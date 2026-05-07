@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/diag.ts (Sprint 489)
+ * fast-check property tests — src/core/diag.ts (Sprint 489, 574)
  *
  * Properties under test:
  *  DG1. diagLog ring buffer never exceeds DIAG_BUFFER_SIZE (80).
@@ -9,6 +9,10 @@
  *  DG5. classifyProviderError returns a valid ProviderErrorKind.
  *  DG6. classifyProviderError: network keywords → "network".
  *  DG7. formatDiagEntry output contains the message.
+ *  DG8. classifyProviderError: timeout keywords → "timeout".
+ *  DG9. classifyProviderError: parse keywords → "parse".
+ *  DG10. classifyProviderError: non-Error → "unknown".
+ *  DG11. formatDiagEntry output starts with bracketed time.
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -158,6 +162,74 @@ describe("diag — DG7: formatDiagEntry output contains original message", () =>
         },
       ),
       { numRuns: 50 },
+    );
+  });
+});
+
+// ── DG8: timeout keywords → "timeout" ─────────────────────────────────────────
+
+describe("diag — DG8: timeout error keywords", () => {
+  it("messages with timeout/aborted keywords classify as timeout", () => {
+    const keywords = ["timeout", "aborted", "Request timeout exceeded"];
+    fc.assert(
+      fc.property(fc.constantFrom(...keywords), (keyword) => {
+        clearDiag();
+        const kind = classifyProviderError(new Error(keyword), "timeout-test");
+        expect(kind).toBe("timeout");
+      }),
+      { numRuns: 10 },
+    );
+  });
+});
+
+// ── DG9: parse keywords → "parse" ────────────────────────────────────────────
+
+describe("diag — DG9: parse error keywords", () => {
+  it("messages with json/parse/syntax keywords classify as parse", () => {
+    const keywords = ["Unexpected JSON", "parse error", "SyntaxError in response"];
+    fc.assert(
+      fc.property(fc.constantFrom(...keywords), (keyword) => {
+        clearDiag();
+        const kind = classifyProviderError(new Error(keyword), "parse-test");
+        expect(kind).toBe("parse");
+      }),
+      { numRuns: 10 },
+    );
+  });
+});
+
+// ── DG10: non-Error input → "unknown" ────────────────────────────────────────
+
+describe("diag — DG10: non-Error input", () => {
+  it("strings, numbers, null all classify as unknown", () => {
+    fc.assert(
+      fc.property(
+        fc.oneof(fc.string(), fc.integer(), fc.constant(null)),
+        (err) => {
+          clearDiag();
+          const kind = classifyProviderError(err, "non-error-test");
+          expect(kind).toBe("unknown");
+        },
+      ),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── DG11: formatDiagEntry starts with bracketed time ────────────────────────
+
+describe("diag — DG11: formatDiagEntry bracketed time prefix", () => {
+  it("output starts with [HH:MM:SS] pattern", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 2_000_000_000_000 }),
+        fc.string({ minLength: 1, maxLength: 50 }),
+        (ts, msg) => {
+          const formatted = formatDiagEntry({ ts, msg });
+          expect(formatted).toMatch(/^\[\d{2}:\d{2}:\d{2}\]/);
+        },
+      ),
+      { numRuns: 30 },
     );
   });
 });
