@@ -53,6 +53,7 @@
  * extended scope to ims-adapter.ts, bg-images.ts, early-hints.ts (property-tested IMS1-IMS7, BG1-BG5, CO1-CO7); removed duplicate canary entry.
  * extended scope to allowlists.ts (property-tested AW1-AW5).
  * extended scope to currency.ts (property-tested CUR9-CUR12).
+ * (v14.7.0): extended scope to news.ts, theme.ts, toast.ts, boi-adapter.ts, tase-adapter.ts.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -173,6 +174,12 @@ export default {
     "src/core/fdb-card.ts",
     "src/core/vitals-reporter.ts",
     "src/core/sw-register.ts",
+    // (v14.7.0): news card, theme system, toast UI, IL provider adapters
+    "src/cards/news/news.ts",
+    "src/ui/theme.ts",
+    "src/ui/toast.ts",
+    "src/cards/currency/boi-adapter.ts",
+    "src/cards/stocks/tase-adapter.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
