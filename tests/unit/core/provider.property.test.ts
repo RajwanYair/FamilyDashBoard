@@ -9,6 +9,10 @@
  *  PV5. recordProviderLatency: ring buffer never exceeds LATENCY_MAX_SAMPLES (20).
  *  PV6. getProviderHealth returns a copy (mutation doesn't affect internal state).
  *  PV7. shouldBackoff returns false when status is ok.
+ *  PV8. getAllProviderHealth includes every registered provider (Sprint 598)
+ *  PV9. recordProviderLatency: FIFO — latest sample is last in array (Sprint 598)
+ *  PV10. shouldBackoff returns true when down + recent attempt (Sprint 598)
+ *  PV11. recordProviderSuccess: successCount accumulates across calls (Sprint 598)
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -17,6 +21,7 @@ import {
   recordProviderSuccess,
   recordProviderFailure,
   getProviderHealth,
+  getAllProviderHealth,
   getBackoffMs,
   recordProviderLatency,
   getProviderLatency,
@@ -188,6 +193,86 @@ describe("provider — PV7: shouldBackoff returns false when status is ok", () =
         },
       ),
       { numRuns: 30 },
+    );
+  });
+});
+
+// ── PV8: getAllProviderHealth includes registered providers ───────────────────
+
+describe("provider — PV8: getAllProviderHealth includes registered", () => {
+  it("each interacted provider appears in getAllProviderHealth", () => {
+    fc.assert(
+      fc.property(
+        fc.array(providerIdArb, { minLength: 1, maxLength: 5 }),
+        (ids) => {
+          _resetProviderHealth();
+          const uniqueIds = [...new Set(ids)];
+          for (const id of uniqueIds) recordProviderFailure(id);
+          const all = getAllProviderHealth();
+          const allIds = all.map((h) => h.id);
+          for (const id of uniqueIds) {
+            expect(allIds).toContain(id);
+          }
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── PV9: latency FIFO — latest sample is last ───────────────────────────────
+
+describe("provider — PV9: latency FIFO ordering", () => {
+  it("latest recorded latency is the last element", () => {
+    fc.assert(
+      fc.property(
+        providerIdArb,
+        fc.array(fc.integer({ min: 1, max: 10_000 }), { minLength: 1, maxLength: 15 }),
+        (id, samples) => {
+          _resetProviderHealth();
+          for (const ms of samples) recordProviderLatency(id, ms);
+          const stored = getProviderLatency(id);
+          expect(stored[stored.length - 1]).toBe(samples[samples.length - 1]);
+        },
+      ),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── PV10: shouldBackoff true when down + recent attempt ──────────────────────
+
+describe("provider — PV10: shouldBackoff true when down", () => {
+  it("returns true for down provider with very recent lastAttemptAt", () => {
+    fc.assert(
+      fc.property(providerIdArb, (id) => {
+        _resetProviderHealth();
+        // 5 failures → down
+        for (let i = 0; i < 5; i++) recordProviderFailure(id);
+        expect(getProviderHealth(id).status).toBe("down");
+        // last attempt just now → backoff should be true
+        expect(shouldBackoff(id, Date.now())).toBe(true);
+      }),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── PV11: successCount accumulates ───────────────────────────────────────────
+
+describe("provider — PV11: successCount accumulates", () => {
+  it("N successes → successCount === N", () => {
+    fc.assert(
+      fc.property(
+        providerIdArb,
+        fc.integer({ min: 1, max: 30 }),
+        (id, n) => {
+          _resetProviderHealth();
+          for (let i = 0; i < n; i++) recordProviderSuccess(id);
+          expect(getProviderHealth(id).successCount).toBe(n);
+        },
+      ),
+      { numRuns: 40 },
     );
   });
 });
