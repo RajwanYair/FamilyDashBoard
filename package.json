@@ -44,7 +44,7 @@
         "format:check": "prettier --check .",
         "typecheck": "tsc -b --noEmit",
         "typecheck:sw": "tsc --project tsconfig.sw.json",
-        "check": "npm run typecheck && npm run typecheck:sw && npm run lint && npm run lint:md && npm run lint:instructions && npm run check:sw && npm run check:version && npm run check:worker-client && npm run check:adr && npm run check:openapi-ttl && npm run check:release-notes && npm run check:reading-level && npm run check:smart-contrast && npm run check:boundaries && npm run check:test-focus && npm run check:artifacts && npm run check:owasp && npm run check:trusted-types && npm run check:csp-wildcards && npm run check:dead-exports && npm run test",
+        "check": "npm run typecheck && npm run typecheck:sw && npm run lint && npm run format:check && npm run lint:md && npm run lint:instructions && npm run check:sw && npm run check:version && npm run check:worker-client && npm run check:adr && npm run check:openapi-ttl && npm run check:release-notes && npm run check:reading-level && npm run check:smart-contrast && npm run check:boundaries && npm run check:test-focus && npm run check:artifacts && npm run check:owasp && npm run check:trusted-types && npm run check:csp-wildcards && npm run check:dead-exports && npm run check:vendor && npm run test",
         "check:test-focus": "node scripts/check-test-focus-skip.mjs",
         "check:artifacts": "node scripts/check-build-artifacts-untracked.mjs",
         "check:boundaries": "node scripts/check-module-boundaries.mjs",
