@@ -26,6 +26,9 @@
  * Sprint 561 (v14.5.0) — added A03 document.writeln, A05 insecure WebSocket, A02 private key material.
  * Sprint 567 (v14.5.0) — added A01 form action manipulation, A03 CSS injection via cssText, A08 dynamic importScripts.
  * Sprint 573 (v14.5.0) — added A02 token in URL fragment, A05 ACAO reflecting origin, A09 sensitive var in Error().
+ * Sprint 579 (v14.5.0) — added A03 proto pollution, A04 SSRF interpolated URL, A08 location.href redirect.
+ * Sprint 585 (v14.6.0) — added A01 postMessage wildcard, A07 hardcoded secret, A05 document.domain.
+ * Sprint 591 (v14.7.0) — added A03 srcdoc template injection, A09 PII in telemetry, A02 weak PBKDF2 iterations.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -851,6 +854,33 @@ const RULES = [
     severity: "error",
     pattern: /document\.domain\s*=/,
     safeMarkers: ["test", "spec", "// owasp-allow:A05"],
+  },
+
+  // Sprint 591 — A03: srcdoc attribute set via template literal (injection)
+  {
+    category: "A03",
+    label: "iframe srcdoc set from template literal (XSS injection vector)",
+    severity: "error",
+    pattern: /\.srcdoc\s*=\s*`/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A03", "trusted-types", "sanitize"],
+  },
+
+  // Sprint 591 — A09: User PII in telemetry/analytics payload
+  {
+    category: "A09",
+    label: "PII field name in analytics/telemetry payload (privacy leak)",
+    severity: "warn",
+    pattern: /(?:analytics|telemetry|track|beacon)\([^)]*(?:email|phone|address|ssn|passport)/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A09", "redact", "anonymize", "hash"],
+  },
+
+  // Sprint 591 — A02: PBKDF2 with fewer than 100k iterations (weak KDF)
+  {
+    category: "A02",
+    label: "PBKDF2 with too few iterations (< 100000 is weak)",
+    severity: "warn",
+    pattern: /(?:deriveKey|deriveBits|pbkdf2).*iterations["'\s:]*\d{1,4}[^\d]/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A02", "100000", "600000"],
   },
 ];
 

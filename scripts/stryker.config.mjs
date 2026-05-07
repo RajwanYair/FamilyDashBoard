@@ -163,6 +163,8 @@ export default {
     "src/core/signals.ts",
     // Sprint 585: state store (ST9-12), error-tracker (ET8-11)
     "src/core/state.ts",
+    // Sprint 591: error-tracker (ET8-11), links (LK7-10)
+    "src/core/error-tracker.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
