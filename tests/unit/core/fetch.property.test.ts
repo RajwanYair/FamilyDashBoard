@@ -10,11 +10,15 @@
  *  FT6. classifyFetchError: SyntaxError → "invalid-json"
  *  FT7. classifyFetchError: non-Error → "unknown"
  *  FT8. clearFetchLocks: resets all locks.
+ *  FT9. classifyFetchError: Error with HTTP status code → "http-error"
+ *  FT10. releaseLock: releasing an unheld lock is a no-op (idempotent)
+ *  FT11. acquireLock: works with unicode key names
+ *  FT12. recordFetchFailure: 3+ failures → isNetworkOffline true; recordFetchSuccess resets
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
 import * as fc from "fast-check";
-import { acquireLock, releaseLock, clearFetchLocks, classifyFetchError } from "@/core/fetch";
+import { acquireLock, releaseLock, clearFetchLocks, classifyFetchError, recordFetchSuccess, recordFetchFailure, isNetworkOffline, getConsecutiveFailures } from "@/core/fetch";
 
 beforeEach(() => {
   clearFetchLocks();
@@ -142,6 +146,79 @@ describe("fetch — FT8: clearFetchLocks", () => {
         },
       ),
       { numRuns: 20 },
+    );
+  });
+});
+
+// ── FT9: classifyFetchError — Error with HTTP status code → http-error ───────
+
+describe("fetch — FT9: Error with HTTP status → http-error", () => {
+  it("message containing 4xx/5xx → http-error", () => {
+    const statusArb = fc.integer({ min: 400, max: 599 });
+    fc.assert(
+      fc.property(statusArb, (code) => {
+        const err = new Error(`Request failed with status ${code}`);
+        expect(classifyFetchError(err)).toBe("http-error");
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── FT10: releaseLock — releasing unheld lock is no-op ───────────────────────
+
+describe("fetch — FT10: releaseLock idempotent", () => {
+  it("releasing a never-acquired lock does not throw", () => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 1, maxLength: 20 }), (name) => {
+        clearFetchLocks();
+        // Should not throw
+        releaseLock(name);
+        // Should still be acquirable
+        expect(acquireLock(name)).toBe(true);
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── FT11: acquireLock — unicode key names ────────────────────────────────────
+
+describe("fetch — FT11: acquireLock unicode names", () => {
+  it("unicode names behave as normal lock keys", () => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 1, maxLength: 10, unit: "grapheme" }), (name) => {
+        clearFetchLocks();
+        expect(acquireLock(name)).toBe(true);
+        expect(acquireLock(name)).toBe(false);
+        releaseLock(name);
+        expect(acquireLock(name)).toBe(true);
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── FT12: recordFetchFailure/Success — offline transitions ───────────────────
+
+describe("fetch — FT12: network failure tracking", () => {
+  it("3+ consecutive failures → offline; success resets", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 3, max: 20 }), (n) => {
+        // Reset via success
+        recordFetchSuccess();
+        expect(isNetworkOffline()).toBe(false);
+        expect(getConsecutiveFailures()).toBe(0);
+
+        for (let i = 0; i < n; i++) recordFetchFailure();
+        expect(isNetworkOffline()).toBe(true);
+        expect(getConsecutiveFailures()).toBe(n);
+
+        recordFetchSuccess();
+        expect(isNetworkOffline()).toBe(false);
+        expect(getConsecutiveFailures()).toBe(0);
+      }),
+      { numRuns: 30 },
     );
   });
 });
