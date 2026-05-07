@@ -161,6 +161,16 @@ jobs:
             echo "✅ No dangerous patterns found"
           fi
           exit $FAILED
+      - name: OWASP Top 10 pattern scan
+        run: node scripts/check-owasp.mjs
+      - name: Trusted Types enforcement audit
+        run: node scripts/check-trusted-types.mjs
+      - name: CSP wildcard review
+        run: node scripts/check-csp-wildcards.mjs
+      - name: GitHub Actions SHA-pinned check
+        run: node scripts/check-actions-pinned.mjs
+      - name: npm ignore-scripts gate
+        run: node scripts/check-npm-ignore-scripts.mjs
 
   worker-tests:
     name: Worker Unit Tests
@@ -220,6 +230,12 @@ jobs:
         run: node scripts/check-mermaid.mjs
       - name: Container-query audit
         run: node scripts/check-container-queries.mjs
+      - name: Module boundary lint (D12 + D12-cross)
+        run: node scripts/check-module-boundaries.mjs
+      - name: Smart contrast audit (WCAG)
+        run: node scripts/check-smart-contrast.mjs
+      - name: Dead exports check
+        run: node scripts/check-dead-exports.mjs --max-allowed 5
 
   lighthouse:
     name: Lighthouse CI (Accessibility + Performance)
