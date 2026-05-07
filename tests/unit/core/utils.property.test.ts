@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/utils.ts (Sprint 470)
+ * fast-check property tests — src/core/utils.ts (Sprint 470, 575)
  *
  * Properties under test:
  *  UT1. clamp: result is always in [min, max] for any finite triple.
@@ -10,6 +10,10 @@
  *  UT6. decomposeDuration: each part is within valid calendar ranges (0 ≤ h < 24, 0 ≤ m < 60, 0 ≤ s < 60).
  *  UT7. computeMoonPhase: result always has a non-empty emoji and non-empty label.
  *  UT8. computeMoonPhase: result is one of the 8 known phase objects (emoji ∈ MOON_EMOJIS).
+ *  UT9. pad2: single-digit → exactly 2 chars with leading zero.
+ *  UT10. decomposeDuration: negative ms → all zeros.
+ *  UT11. clamp: monotonicity — if a ≤ b then clamp(a) ≤ clamp(b).
+ *  UT12. decomposeDuration: idempotence of seconds — result.seconds < 60.
  */
 
 import { describe, it, expect } from "vitest";
@@ -189,6 +193,75 @@ describe("utils — UT8: computeMoonPhase result emoji is one of the 8 moon phas
         expect(MOON_EMOJIS.has(emoji)).toBe(true);
       }),
       { numRuns: 200 },
+    );
+  });
+});
+
+// ── UT9: pad2 single-digit → 2 chars with leading zero ──────────────────────
+
+describe("utils — UT9: pad2 single-digit", () => {
+  it("0–9 → exactly '0X'", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 9 }), (n) => {
+        const result = pad2(n);
+        expect(result).toHaveLength(2);
+        expect(result[0]).toBe("0");
+      }),
+      { numRuns: 10 },
+    );
+  });
+});
+
+// ── UT10: decomposeDuration negative → all zeros ─────────────────────────────
+
+describe("utils — UT10: decomposeDuration negative", () => {
+  it("negative ms → all parts are 0", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: -1_000_000, max: -1 }), (ms) => {
+        const { days, hours, minutes, seconds } = decomposeDuration(ms);
+        expect(days).toBe(0);
+        expect(hours).toBe(0);
+        expect(minutes).toBe(0);
+        expect(seconds).toBe(0);
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── UT11: clamp monotonicity ─────────────────────────────────────────────────
+
+describe("utils — UT11: clamp monotonicity", () => {
+  it("a ≤ b → clamp(a, min, max) ≤ clamp(b, min, max)", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: -1000, max: 1000, noNaN: true, noDefaultInfinity: true }),
+        fc.double({ min: -1000, max: 1000, noNaN: true, noDefaultInfinity: true }),
+        fc.double({ min: -500, max: 500, noNaN: true, noDefaultInfinity: true }),
+        fc.double({ min: -500, max: 500, noNaN: true, noDefaultInfinity: true }),
+        (a, b, x, y) => {
+          const min = Math.min(x, y);
+          const max = Math.max(x, y);
+          if (a > b) return; // skip when a > b
+          expect(clamp(a, min, max)).toBeLessThanOrEqual(clamp(b, min, max));
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+});
+
+// ── UT12: decomposeDuration seconds always < 60 ──────────────────────────────
+
+describe("utils — UT12: decomposeDuration seconds < 60", () => {
+  it("seconds is always in [0, 59]", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 100_000_000 }), (ms) => {
+        const { seconds } = decomposeDuration(ms);
+        expect(seconds).toBeGreaterThanOrEqual(0);
+        expect(seconds).toBeLessThanOrEqual(59);
+      }),
+      { numRuns: 100 },
     );
   });
 });
