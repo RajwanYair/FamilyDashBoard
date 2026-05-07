@@ -11,6 +11,10 @@
  *  PF7. checkAllVitalBudgets returns exactly 6 entries (one per PerfVitals key).
  *  PF8. checkAllVitalBudgets with budget=Infinity always passes for any measured value.
  *  PF9. recordCardInitTime rounds to 2 decimal places.
+ *  PF10. formatVital output for ms keys is numeric prefix + " ms" (parseable).
+ *  PF11. rateVital('cls', 0) is always 'good' (lower bound).
+ *  PF12. recordCardInitTime is idempotent for same card (overwrites, not duplicates).
+ *  PF13. checkAllVitalBudgets entries always have key, status, and measured fields.
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -199,5 +203,86 @@ describe("perf — PF9: recordCardInitTime rounds to 2 decimal places", () => {
       ),
       { numRuns: 80 },
     );
+  });
+});
+
+// ── PF10: formatVital ms keys produce parseable output ───────────────────────
+
+describe("perf — PF10: formatVital ms-key output is parseable as number + ' ms'", () => {
+  it("stripping ' ms' yields a finite number", () => {
+    fc.assert(
+      fc.property(msKeyArb, finitePositiveArb, (key, value) => {
+        const result = formatVital(key, value);
+        const numeric = parseFloat(result.replace(/ ms$/, ""));
+        expect(Number.isFinite(numeric)).toBe(true);
+      }),
+      { numRuns: 80 },
+    );
+  });
+});
+
+// ── PF11: rateVital('cls', 0) is always 'good' ──────────────────────────────
+
+describe("perf — PF11: rateVital cls=0 is good (lower bound)", () => {
+  it("zero CLS always rates good", () => {
+    expect(rateVital("cls", 0)).toBe("good");
+  });
+
+  it("zero on any ms-key always rates good", () => {
+    fc.assert(
+      fc.property(msKeyArb, (key) => {
+        expect(rateVital(key, 0)).toBe("good");
+      }),
+      { numRuns: 5 },
+    );
+  });
+});
+
+// ── PF12: recordCardInitTime overwrites (no duplicates) ──────────────────────
+
+describe("perf — PF12: recordCardInitTime overwrites for same card", () => {
+  it("map size stays 1 after recording same id twice", () => {
+    fc.assert(
+      fc.property(
+        cardIdArb,
+        fc.double({ min: 0, max: 10_000, noNaN: true, noDefaultInfinity: true }),
+        fc.double({ min: 0, max: 10_000, noNaN: true, noDefaultInfinity: true }),
+        (id, d1, d2) => {
+          recordCardInitTime(id, d1);
+          recordCardInitTime(id, d2);
+          const timings = getCardTimings();
+          // The id should appear exactly once
+          let count = 0;
+          for (const k of timings.keys()) {
+            if (k === id) count++;
+          }
+          expect(count).toBe(1);
+          // Value should be the latest
+          const stored = timings.get(id)!;
+          const expected = Math.round(d2 * 100) / 100;
+          expect(stored).toBe(expected);
+        },
+      ),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── PF13: checkAllVitalBudgets entry shape ───────────────────────────────────
+
+describe("perf — PF13: checkAllVitalBudgets entries have required fields", () => {
+  beforeEach(() => {
+    _resetPerfObserver();
+  });
+
+  it("every entry has key, budget, measured, and status", () => {
+    const results = checkAllVitalBudgets();
+    for (const entry of results) {
+      expect(entry).toHaveProperty("key");
+      expect(entry).toHaveProperty("budget");
+      expect(entry).toHaveProperty("measured");
+      expect(entry).toHaveProperty("status");
+      expect(["pass", "fail", "pending"]).toContain(entry.status);
+    }
   });
 });
