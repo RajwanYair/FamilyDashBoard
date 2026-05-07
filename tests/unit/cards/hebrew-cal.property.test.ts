@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/hebrew-cal/hebrew-cal.ts (Sprint 524)
+ * fast-check property tests — src/cards/hebrew-cal/hebrew-cal.ts (Sprint 524, extended Sprint 568)
  *
  * Properties under test:
  *  HC1. getPsalmOfDay: result ∈ PSALM_BY_WEEKDAY set
@@ -12,6 +12,10 @@
  *  HC8. getHaftarah: no haftara item → null
  *  HC9. todayHebrewMD: month ∈ [1,13], day ∈ [1,30]
  *  HC10. nextHebrewYearGregorianApprox: returns year+1
+ *  HC11. zmanimTimeLabel: empty → "--"
+ *  HC12. zmanimTimeLabel: valid ISO → HH:MM format
+ *  HC13. zmanimTimeLabel: HH:MM passthrough
+ *  HC14. isShabbat: returns boolean for any candles/havdala
  */
 
 import { describe, it, expect } from "vitest";
@@ -25,6 +29,8 @@ import {
   getHaftarah,
   todayHebrewMD,
   nextHebrewYearGregorianApprox,
+  zmanimTimeLabel,
+  isShabbat,
 } from "@/cards/hebrew-cal/hebrew-cal";
 
 const VALID_PSALMS = new Set([24, 48, 82, 94, 81, 93, 92]);
@@ -174,6 +180,59 @@ describe("hebrew-cal — HC10: nextHebrewYearGregorianApprox", () => {
         },
       ),
       { numRuns: 15 },
+    );
+  });
+});
+
+// ── HC11: zmanimTimeLabel empty → "--" ───────────────────────────────────────
+
+describe("hebrew-cal — HC11: zmanimTimeLabel empty", () => {
+  it("empty string → --", () => {
+    expect(zmanimTimeLabel("")).toBe("--");
+  });
+});
+
+// ── HC12: zmanimTimeLabel valid ISO ──────────────────────────────────────
+
+describe("hebrew-cal — HC12: zmanimTimeLabel valid ISO", () => {
+  it("valid ISO string → HH:MM format", () => {
+    const result = zmanimTimeLabel("2025-06-01T06:30:00+03:00");
+    expect(result).toMatch(/^\d{2}:\d{2}$/);
+  });
+});
+
+// ── HC13: zmanimTimeLabel HH:MM passthrough ───────────────────────────────
+
+describe("hebrew-cal — HC13: zmanimTimeLabel HH:MM", () => {
+  it("HH:MM passes through unchanged", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 23 }),
+        fc.integer({ min: 0, max: 59 }),
+        (h, m) => {
+          const input = `${h}:${String(m).padStart(2, "0")}`;
+          expect(zmanimTimeLabel(input)).toBe(input);
+        },
+      ),
+      { numRuns: 15 },
+    );
+  });
+});
+
+// ── HC14: isShabbat returns boolean ─────────────────────────────────────
+
+describe("hebrew-cal — HC14: isShabbat type safety", () => {
+  it("always returns a boolean", () => {
+    fc.assert(
+      fc.property(
+        fc.option(fc.integer({ min: 0, max: 2_000_000_000_000 }), { nil: null }),
+        fc.option(fc.integer({ min: 0, max: 2_000_000_000_000 }), { nil: null }),
+        (candles, havdala) => {
+          const result = isShabbat(candles, havdala);
+          expect(typeof result).toBe("boolean");
+        },
+      ),
+      { numRuns: 20 },
     );
   });
 });
