@@ -5,6 +5,7 @@
  * Enforces the architectural rule that:
  *   - `src/cards/*` MUST NOT import from `src/ui/*`
  *   - `src/ui/*`    MUST NOT import from `src/cards/*`
+ *   - `src/cards/X/*` MUST NOT import from `src/cards/Y/*` (cross-card coupling)
  *
  * Cards talk to UI through the registry (`src/core/card-registry.ts`),
  * the lifecycle (`src/core/fdb-card.ts`), and shared helpers under
@@ -30,6 +31,43 @@ const FORBIDDEN = [
 ];
 
 /**
+ * Cross-card import detector: a file in `src/cards/X/` must not import
+ * from `src/cards/Y/` (where X ≠ Y). Shared card utilities belong in
+ * `src/core/` or `src/cards/base-card.ts`.
+ * @param {string} filePath - absolute path
+ * @param {string} fileText - file contents
+ * @returns {string|null} violation description or null
+ */
+function detectCrossCardImport(filePath, fileText) {
+  const cardDirMatch = filePath.replace(/\\/g, "/").match(/src\/cards\/([^/]+)\//);
+  if (!cardDirMatch) return null;
+  const ownCard = cardDirMatch[1];
+  // Match imports from other card directories
+  const crossImportRe = /from\s+["']([^"']*\/cards\/([^/"']+)\/[^"']*)['"]/g;
+  let m;
+  while ((m = crossImportRe.exec(fileText)) !== null) {
+    const importedCard = m[2];
+    if (importedCard !== ownCard) {
+      return `imports from src/cards/${importedCard}/ (cross-card coupling forbidden)`;
+    }
+  }
+  // Also check relative imports that resolve to a sibling card dir.
+  // Cards live at depth src/cards/X/file.ts, so a sibling card import
+  // looks like `from "../Y/..."` (single ../ then a sibling dir).
+  // We must NOT flag `../../core/` or `../../ui/` (those go above cards/).
+  const relCrossRe = /from\s+["'](\.\/\.\.\/([^/"']+)\/[^"']*|\.\.\/([^/"'.]+)\/[^"']*)['"]/g;
+  while ((m = relCrossRe.exec(fileText)) !== null) {
+    const importedCard = m[2] || m[3];
+    // Skip if import goes up two levels (../../) — that leaves the cards/ dir
+    if (m[1].startsWith("../../")) continue;
+    if (importedCard !== ownCard) {
+      return `imports from sibling card "${importedCard}" via relative path (cross-card coupling forbidden)`;
+    }
+  }
+  return null;
+}
+
+/**
  * Pre-existing violations grandfathered when this check was introduced.
  * NEW additions to this list are forbidden — fix the import instead.
  * Refactor backlog: D12-baseline (track in ROADMAP §3 backlog).
@@ -41,6 +79,9 @@ const BASELINE = new Set([
   "src/cards/video-news/fdb-video-news.ts",
   "src/ui/ticker.ts",
   "src/ui/today-pane.ts",
+  // D12-cross: pre-existing cross-card imports (refactor tracked in ROADMAP §3)
+  "src/cards/hebrew-cal/hebrew-cal.ts",  // imports from tasks
+  "src/cards/stocks/tase-adapter.ts",     // imports from currency
 ]);
 
 /** @returns {string[]} */
@@ -70,6 +111,16 @@ for (const file of files) {
         continue;
       }
       console.error(`❌ ${rel}: ${rule.why}`);
+      violations++;
+    }
+  }
+  // Cross-card import check (D12-cross)
+  const crossViolation = detectCrossCardImport(file, text);
+  if (crossViolation) {
+    if (BASELINE.has(rel)) {
+      baselined++;
+    } else {
+      console.error(`❌ ${rel}: ${crossViolation}`);
       violations++;
     }
   }
