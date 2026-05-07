@@ -9,6 +9,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.6.0] — 2026-05-13
+
+> **7037 tests / 275 suites / 0 failures**
+
+### CI / Supply Chain
+
+- **8 missing security checks wired into CI** (Sprint 487): OWASP, trusted-types, CSP-wildcards, actions-pinned, npm-ignore-scripts, module-boundaries, smart-contrast, dead-exports
+- **Dead-exports + security checks added to npm check** (Sprint 488): `check:dead-exports`, `check:owasp`, `check:trusted-types`, `check:csp-wildcards` in local meta-script
+- **Stryker mutation threshold ratchet** (Sprint 489): break 85→87, low 80→82, high 85→87
+- **CI inline grep replaced by OWASP script** (Sprint 490): 86+ rules replace 7 bash greps
+- **ROADMAP housekeeping** (Sprint 491): stale coverage/threshold/LHCI numbers updated
+- **lint-instructions added to CI** (Sprint 492): instruction file validation in lint job
+- **check-build-artifacts-untracked added to CI** (Sprint 493): build artifact hygiene gate
+- **Sigstore + reproducible build dry-run in CI** (Sprint 494): SLSA L3 supply-chain gates
+- **Vendor-neutrality gate in CI** (Sprint 495): annual drill tracking in build job
+
+---
+
 ## [14.5.0] — 2026-05-07
 
 > **7037 tests / 275 suites / 0 failures**
