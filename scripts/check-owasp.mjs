@@ -29,6 +29,7 @@
  * Sprint 579 (v14.5.0) — added A03 proto pollution, A04 SSRF interpolated URL, A08 location.href redirect.
  * Sprint 585 (v14.6.0) — added A01 postMessage wildcard, A07 hardcoded secret, A05 document.domain.
  * Sprint 591 (v14.7.0) — added A03 srcdoc template injection, A09 PII in telemetry, A02 weak PBKDF2 iterations.
+ * Sprint 597 (v14.7.0) — added A04 Object.assign proto pollution, A06 weak hash (MD5/SHA1), A10 fetch without catch.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -881,6 +882,33 @@ const RULES = [
     severity: "warn",
     pattern: /(?:deriveKey|deriveBits|pbkdf2).*iterations["'\s:]*\d{1,4}[^\d]/i,
     safeMarkers: ["test", "spec", "// owasp-allow:A02", "100000", "600000"],
+  },
+
+  // Sprint 597 — A04: Object.assign with user-controlled source (proto pollution)
+  {
+    category: "A04",
+    label: "Object.assign with unvalidated source (prototype pollution risk)",
+    severity: "warn",
+    pattern: /Object\.assign\([^,]+,\s*(?:req\.body|params|query|input|payload|userData)/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A04", "structuredClone", "sanitize"],
+  },
+
+  // Sprint 597 — A06: Weak hash algorithm for security purposes (MD5/SHA1)
+  {
+    category: "A06",
+    label: "Weak hash algorithm (MD5/SHA-1) used for security/integrity",
+    severity: "warn",
+    pattern: /(?:createHash|digest|subtle\.digest)\(['"](?:md5|sha-?1)['"]\)/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A06", "non-security", "checksum", "etag"],
+  },
+
+  // Sprint 597 — A10: fetch() without .catch() or try/catch (unhandled rejection)
+  {
+    category: "A10",
+    label: "fetch() chain without .catch() (unhandled rejection risk)",
+    severity: "warn",
+    pattern: /fetch\([^)]+\)\.then\([^)]+\)(?!\.catch)/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A10", "try", "catch", "allSettled"],
   },
 ];
 

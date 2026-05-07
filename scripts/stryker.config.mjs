@@ -165,6 +165,8 @@ export default {
     "src/core/state.ts",
     // Sprint 591: error-tracker (ET8-11), links (LK7-10)
     "src/core/error-tracker.ts",
+    // Sprint 597: links (LK7-10), semantic-clipboard (SC7-10)
+    "src/core/links.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
