@@ -49,7 +49,10 @@ describe("analytics — AN3: normaliseRoute returns pathname", () => {
     fc.assert(
       fc.property(fc.webPath(), (path) => {
         const url = `https://example.com${path}`;
-        expect(normaliseRoute(url)).toBe(path || "/");
+        // Compare against URL-normalised pathname — fc.webPath() can produce
+        // percent-encoded segments that the URL constructor re-encodes differently.
+        const expected = new URL(url).pathname;
+        expect(normaliseRoute(url)).toBe(expected);
       }),
       { numRuns: 20 },
     );
