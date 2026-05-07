@@ -167,6 +167,12 @@ export default {
     "src/core/error-tracker.ts",
     // links (LK7-10), semantic-clipboard (SC7-10)
     "src/core/links.ts",
+    // (v14.5.0): expanded scope — idb-cache, provider-adapter, fdb-card, vitals-reporter, sw-register
+    "src/core/idb-cache.ts",
+    "src/core/provider-adapter.ts",
+    "src/core/fdb-card.ts",
+    "src/core/vitals-reporter.ts",
+    "src/core/sw-register.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
