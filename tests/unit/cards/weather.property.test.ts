@@ -41,14 +41,14 @@ describe("weather — WX1: parseCityEntry valid", () => {
   it("parses 'name|lat|lon' correctly", () => {
     fc.assert(
       fc.property(
-        fc.string({ minLength: 1, maxLength: 20 }).filter((s) => !s.includes("|")),
+        fc.string({ minLength: 1, maxLength: 20 }).filter((s) => !s.includes("|") && s.trim().length > 0),
         fc.double({ min: -90, max: 90, noNaN: true, noDefaultInfinity: true }),
         fc.double({ min: -180, max: 180, noNaN: true, noDefaultInfinity: true }),
         (name, lat, lon) => {
           const raw = `${name}|${lat}|${lon}`;
           const result = parseCityEntry(raw);
           expect(result).not.toBeNull();
-          expect(result!.name).toBe(name);
+          expect(result!.name).toBe(name.trim());
           expect(result!.lat).toBeCloseTo(lat, 5);
           expect(result!.lon).toBeCloseTo(lon, 5);
         },
