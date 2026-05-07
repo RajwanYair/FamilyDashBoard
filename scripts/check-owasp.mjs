@@ -183,13 +183,15 @@ const RULES = [
     category: "A07",
     label: "Credential stored in localStorage",
     severity: "error",
-    pattern: /localStorage\.setItem\s*\(\s*['"][^'"]*(?:token|password|secret|auth|credential)[^'"]*['"]/i,
+    pattern:
+      /localStorage\.setItem\s*\(\s*['"][^'"]*(?:token|password|secret|auth|credential)[^'"]*['"]/i,
   },
   {
     category: "A07",
     label: "Credential stored in sessionStorage",
     severity: "error",
-    pattern: /sessionStorage\.setItem\s*\(\s*['"][^'"]*(?:token|password|secret|auth|credential)[^'"]*['"]/i,
+    pattern:
+      /sessionStorage\.setItem\s*\(\s*['"][^'"]*(?:token|password|secret|auth|credential)[^'"]*['"]/i,
   },
 
   // A08 — Software and Data Integrity Failures
@@ -216,7 +218,7 @@ const RULES = [
     pattern: /\bfetch\s*\(\s*(?:params|req|request|input|userInput|url)\b/i,
   },
 
-  // A03 — Injection 
+  // A03 — Injection
   {
     // Dynamically creating a <script> element is an XSS/script-injection vector
     category: "A03",
@@ -225,7 +227,7 @@ const RULES = [
     pattern: /\bdocument\.createElement\s*\(\s*['"]script['"]\s*\)/i,
   },
 
-  // A04 — Insecure Design: prototype pollution 
+  // A04 — Insecure Design: prototype pollution
   {
     // __proto__ assignment can silently poison every object in the runtime
     category: "A04",
@@ -241,7 +243,7 @@ const RULES = [
     pattern: /Object\.defineProperty\s*\(\s*Object\.prototype\b/,
   },
 
-  // A03 — Injection 
+  // A03 — Injection
   {
     // insertAdjacentHTML injects raw HTML into the DOM — same risk as innerHTML
     category: "A03",
@@ -250,7 +252,7 @@ const RULES = [
     pattern: /\.insertAdjacentHTML\s*\(/,
   },
 
-  // A05 — Security Misconfiguration 
+  // A05 — Security Misconfiguration
   {
     // Plain HTTP fetch leaks data in transit; use HTTPS for all network calls
     category: "A05",
@@ -259,16 +261,17 @@ const RULES = [
     pattern: /\bfetch\s*\(\s*['"]http:\/\//,
   },
 
-  // A07 — Identification and Authentication Failures 
+  // A07 — Identification and Authentication Failures
   {
     // window.opener can point to the originating page; assigning to it enables reverse tabnapping
     category: "A07",
-    label: "window.opener access (reverse tabnapping — ensure opener is null for cross-origin links)",
+    label:
+      "window.opener access (reverse tabnapping — ensure opener is null for cross-origin links)",
     severity: "warn",
     pattern: /\bwindow\.opener\b/,
   },
 
-  // A03 — Injection 
+  // A03 — Injection
   {
     // iframe.srcdoc = userInput injects arbitrary HTML into an iframe — same risk as innerHTML
     category: "A03",
@@ -277,7 +280,7 @@ const RULES = [
     pattern: /\.srcdoc\s*=(?!=)/,
   },
 
-  // A02 — Cryptographic Failures 
+  // A02 — Cryptographic Failures
   {
     // btoa() is base64, not encryption; storing credentials via btoa() gives a false sense of security
     category: "A02",
@@ -286,7 +289,7 @@ const RULES = [
     pattern: /\bbtoa\s*\([^)]*(?:token|secret|password|key|credential)[^)]*\)/i,
   },
 
-  // A01 — Broken Access Control 
+  // A01 — Broken Access Control
   {
     // Hardcoding isAdmin/isRoot/isSuperUser = true bypasses all access control
     category: "A01",
@@ -295,7 +298,7 @@ const RULES = [
     pattern: /\b(?:isAdmin|isRoot|isSuperUser|isModerator)\s*=\s*true\b/i,
   },
 
-  // A01 — Broken Access Control 
+  // A01 — Broken Access Control
   {
     // document.domain assignment relaxes the same-origin policy, allowing cross-origin frame access
     category: "A01",
@@ -304,7 +307,7 @@ const RULES = [
     pattern: /\bdocument\.domain\s*=(?!=)/,
   },
 
-  // A03 — Injection 
+  // A03 — Injection
   {
     // new RegExp() with a non-literal argument can introduce ReDoS or injection via user-controlled input
     category: "A03",
@@ -313,27 +316,29 @@ const RULES = [
     pattern: /\bnew\s+RegExp\s*\(\s*(?!\/|['"`])[^)]/,
   },
 
-  // A04 — Insecure Design 
+  // A04 — Insecure Design
   {
     // Object.assign() called with a variable second argument can smuggle __proto__ when parsing untrusted JSON
     category: "A04",
-    label: "Object.assign() with variable source — ensure source is not user-supplied JSON (prototype pollution via __proto__)",
+    label:
+      "Object.assign() with variable source — ensure source is not user-supplied JSON (prototype pollution via __proto__)",
     severity: "warn",
     pattern: /\bObject\.assign\s*\(\s*[^,)]+,\s*(?!{)[a-zA-Z_$][a-zA-Z0-9_.]*\s*\)/,
   },
 
-  // A03 — Injection 
+  // A03 — Injection
   {
     // DOMParser.parseFromString with "text/html" can execute scripts if the parsed result
     // is inserted into the live DOM without sanitization
     category: "A03",
-    label: "DOMParser.parseFromString('text/html') — parsed DOM must not be inserted unsanitized into live document",
+    label:
+      "DOMParser.parseFromString('text/html') — parsed DOM must not be inserted unsanitized into live document",
     severity: "warn",
     pattern: /\.parseFromString\s*\([^)]*,\s*['"]text\/html['"]/,
     safeMarkers: ["owasp-allow:A03", "// safe: result not inserted into live DOM"],
   },
 
-  // A05 — Security Misconfiguration 
+  // A05 — Security Misconfiguration
   {
     // External links without rel="noopener noreferrer" and proper referrerPolicy leak origin info
     category: "A05",
@@ -343,7 +348,7 @@ const RULES = [
     safeMarkers: ["noopener"],
   },
 
-  // A08 — Software and Data Integrity Failures 
+  // A08 — Software and Data Integrity Failures
   {
     // importScripts() in Workers loads & executes remote code without SRI; prefer static import
     category: "A08",
@@ -352,34 +357,37 @@ const RULES = [
     pattern: /\bimportScripts\s*\(/,
   },
 
-  // A03 — Injection 
+  // A03 — Injection
   {
     // document.createRange().createContextualFragment() parses arbitrary HTML and can execute scripts
     category: "A03",
-    label: "createContextualFragment() — parses HTML with script execution, use textContent or Trusted Types",
+    label:
+      "createContextualFragment() — parses HTML with script execution, use textContent or Trusted Types",
     severity: "error",
     pattern: /\.createContextualFragment\s*\(/,
   },
 
-  // A05 — Security Misconfiguration 
+  // A05 — Security Misconfiguration
   {
     // Setting Access-Control-Allow-Credentials: true with a permissive origin is a CORS credential leak
     category: "A05",
-    label: "Access-Control-Allow-Credentials: true — risks credential leak with permissive CORS origin",
+    label:
+      "Access-Control-Allow-Credentials: true — risks credential leak with permissive CORS origin",
     severity: "warn",
     pattern: /['"]Access-Control-Allow-Credentials['"]\s*:\s*['"]true['"]/i,
   },
 
-  // A02 — Cryptographic Failures 
+  // A02 — Cryptographic Failures
   {
     // crypto.subtle.importKey with 'raw' format and no length check may accept weak keys (< 128 bits)
     category: "A02",
     label: "crypto.subtle with insecure algorithm (DES/RC4/ECB) — use AES-GCM or ChaCha20",
     severity: "error",
-    pattern: /crypto\.subtle\.(?:encrypt|decrypt|importKey)\s*\([^)]*['"](?:DES|RC4|AES-ECB|3DES)['"]/i,
+    pattern:
+      /crypto\.subtle\.(?:encrypt|decrypt|importKey)\s*\([^)]*['"](?:DES|RC4|AES-ECB|3DES)['"]/i,
   },
 
-  // A07 — Identification and Authentication Failures 
+  // A07 — Identification and Authentication Failures
   {
     // Storing JWT tokens in cookie without HttpOnly or Secure flags leaks them to JS/XSS
     category: "A07",
@@ -388,7 +396,7 @@ const RULES = [
     pattern: /\bdocument\.cookie\s*=\s*[^;]*(?:token|session|auth|jwt)/i,
   },
 
-  // A03 — Injection 
+  // A03 — Injection
   {
     // URL() constructor used directly with user input + .href as src/href can enable XSS via javascript:
     category: "A03",
@@ -397,7 +405,7 @@ const RULES = [
     pattern: /['"]javascript\s*:/i,
   },
 
-  // A04 — Insecure Design 
+  // A04 — Insecure Design
   {
     // Constructor.prototype reassignment can silently break instanceof and prototype chain
     category: "A04",
@@ -407,7 +415,7 @@ const RULES = [
     safeMarkers: ["Object.create("],
   },
 
-  // A09 — Logging Failures 
+  // A09 — Logging Failures
   {
     // console.log/warn/error with variables named token/password/secret/apiKey
     category: "A09",
@@ -417,7 +425,7 @@ const RULES = [
     safeMarkers: ["redact(", "mask(", "[REDACTED]"],
   },
 
-  // A05 — Security Misconfiguration 
+  // A05 — Security Misconfiguration
   {
     // Setting Access-Control-Allow-Origin to literal wildcard in code
     category: "A05",
@@ -426,7 +434,7 @@ const RULES = [
     pattern: /['"]Access-Control-Allow-Origin['"]\s*[:,]\s*['"]\*/i,
   },
 
-  // A08 — Software Integrity Failures 
+  // A08 — Software Integrity Failures
   {
     // Dynamically constructed script src from variable (DOM-based script injection)
     category: "A08",
@@ -436,7 +444,7 @@ const RULES = [
     safeMarkers: ["URL.createObjectURL(", "data:text/javascript"],
   },
 
-  // A01 — Broken Access Control 
+  // A01 — Broken Access Control
   {
     // window.location.href set from untrusted source can enable open redirect
     category: "A01",
@@ -446,7 +454,7 @@ const RULES = [
     safeMarkers: ["location.reload(", "location.hash", "location.search"],
   },
 
-  // A02 — Cryptographic Failures 
+  // A02 — Cryptographic Failures
   {
     // Using Math.random for any security/token purpose is predictable
     category: "A02",
@@ -456,7 +464,7 @@ const RULES = [
     safeMarkers: ["crypto.getRandomValues(", "crypto.randomUUID("],
   },
 
-  // A10 — SSRF 
+  // A10 — SSRF
   {
     // Constructing URL from user-controlled searchParams without origin validation
     category: "A10",
@@ -466,17 +474,18 @@ const RULES = [
     safeMarkers: ["allowlist", "ALLOWED_ORIGINS", "validateUrl("],
   },
 
-  // A03 — Injection 
+  // A03 — Injection
   {
     // Using template literals in SQL queries risks SQLi (look for SQL verbs followed by FROM/INTO/SET + interpolation)
     category: "A03",
     label: "Template literal in SQL query — use parameterized queries",
     severity: "error",
-    pattern: /(?:SELECT\s+.+FROM|INSERT\s+INTO|UPDATE\s+\w+\s+SET|DELETE\s+FROM|DROP\s+TABLE)\s.*\$\{/i,
+    pattern:
+      /(?:SELECT\s+.+FROM|INSERT\s+INTO|UPDATE\s+\w+\s+SET|DELETE\s+FROM|DROP\s+TABLE)\s.*\$\{/i,
     safeMarkers: [".prepare(", ".bind(", "parameterized"],
   },
 
-  // A07 — Auth Failures 
+  // A07 — Auth Failures
   {
     // Exposing tokens/keys in URL query strings (logged in server access logs)
     category: "A07",
@@ -486,7 +495,7 @@ const RULES = [
     safeMarkers: ["Authorization:", "Bearer", "env.", "* Handle", "* GET", "* POST"],
   },
 
-  // A04 — Insecure Design 
+  // A04 — Insecure Design
   {
     // Disabling TLS verification (rejectUnauthorized: false) — MITM risk
     category: "A04",
@@ -495,7 +504,7 @@ const RULES = [
     pattern: /rejectUnauthorized\s*:\s*false/,
   },
 
-  // A05 — Security Misconfiguration 
+  // A05 — Security Misconfiguration
   {
     // Over-permissive Access-Control-Allow-Headers wildcard
     category: "A05",
@@ -504,7 +513,7 @@ const RULES = [
     pattern: /Access-Control-Allow-Headers['"]\s*[:,]\s*['"]?\*/i,
   },
 
-  // A08 — Software Integrity 
+  // A08 — Software Integrity
   {
     // Loading external scripts without Subresource Integrity (SRI)
     category: "A08",
@@ -513,7 +522,7 @@ const RULES = [
     pattern: /<script[^>]+src\s*=\s*['"]https?:\/\/[^>]*(?!integrity)/i,
   },
 
-  // A09 — Logging Failures 
+  // A09 — Logging Failures
   {
     // console.error logging sensitive variable names
     category: "A09",
@@ -522,7 +531,7 @@ const RULES = [
     pattern: /console\.error\s*\([^)]*(?:password|secret|token|apiKey|credential)[^)]*\)/i,
   },
 
-  // A02 — Cryptographic Failures 
+  // A02 — Cryptographic Failures
   {
     // Hardcoded JWT secret strings in source
     category: "A02",
@@ -531,7 +540,7 @@ const RULES = [
     pattern: /(?:jwt|jsonwebtoken).*(?:secret|key)\s*[:=]\s*['"][^'"]{8,}['"]/i,
   },
 
-  // A01 — Broken Access Control 
+  // A01 — Broken Access Control
   {
     // window.open with user-controlled URL without validation
     category: "A01",
@@ -541,7 +550,7 @@ const RULES = [
     safeMarkers: ["trustedURL", "validateUrl", "safeOpen", "noopener", "_blank"],
   },
 
-  // A04 — Insecure Design 
+  // A04 — Insecure Design
   {
     // Disabling Content-Security-Policy via meta tag removal
     category: "A04",
@@ -587,7 +596,21 @@ const RULES = [
     label: "unencoded template literal in URL — potential injection vector",
     severity: "warn",
     pattern: /(?:fetch|XMLHttpRequest|new\s+Request)\s*\(\s*`[^`]*\$\{/,
-    safeMarkers: ["encodeURIComponent", "encodeURI", "URLSearchParams", "safeParam", "sanitize", "WORKER_BASE_URL", "BASE_URL", "NWS_API", "toFixed", "encoded", "params", "geonameid", "import.meta.env"],
+    safeMarkers: [
+      "encodeURIComponent",
+      "encodeURI",
+      "URLSearchParams",
+      "safeParam",
+      "sanitize",
+      "WORKER_BASE_URL",
+      "BASE_URL",
+      "NWS_API",
+      "toFixed",
+      "encoded",
+      "params",
+      "geonameid",
+      "import.meta.env",
+    ],
   },
 
   // A07 — Auth Failures: bearer token in console output
@@ -683,7 +706,14 @@ const RULES = [
     label: "Response missing X-Frame-Options or frame-ancestors CSP",
     severity: "warn",
     pattern: /new\s+Response\([\s\S]{0,200}status:\s*200[\s\S]{0,200}\)/,
-    safeMarkers: ["X-Frame-Options", "frame-ancestors", "test", "spec", "CORS_HEADERS", "Content-Type"],
+    safeMarkers: [
+      "X-Frame-Options",
+      "frame-ancestors",
+      "test",
+      "spec",
+      "CORS_HEADERS",
+      "Content-Type",
+    ],
   },
 
   // A09 — Security Logging: stack trace exposed to client in production response
@@ -703,7 +733,17 @@ const RULES = [
     label: "Hardcoded password/secret literal in assignment",
     severity: "error",
     pattern: /(?:password|passwd|secret|apiKey|api_key)\s*[:=]\s*['"`][^'"`]{4,}/i,
-    safeMarkers: ["test", "spec", "mock", "env.", "process.env", "import.meta.env", "example", "placeholder", "CHANGE_ME"],
+    safeMarkers: [
+      "test",
+      "spec",
+      "mock",
+      "env.",
+      "process.env",
+      "import.meta.env",
+      "example",
+      "placeholder",
+      "CHANGE_ME",
+    ],
   },
 
   // A06 — Vulnerable Components: eval of import() with user-controlled string
@@ -721,7 +761,25 @@ const RULES = [
     label: "fetch() with interpolated/dynamic URL (potential SSRF)",
     severity: "warn",
     pattern: /fetch\(\s*`[^`]*\$\{/,
-    safeMarkers: ["WORKER_BASE_URL", "BASE_URL", "NWS_API", "PROXIES", "safeParam", "allowlist", "ALLOWED_", "import.meta.env", "encodeURIComponent", "URLSearchParams", "test", "spec", "geonameid", "encoded", "owasp-allow:A10", "hebcal", "sefaria"],
+    safeMarkers: [
+      "WORKER_BASE_URL",
+      "BASE_URL",
+      "NWS_API",
+      "PROXIES",
+      "safeParam",
+      "allowlist",
+      "ALLOWED_",
+      "import.meta.env",
+      "encodeURIComponent",
+      "URLSearchParams",
+      "test",
+      "spec",
+      "geonameid",
+      "encoded",
+      "owasp-allow:A10",
+      "hebcal",
+      "sefaria",
+    ],
   },
 
   // A03: XSS via document.writeln
@@ -965,7 +1023,8 @@ const RULES = [
     category: "A01",
     label: "window.location from unvalidated input (open redirect)",
     severity: "warn",
-    pattern: /(?:window|document)\.location(?:\.href)?\s*=\s*(?:params|query|input|searchParams|url\b)/i,
+    pattern:
+      /(?:window|document)\.location(?:\.href)?\s*=\s*(?:params|query|input|searchParams|url\b)/i,
     safeMarkers: ["test", "spec", "// owasp-allow:A01", "allowlist", "safeUrl", "validate"],
   },
 
@@ -995,7 +1054,15 @@ const RULES = [
     label: "new Response() without Permissions-Policy header (camera/mic/geolocation)",
     severity: "warn",
     pattern: /new\s+Response\([^)]*\{[^}]*status:\s*200/,
-    safeMarkers: ["Permissions-Policy", "permissions-policy", "test", "spec", "CORS_HEADERS", "Content-Type", "json"],
+    safeMarkers: [
+      "Permissions-Policy",
+      "permissions-policy",
+      "test",
+      "spec",
+      "CORS_HEADERS",
+      "Content-Type",
+      "json",
+    ],
   },
 
   // A08 — Software Integrity: eval-like via Reflect.construct with Function
@@ -1059,7 +1126,7 @@ function collectTsFiles(dir) {
 }
 
 /**
- * Collect all .mjs files (non-recursive) from `dir`. 
+ * Collect all .mjs files (non-recursive) from `dir`.
  * @param {string} dir
  * @returns {string[]}
  */
@@ -1071,7 +1138,7 @@ function collectMjsFiles(dir) {
     .map((f) => join(dir, f));
 }
 
-// Collect from src/, worker/src/, and scripts/ 
+// Collect from src/, worker/src/, and scripts/
 const files = [
   ...collectTsFiles(SRC),
   ...(statSync(WORKER_SRC, { throwIfNoEntry: false })?.isDirectory() ? collectTsFiles(WORKER_SRC) : []),

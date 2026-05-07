@@ -15,11 +15,11 @@
  *   - canary.ts             : mutation score ≥ 90%
  *   - error-tracker.ts      : mutation score ≥ 85%  (V13 + raised Roadmap #9)
  *   - config.ts             : mutation score ≥ 85%  (V13 + raised Roadmap #9)
- *   - error-reporter.ts     : mutation score ≥ 75%  
+ *   - error-reporter.ts     : mutation score ≥ 75%
  *   - diag.ts               : mutation score ≥ 85%  ( + raised Roadmap #9)
- *   - signals.ts            : mutation score ≥ 85%  
- *   - fs-access.ts          : mutation score ≥ 75%  
- *   - idle.ts               : mutation score ≥ 75%  
+ *   - signals.ts            : mutation score ≥ 85%
+ *   - fs-access.ts          : mutation score ≥ 75%
+ *   - idle.ts               : mutation score ≥ 75%
  *   - cache.ts              : mutation score ≥ 85%  (Roadmap #9)
  *   - event-bus.ts          : mutation score ≥ 80%  (pub/sub logic)
  *   - keyboard.ts           : mutation score ≥ 80%  (keyboard shortcut dispatch)

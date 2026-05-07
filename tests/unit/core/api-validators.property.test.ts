@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/types/api.ts type guards 
+ * fast-check property tests — src/types/api.ts type guards
  *
  * Properties under test:
  *  AV1. All type guards return false for any primitive (string / number / boolean / null / undefined).

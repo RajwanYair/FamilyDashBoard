@@ -9,6 +9,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.7.0] — 2026-05-14
+
+> **7050 tests / 277 suites / 0 failures**
+
+### Testing & Quality
+
+- **Fix flaky AN3 property test** (Sprint 497): compare `normaliseRoute` against `new URL().pathname` instead of raw path
+- **Fix flaky AV6 + WX1 property tests** (Sprint 498): constrain `fc.date()` range, filter whitespace-only strings
+- **Wire format:check + vendor into npm check** (Sprint 499): local meta-script now includes `format:check` + `check:vendor`
+- **OWASP scanner +6 rules** (Sprint 500): Range.insertNode, crypto short-key, Permissions-Policy, Reflect.construct(Function), structuredClone user input, env var logging
+- **Cross-project + temporal-polyfill checks in CI** (Sprint 501): `check-cross-project-gate.mjs` + `check-temporal-polyfill-size.mjs` added to build job
+- **Stryker scope +5 files** (Sprint 502): news, theme, toast, boi-adapter, tase-adapter added to mutation testing
+- **Property tests BOI1-BOI6 + TA1-TA6** (Sprint 503): IL provider adapter coverage for Bank of Israel + TASE
+- **Wire mermaid + containers + cross-project + temporal-polyfill into npm check** (Sprint 504): local meta-script now runs 28 checks
+- **ROADMAP housekeeping** (Sprint 505): test/suite counts, Stryker/fast-check scope, refresh date
+
+---
+
 ## [14.6.0] — 2026-05-13
 
 > **7037 tests / 275 suites / 0 failures**

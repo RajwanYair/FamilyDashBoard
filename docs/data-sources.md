@@ -232,7 +232,7 @@ Exceeding the limit returns HTTP 429.
 
 ---
 
-## KV TTL Annual Audit — 2026-04-29 
+## KV TTL Annual Audit — 2026-04-29
 
 All 22 routes in `worker/openapi.yaml` reviewed. Verdict: **no changes required**.
 

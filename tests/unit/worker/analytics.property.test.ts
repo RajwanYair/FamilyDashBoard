@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/analytics.ts 
+ * fast-check property tests — worker/src/utils/analytics.ts
  *
  * Properties under test:
  *  AN1. normaliseRoute strips query string from valid URLs.

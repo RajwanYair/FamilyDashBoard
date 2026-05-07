@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * FamilyDashBoard — Per-Card Bundle Delta CI Check 
+ * FamilyDashBoard — Per-Card Bundle Delta CI Check
  *
  * Reads the last entry in scripts/bundle-trend.json (the baseline) and
  * compares it to the current dist/assets to detect per-card regressions.
