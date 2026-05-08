@@ -811,3 +811,138 @@ describe("DiagOverlay — openDiagOverlay auto-refresh interval (lines 312-316)"
     expect(logEl?.textContent).toContain("[test] after-open entry");
   });
 });
+
+// ── renderErrors with actual errors ──────────────────────────────────────────
+
+describe("Diag Overlay — renderErrors with errors present", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <dialog id="diag-overlay">
+        <div id="diag-log"></div>
+        <div id="diag-panes"></div>
+        <div id="diag-error-log"></div>
+      </dialog>
+    `;
+    polyfillDialog(document.getElementById("diag-overlay"));
+    clearDiag();
+  });
+  afterEach(() => {
+    closeDiagOverlay();
+    document.body.innerHTML = "";
+    clearDiag();
+  });
+
+  it("renders error entries when recordError has been called", async () => {
+    const { recordError, clearErrors } = await import("@/core/error-tracker");
+    recordError("Test error 1", "test.ts", 42);
+    recordError("Test error 2", "other.ts");
+    openDiagOverlay();
+    const errLog = document.getElementById("diag-error-log");
+    expect(errLog?.textContent).toContain("Test error 1");
+    expect(errLog?.textContent).toContain("Test error 2");
+    const rows = errLog?.querySelectorAll(".diag-error");
+    expect(rows?.length).toBe(2);
+    clearErrors();
+  });
+});
+
+// ── initDiagOverlay — snapshot + build stamp ──────────────────────────────────
+
+describe("Diag Overlay — init wires snapshot + build time", () => {
+  afterEach(() => {
+    closeDiagOverlay();
+    document.body.innerHTML = "";
+    clearDiag();
+    vi.restoreAllMocks();
+  });
+
+  it("stamps build time into #diag-build-time element", () => {
+    document.body.innerHTML = `
+      <dialog id="diag-overlay">
+        <span id="diag-build-time"></span>
+        <div id="diag-log"></div>
+        <div id="diag-panes"></div>
+      </dialog>
+    `;
+    polyfillDialog(document.getElementById("diag-overlay"));
+    initDiagOverlay();
+    const buildEl = document.getElementById("diag-build-time");
+    expect(buildEl?.textContent).toContain("Build:");
+  });
+
+  it("snapshot button wires downloadSnapshot", async () => {
+    const snapshotMod = await import("@/core/snapshot");
+    const spy = vi.spyOn(snapshotMod, "downloadSnapshot").mockImplementation(() => {});
+    document.body.innerHTML = `
+      <dialog id="diag-overlay">
+        <button id="diag-snapshot-btn">📸</button>
+        <div id="diag-log"></div>
+        <div id="diag-panes"></div>
+      </dialog>
+    `;
+    polyfillDialog(document.getElementById("diag-overlay"));
+    initDiagOverlay();
+    document.getElementById("diag-snapshot-btn")!.click();
+    expect(spy).toHaveBeenCalledOnce();
+  });
+
+  it("clear-errors button calls clearErrors and rerenders", async () => {
+    const { recordError, getErrorCount } = await import("@/core/error-tracker");
+    recordError("err");
+    document.body.innerHTML = `
+      <dialog id="diag-overlay">
+        <button id="diag-clear-errors-btn">🗑</button>
+        <div id="diag-log"></div>
+        <div id="diag-panes"></div>
+        <div id="diag-error-log"></div>
+      </dialog>
+    `;
+    polyfillDialog(document.getElementById("diag-overlay"));
+    initDiagOverlay();
+    openDiagOverlay();
+    expect(getErrorCount()).toBe(1);
+    document.getElementById("diag-clear-errors-btn")!.click();
+    expect(getErrorCount()).toBe(0);
+  });
+});
+
+// ── renderStats branches — failed panes + error count ─────────────────────────
+
+describe("Diag Overlay — renderStats with failed panes and errors", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <dialog id="diag-overlay">
+        <div id="diag-log"></div>
+        <div id="diag-panes"></div>
+        <div id="diag-error-log"></div>
+      </dialog>
+    `;
+    polyfillDialog(document.getElementById("diag-overlay"));
+    clearDiag();
+  });
+  afterEach(() => {
+    closeDiagOverlay();
+    document.body.innerHTML = "";
+    clearDiag();
+    vi.restoreAllMocks();
+  });
+
+  it("shows failed panes with backoff info in stats", async () => {
+    const { recordFailure, recordSuccess } = await import("@/core/sync");
+    recordFailure("weather");
+    recordFailure("weather");
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes");
+    expect(panes?.textContent).toContain("weather");
+    recordSuccess("weather");
+  });
+
+  it("shows error count in red when errors exist", async () => {
+    const { recordError, clearErrors } = await import("@/core/error-tracker");
+    recordError("boom");
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes");
+    expect(panes?.innerHTML).toContain("שגיאות");
+    clearErrors();
+  });
+});
