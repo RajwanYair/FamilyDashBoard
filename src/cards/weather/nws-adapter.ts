@@ -43,12 +43,12 @@ interface NWSHourlyForecast {
 }
 
 /** Convert Fahrenheit → Celsius (NWS always returns °F) */
-function fToC(f: number): number {
+export function fToC(f: number): number {
   return Math.round((f - 32) * (5 / 9));
 }
 
 /** Map a short NWS forecast phrase to an Open-Meteo WMO weather code (best-effort). */
-function nwsPhraseToWmoCode(phrase: string): number {
+export function nwsPhraseToWmoCode(phrase: string): number {
   const p = phrase.toLowerCase();
   if (p.includes("thunder")) return 95;
   if (p.includes("snow")) return 71;
