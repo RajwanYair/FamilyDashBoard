@@ -54,6 +54,7 @@
  * extended scope to allowlists.ts (property-tested AW1-AW5).
  * extended scope to currency.ts (property-tested CUR9-CUR12).
  * (v14.7.0): extended scope to news.ts, theme.ts, toast.ts, boi-adapter.ts, tase-adapter.ts.
+ * (v14.8.0): extended scope to alerts-adapter.ts, calendar-adapter.ts, currency-adapter.ts, hebcal-adapter.ts, stocks-adapter.ts.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -180,6 +181,12 @@ export default {
     "src/ui/toast.ts",
     "src/cards/currency/boi-adapter.ts",
     "src/cards/stocks/tase-adapter.ts",
+    // (v14.8.0): card adapter modules — alerts, calendar, currency, hebrew-cal, stocks
+    "src/cards/alerts/alerts-adapter.ts",
+    "src/cards/calendar/calendar-adapter.ts",
+    "src/cards/currency/currency-adapter.ts",
+    "src/cards/hebrew-cal/hebcal-adapter.ts",
+    "src/cards/stocks/stocks-adapter.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
