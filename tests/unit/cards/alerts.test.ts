@@ -2148,3 +2148,66 @@ describe("Alerts — initAlertsCard history button ( / A2 lines 654-658)", () =>
     expect(btn.getAttribute("aria-expanded")).toBe("false");
   });
 });
+
+// ── S564: buildAlertItem with undefined cities/threat (L236/L237 ?? fallbacks)
+
+describe("Alerts — buildAlertItem missing cities/threat fields", () => {
+  it("handles alert with undefined cities (falls back to empty array)", () => {
+    const ev: AlertEvent = {
+      id: "no-cities",
+      alerts: [{ time: NOW_SEC - 60 } as never],
+    };
+    const el = buildAlertItem(ev, NOW_SEC, false, false);
+    expect(el).toBeInstanceOf(HTMLElement);
+    // No cities → empty cities text
+    const citiesDiv = el!.querySelector(".alert-cities");
+    expect(citiesDiv?.textContent).toBe("");
+  });
+
+  it("handles alert with undefined threat (falls back to 0)", () => {
+    const ev: AlertEvent = {
+      id: "no-threat",
+      alerts: [{ cities: ["חיפה"], time: NOW_SEC - 60 } as never],
+    };
+    const el = buildAlertItem(ev, NOW_SEC, false, false);
+    expect(el).toBeInstanceOf(HTMLElement);
+    // threat 0 should use the default threat icon
+    const threatEl = el!.querySelector(".alert-threat");
+    expect(threatEl?.textContent).toBeTruthy();
+  });
+
+  it("returns null when alerts[0] is undefined (sparse array — L234)", () => {
+    // eslint-disable-next-line no-sparse-arrays
+    const ev = { id: "sparse", alerts: [, { cities: ["א"], threat: 1, time: NOW_SEC - 60 }] } as unknown as AlertEvent;
+    const el = buildAlertItem(ev, NOW_SEC, false, false);
+    expect(el).toBeNull();
+  });
+});
+
+describe("Alerts — renderAlerts with undefined/empty alerts array", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="alerts-scroll"></div>
+      <div id="alerts-badge"></div>
+    `;
+    cacheDom();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("handles event with undefined alerts property (L300 ?? [] fallback)", () => {
+    const ev = { id: "no-alerts-prop" } as unknown as AlertEvent;
+    expect(() => renderAlerts([ev], false)).not.toThrow();
+  });
+
+  it("skips buildAlertItem null result in render loop (L353 else)", () => {
+    // Event with empty alerts → buildAlertItem returns null → fragment not appended
+    const ev: AlertEvent = { id: "empty-alerts", alerts: [] };
+    expect(() => renderAlerts([ev, sampleEvent], false)).not.toThrow();
+    // The valid event still renders
+    const scroll = document.getElementById("alerts-scroll")!;
+    expect(scroll.querySelectorAll(".alert-item").length).toBeGreaterThan(0);
+  });
+});
