@@ -1,8 +1,8 @@
 /**
- * Property-based tests for src/core/fetch.ts (FP1–FP5)
+ * Property-based tests for src/core/fetch.ts (FP1–FP10)
  *
  * Uses fast-check to verify lock and network-failure-streak invariants
- * for any key string / failure count.
+ * for any key string / failure count, and classifyFetchError categorization.
  */
 
 import fc from "fast-check";
@@ -15,7 +15,9 @@ import {
   recordFetchFailure,
   getConsecutiveFailures,
   isNetworkOffline,
+  classifyFetchError,
 } from "@/core/fetch";
+import type { FetchErrorCategory } from "@/core/fetch";
 
 beforeEach(() => {
   clearFetchLocks();
@@ -106,6 +108,86 @@ describe("FP5: recordFetchFailure increments consecutive count exactly", () => {
         return count === n && (n >= 3 ? offline : !offline);
       }),
       { numRuns: 100 },
+    );
+  });
+});
+
+// ── FP6: classifyFetchError always returns a valid FetchErrorCategory ─────────
+
+const validCategories: FetchErrorCategory[] = [
+  "timeout",
+  "network",
+  "http-error",
+  "invalid-json",
+  "cors",
+  "unknown",
+];
+
+describe("FP6: classifyFetchError always returns a valid category", () => {
+  it("arbitrary Error messages produce a valid category", () => {
+    fc.assert(
+      fc.property(fc.string(), (msg) => {
+        const result = classifyFetchError(new Error(msg));
+        return validCategories.includes(result);
+      }),
+      { numRuns: 200 },
+    );
+  });
+});
+
+// ── FP7: classifyFetchError on non-Error values returns 'unknown' ─────────────
+
+describe("FP7: classifyFetchError on non-Error values", () => {
+  it("number, string, null, undefined → unknown", () => {
+    fc.assert(
+      fc.property(
+        fc.oneof(fc.integer(), fc.string(), fc.constant(null), fc.constant(undefined)),
+        (val) => {
+          return classifyFetchError(val) === "unknown";
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+});
+
+// ── FP8: classifyFetchError — DOMException AbortError always → timeout ────────
+
+describe("FP8: DOMException AbortError always classifies as timeout", () => {
+  it("any message with AbortError name → timeout", () => {
+    fc.assert(
+      fc.property(fc.string(), (msg) => {
+        const err = new DOMException(msg, "AbortError");
+        return classifyFetchError(err) === "timeout";
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── FP9: classifyFetchError — SyntaxError always → invalid-json ───────────────
+
+describe("FP9: SyntaxError always classifies as invalid-json", () => {
+  it("any SyntaxError message → invalid-json", () => {
+    fc.assert(
+      fc.property(fc.string(), (msg) => {
+        return classifyFetchError(new SyntaxError(msg)) === "invalid-json";
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── FP10: classifyFetchError — TypeError with 'Failed to fetch' → network ────
+
+describe("FP10: TypeError 'Failed to fetch' variants → network", () => {
+  it("message containing 'failed to fetch' → network", () => {
+    fc.assert(
+      fc.property(fc.string({ maxLength: 20 }), (prefix) => {
+        const err = new TypeError(`${prefix} Failed to fetch`);
+        return classifyFetchError(err) === "network";
+      }),
+      { numRuns: 50 },
     );
   });
 });
