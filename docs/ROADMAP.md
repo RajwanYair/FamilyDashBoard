@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-08 · **Shipped baseline**: v14.9.0  · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-08 · **Shipped baseline**: v14.10.0  · **Active stream**: V15-OPEN.
 >
-> **Inventory**: 7085 tests / 280 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Inventory**: 7097 tests / 281 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
 > **Coverage **: 94.4 / 85.6 / 94.7 / 95.8 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
@@ -15,7 +15,7 @@
 
 ## 0. Executive Summary
 
-After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 7085 tests / 280 suites, 77 fast-check property test files across 4 domains (core / cards / ui / worker), container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
+After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 7097 tests / 281 suites, 77 fast-check property test files across 4 domains (core / cards / ui / worker), container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 The v14 → v17 frontier is no longer breadth or feature catch-up. It is six things:
 
@@ -487,7 +487,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 ### 6.1 — Tooling acceleration & supply-chain tightening (v14.0, Q1 2027)
 
 - [x] D12 module-boundary linting in `tooling/eslint/`. _(v14.9.0: added `src/core/*` must-not-import `src/cards/*` rule)_
-- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** ; warn lowered 36 → **32 KB** ; hard-cap **66 KB** ; warn **30 KB** → **18 KB** (v14.9.0); target warn 16 / hard 60 at v14 GA)_
+- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** ; warn lowered 36 → **32 KB** ; hard-cap **66 KB** ; warn **30 KB** → **18 KB** (v14.9.0); hard-cap **65 KB** (v14.10.0); target warn 16 / hard 60 at v14 GA)_
 - [x] D14 Renovate group rules.
 - [x] D11 `popover=` for diag toasts + bookmark menu.
 - [x] D9 CSS `if()` + `@function` migration (tokens). _(partial: `@supports`-gated `if()` + `@function` sketch added in v14.0 ; full migration pending Baseline 2026)_
@@ -577,7 +577,7 @@ NEW stream. The dashboard becomes addressable by users' AI assistants without sc
 - [x] OWASP Top 10 rotation automated (`scripts/check-owasp.mjs`).
 - [x] **D15** Annual third-party rebuilder verification (SLSA verifier-action). _(shipped `.github/workflows/rebuild-verify.yml` — hermetic rebuild + SHA-256 comparison; opens GitHub issue on mismatch; annual cron Jan 1 + post-release trigger)_
 - [ ] OpenTelemetry from Worker (opt-in).
-- [x] OWASP Top 10 audit per major release. _(pre-v14.0 full audit passed; 2 new rules added to `check-owasp.mjs` — A03 document.write, A05 postMessage(*); 0 findings; security-audit.instructions.md updated. 3 new rules — A03 createElement-script, A04 \_\_proto\_\_ pollution, A04 defineProperty-prototype; 0 findings.)_
+- [x] OWASP Top 10 audit per major release. _(pre-v14.0 full audit passed; 2 new rules added to `check-owasp.mjs` — A03 document.write, A05 postMessage(*); 0 findings; security-audit.instructions.md updated. 3 new rules — A03 createElement-script, A04 \_\_proto\_\_ pollution, A04 defineProperty-prototype; 0 findings. +3 rules v14.10.0 — A01 searchParams injection, A08 SRI bypass, A09 sendBeacon PII; 0 findings.)_
 
 **Exit**: SLSA L3; OpenTelemetry shipping zero data by default; one third-party rebuilder verification per major release.
 
