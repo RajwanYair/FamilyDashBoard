@@ -9,6 +9,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.13.0] — 2025-05-23
+
+> **7221 tests / 282 suites / 0 failures** · Coverage: 95.7 / 88.8 / 95.1 / 96.7
+
+- **Branch coverage ratchet**: thresholds raised from 95.6/88.4/95.0/96.6 → 95.7/88.8/95.1/96.7
+- **currency.ts branch 81→86%**: trend arrows, semantic payload, edge cases
+- **resizer.ts branch 80→81%**: computed flex-grow fallback, gridsArea removal
+- **countdown.ts branch 84→85%**: recurrence, custom config, malformed ICS
+- **motivation.ts branch 83→85%**: category pre-set, motivationInterval config
+- **cache.ts branch 84→88%**: cGetAsync/cGetStaleAsync IDB L2 hit paths
+- **hebrew-cal.ts branch 83→84%**: getUpcomingYahrzeits filter paths
+- **alerts.ts branch 87→90%**: ?? fallbacks, sparse-array guard, render-loop null skip
+- **Fix**: flaky hebrew-cal property test (fc.pre skip for Intl edge dates)
+
 ## [14.12.0] — 2026-05-08
 
 > **7178 tests / 282 suites / 0 failures**

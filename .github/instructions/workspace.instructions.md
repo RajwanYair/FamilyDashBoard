@@ -3,13 +3,13 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v14.12.0
+# FamilyDashBoard — v14.13.0
 
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes · 12 cards
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`. Shared tooling configs are vendored into `tooling/` (tsconfig/, eslint/, vitest/).
-> **Tests**: 7178 / 282 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
-> **Coverage**: 95.0 / 87.0 / 94.8 / 96.0 (statements / branches / functions / lines) — see `vitest.config.ts`
+> **Tests**: 7221 / 282 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
+> **Coverage**: 95.7 / 88.8 / 95.1 / 96.7 (statements / branches / functions / lines) — see `vitest.config.ts`
 
 ## Shell / Terminal
 
