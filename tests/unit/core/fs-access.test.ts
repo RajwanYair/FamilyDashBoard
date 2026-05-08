@@ -191,3 +191,88 @@ describe("fs-access — picker-available path", () => {
     vi.unstubAllGlobals();
   });
 });
+
+// ── Uncovered branches: extensions fallback, non-string reader result ─────────
+
+describe("fs-access — branch coverage: extensions fallback and edge cases", () => {
+  it("saveTextFile picker path uses empty extensions array when opts.extensions is undefined", async () => {
+    let written = "";
+    const handle = {
+      createWritable: vi.fn().mockResolvedValue({
+        write: vi.fn(async (data: string) => {
+          written = data;
+        }),
+        close: vi.fn().mockResolvedValue(undefined),
+      }),
+    };
+    (window as FsaWindow).showSaveFilePicker = vi.fn().mockResolvedValue(handle);
+    (window as FsaWindow).showOpenFilePicker = vi.fn();
+    // No extensions in opts → exercises opts.extensions ?? [] (L64)
+    const ok = await saveTextFile("test-content", {
+      suggestedName: "test.txt",
+      mimeType: "text/plain",
+    });
+    expect(ok).toBe(true);
+    expect(written).toBe("test-content");
+  });
+
+  it("pickTextFile picker path uses empty extensions array when opts.extensions is undefined", async () => {
+    const file = new File(["data"], "input.txt");
+    file.text = (): Promise<string> => Promise.resolve("data");
+    const handle = { getFile: vi.fn().mockResolvedValue(file) };
+    (window as FsaWindow).showOpenFilePicker = vi.fn().mockResolvedValue([handle]);
+    (window as FsaWindow).showSaveFilePicker = vi.fn();
+    // No extensions → exercises opts.extensions ?? [] (L105)
+    await expect(pickTextFile({ mimeType: "text/plain" })).resolves.toBe("data");
+  });
+
+  it("pickTextFile fallback skips input.accept when no extensions provided", async () => {
+    const clickSpy = vi.spyOn(HTMLInputElement.prototype, "click").mockImplementation(() => {});
+    class MockReader {
+      onload: ((e: ProgressEvent<FileReader>) => void) | null = null;
+      onerror: ((e: ProgressEvent<FileReader>) => void) | null = null;
+      result: string | ArrayBuffer | null = null;
+      readAsText(): void {
+        this.result = "content";
+        this.onload?.({ target: this as unknown as FileReader } as ProgressEvent<FileReader>);
+      }
+    }
+    vi.stubGlobal("FileReader", MockReader);
+    // No extensions → exercises the else branch of `if (opts.extensions?.length)` (L121)
+    const p = pickTextFile({ mimeType: "text/plain" });
+    const input = clickSpy.mock.contexts[0] as unknown as HTMLInputElement;
+    expect(input.accept).toBe(""); // no accept attribute set
+    Object.defineProperty(input, "files", {
+      value: { 0: new File(["content"], "x.txt"), length: 1 },
+      configurable: true,
+    });
+    input.onchange?.(new Event("change"));
+    await expect(p).resolves.toBe("content");
+    vi.unstubAllGlobals();
+  });
+
+  it("pickTextFile fallback resolves null when FileReader.result is not a string", async () => {
+    const clickSpy = vi.spyOn(HTMLInputElement.prototype, "click").mockImplementation(() => {});
+    class MockReaderNonString {
+      onload: ((e: ProgressEvent<FileReader>) => void) | null = null;
+      onerror: ((e: ProgressEvent<FileReader>) => void) | null = null;
+      result: string | ArrayBuffer | null = null;
+      readAsText(): void {
+        // Simulate an ArrayBuffer result (edge case — readAsText shouldn't produce this, but defensive code handles it)
+        this.result = new ArrayBuffer(8);
+        this.onload?.({ target: this as unknown as FileReader } as ProgressEvent<FileReader>);
+      }
+    }
+    vi.stubGlobal("FileReader", MockReaderNonString);
+    const p = pickTextFile({ extensions: [".bin"] });
+    const input = clickSpy.mock.contexts[0] as unknown as HTMLInputElement;
+    Object.defineProperty(input, "files", {
+      value: { 0: new File(["x"], "x.bin"), length: 1 },
+      configurable: true,
+    });
+    input.onchange?.(new Event("change"));
+    // L130: reader.result is not a string → resolves to null
+    await expect(p).resolves.toBeNull();
+    vi.unstubAllGlobals();
+  });
+});
