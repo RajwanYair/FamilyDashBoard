@@ -9,6 +9,30 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.10.0] — 2026-05-08
+
+> **7097 tests / 281 suites / 0 failures**
+
+### Testing & Quality
+
+- **sw-register branch coverage 80→90%** (S527): error paths + installing-state banner assertions
+- **fs-access branch coverage 87→97%** (S530): extensions fallback + FileReader edge cases
+- **OWASP rule-count regression test** (S531): ratchet ≥118 rules, all A01-A10 categories covered
+- **Stryker mutation scope +4 files** (S532): first-run-tour, offline-banner, status-bar, scroll
+
+### Infrastructure
+
+- **OWASP scanner +3 rules** (S528): A01 searchParams injection, A08 SRI bypass, A09 sendBeacon PII audit
+- **Per-card budget ratchet** (S529): hard-cap 66→65 KB (weather at 64.5 KB — 0.5 KB margin)
+- **Pre-commit hook enhancement** (S533): added test-focus-skip + OWASP scan gates
+- **Bundle delta — source folder tracking** (S534): per-card source folder growth (warn >5%, fail >15%)
+
+### Documentation
+
+- **ROADMAP housekeeping** (S535): updated baseline to v14.10.0 (7097 tests, 281 suites, hard-cap 65 KB)
+
+---
+
 ## [14.9.0] — 2026-05-08
 
 > **7085 tests / 280 suites / 0 failures** (commit `6d7b89d`)
