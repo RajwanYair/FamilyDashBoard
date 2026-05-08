@@ -26,6 +26,7 @@
  * Usage:
  *   node scripts/check-reproducible.mjs            # in CI after build
  *   node scripts/check-reproducible.mjs --dry-run  # pre-build check only
+ *   node scripts/check-reproducible.mjs --verify dist/rebuilder-manifest.json  # compare inputs
  */
 
 import { createHash } from "crypto";
@@ -39,6 +40,8 @@ const DIST = join(ROOT, "dist");
 const MANIFEST_PATH = join(DIST, "rebuilder-manifest.json");
 
 const isDryRun = process.argv.includes("--dry-run");
+const verifyIdx = process.argv.indexOf("--verify");
+const verifyPath = verifyIdx !== -1 ? process.argv[verifyIdx + 1] : null;
 
 /** @param {string} filePath  @returns {string} */
 function sha256File(filePath) {
@@ -117,6 +120,33 @@ if (isDryRun) {
   console.log("[check-reproducible] Dry-run mode: manifest not written.");
   console.log(JSON.stringify(manifest, null, 2));
   process.exit(0);
+}
+
+// ── Verify mode: compare current hashes against a saved manifest ─────────────
+
+if (verifyPath) {
+  if (!existsSync(verifyPath)) {
+    console.error(`[check-reproducible] --verify file not found: ${verifyPath}`);
+    process.exit(1);
+  }
+  const saved = JSON.parse(readFileSync(verifyPath, "utf-8"));
+  const diffs = [];
+  for (const [key, hash] of Object.entries(manifest.buildInputHashes)) {
+    const savedHash = saved.buildInputHashes?.[key];
+    if (savedHash && savedHash !== hash) {
+      diffs.push({ file: key, expected: savedHash, actual: hash });
+    }
+  }
+  if (diffs.length === 0) {
+    console.log("[check-reproducible] ✅ All build input hashes match the saved manifest.");
+    process.exit(0);
+  } else {
+    console.error(`[check-reproducible] ❌ ${diffs.length} input hash mismatch(es):`);
+    for (const d of diffs) {
+      console.error(`  ${d.file}: expected ${d.expected.slice(0, 12)}… got ${d.actual.slice(0, 12)}…`);
+    }
+    process.exit(1);
+  }
 }
 
 if (!existsSync(DIST)) {
