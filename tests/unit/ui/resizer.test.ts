@@ -459,3 +459,41 @@ describe("column gap detection edge cases", () => {
     expect(document.documentElement.hasAttribute("data-resize-col")).toBe(false);
   });
 });
+
+describe("flexGrowOf — getComputedStyle fallback", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    document.documentElement.removeAttribute("data-resize-row");
+  });
+
+  it("uses getComputedStyle when inline flex-grow is absent", () => {
+    // Cards without inline flex-grow → triggers getComputedStyle path (line 176-177)
+    document.body.innerHTML = `
+      <div class="grids-area">
+        <div class="grid-col">
+          <div class="card" data-card-id="no-grow-a" style="flex-shrink:1;flex-basis:0;height:200px;"></div>
+          <div class="card" data-card-id="no-grow-b" style="flex-shrink:1;flex-basis:0;height:200px;"></div>
+        </div>
+      </div>
+    `;
+    initResizers();
+    const col = document.querySelector<HTMLElement>(".grid-col")!;
+    const cards = col.querySelectorAll<HTMLElement>(":scope > .card");
+    stubRect(col, { top: 0, right: 960, bottom: 1080, left: 0 });
+    stubRect(cards[0]!, { top: 0, right: 960, bottom: 400, left: 0, height: 400 });
+    stubRect(cards[1]!, { top: 420, right: 960, bottom: 1080, left: 0, height: 660 });
+
+    // Start row drag
+    fireMouseEvent("mousedown", { clientX: 400, clientY: 410 });
+    // Move to trigger applyRowResize → flexGrowOf reads getComputedStyle
+    fireMouseEvent("mousemove", { clientX: 400, clientY: 460 });
+
+    // Cards should now have inline flex-grow assigned by the resize
+    const growA = parseFloat(cards[0]!.style.flexGrow);
+    const growB = parseFloat(cards[1]!.style.flexGrow);
+    expect(growA).toBeGreaterThan(0);
+    expect(growB).toBeGreaterThan(0);
+
+    fireMouseEvent("mouseup");
+  });
+});
