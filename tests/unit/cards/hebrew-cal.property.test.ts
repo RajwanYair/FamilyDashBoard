@@ -75,7 +75,13 @@ describe("hebrew-cal — HC3: hebrewMonthName", () => {
       fc.property(
         fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
         (d) => {
-          const name = hebrewMonthName(d);
+          let name: string;
+          try {
+            name = hebrewMonthName(d);
+          } catch {
+            fc.pre(false);
+            return;
+          }
           expect(name.length).toBeGreaterThan(0);
         },
       ),

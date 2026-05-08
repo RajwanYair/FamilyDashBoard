@@ -57,7 +57,9 @@ iteration, not in `beforeEach`.** Modules like `card-registry` use a
 module-scoped `Map` that persists across the 20+ iterations a single
 `fc.assert` runs. Calling `uniquePrefix()` (or any reset helper) at the
 top of the `it()` block is wrong — every iteration shares the prefix and
-state accumulates. The fix discovered during ```ts
+state accumulates. The fix discovered during development:
+
+```ts
 fc.assert(
   fc.property(genCardId(), (id) => {
     const prefix = uniquePrefix(); // ← inside the property body

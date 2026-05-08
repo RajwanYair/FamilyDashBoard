@@ -3,7 +3,7 @@
 > **Refresh date**: 2026-05-23 · **Shipped baseline**: v14.13.0  · **Active stream**: V15-OPEN.
 >
 > **Inventory**: 7221 tests / 282 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
-> **Coverage **: 95.7 / 88.8 / 95.1 / 96.7 (statements / branches / functions / lines).
+> **Coverage**: 95.7 / 88.8 / 95.1 / 96.7 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -103,7 +103,7 @@ Stamps: **Keep**, **Adopt**, **Replace**, **Defer**, **Reject**, **Track**, **Su
 | **Cloudflare Snippets**                             | **Track v14.x**                   | Move static header injection out of Worker once Snippets ships TEE.                                     |
 | WebTransport / HTTP/3 push                          | **Defer**                         | DO Hibernatable WebSocket has same UX at known cost.                                                    |
 | File-protocol launch (`dist/index.html`)            | **Shipped v13.13**                | `--base ./` + `removeCrossOrigin` Vite plugin.                                                          |
-| Dev-mode CSP relaxation                             | **Shipped **          | `vite-plugin-dev-csp-strip` removes meta in `serve` mode only.                                          |
+| Dev-mode CSP relaxation                             | **Shipped**           | `vite-plugin-dev-csp-strip` removes meta in `serve` mode only.                                          |
 | **MCP server (read-only) for AI assistants**        | **Adopt v14.x (NEW, see §1.11)**  | Localhost-only; surface "today's signals" so user agents can ask without scraping.                      |
 | **Web Push (VAPID) for alerts on phone**            | **Gate: 3+ user requests v14.x**  | Worker-side VAPID; opt-in; never tracks; only fires for `alerts` card severity ≥ rocket.                |
 
@@ -316,7 +316,7 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 
 ## 3. Per-Card Open Backlog (2026-Q2 refresh — prune)
 
-The full per-card peer comparison and capability gap analysis is preserved in the v1 roadmap and **shipped through **. audit removed v1 carry-over items that have since been silently shipped (W-Nowcast, W-AQI, W-Compass, S-Watchlists, C-Sparkline, CAL-Conflict, A-DO, M-Favorites, SI-RTT, V-PiP, N-Star core API). This section now lists **only what genuinely remains open** for v14.0+.
+The full per-card peer comparison and capability gap analysis is preserved in the v1 roadmap and **shipped through v13**. Audit removed v1 carry-over items that have since been silently shipped (W-Nowcast, W-AQI, W-Compass, S-Watchlists, C-Sparkline, CAL-Conflict, A-DO, M-Favorites, SI-RTT, V-PiP, N-Star core API). This section now lists **only what genuinely remains open** for v14.0+.
 
 ### 3.1 News
 

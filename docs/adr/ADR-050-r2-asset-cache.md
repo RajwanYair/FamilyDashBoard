@@ -1,4 +1,4 @@
-# ADR-050 — Cloudflare R2 Asset Cache 
+# ADR-050 — Cloudflare R2 Asset Cache
 
 **Status**: Proposed
 **Deciders**: RajwanYair

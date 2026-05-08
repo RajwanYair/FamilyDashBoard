@@ -71,7 +71,7 @@ isSignal(v): v is ReadonlySignal<unk>   // type guard
 
 ### Migration plan (from ROADMAP §3.2)
 
-1. **v13.9 / ** _(this ADR)_: ship primitive + tests + ADR.
+1. **v13.9** _(this ADR)_: ship primitive + tests + ADR.
 2. **v14.0**: opt-in migration of `state.ts` slices, card-at-a-time. New cards must use `signal`/`computed` exclusively.
 3. **v14.x**: when TC39 polyfill ≤ 1.5 KB, replace internals of `src/core/signals.ts` with a re-export of the polyfill. No call-site changes.
 4. **v15**: remove `state.ts` once every consumer is on signals.

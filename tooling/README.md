@@ -360,7 +360,7 @@ per-project overrides to ESLint rules or TypeScript strictness settings.
 
 ---
 
-### Sibling Repo Audit Findings 
+### Sibling Repo Audit Findings
 
 Audited 2026-05. Three sibling repos under `MyScripts/` assessed against shared preset baseline.
 

@@ -30,6 +30,7 @@ value must be declared `?: T | undefined`.  Properties that are purely absent
 (never written as `undefined`) stay `?: T`.
 
 ### Files changed in Six source files required `prop?: T → prop?: T | undefined` annotations
+
 (15 total property sites):
 
 | File | Properties updated |

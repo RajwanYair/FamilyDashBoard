@@ -1,4 +1,4 @@
-# ADR-049 — WebRTC QR-pair Cross-Device Mirror 
+# ADR-049 — WebRTC QR-pair Cross-Device Mirror
 
 **Status**: Proposed
 **Deciders**: RajwanYair
