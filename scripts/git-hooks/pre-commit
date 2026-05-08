@@ -1,6 +1,13 @@
 #!/bin/sh
 # FamilyDashBoard pre-commit hook
-# Checks that src/core/worker-client.ts is in sync with worker/openapi.yaml.
+# Fast local quality gates that run before every commit.
 # Install: node scripts/install-git-hooks.mjs
 
-node scripts/check-worker-client.mjs
+# Worker-client ↔ OpenAPI sync
+node scripts/check-worker-client.mjs || exit 1
+
+# Forbid .only / .skip in test files
+node scripts/check-test-focus-skip.mjs || exit 1
+
+# OWASP pattern scan (catches security regressions early)
+node scripts/check-owasp.mjs || exit 1

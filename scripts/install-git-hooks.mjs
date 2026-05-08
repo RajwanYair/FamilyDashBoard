@@ -40,4 +40,4 @@ try {
 }
 
 console.log(`✅  Installed pre-commit hook → .git/hooks/pre-commit`);
-console.log(`   The hook runs: node scripts/check-worker-client.mjs`);
+console.log(`   The hook runs: worker-client sync, test-focus-skip, OWASP scan`);
