@@ -92,6 +92,8 @@ const manifest = {
     "tsconfig.json": sha256File(join(ROOT, "tsconfig.json")),
     "sw.ts": sha256File(join(ROOT, "sw.ts")),
     "src/main.ts": sha256File(join(ROOT, "src", "main.ts")),
+    "src/index.html": sha256File(join(ROOT, "src", "index.html")),
+    "../package-lock.json": sha256File(join(ROOT, "..", "package-lock.json")),
   },
   artefacts: {
     "dist.zip": sha256File(distZipPath),
