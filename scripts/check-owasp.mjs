@@ -30,6 +30,7 @@
  * (v14.6.0) — added A01 postMessage wildcard, A07 hardcoded secret, A05 document.domain.
  * (v14.7.0) — added A03 srcdoc template injection, A09 PII in telemetry, A02 weak PBKDF2 iterations.
  * (v14.7.0) — added A04 Object.assign proto pollution, A06 weak hash (MD5/SHA1), A10 fetch without catch.
+ * (v14.8.0) — added A03 innerHTML template literal, A05 fetch without AbortController, A02 crypto short key length, A01 window.name abuse.
  * (v14.5.0) — added A03 insertBefore DOM injection, A05 credentials include, A07 authorization header leak,
  *             A08 importScripts dynamic URL, A09 stack trace in response, A01 location redirect from input.
  *
@@ -1090,6 +1091,44 @@ const RULES = [
     severity: "warn",
     pattern: /console\.\w+\([^)]*(?:process\.env|import\.meta\.env)\b/,
     safeMarkers: ["test", "spec", "// owasp-allow:A09", "NODE_ENV", "MODE", "DEV", "PROD"],
+  },
+
+  // ── v14.8.0 ──────────────────────────────────────────────────────────────
+
+  // A03 — Injection: innerHTML via template literal (bypass of textContent rule)
+  {
+    category: "A03",
+    label: "innerHTML assigned via template literal — use textContent or DOM API",
+    severity: "error",
+    pattern: /\.innerHTML\s*=\s*`/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A03", "sanitize", "DOMPurify"],
+  },
+
+  // A05 — Security Misconfiguration: fetch without AbortController (DoS via hung requests)
+  {
+    category: "A05",
+    label: "fetch() without signal/AbortController — may hang indefinitely",
+    severity: "warn",
+    pattern: /\bfetch\(\s*[^,)]+\s*\)\s*(?!\s*\.)/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A05", "signal", "AbortController", "fetchWithTimeout", "fetchViaWorker", "fetchJSON"],
+  },
+
+  // A02 — Cryptographic Failures: crypto.subtle with short key length
+  {
+    category: "A02",
+    label: "crypto.subtle generateKey with short length — use ≥256 bits",
+    severity: "error",
+    pattern: /generateKey\([^)]*(?:128|192)\b/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A02"],
+  },
+
+  // A01 — Broken Access Control: window.name read (data channel abuse vector)
+  {
+    category: "A01",
+    label: "window.name read — cross-origin data channel abuse vector",
+    severity: "warn",
+    pattern: /\bwindow\.name\b/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A01", "assign", "="],
   },
 ];
 
