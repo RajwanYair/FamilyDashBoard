@@ -14,10 +14,11 @@
  *   - Type-only exports (exported for d.ts consumers only)
  *
  * Usage:
- *   node scripts/check-dead-exports.mjs [--fail-on-dead] [--max-allowed N]
+ *   node scripts/check-dead-exports.mjs [--fail-on-dead] [--max-allowed N] [--json]
  *
  * The script exits 0 even when candidates are found (informational only) unless
  * --fail-on-dead is passed.  --max-allowed N exits 1 if dead count exceeds N.
+ * --json outputs structured JSON (for CI artifact collection).
  * This keeps CI green while still surfacing debt.
  */
 
@@ -37,6 +38,7 @@ const { values: flags } = parseArgs({
   options: {
     "fail-on-dead": { type: "boolean", default: false },
     "max-allowed": { type: "string", default: "" },
+    json: { type: "boolean", default: false },
   },
   strict: false,
 });
@@ -161,26 +163,35 @@ for (const file of [...srcFiles, ...workerSrcFiles]) {
 
 if (dead.length === 0) {
   const totalFiles = srcFiles.length + workerSrcFiles.length;
-  console.log(
-    `✅ Dead export check: no unused exports detected in src/ or worker/src/ (${totalFiles} files scanned)`,
-  );
+  if (flags.json) {
+    console.log(JSON.stringify({ status: "clean", dead: [], totalFiles }));
+  } else {
+    console.log(
+      `✅ Dead export check: no unused exports detected in src/ or worker/src/ (${totalFiles} files scanned)`,
+    );
+  }
   process.exit(0);
 }
 
-console.log(`\n⚠️  Dead export candidates (${dead.length} symbols):\n`);
-const byFile = /** @type {Map<string, string[]>} */ (new Map());
-for (const { file, symbol } of dead) {
-  if (!byFile.has(file)) byFile.set(file, []);
-  byFile.get(file)?.push(symbol);
+if (flags.json) {
+  const totalFiles = srcFiles.length + workerSrcFiles.length;
+  console.log(JSON.stringify({ status: "debt", dead, totalFiles }, null, 2));
+} else {
+  console.log(`\n⚠️  Dead export candidates (${dead.length} symbols):\n`);
+  const byFile = /** @type {Map<string, string[]>} */ (new Map());
+  for (const { file, symbol } of dead) {
+    if (!byFile.has(file)) byFile.set(file, []);
+    byFile.get(file)?.push(symbol);
+  }
+  for (const [file, syms] of byFile) {
+    console.log(`  ${file}`);
+    for (const s of syms) console.log(`    • ${s}`);
+  }
+  console.log(
+    "\nNote: This list includes false positives (dynamic imports, entry points,\n" +
+      "      type-only consumers). Review manually before deleting.\n",
+  );
 }
-for (const [file, syms] of byFile) {
-  console.log(`  ${file}`);
-  for (const s of syms) console.log(`    • ${s}`);
-}
-console.log(
-  "\nNote: This list includes false positives (dynamic imports, entry points,\n" +
-    "      type-only consumers). Review manually before deleting.\n",
-);
 
 if (flags["fail-on-dead"]) {
   console.error("::error::Dead export candidates found — pass --fail-on-dead=false to allow.");
