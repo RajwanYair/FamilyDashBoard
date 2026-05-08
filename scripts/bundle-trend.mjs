@@ -11,10 +11,13 @@
  *
  * Usage:
  *   node scripts/bundle-trend.mjs [version]
+ *   node scripts/bundle-trend.mjs --ci            # output JSON to stdout only (no file write)
+ *   node scripts/bundle-trend.mjs --ci [version]
  *
  * Prerequisite: run `npx vite build` first (dist/assets must exist).
  *
  * Output: scripts/bundle-trend.json (created if absent, appended otherwise)
+ *         With --ci, writes JSON to stdout and exits without modifying the file.
  */
 
 import { readdirSync, readFileSync, writeFileSync, existsSync, statSync } from "node:fs";
@@ -22,6 +25,7 @@ import { resolve, join } from "node:path";
 import { gzipSync } from "node:zlib";
 import { createRequire } from "node:module";
 
+const CI_MODE = process.argv.includes("--ci");
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
 
@@ -128,12 +132,19 @@ for (const entry of srcDirs) {
 
 const record = {
   date: new Date().toISOString().slice(0, 10),
-  version: process.argv[2] ?? pkg.version,
+  version: process.argv.filter((a) => a !== "--ci")[2] ?? pkg.version,
   jsKb: toKb(jsBytes),
   cssKb: toKb(cssBytes),
   ...(Object.keys(cardSizes).length > 0 && { cards: cardSizes }),
   ...(Object.keys(cardSourceSizes).length > 0 && { cardSource: cardSourceSizes }),
 };
+
+// ── CI mode: output JSON to stdout only ────────────────────────────────────
+
+if (CI_MODE) {
+  process.stdout.write(JSON.stringify(record, null, 2) + "\n");
+  process.exit(0);
+}
 
 // ── Read+append or create ──────────────────────────────────────────────────
 

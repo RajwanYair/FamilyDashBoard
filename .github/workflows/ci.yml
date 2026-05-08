@@ -182,6 +182,15 @@ jobs:
         run: bash .github/ci/install-tools.sh
       - name: Build
         run: npx vite build
+      - name: Bundle trend snapshot (CI)
+        run: node scripts/bundle-trend.mjs --ci | tee bundle-trend-snapshot.json
+      - name: Upload bundle trend artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-trend-snapshot
+          path: bundle-trend-snapshot.json
+          retention-days: 90
       - name: Bundle size check
         run: node scripts/check-bundle-size.mjs
       - name: Per-card bundle delta check
