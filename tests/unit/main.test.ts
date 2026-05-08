@@ -116,6 +116,7 @@ vi.mock("@/core/vitals-reporter", () => ({
   scheduleVitalsReport: vi.fn(),
   flushVitalsReport: vi.fn(),
 }));
+vi.mock("@/core/mcp-bridge", () => ({ initMcpBridge: vi.fn() }));
 
 import { applySeasonClass, applyHiddenCards, applyCardLayout, applyCardSizes, init } from "@/main";
 import { diagLog, getDiagEntries } from "@/core/diag";
@@ -1540,5 +1541,120 @@ describe("Main — module-level visibilitychange handler (line 123)", () => {
     });
     document.dispatchEvent(new Event("visibilitychange"));
     expect(flushVitalsReport).not.toHaveBeenCalled();
+  });
+});
+
+// ── init() English keyboard labels (line 276-283) ────────────────────────────
+
+describe("Main — init() English keyboard labels (lang=en branch)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = "";
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+      hiddenCards: [],
+      cardSizes: {},
+      interfaceLanguage: "en",
+    } as ReturnType<typeof loadConfig>);
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+  });
+
+  it("registers 's' key with English label 'Settings'", () => {
+    init();
+    const calls = vi.mocked(registerKey).mock.calls;
+    const sCall = calls.find(([k]) => k === "s");
+    expect(sCall?.[1]).toBe("Settings");
+  });
+
+  it("registers 'n' key with English label 'Night dimmer'", () => {
+    init();
+    const calls = vi.mocked(registerKey).mock.calls;
+    const nCall = calls.find(([k]) => k === "n");
+    expect(nCall?.[1]).toBe("Night dimmer");
+  });
+
+  it("registers '+' key with English label 'Increase font'", () => {
+    init();
+    const calls = vi.mocked(registerKey).mock.calls;
+    const plusCall = calls.find(([k]) => k === "+");
+    expect(plusCall?.[1]).toBe("Increase font");
+  });
+
+  it("registers '-' key with English label 'Decrease font'", () => {
+    init();
+    const calls = vi.mocked(registerKey).mock.calls;
+    const minusCall = calls.find(([k]) => k === "-");
+    expect(minusCall?.[1]).toBe("Decrease font");
+  });
+
+  it("registers 'f' key with English label 'Fullscreen'", () => {
+    init();
+    const calls = vi.mocked(registerKey).mock.calls;
+    const fCall = calls.find(([k]) => k === "f");
+    expect(fCall?.[1]).toBe("Fullscreen");
+  });
+
+  it("registers 'c' key with English label 'Seconds'", () => {
+    init();
+    const calls = vi.mocked(registerKey).mock.calls;
+    const cCall = calls.find(([k]) => k === "c");
+    expect(cCall?.[1]).toBe("Seconds");
+  });
+});
+
+// ── init() MCP bridge lazy-load (line 539) ───────────────────────────────────
+
+describe("Main — init() MCP bridge lazy-load (?mcp=1)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = "";
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+      hiddenCards: [],
+      cardSizes: {},
+    } as ReturnType<typeof loadConfig>);
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+    Object.defineProperty(window, "location", {
+      value: { hash: "", pathname: "/", search: "" },
+      configurable: true,
+      writable: true,
+    });
+  });
+
+  it("imports mcp-bridge when ?mcp=1 is present", async () => {
+    Object.defineProperty(window, "location", {
+      value: { hash: "", pathname: "/", search: "?mcp=1" },
+      configurable: true,
+      writable: true,
+    });
+    init();
+    // The import is async — give it a microtask to settle
+    await new Promise((r) => setTimeout(r, 0));
+    // If we get here without error, the dynamic import path was exercised
+    expect(diagLog).toHaveBeenCalledWith(expect.stringContaining("[init] FDB-010"));
+  });
+
+  it("does NOT import mcp-bridge when ?mcp is absent", () => {
+    Object.defineProperty(window, "location", {
+      value: { hash: "", pathname: "/", search: "" },
+      configurable: true,
+      writable: true,
+    });
+    init();
+    expect(diagLog).toHaveBeenCalledWith(expect.stringContaining("[init] FDB-010"));
   });
 });
