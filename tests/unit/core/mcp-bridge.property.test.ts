@@ -6,6 +6,7 @@
  *  MB2. deepFreezeJson preserves JSON-serialisable values exactly.
  *  MB3. deepFreezeJson strips non-JSON-serialisable values (functions, undefined, Symbols).
  *  MB4. deepFreezeJson handles null and primitives without throwing.
+ *  MB4b. deepFreezeJson converts -0 to +0 (JSON semantics).
  *  MB5. deepFreezeJson is idempotent.
  */
 
@@ -74,11 +75,20 @@ describe("mcp-bridge — MB4: handles null/primitives", () => {
 
   it("number passes through", () => {
     fc.assert(
-      fc.property(fc.double({ noNaN: true, noDefaultInfinity: true }), (n) => {
-        expect(deepFreezeJson(n)).toBe(n);
-      }),
+      fc.property(
+        fc
+          .double({ noNaN: true, noDefaultInfinity: true })
+          .filter((n) => !Object.is(n, -0)),
+        (n) => {
+          expect(deepFreezeJson(n)).toBe(n);
+        },
+      ),
       { numRuns: 20 },
     );
+  });
+
+  it("negative zero becomes positive zero (JSON semantics)", () => {
+    expect(deepFreezeJson(-0)).toBe(0);
   });
 
   it("string passes through", () => {
