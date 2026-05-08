@@ -325,7 +325,7 @@ describe("cache — CS12: cAge for fresh entry", () => {
         cSet(key, data);
         const age = cAge(key);
         expect(age).not.toBeNull();
-        expect(age!).toBeLessThanOrEqual(1); // <= 1 minute
+        expect(age!).toBeLessThanOrEqual(50); // <= 50 ms (real-time jitter)
       }),
       { numRuns: 30 },
     );
