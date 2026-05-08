@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-14 · **Shipped baseline**: v14.7.0  · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-18 · **Shipped baseline**: v14.7.0  · **Active stream**: V15-OPEN.
 >
-> **Inventory**: 7050 tests / 277 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Inventory**: 7067 tests / 279 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
 > **Coverage **: 94.4 / 85.6 / 94.7 / 95.8 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
@@ -15,7 +15,7 @@
 
 ## 0. Executive Summary
 
-After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 7050 tests / 277 suites, 79 fast-check property suites across 23 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
+After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 7067 tests / 279 suites, 81 fast-check property suites across 25 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 The v14 → v17 frontier is no longer breadth or feature catch-up. It is six things:
 
