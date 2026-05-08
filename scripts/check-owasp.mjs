@@ -32,6 +32,7 @@
  * (v14.7.0) — added A04 Object.assign proto pollution, A06 weak hash (MD5/SHA1), A10 fetch without catch.
  * (v14.8.0) — added A03 innerHTML template literal, A05 fetch without AbortController, A02 crypto short key length, A01 window.name abuse.
  * (v14.9.0) — added A03 createTreeWalker SHOW_ALL, A05 SharedArrayBuffer without isolation, A02 hardcoded IV/nonce, A07 Authorization header literal.
+ * (v14.10.0) — added A01 Object.fromEntries(searchParams) injection, A08 createElement script/link without SRI, A09 sendBeacon PII audit.
  * (v14.5.0) — added A03 insertBefore DOM injection, A05 credentials include, A07 authorization header leak,
  *             A08 importScripts dynamic URL, A09 stack trace in response, A01 location redirect from input.
  *
@@ -1168,6 +1169,35 @@ const RULES = [
     severity: "warn",
     pattern: /['"]Authorization['"]\s*:\s*[`'"]/i,
     safeMarkers: ["test", "spec", "// owasp-allow:A07", "Bearer ${", "getToken", "authToken"],
+  },
+
+  // ── v14.10.0 ─────────────────────────────────────────────────────────────
+
+  // A01 — Broken Access Control: Object.fromEntries on unsanitized URLSearchParams
+  {
+    category: "A01",
+    label: "Object.fromEntries(searchParams) — parameter injection without validation",
+    severity: "warn",
+    pattern: /Object\.fromEntries\(\s*(?:new\s+URLSearchParams|searchParams|params|query)/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A01", "validate", "schema", "parse", "pick"],
+  },
+
+  // A08 — Software Integrity: script/link element without integrity attribute (SRI bypass)
+  {
+    category: "A08",
+    label: "createElement('script'/'link') without integrity — missing SRI for external resource",
+    severity: "warn",
+    pattern: /createElement\(\s*['"](?:script|link)['"]\s*\)(?:[\s\S]{0,200})(?:src|href)\s*=/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A08", "integrity", "crossOrigin", "trusted"],
+  },
+
+  // A09 — Logging Failures: sendBeacon with potentially sensitive payload
+  {
+    category: "A09",
+    label: "navigator.sendBeacon — verify payload contains no PII or credentials",
+    severity: "warn",
+    pattern: /navigator\.sendBeacon\s*\(/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A09", "anonymize", "redact", "sanitize"],
   },
 ];
 
