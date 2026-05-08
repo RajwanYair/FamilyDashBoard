@@ -525,4 +525,164 @@ describe("Card Settings Dialog — openCardSettings icon fallback", () => {
       expect.any(HTMLElement),
     );
   });
+
+  it("includes primitive values from flatCfg in the values map", async () => {
+    vi.mocked(loadCard).mockResolvedValue(makeCardDef("alerts", true));
+    vi.mocked(getCard).mockReturnValue({
+      id: "alerts",
+      icon: "🚨",
+      titleHe: "התרעות",
+      titleEn: "Alerts",
+      load: vi.fn(),
+    });
+    // Put a boolean value matching the schema key → should be included
+    vi.mocked(loadConfig).mockReturnValue({
+      alertsSetting: false,
+      cards: {},
+    } as unknown as ReturnType<typeof loadConfig>);
+
+    const { openCardSettings } = await import("@/ui/card-settings-dialog");
+    await openCardSettings("alerts");
+
+    expect(vi.mocked(renderConfigFields)).toHaveBeenCalledWith(
+      expect.any(Array),
+      { alertsSetting: false },
+      expect.any(HTMLElement),
+    );
+  });
+});
+
+// ── Save button with missing body ──────────────────────────────────────────
+
+describe("Card Settings Dialog — save button edge: no .csd__body", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+    setupDialogShim();
+    vi.mocked(loadConfig).mockReturnValue(fakeCfg() as ReturnType<typeof loadConfig>);
+    vi.mocked(renderConfigFields).mockImplementation(() => {});
+    vi.mocked(readConfigValues).mockReturnValue({});
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("save closes dialog without saving when .csd__body is missing", async () => {
+    vi.mocked(loadCard).mockResolvedValue(makeCardDef("weather", true));
+    vi.mocked(getCard).mockReturnValue({
+      id: "weather",
+      icon: "🌤",
+      titleHe: "מזג אוויר",
+      titleEn: "Weather",
+      load: vi.fn(),
+    });
+
+    const { openCardSettings } = await import("@/ui/card-settings-dialog");
+    await openCardSettings("weather");
+
+    const dlg = document.getElementById("card-settings-dialog") as HTMLDialogElement;
+    // Remove .csd__body so the guard triggers
+    const body = dlg.querySelector(".csd__body");
+    body?.parentElement?.removeChild(body);
+
+    document.querySelector<HTMLButtonElement>(".csd__save-btn")?.click();
+    expect(dlg.hasAttribute("open")).toBe(false);
+    expect(vi.mocked(saveConfig)).not.toHaveBeenCalled();
+  });
+
+  it("save closes dialog without saving when _currentCardId is null", async () => {
+    vi.mocked(loadCard).mockResolvedValue(makeCardDef("stocks", true));
+    vi.mocked(getCard).mockReturnValue({
+      id: "stocks",
+      icon: "📈",
+      titleHe: "מניות",
+      titleEn: "Stocks",
+      load: vi.fn(),
+    });
+
+    const { openCardSettings } = await import("@/ui/card-settings-dialog");
+    await openCardSettings("stocks");
+
+    const dlg = document.getElementById("card-settings-dialog") as HTMLDialogElement;
+    // Close dialog to reset _currentCardId to null via close event listener
+    dlg.close();
+
+    // Manually set open again to simulate a stale dialog
+    dlg.setAttribute("open", "");
+    document.querySelector<HTMLButtonElement>(".csd__save-btn")?.click();
+    expect(dlg.hasAttribute("open")).toBe(false);
+    expect(vi.mocked(saveConfig)).not.toHaveBeenCalled();
+  });
+});
+
+// ── Gear button click invokes openCardSettings ─────────────────────────────
+
+describe("Card Settings Dialog — gear button click handler", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+    setupDialogShim();
+    vi.mocked(loadConfig).mockReturnValue(fakeCfg() as ReturnType<typeof loadConfig>);
+    vi.mocked(renderConfigFields).mockImplementation(() => {});
+    vi.mocked(readConfigValues).mockReturnValue({});
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("clicking gear button opens card settings dialog", async () => {
+    const cardEl = makeCardEl("stocks");
+    vi.mocked(loadCard).mockResolvedValue(makeCardDef("stocks", true));
+    vi.mocked(getCard).mockReturnValue({
+      id: "stocks",
+      icon: "📈",
+      titleHe: "מניות",
+      titleEn: "Stocks",
+      load: vi.fn(),
+    });
+
+    const { initCardSettingsButtons } = await import("@/ui/card-settings-dialog");
+    await initCardSettingsButtons();
+
+    const gearBtn = cardEl.querySelector<HTMLButtonElement>(".card__settings-btn");
+    expect(gearBtn).not.toBeNull();
+    gearBtn!.click();
+
+    // Wait for openCardSettings async
+    await new Promise((r) => setTimeout(r, 0));
+
+    const dlg = document.getElementById("card-settings-dialog");
+    expect(dlg).not.toBeNull();
+    expect(dlg?.hasAttribute("open")).toBe(true);
+  });
+
+  it("gear button appends to .card__hd-end when present", async () => {
+    const section = document.createElement("section");
+    section.dataset["cardId"] = "currency";
+    const header = document.createElement("header");
+    header.className = "card__header";
+    const endSlot = document.createElement("div");
+    endSlot.className = "card__hd-end";
+    header.appendChild(endSlot);
+    section.appendChild(header);
+    document.body.appendChild(section);
+
+    vi.mocked(loadCard).mockResolvedValue(makeCardDef("currency", true));
+    vi.mocked(getCard).mockReturnValue({
+      id: "currency",
+      icon: "💱",
+      titleHe: "מטבעות",
+      titleEn: "Currency",
+      load: vi.fn(),
+    });
+
+    const { initCardSettingsButtons } = await import("@/ui/card-settings-dialog");
+    await initCardSettingsButtons();
+
+    expect(endSlot.querySelector(".card__settings-btn")).not.toBeNull();
+  });
 });
