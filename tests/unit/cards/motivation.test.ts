@@ -1137,3 +1137,47 @@ describe("Motivation — fav heart click handler (line 389)", () => {
     expect(await isFavorite(q)).toBe(false);
   });
 });
+
+// ── S560: initMotivationCard with pre-set category (L396 else) ──────────
+
+import * as configModule from "@/core/config";
+
+describe("Motivation — initMotivationCard when category is already set", () => {
+  afterEach(() => {
+    _resetMotivationForTest();
+    vi.restoreAllMocks();
+    document.body.innerHTML = "";
+  });
+
+  it("does not override _activeCategory if already set before init", () => {
+    document.body.innerHTML = `<div id="moti-text"></div><div id="moti-author"></div>`;
+    _resetMotivationForTest();
+    setMotivationCategory("courage");
+    initMotivationCard();
+    expect(getMotivationCategory()).toBe("courage");
+  });
+
+  it("initMotivationCard uses motivationInterval from config when set", () => {
+    document.body.innerHTML = `<div id="moti-text"></div><div id="moti-author"></div>`;
+    _resetMotivationForTest();
+    vi.spyOn(configModule, "loadConfig").mockReturnValue({
+      ...configModule.loadConfig(),
+      motivationInterval: 5,
+    });
+    const setSpy = vi.spyOn(globalThis, "setInterval");
+    initMotivationCard();
+    // setMotivationInterval(5) should call setInterval with 5*60000
+    expect(setSpy).toHaveBeenCalledWith(expect.any(Function), 5 * 60_000);
+    setSpy.mockRestore();
+  });
+
+  it("initMotivationCard handles undefined motivationInterval (fallback to 0)", () => {
+    document.body.innerHTML = `<div id="moti-text"></div><div id="moti-author"></div>`;
+    _resetMotivationForTest();
+    const cfg = { ...configModule.loadConfig() };
+    delete (cfg as Record<string, unknown>).motivationInterval;
+    vi.spyOn(configModule, "loadConfig").mockReturnValue(cfg);
+    // Should not throw and should not start interval (0 disables)
+    expect(() => initMotivationCard()).not.toThrow();
+  });
+});
