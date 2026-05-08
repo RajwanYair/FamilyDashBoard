@@ -1790,3 +1790,140 @@ describe("Config Panel — collectForm deep branches", () => {
     expect(saved.homeCity).toBe("חיפה");
   });
 });
+
+// ── buildConfigAccordion tests ──────────────────────────────────────────
+
+describe("ConfigPanel — buildConfigAccordion", () => {
+  afterEach(() => { document.body.innerHTML = ""; });
+
+  it("renders ungrouped fields flat inside container", async () => {
+    const { buildConfigAccordion } = await import("@/ui/config-panel");
+    const container = document.createElement("div");
+    buildConfigAccordion([
+      { key: "f1", labelHe: "שדה", labelEn: "Field", type: "text", defaultValue: "abc" },
+      { key: "f2", labelHe: "מספר", labelEn: "Number", type: "number", defaultValue: 5, min: 0, max: 10, step: 1 },
+    ], container);
+    const rows = container.querySelectorAll(".cfg-row");
+    expect(rows.length).toBe(2);
+    const input1 = container.querySelector<HTMLInputElement>("[name='f1']");
+    expect(input1?.value).toBe("abc");
+    const input2 = container.querySelector<HTMLInputElement>("[name='f2']");
+    expect(input2?.value).toBe("5");
+    expect(input2?.min).toBe("0");
+    expect(input2?.max).toBe("10");
+    expect(input2?.step).toBe("1");
+  });
+
+  it("renders boolean field as checkbox with checked state", async () => {
+    const { buildConfigAccordion } = await import("@/ui/config-panel");
+    const container = document.createElement("div");
+    buildConfigAccordion([
+      { key: "b1", labelHe: "סימון", labelEn: "Check", type: "boolean", defaultValue: true },
+    ], container);
+    const input = container.querySelector<HTMLInputElement>("[name='b1']");
+    expect(input?.type).toBe("checkbox");
+    expect(input?.checked).toBe(true);
+  });
+
+  it("groups fields into <details> elements", async () => {
+    const { buildConfigAccordion } = await import("@/ui/config-panel");
+    const container = document.createElement("div");
+    buildConfigAccordion([
+      { key: "g1", labelHe: "א", labelEn: "A", type: "text", defaultValue: "", group: "קבוצה" },
+      { key: "g2", labelHe: "ב", labelEn: "B", type: "text", defaultValue: "", group: "קבוצה" },
+      { key: "g3", labelHe: "ג", labelEn: "C", type: "text", defaultValue: "", group: "אחר", groupOpenByDefault: true },
+    ], container);
+    const details = container.querySelectorAll("details");
+    expect(details.length).toBe(2);
+    expect(details[0]?.querySelector("summary")?.textContent).toBe("קבוצה");
+    expect(details[0]?.open).toBe(false);
+    expect(details[1]?.open).toBe(true);
+    // Both fields in same group share a parent <details>
+    expect(details[0]?.querySelectorAll(".cfg-row").length).toBe(2);
+  });
+
+  it("renders placeholder attribute when provided", async () => {
+    const { buildConfigAccordion } = await import("@/ui/config-panel");
+    const container = document.createElement("div");
+    buildConfigAccordion([
+      { key: "p1", labelHe: "מקום", labelEn: "Place", type: "text", defaultValue: "", placeholder: "הקלד..." },
+    ], container);
+    const input = container.querySelector<HTMLInputElement>("[name='p1']");
+    expect(input?.placeholder).toBe("הקלד...");
+  });
+});
+
+// ── Tab keyboard navigation tests ──────────────────────────────────────────
+
+describe("ConfigPanel — tab keyboard navigation", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    setupConfigPanelTestDOM();
+  });
+  afterEach(() => { document.body.innerHTML = ""; localStorage.clear(); });
+
+  it("ArrowRight moves focus to next tab", async () => {
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    const tabs = document.querySelectorAll<HTMLButtonElement>(".cfg-tab");
+    expect(tabs.length).toBeGreaterThan(1);
+    tabs[0]!.focus();
+    tabs[0]!.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    expect(document.activeElement).toBe(tabs[1]);
+  });
+
+  it("ArrowLeft wraps from first to last tab", async () => {
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    const tabs = document.querySelectorAll<HTMLButtonElement>(".cfg-tab");
+    tabs[0]!.focus();
+    tabs[0]!.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }));
+    expect(document.activeElement).toBe(tabs[tabs.length - 1]);
+  });
+
+  it("Home goes to first tab, End goes to last", async () => {
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    const tabs = document.querySelectorAll<HTMLButtonElement>(".cfg-tab");
+    tabs[2]!.focus();
+    tabs[2]!.dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true }));
+    expect(document.activeElement).toBe(tabs[0]);
+    tabs[0]!.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true }));
+    expect(document.activeElement).toBe(tabs[tabs.length - 1]);
+  });
+});
+
+// ── Unsaved-changes dirty indicator ──────────────────────────────────────────
+
+describe("ConfigPanel — dirty indicator", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    setupConfigPanelTestDOM();
+  });
+  afterEach(() => { document.body.innerHTML = ""; localStorage.clear(); });
+
+  it("input event on overlay marks gear button with asterisk", async () => {
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    const gear = document.getElementById("cfg-gear-btn");
+    expect(gear?.textContent).toBe("⚙️");
+    const ov = document.getElementById("config-overlay");
+    ov?.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(gear?.textContent).toBe("⚙️*");
+  });
+
+  it("closeConfigPanel shows toast on first close when dirty", async () => {
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    const ov = document.getElementById("config-overlay");
+    ov?.dispatchEvent(new Event("input", { bubbles: true }));
+    // First close should warn, not close
+    mod.closeConfigPanel();
+    expect(ov?.classList.contains("visible")).toBe(true);
+    // Second close should actually close
+    mod.closeConfigPanel();
+    expect(ov?.classList.contains("visible")).toBe(false);
+  });
+});
