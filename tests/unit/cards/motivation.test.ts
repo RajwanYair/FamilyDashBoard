@@ -1070,3 +1070,70 @@ describe("Motivation — markIndexUsed localStorage catch branch ", () => {
     expect(() => markIndexUsed(0, 5)).not.toThrow();
   });
 });
+
+// ── S540: motivation branch coverage — uncovered paths ───────────────────────
+
+describe("Motivation — _resetMotivationForTest clears interval (line 570)", () => {
+  afterEach(() => {
+    _resetMotivationForTest();
+    document.body.innerHTML = "";
+  });
+
+  it("clears active auto-advance interval on reset", () => {
+    document.body.innerHTML = `<div id="moti-text"></div><div id="moti-author"></div>`;
+    _resetMotivationForTest();
+    initMotivationCard();
+    // Start auto-advance timer
+    setMotivationInterval(5);
+    const clearSpy = vi.spyOn(globalThis, "clearInterval");
+    // Reset should clear the interval
+    _resetMotivationForTest();
+    expect(clearSpy).toHaveBeenCalled();
+    clearSpy.mockRestore();
+  });
+});
+
+describe("Motivation — fav heart click handler (line 389)", () => {
+  beforeEach(() => {
+    _idbClearFallback();
+  });
+  afterEach(() => {
+    _resetMotivationForTest();
+    document.body.innerHTML = "";
+  });
+
+  it("click on moti-fav-btn toggles favorite for current quote", async () => {
+    document.body.innerHTML = `
+      <div id="moti-text"></div>
+      <div id="moti-author"></div>
+      <button id="moti-fav-btn"></button>
+    `;
+    _resetMotivationForTest();
+    initMotivationCard();
+    // Current quote should be set after init
+    const q = getCurrentQuote();
+    expect(q).not.toBeNull();
+    // Click the fav button — should not throw
+    document.getElementById("moti-fav-btn")!.click();
+    // Wait for async toggleFavorite to complete
+    await new Promise((r) => setTimeout(r, 0));
+    // The quote should now be in favorites
+    expect(await isFavorite(q!)).toBe(true);
+  });
+
+  it("second click unfavorites the current quote", async () => {
+    document.body.innerHTML = `
+      <div id="moti-text"></div>
+      <div id="moti-author"></div>
+      <button id="moti-fav-btn"></button>
+    `;
+    _resetMotivationForTest();
+    initMotivationCard();
+    const q = getCurrentQuote()!;
+    // Use API directly for deterministic sequencing
+    await toggleFavorite(q); // add
+    expect(await isFavorite(q)).toBe(true);
+    await toggleFavorite(q); // remove
+    expect(await isFavorite(q)).toBe(false);
+  });
+});
