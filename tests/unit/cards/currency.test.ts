@@ -27,6 +27,7 @@ import {
 } from "@/cards/currency/currency";
 import { clearFetchLocks } from "@/core/fetch";
 import { cDelete } from "@/core/cache";
+import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
 
 const MOCK_RATES: Record<string, number> = {
   USD: 0.2667, // 1 ILS = 0.2667 USD → 1 USD ≈ 3.75 ILS
@@ -440,6 +441,57 @@ describe("Currency — renderCurrency change indicators", () => {
     const chg = document.getElementById("curUsdChg");
     // Should show trend data (1d arrow)
     expect(chg?.textContent).toContain("1d");
+  });
+
+  it("shows negative trend arrow with negative class (rate increased = ILS weaker)", () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const weekAgo = new Date(Date.now() - 8 * 86400_000).toISOString().slice(0, 10);
+    const history = [
+      { date: weekAgo, rates: { USD: 0.2667 } }, // 1 USD = 3.75 ILS
+      { date: today, rates: { USD: 0.30 } },      // 1 USD = 3.33 ILS (USD weaker → ↓)
+    ];
+    localStorage.setItem("dash_v2_cur_history", JSON.stringify(history));
+    _resetCurrencyForTest();
+    cacheDom();
+    renderCurrency({ ...MOCK_RATES, USD: 0.30 });
+    const chg = document.getElementById("curUsdChg");
+    expect(chg?.textContent).toContain("↓");
+    expect(chg?.className).toContain("negative");
+  });
+
+  it("shows positive trend with positive class (rate decreased = ILS stronger buys more foreign)", () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const weekAgo = new Date(Date.now() - 8 * 86400_000).toISOString().slice(0, 10);
+    const history = [
+      { date: weekAgo, rates: { USD: 0.30 } },   // 1 USD = 3.33 ILS
+      { date: today, rates: { USD: 0.2667 } },    // 1 USD = 3.75 ILS (USD stronger → ↑)
+    ];
+    localStorage.setItem("dash_v2_cur_history", JSON.stringify(history));
+    _resetCurrencyForTest();
+    cacheDom();
+    renderCurrency(MOCK_RATES);
+    const chg = document.getElementById("curUsdChg");
+    expect(chg?.textContent).toContain("↑");
+    expect(chg?.className).toContain("positive");
+  });
+
+  it("shows 7d and 30d trends when history spans multiple windows", () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const weekAgo = new Date(Date.now() - 8 * 86400_000).toISOString().slice(0, 10);
+    const monthAgo = new Date(Date.now() - 31 * 86400_000).toISOString().slice(0, 10);
+    const history = [
+      { date: monthAgo, rates: { USD: 0.29 } },
+      { date: weekAgo, rates: { USD: 0.28 } },
+      { date: today, rates: { USD: 0.2667 } },
+    ];
+    localStorage.setItem("dash_v2_cur_history", JSON.stringify(history));
+    _resetCurrencyForTest();
+    cacheDom();
+    renderCurrency(MOCK_RATES);
+    const chg = document.getElementById("curUsdChg");
+    // Should show multiple trend windows
+    expect(chg?.textContent).toContain("7d");
+    expect(chg?.textContent).toContain("30d");
   });
 
   it("handles missing chgEl gracefully (no change DOM element)", () => {
@@ -1214,5 +1266,233 @@ describe("Currency — getLastCurrencyRates", () => {
 
   it("returns null when no rates have been fetched (cache miss)", () => {
     expect(getLastCurrencyRates()).toBeNull();
+  });
+});
+
+// ── S557: branch coverage for buildCurrencyPayload via semantic clipboard ──
+
+describe("Currency — buildCurrencyPayload (via semantic clipboard)", () => {
+  beforeEach(() => {
+    _resetSemanticProducers();
+    _resetCurrencyForTest();
+    document.body.innerHTML = `
+      <div id="curUsd"></div><div id="curUsdChg"></div>
+      <div id="curEur"></div><div id="curEurChg"></div>
+      <div id="curGbp"></div><div id="curGbpChg"></div>
+      <div id="curGold"></div><div id="curGoldChg"></div>
+      <div id="curSilver"></div><div id="curSilverChg"></div>
+      <div id="curOil"></div><div id="curOilChg"></div>
+      <div id="curBtc"></div><div id="curBtcChg"></div>
+      <div id="currency-body"></div>
+      <span id="cur-last-fetch"></span>
+    `;
+    cacheDom();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ rates: MOCK_RATES }),
+    }));
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    _resetSemanticProducers();
+    _resetCurrencyForTest();
+    vi.restoreAllMocks();
+  });
+
+  it("returns payload with USD/EUR rates after renderCurrency", () => {
+    initCurrencyCard();
+    renderCurrency({ USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009 });
+    const payload = getSemanticPayload("currency");
+    expect(payload).not.toBeNull();
+    expect(payload!.cardId).toBe("currency");
+    expect(payload!.text).toContain("USD");
+    expect(payload!.text).toContain("EUR");
+    expect(payload!.ts).toBeGreaterThan(0);
+  });
+});
+
+// ── S557: storeCurrencyHistory trims beyond 30 entries ──
+
+describe("Currency — storeCurrencyHistory trims to max 30 entries", () => {
+  beforeEach(() => {
+    localStorage.removeItem("dash_v2_cur_history");
+  });
+  afterEach(() => {
+    localStorage.removeItem("dash_v2_cur_history");
+  });
+
+  it("trims history to 30 when localStorage already has 30+ entries", () => {
+    // Pre-seed localStorage with 31 entries (unique dates)
+    const history = Array.from({ length: 31 }, (_, i) => ({
+      date: `2024-02-${String(i + 1).padStart(2, "0")}`,
+      rates: { USD: 0.27 + i * 0.001 },
+    }));
+    localStorage.setItem("dash_v2_cur_history", JSON.stringify(history));
+
+    // storeCurrencyHistory adds today's entry → total > 30 → triggers slice
+    storeCurrencyHistory({ USD: 0.29 });
+    const stored = loadCurrencyHistory();
+    expect(stored.length).toBeLessThanOrEqual(30);
+  });
+});
+
+// ── S557: get7DayTrend missing rate key returns null ──
+
+describe("Currency — get7DayTrend missing rate key", () => {
+  it("returns null when key is not in oldest entry rates", () => {
+    const history = [
+      { date: "2024-01-01", rates: { EUR: 0.24 } },
+      { date: "2024-01-08", rates: { USD: 0.27, EUR: 0.24 } },
+    ];
+    expect(get7DayTrend("USD", history)).toBeNull();
+  });
+
+  it("returns null when key is not in newest entry rates", () => {
+    const history = [
+      { date: "2024-01-01", rates: { USD: 0.27 } },
+      { date: "2024-01-08", rates: { EUR: 0.24 } },
+    ];
+    expect(get7DayTrend("USD", history)).toBeNull();
+  });
+
+  it("returns null when oldest rate is 0", () => {
+    const history = [
+      { date: "2024-01-01", rates: { USD: 0 } },
+      { date: "2024-01-08", rates: { USD: 0.27 } },
+    ];
+    expect(get7DayTrend("USD", history)).toBeNull();
+  });
+});
+
+// ── S557: getCurrencyTrend edge cases ──
+
+describe("Currency — getCurrencyTrend edge cases", () => {
+  it("returns null when newest rate for key is 0", () => {
+    const history = [
+      { date: "2024-01-01", rates: { USD: 0.27 } },
+      { date: "2024-01-08", rates: { USD: 0 } },
+    ];
+    expect(getCurrencyTrend("USD", history, 7)).toBeNull();
+  });
+
+  it("returns null when key is missing from newest entry", () => {
+    const history = [
+      { date: "2024-01-01", rates: { USD: 0.27 } },
+      { date: "2024-01-08", rates: { EUR: 0.24 } },
+    ];
+    expect(getCurrencyTrend("USD", history, 7)).toBeNull();
+  });
+
+  it("returns null when ref entry has oldRate = 0", () => {
+    const history = [
+      { date: "2024-01-01", rates: { USD: 0 } },
+      { date: "2024-01-08", rates: { USD: 0.27 } },
+    ];
+    expect(getCurrencyTrend("USD", history, 7)).toBeNull();
+  });
+});
+
+// ── S557: initCalcWidget XAU precision (4 decimals) ──
+
+describe("Currency — initCalcWidget XAU precision", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="curUsd"></div><div id="curUsdChg"></div>
+      <div id="curEur"></div><div id="curEurChg"></div>
+      <div id="curGbp"></div><div id="curGbpChg"></div>
+      <div id="curGold"></div><div id="curGoldChg"></div>
+      <div id="curSilver"></div><div id="curSilverChg"></div>
+      <div id="curOil"></div><div id="curOilChg"></div>
+      <div id="curBtc"></div><div id="curBtcChg"></div>
+      <div id="currency-body"></div>
+      <span id="cur-last-fetch"></span>
+      <input id="cur-calc-input" type="number">
+      <select id="cur-calc-pair">
+        <option value="USD">USD</option>
+        <option value="XAU" selected>XAU</option>
+        <option value="XAG">XAG</option>
+      </select>
+      <span id="cur-calc-result">--</span>
+    `;
+    _resetCurrencyForTest();
+    cacheDom();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    _resetCurrencyForTest();
+  });
+
+  it("formats XAU with 4 decimal places", () => {
+    initCalcWidget();
+    renderCurrency({ USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009 });
+    const input = document.getElementById("cur-calc-input") as HTMLInputElement;
+    const pairSel = document.getElementById("cur-calc-pair") as HTMLSelectElement;
+    const result = document.getElementById("cur-calc-result");
+    pairSel.value = "XAU";
+    input.value = "10000";
+    input.dispatchEvent(new Event("input"));
+    // 10000 * 0.000115 = 1.15 → formatted as "1.1500"
+    expect(result?.textContent).toMatch(/\.\d{4}$/);
+  });
+
+  it("formats XAG with 4 decimal places", () => {
+    initCalcWidget();
+    renderCurrency({ USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009 });
+    const input = document.getElementById("cur-calc-input") as HTMLInputElement;
+    const pairSel = document.getElementById("cur-calc-pair") as HTMLSelectElement;
+    const result = document.getElementById("cur-calc-result");
+    pairSel.value = "XAG";
+    input.value = "100";
+    pairSel.dispatchEvent(new Event("change"));
+    input.dispatchEvent(new Event("input"));
+    // 100 * 0.009 = 0.9 → "0.9000"
+    expect(result?.textContent).toMatch(/\.\d{4}$/);
+  });
+});
+
+// ── S557: renderCurrency — cur-last-fetch timestamp update ──
+
+describe("Currency — renderCurrency last-fetch timestamp", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="curUsd"></div><div id="curUsdChg"></div>
+      <div id="curEur"></div><div id="curEurChg"></div>
+      <div id="curGbp"></div><div id="curGbpChg"></div>
+      <div id="curGold"></div><div id="curGoldChg"></div>
+      <div id="curSilver"></div><div id="curSilverChg"></div>
+      <div id="curOil"></div><div id="curOilChg"></div>
+      <div id="curBtc"></div><div id="curBtcChg"></div>
+      <div id="currency-body"></div>
+      <span id="cur-last-fetch"></span>
+    `;
+    _resetCurrencyForTest();
+    cacheDom();
+    localStorage.removeItem("dash_v2_cur_history");
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    _resetCurrencyForTest();
+    localStorage.removeItem("dash_v2_cur_history");
+  });
+
+  it("updates cur-last-fetch textContent after render", () => {
+    renderCurrency(MOCK_RATES);
+    const el = document.getElementById("cur-last-fetch");
+    expect(el?.textContent).not.toBe("");
+  });
+
+  it("sets title attribute on cur-last-fetch", () => {
+    renderCurrency(MOCK_RATES);
+    const el = document.getElementById("cur-last-fetch");
+    expect(el?.title).toContain("עדכון אחרון");
+  });
+
+  it("flashes data-fresh class on currency-body", () => {
+    renderCurrency(MOCK_RATES);
+    const body = document.getElementById("currency-body");
+    expect(body?.classList.contains("data-fresh")).toBe(true);
   });
 });
