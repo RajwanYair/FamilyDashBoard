@@ -1094,4 +1094,95 @@ describe("SW Register — unregisterSW", () => {
     expect(cachesDelete).toHaveBeenCalledWith("familydashboard-v13");
     expect(cachesDelete).toHaveBeenCalledWith("familydashboard-api-v13");
   });
+
+  it("resolves gracefully when getRegistrations rejects", async () => {
+    const swContainer = {
+      getRegistrations: vi.fn().mockRejectedValue(new Error("SW storage corrupt")),
+      addEventListener: vi.fn(),
+      controller: null,
+      register: vi.fn(),
+    };
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: swContainer,
+      writable: true,
+      configurable: true,
+    });
+    vi.stubGlobal("caches", {
+      keys: vi.fn().mockResolvedValue([]),
+      delete: vi.fn(),
+    });
+    const mod = await freshMod();
+    // Should not throw — catches the error internally
+    await expect(mod.unregisterSW()).resolves.toBe(0);
+  });
+
+  it("resolves gracefully when caches.keys() rejects", async () => {
+    const reg1 = { unregister: vi.fn().mockResolvedValue(true) };
+    const swContainer = {
+      getRegistrations: vi.fn().mockResolvedValue([reg1]),
+      addEventListener: vi.fn(),
+      controller: null,
+      register: vi.fn(),
+    };
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: swContainer,
+      writable: true,
+      configurable: true,
+    });
+    vi.stubGlobal("caches", {
+      keys: vi.fn().mockRejectedValue(new Error("Cache API unavailable")),
+      delete: vi.fn(),
+    });
+    const mod = await freshMod();
+    // Unregister succeeds (1 reg), cache purge failure is swallowed
+    const count = await mod.unregisterSW();
+    expect(count).toBe(1);
+    expect(reg1.unregister).toHaveBeenCalled();
+  });
+});
+
+// ── showUpdateBanner — non-ready states (downloading/installing) ──
+
+describe("SW Register — showUpdateBanner installing state", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("sets data-sw-state='installing' when SW enters installing state", async () => {
+    document.body.innerHTML =
+      '<div id="sw-update-banner"><span id="sw-update-status"></span></div>';
+
+    // Track statechange listeners on the installing worker
+    let stateChangeCb: (() => void) | null = null;
+    const installing = {
+      state: "installing",
+      addEventListener: (evt: string, cb: EventListenerOrEventListenerObject) => {
+        if (evt === "statechange" && typeof cb === "function") stateChangeCb = cb as () => void;
+      },
+    };
+    const reg = {
+      installing,
+      waiting: null,
+      addEventListener: vi.fn((_: string, cb: EventListenerOrEventListenerObject) => {
+        if (_ === "updatefound" && typeof cb === "function") (cb as () => void)();
+      }),
+    } as unknown as ServiceWorkerRegistration;
+
+    stubServiceWorker(reg);
+    const mod = await freshMod();
+    await mod.registerSW();
+
+    // statechange fires while state is still "installing"
+    stateChangeCb?.();
+
+    const banner = document.getElementById("sw-update-banner")!;
+    expect(banner.getAttribute("data-sw-state")).toBe("installing");
+    expect(banner.classList.contains("visible")).toBe(true);
+    expect(document.getElementById("sw-update-status")!.textContent).toContain("מתקין");
+  });
 });
