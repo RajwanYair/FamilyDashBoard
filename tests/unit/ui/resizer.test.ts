@@ -497,3 +497,62 @@ describe("flexGrowOf — getComputedStyle fallback", () => {
     fireMouseEvent("mouseup");
   });
 });
+
+// ── S558: flexGrowOf computed fallback (no inline style) ──────────────────
+
+describe("row resize uses computed flex-grow when inline is absent", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    document.documentElement.removeAttribute("data-resize-row");
+    document.documentElement.removeAttribute("data-resize-col");
+  });
+
+  it("defaults to flex-grow 1 when card has no inline flex-grow", () => {
+    // Cards without inline flex-grow — flexGrowOf uses computed/fallback
+    document.body.innerHTML = `
+      <div class="grids-area">
+        <div class="grid-col">
+          <div class="card" data-card-id="a"></div>
+          <div class="card" data-card-id="b"></div>
+        </div>
+      </div>
+    `;
+    initResizers();
+    const col = document.querySelector<HTMLElement>(".grid-col")!;
+    const cards = col.querySelectorAll<HTMLElement>(".card");
+    stubRect(col, { top: 0, right: 960, bottom: 1080, left: 0 });
+    stubRect(cards[0]!, { top: 0, right: 960, bottom: 500, left: 0, height: 500 });
+    stubRect(cards[1]!, { top: 520, right: 960, bottom: 1080, left: 0, height: 560 });
+
+    fireMouseEvent("mousedown", { clientX: 400, clientY: 510 });
+    fireMouseEvent("mousemove", { clientX: 400, clientY: 550 });
+
+    // Cards should now have inline flex-grow assigned by applyRowResize
+    const growA = parseFloat(cards[0]!.style.flexGrow);
+    const growB = parseFloat(cards[1]!.style.flexGrow);
+    expect(growA).toBeGreaterThan(0);
+    expect(growB).toBeGreaterThan(0);
+    // Combined grow ≈ 2 (default 1+1 when computed is NaN → fallback to 1)
+    expect(growA + growB).toBeCloseTo(2, 1);
+
+    fireMouseEvent("mouseup");
+  });
+});
+
+// ── S558: onMouseMove when no .grids-area present ──────────────────────────
+
+describe("mousemove without .grids-area does not crash", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("clears cursor when grids-area is removed after init", () => {
+    makeGridsArea();
+    initResizers();
+    // Remove grids-area to simulate dynamic DOM change
+    document.querySelector(".grids-area")?.remove();
+    expect(() => fireMouseEvent("mousemove", { clientX: 50, clientY: 50 })).not.toThrow();
+    expect(document.documentElement.hasAttribute("data-resize-col")).toBe(false);
+    expect(document.documentElement.hasAttribute("data-resize-row")).toBe(false);
+  });
+});
