@@ -288,17 +288,16 @@
    *
    * ADR-062 §Migration Sketch step 1/2 (partial — step 2 = fallback removal
    * is deferred until CSS if() reaches Baseline 2026).
+   *
+   * NOTE: Removed from compiled CSS — lightningcss cannot parse CSS if() yet.
+   * Re-enable when lightningcss adds support (tracked: lightningcss#789).
+   *
+   * @supports (top: if(true; 0px; 0px)) {
+   *   :root {
+   *     --accent-subtle: color-mix(in sRGB, var(--accent) if(true; 12%; 12%), transparent);
+   *     --accent-dim: color-mix(in sRGB, var(--accent) if(true; 40%; 40%), transparent);
+   *     --positive-subtle: color-mix(in sRGB, var(--positive) if(true; 12%; 12%), transparent);
+   *     --negative-subtle: color-mix(in sRGB, var(--negative) if(true; 12%; 12%), transparent);
+   *   }
+   * }
    */
-  @supports (top: if(true; 0px; 0px)) {
-    :root {
-      /* Accent tint — 12% opacity variant */
-      --accent-subtle: color-mix(in sRGB, var(--accent) if(true; 12%; 12%), transparent);
-      /* Accent dim — 40% opacity variant */
-      --accent-dim: color-mix(in sRGB, var(--accent) if(true; 40%; 40%), transparent);
-      /* Positive tint */
-      --positive-subtle: color-mix(in sRGB, var(--positive) if(true; 12%; 12%), transparent);
-      /* Negative tint */
-      --negative-subtle: color-mix(in sRGB, var(--negative) if(true; 12%; 12%), transparent);
-    }
-  }
-}
