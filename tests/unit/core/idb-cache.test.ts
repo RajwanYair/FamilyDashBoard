@@ -608,6 +608,128 @@ describe("idbEvictStale", () => {
   });
 });
 
+// ── Transaction-throw branch coverage (lines 84, 107, 126, 145) ──────────────
+
+describe("IDB Cache — transaction throws", () => {
+  /**
+   * Creates a mock IDB where open succeeds but transaction() throws,
+   * covering the catch blocks in idbGet/idbSet/idbDel/idbClear.
+   */
+  function makeBrokenTxIdb() {
+    const mockDb = {
+      transaction: () => {
+        throw new Error("transaction failed");
+      },
+      objectStoreNames: { contains: () => true },
+    };
+
+    const mockOpen = {
+      result: mockDb as unknown as IDBDatabase,
+      onsuccess: null as ((e: Event) => void) | null,
+      onerror: null as ((e: Event) => void) | null,
+      onupgradeneeded: null as ((e: IDBVersionChangeEvent) => void) | null,
+    } as unknown as IDBOpenDBRequest;
+
+    setTimeout(() => mockOpen.onsuccess?.({ target: mockOpen } as unknown as Event), 0);
+
+    return { open: () => mockOpen } as unknown as IDBFactory;
+  }
+
+  it("idbGet resolves null when transaction throws", async () => {
+    _resetIdb();
+    vi.stubGlobal("indexedDB", makeBrokenTxIdb());
+    const result = await idbGet("any-key");
+    expect(result).toBeNull();
+  });
+
+  it("idbSet resolves without throwing when transaction throws", async () => {
+    _resetIdb();
+    vi.stubGlobal("indexedDB", makeBrokenTxIdb());
+    await expect(idbSet("k", "v")).resolves.toBeUndefined();
+  });
+
+  it("idbDel resolves without throwing when transaction throws", async () => {
+    _resetIdb();
+    vi.stubGlobal("indexedDB", makeBrokenTxIdb());
+    await expect(idbDel("k")).resolves.toBeUndefined();
+  });
+
+  it("idbClear resolves without throwing when transaction throws", async () => {
+    _resetIdb();
+    vi.stubGlobal("indexedDB", makeBrokenTxIdb());
+    await expect(idbClear()).resolves.toBeUndefined();
+  });
+});
+
+// ── openDB error/upgrade branches (lines 40-43, 53-54) ───────────────────────
+
+describe("IDB Cache — openDB error path", () => {
+  it("idbGet returns null when indexedDB.open fires onerror", async () => {
+    _resetIdb();
+    const mockOpen = {
+      result: null,
+      onsuccess: null as ((e: Event) => void) | null,
+      onerror: null as ((e: Event) => void) | null,
+      onupgradeneeded: null as ((e: IDBVersionChangeEvent) => void) | null,
+    } as unknown as IDBOpenDBRequest;
+    setTimeout(() => mockOpen.onerror?.({} as Event), 0);
+    vi.stubGlobal("indexedDB", { open: () => mockOpen } as unknown as IDBFactory);
+    const result = await idbGet("key");
+    expect(result).toBeNull();
+  });
+
+  it("idbSet resolves when indexedDB.open fires onerror", async () => {
+    _resetIdb();
+    const mockOpen = {
+      result: null,
+      onsuccess: null as ((e: Event) => void) | null,
+      onerror: null as ((e: Event) => void) | null,
+      onupgradeneeded: null as ((e: IDBVersionChangeEvent) => void) | null,
+    } as unknown as IDBOpenDBRequest;
+    setTimeout(() => mockOpen.onerror?.({} as Event), 0);
+    vi.stubGlobal("indexedDB", { open: () => mockOpen } as unknown as IDBFactory);
+    await expect(idbSet("k", "v")).resolves.toBeUndefined();
+  });
+});
+
+describe("IDB Cache — onupgradeneeded creates store", () => {
+  it("creates object store when it does not exist", async () => {
+    _resetIdb();
+    let storeCreated = false;
+    const mockDb = {
+      objectStoreNames: { contains: () => false },
+      createObjectStore: () => {
+        storeCreated = true;
+      },
+      transaction: () => ({
+        objectStore: () => ({
+          get: () => {
+            const req = { result: undefined, onsuccess: null as ((e: Event) => void) | null, onerror: null as ((e: Event) => void) | null } as unknown as IDBRequest;
+            setTimeout(() => req.onsuccess?.({} as Event), 0);
+            return req;
+          },
+        }),
+      }),
+    };
+
+    const mockOpen = {
+      result: mockDb as unknown as IDBDatabase,
+      onsuccess: null as ((e: Event) => void) | null,
+      onerror: null as ((e: Event) => void) | null,
+      onupgradeneeded: null as ((e: IDBVersionChangeEvent) => void) | null,
+    } as unknown as IDBOpenDBRequest;
+
+    setTimeout(() => {
+      mockOpen.onupgradeneeded?.({ target: mockOpen } as unknown as IDBVersionChangeEvent);
+      mockOpen.onsuccess?.({ target: mockOpen } as unknown as Event);
+    }, 0);
+
+    vi.stubGlobal("indexedDB", { open: () => mockOpen } as unknown as IDBFactory);
+    await idbGet("test");
+    expect(storeCreated).toBe(true);
+  });
+});
+
 // ── catch-block branches (lines 165, 192) ─────────────────────────
 
 function makeThrowingMockIdb() {
