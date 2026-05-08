@@ -15,12 +15,19 @@ export function setupConfigPanelTestDOM(): void {
           <input id="cfg-family-name" type="text" />
           <input id="cfg-members" type="text" />
           <input id="cfg-auto-theme" type="text" />
+          <input id="cfg-dim-warm" type="text" />
           <input id="cfg-clock-seconds" type="text" />
           <input id="cfg-dim-start" type="number" />
           <input id="cfg-dim-end" type="number" />
           <input id="cfg-temp-unit" type="text" />
           <input id="cfg-news-fontsize" type="range" />
           <span id="cfg-news-fontsize-val">100%</span>
+          <input id="cfg-dim-level" type="range" value="60" />
+          <span id="cfg-dim-level-val">60%</span>
+          <input id="cfg-font-scale" type="range" min="70" max="150" value="100" />
+          <span id="cfg-font-scale-val">100%</span>
+          <input id="cfg-ticker-speed" type="range" value="3" />
+          <span id="cfg-ticker-speed-val">3</span>
         </div>
         <div class="cfg-section" data-tab="calendar">
           <textarea id="cfg-birthday"></textarea>
@@ -41,6 +48,8 @@ export function setupConfigPanelTestDOM(): void {
           <select id="alerts-toggle"><option value="on">On</option><option value="off">Off</option></select>
           <input id="cfg-alert-zone" type="text" />
           <input id="cfg-alert-sound" type="text" />
+          <input id="cfg-alert-volume" type="range" value="18" />
+          <span id="cfg-alert-volume-val">18%</span>
           <input id="cfg-alert-realtime" type="text" />
           <textarea id="cfg-stock-alerts"></textarea>
         </div>
@@ -61,6 +70,35 @@ export function setupConfigPanelTestDOM(): void {
           <input id="cfg-cd-card-date" type="date" />
           <input id="cfg-cd-card-time" type="time" />
           <input id="cfg-cd-card-done-msg" type="text" />
+          <input id="cfg-cd-card-start-date" type="date" />
+          <input id="cfg-cd2-title" type="text" />
+          <input id="cfg-cd2-date" type="date" />
+          <input id="cfg-cd2-time" type="time" value="18:00" />
+          <input id="cfg-cd2-done-msg" type="text" />
+          <input id="cfg-cd3-title" type="text" />
+          <input id="cfg-cd3-date" type="date" />
+          <input id="cfg-cd3-time" type="time" value="18:00" />
+          <input id="cfg-cd3-done-msg" type="text" />
+          <textarea id="cfg-chores"></textarea>
+          <textarea id="cfg-portfolio"></textarea>
+          <input id="cfg-tasks-reset-hour" type="number" value="6" />
+          <input id="cfg-moti-interval" type="number" value="0" />
+          <select id="cfg-anim-level"><option value="normal" selected>normal</option><option value="none">none</option><option value="minimal">minimal</option><option value="full">full</option></select>
+        </div>
+        <div class="cfg-section" data-tab="cards">
+          <div id="cfg-cards-list"></div>
+          <select id="cfg-weather-hourly"><option value="on" selected>On</option><option value="off">Off</option></select>
+          <select id="cfg-weather-wind"><option value="on" selected>On</option><option value="off">Off</option></select>
+          <select id="cfg-weather-sunrise"><option value="on" selected>On</option><option value="off">Off</option></select>
+          <select id="cfg-weather-details"><option value="on" selected>On</option><option value="off">Off</option></select>
+          <select id="cfg-weather-us-travel"><option value="off" selected>Off</option><option value="on">On</option></select>
+          <select id="cfg-news-show-source"><option value="on" selected>On</option><option value="off">Off</option></select>
+          <input id="cfg-news-max-items" type="number" value="20" />
+          <select id="cfg-stocks-group-sector"><option value="off" selected>Off</option><option value="on">On</option></select>
+          <select id="cfg-stocks-show-portfolio"><option value="off" selected>Off</option><option value="on">On</option></select>
+          <select id="cfg-tasks-show-done"><option value="on" selected>On</option><option value="off">Off</option></select>
+          <select id="cfg-tasks-show-categories"><option value="on" selected>On</option><option value="off">Off</option></select>
+          <select id="cfg-sysinfo-show-rtt"><option value="on" selected>On</option><option value="off">Off</option></select>
         </div>
         <select class="cfg-card-size-sel" data-card-id="weather">
           <option value="lg" selected>גדול</option>

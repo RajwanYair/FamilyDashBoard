@@ -1601,3 +1601,192 @@ describe("ConfigPanel — openEcfgImportDialog ", () => {
     await Promise.resolve();
   });
 });
+
+// ── collectForm deep branches (S537) ──────────────────────────────────────────
+
+describe("Config Panel — collectForm deep branches", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("saves dimWarmTint on/off", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-dim-warm") as HTMLInputElement).value = "on";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { dimWarmTint?: boolean };
+    expect(saved.dimWarmTint).toBe(true);
+  });
+
+  it("saves nightDimLevel clamped to [10,95]", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-dim-level") as HTMLInputElement).value = "5";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { nightDimLevel?: number };
+    expect(saved.nightDimLevel).toBe(10);
+  });
+
+  it("saves fontScale clamped to [0.7,1.5]", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-font-scale") as HTMLInputElement).value = "200";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { fontScale?: number };
+    expect(saved.fontScale).toBe(1.5);
+  });
+
+  it("saves tickerSpeed clamped to [1,5]", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-ticker-speed") as HTMLInputElement).value = "0";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { tickerSpeed?: number };
+    expect(saved.tickerSpeed).toBe(1);
+  });
+
+  it("saves countdown2 fields", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-cd2-title") as HTMLInputElement).value = "יום הולדת";
+    (document.getElementById("cfg-cd2-date") as HTMLInputElement).value = "2027-03-15";
+    (document.getElementById("cfg-cd2-time") as HTMLInputElement).value = "19:00";
+    (document.getElementById("cfg-cd2-done-msg") as HTMLInputElement).value = "🎉";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as {
+      countdownCard2Title?: string;
+      countdownCard2Date?: string;
+      countdownCard2Time?: string;
+      countdownCard2DoneMsg?: string;
+    };
+    expect(saved.countdownCard2Title).toBe("יום הולדת");
+    expect(saved.countdownCard2Date).toBe("2027-03-15");
+    expect(saved.countdownCard2Time).toBe("19:00");
+    expect(saved.countdownCard2DoneMsg).toBe("🎉");
+  });
+
+  it("saves countdown3 fields", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-cd3-title") as HTMLInputElement).value = "חתונה";
+    (document.getElementById("cfg-cd3-date") as HTMLInputElement).value = "2028-06-01";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as {
+      countdownCard3Title?: string;
+      countdownCard3Date?: string;
+    };
+    expect(saved.countdownCard3Title).toBe("חתונה");
+    expect(saved.countdownCard3Date).toBe("2028-06-01");
+  });
+
+  it("saves tasksResetHour clamped to [0,23]", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-tasks-reset-hour") as HTMLInputElement).value = "25";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { tasksResetHour?: number };
+    expect(saved.tasksResetHour).toBe(23);
+  });
+
+  it("saves motivationInterval clamped to [0,60]", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-moti-interval") as HTMLInputElement).value = "99";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { motivationInterval?: number };
+    expect(saved.motivationInterval).toBe(60);
+  });
+
+  it("saves animLevel valid value", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-anim-level") as HTMLSelectElement).value = "minimal";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { animLevel?: string };
+    expect(saved.animLevel).toBe("minimal");
+  });
+
+  it("saves per-card weather/stocks/tasks booleans", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-weather-hourly") as HTMLSelectElement).value = "off";
+    (document.getElementById("cfg-stocks-group-sector") as HTMLSelectElement).value = "on";
+    (document.getElementById("cfg-tasks-show-done") as HTMLSelectElement).value = "off";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as {
+      weatherShowHourly?: boolean;
+      stocksGroupBySector?: boolean;
+      tasksShowDone?: boolean;
+    };
+    expect(saved.weatherShowHourly).toBe(false);
+    expect(saved.stocksGroupBySector).toBe(true);
+    expect(saved.tasksShowDone).toBe(false);
+  });
+
+  it("saves newsMaxItems clamped to [5,50]", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-news-max-items") as HTMLInputElement).value = "100";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { newsMaxItems?: number };
+    expect(saved.newsMaxItems).toBe(50);
+  });
+
+  it("saves alertVolume clamped to [0,100]", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-alert-volume") as HTMLInputElement).value = "150";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { alertVolume?: number };
+    expect(saved.alertVolume).toBe(100);
+  });
+
+  it("removes network-mode from LS when set to invalid value", async () => {
+    setupDOM();
+    localStorage.setItem("dash_network_mode", "worker-only");
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    const sel = document.getElementById("cfg-network-mode") as HTMLSelectElement;
+    // Force an invalid option
+    const opt = document.createElement("option");
+    opt.value = "invalid";
+    sel.appendChild(opt);
+    sel.value = "invalid";
+    document.getElementById("cfg-save-btn")!.click();
+    expect(localStorage.getItem("dash_network_mode")).toBeNull();
+  });
+
+  it("saves countdownCardStartDate", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-cd-card-start-date") as HTMLInputElement).value = "2027-01-01";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { countdownCardStartDate?: string };
+    expect(saved.countdownCardStartDate).toBe("2027-01-01");
+  });
+
+  it("saves homeCity from cfg-home-name", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-home-name") as HTMLInputElement).value = "חיפה";
+    document.getElementById("cfg-save-btn")!.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { homeCity?: string };
+    expect(saved.homeCity).toBe("חיפה");
+  });
+});
