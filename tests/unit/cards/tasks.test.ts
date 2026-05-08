@@ -2295,3 +2295,94 @@ describe("Tasks configSchema — CS-T1 ", () => {
     expect(field?.defaultValue).toBe("priority");
   });
 });
+
+// ── buildTasksPayload (semantic clipboard) ──────────────────────────────────
+
+describe("Tasks — buildTasksPayload (semantic clipboard)", () => {
+  beforeEach(() => {
+    setupDOM();
+    localStorage.clear();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("produces semantic payload when tasks exist for today", async () => {
+    const { getSemanticPayload } = await import("@/core/semantic-clipboard");
+    const chores: ChoreItem[] = [
+      { chore: "לנקות את הבית", person: "אבא" },
+      { chore: "לקנות חלב @2020-01-01", person: "אמא" },
+    ];
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    setupDOM(JSON.stringify(chores));
+    initTasksCard();
+    const payload = getSemanticPayload("tasks");
+    expect(payload).not.toBeNull();
+    expect(payload?.cardId).toBe("tasks");
+    expect(payload?.text).toContain("משימות היום");
+    expect(payload?.text).toContain("2");
+    expect(payload?.jsonLd).toHaveProperty("@type", "ItemList");
+    expect(payload?.jsonLd).toHaveProperty("numberOfItems", 2);
+  });
+
+  it("includes overdue count in text when overdue tasks exist", async () => {
+    const { getSemanticPayload } = await import("@/core/semantic-clipboard");
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const dateStr = yesterday.toISOString().split("T")[0];
+    const chores: ChoreItem[] = [
+      { chore: `משימה באיחור @${dateStr}`, person: "אבא" },
+      { chore: "משימה רגילה", person: "אמא" },
+    ];
+    setupDOM(JSON.stringify(chores));
+    initTasksCard();
+    const payload = getSemanticPayload("tasks");
+    expect(payload).not.toBeNull();
+    expect(payload?.text).toContain("באיחור");
+  });
+
+  it("returns null when no tasks configured", async () => {
+    const { getSemanticPayload, _resetSemanticProducers } = await import("@/core/semantic-clipboard");
+    _resetSemanticProducers();
+    setupDOM("[]");
+    initTasksCard();
+    const payload = getSemanticPayload("tasks");
+    expect(payload).toBeNull();
+  });
+});
+
+// ── recurring task auto-advance on check ────────────────────────────────────
+
+describe("Tasks — recurring task auto-advance", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("advances due date when recurring task is checked off", () => {
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const chores: ChoreItem[] = [
+      { chore: `משימה יומית @${dateStr}`, person: "אבא", recurrence: "daily" },
+    ];
+    setupDOM(JSON.stringify(chores));
+    renderTasksCard();
+
+    // Find and click the checkbox
+    const cb = document.querySelector<HTMLInputElement>(".tasks-cb");
+    expect(cb).not.toBeNull();
+    cb!.checked = true;
+    cb!.dispatchEvent(new Event("change"));
+
+    // After auto-advance, the chore in localStorage should have a new date
+    const stored = JSON.parse(localStorage.getItem("dash_chores") ?? "[]") as ChoreItem[];
+    const updatedChore = stored[0]?.chore ?? "";
+    // The date should be different (advanced by 1 day)
+    expect(updatedChore).toContain("@");
+    expect(updatedChore).not.toContain(`@${dateStr}`);
+  });
+});
