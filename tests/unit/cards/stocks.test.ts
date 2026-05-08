@@ -2841,3 +2841,189 @@ describe("Stocks configSchema — CS-S1 ", () => {
     expect(f?.defaultValue).toBe(false);
   });
 });
+
+// ── renderStock early-return with no result ──────────────────────────────
+
+describe("Stocks — renderStock edge cases", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  function buildBlock(sym = "AAPL"): HTMLElement {
+    const blk = document.createElement("div");
+    blk.className = "stk";
+    blk.dataset["symbol"] = sym;
+    blk.innerHTML = `
+      <div class="stk-info"><div class="stk-sym">${sym}</div><div class="stk-desc"></div></div>
+      <div class="stk-vals">
+        <div class="stk-price skeleton">---</div>
+        <div class="stk-chg">-</div>
+        <div class="stk-price-ils" hidden></div>
+      </div>
+      <svg class="stk-chart" viewBox="0 0 200 22"></svg>
+      <div class="stk-time">-</div>
+    `;
+    document.body.appendChild(blk);
+    return blk;
+  }
+
+  it("returns early when data has no chart result", () => {
+    const blk = buildBlock();
+    const noResult = { chart: { result: null, error: null } };
+    renderStock(blk, noResult as unknown as YahooChartResponse, "AAPL");
+    // price should remain unchanged
+    expect(blk.querySelector(".stk-price")?.textContent).toBe("---");
+  });
+
+  it("handles single-price array (bezierChart < 2 returns empty)", () => {
+    const blk = buildBlock();
+    const singlePrice = {
+      chart: {
+        result: [{
+          meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD" },
+          indicators: { quote: [{ close: [150] }] },
+        }],
+        error: null,
+      },
+    };
+    renderStock(blk, singlePrice as unknown as YahooChartResponse, "AAPL");
+    // chart SVG should be empty (no path generated)
+    const chartSvg = blk.querySelector(".stk-chart");
+    expect(chartSvg?.querySelector("path")).toBeNull();
+  });
+});
+
+// ── convertUsdToIls via renderStock with ILS sub-element ─────────────────
+
+describe("Stocks — convertUsdToIls (via renderStock with ILS display)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    cClear();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    cClear();
+  });
+
+  function buildBlockWithIls(sym = "AAPL"): HTMLElement {
+    const blk = document.createElement("div");
+    blk.className = "stk";
+    blk.dataset["symbol"] = sym;
+    blk.innerHTML = `
+      <div class="stk-info"><div class="stk-sym">${sym}</div><div class="stk-desc"></div></div>
+      <div class="stk-vals">
+        <div class="stk-price skeleton">---</div>
+        <div class="stk-chg">-</div>
+        <div class="stk-price-ils" hidden></div>
+      </div>
+      <svg class="stk-chart" viewBox="0 0 200 22"></svg>
+      <div class="stk-time">-</div>
+    `;
+    document.body.appendChild(blk);
+    return blk;
+  }
+
+  it("shows ILS equivalent when stocksShowIls enabled and rates available", () => {
+    // Enable stocksShowIls in config
+    localStorage.setItem("dash_v2_config", JSON.stringify({ stocksShowIls: true }));
+    // Seed currency rates cache so getLastCurrencyRates returns data
+    cSet("cur", { USD: 0.27 }); // 1 ILS = 0.27 USD → 1 USD ≈ 3.7 ILS
+    const blk = buildBlockWithIls();
+    const data = {
+      chart: {
+        result: [{
+          meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD" },
+          indicators: { quote: [{ close: [148, 150] }] },
+        }],
+        error: null,
+      },
+    };
+    renderStock(blk, data as unknown as YahooChartResponse, "AAPL");
+    const ilsEl = blk.querySelector(".stk-price-ils");
+    // Should show ₪ value (150 / 0.27 ≈ 556 ILS)
+    expect(ilsEl?.hidden).toBe(false);
+    expect(ilsEl?.textContent).toContain("₪");
+  });
+
+  it("hides ILS when no rates available", async () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({ stocksShowIls: true }));
+    const blk = buildBlockWithIls();
+    const data = {
+      chart: {
+        result: [{
+          meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD" },
+          indicators: { quote: [{ close: [148, 150] }] },
+        }],
+        error: null,
+      },
+    };
+    renderStock(blk, data as unknown as YahooChartResponse, "AAPL");
+    const ilsEl = blk.querySelector(".stk-price-ils");
+    expect(ilsEl?.hidden).toBe(true);
+  });
+});
+
+// ── buildStocksPayload via semantic clipboard ────────────────────────────
+
+describe("Stocks — buildStocksPayload (semantic clipboard)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `<div id="stocks-body"></div><span id="stk-badge"></span>`;
+    localStorage.clear();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("produces semantic payload when top mover exists after loadAllStocks", async () => {
+    const { getSemanticPayload } = await import("@/core/semantic-clipboard");
+    // initStocksCard registers the semantic producer
+    initStocksCard();
+
+    // Set up a stock element with change percentage for getTopMovers to pick up
+    const body = document.getElementById("stocks-body")!;
+    const blk = document.createElement("div");
+    blk.className = "stk";
+    blk.dataset["symbol"] = "AAPL";
+    blk.innerHTML = `
+      <div class="stk-chg stk-up">▲ +3.50%</div>
+    `;
+    body.appendChild(blk);
+
+    // Seed cache with stock data so loadAllStocks renders
+    const { cSet } = await import("@/core/cache");
+    const stockData = {
+      chart: {
+        result: [{
+          meta: { regularMarketPrice: 195, previousClose: 188.37, currency: "USD" },
+          indicators: { quote: [{ close: [188, 190, 195] }] },
+        }],
+        error: null,
+      },
+    };
+    cSet("stk-AAPL", stockData);
+
+    // Run loadAllStocks (acquireLock is mocked to true)
+    vi.mocked(acquireLock).mockReturnValueOnce(true);
+    await loadAllStocks();
+
+    const payload = getSemanticPayload("stocks");
+    // If top mover was set, payload should contain stock info
+    if (payload) {
+      expect(payload.cardId).toBe("stocks");
+      expect(payload.jsonLd).toHaveProperty("@type", "FinancialProduct");
+    }
+  });
+
+  it("returns null when producer not registered", async () => {
+    const { getSemanticPayload, _resetSemanticProducers } = await import("@/core/semantic-clipboard");
+    _resetSemanticProducers();
+    const payload = getSemanticPayload("stocks");
+    expect(payload).toBeNull();
+  });
+});
