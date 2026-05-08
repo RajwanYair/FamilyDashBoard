@@ -1510,3 +1510,104 @@ describe("Countdown configSchema — CS-CD1 ", () => {
     expect(DEFAULT_CONFIG.countdownCardRecurrence).toBe("");
   });
 });
+
+// ── S559: getCountdownTargetDate with recurrence ─────────────────────────
+
+describe("Countdown — getCountdownTargetDate with recurrence", () => {
+  it("applies annual recurrence to advance past date", () => {
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2020-06-15",
+      countdownCardTime: "18:00",
+      countdownCardRecurrence: "annual",
+    } as unknown as DashboardConfig);
+    const d = getCountdownTargetDate();
+    // Should be in a year >= current year (since 2020 is in the past)
+    expect(d.getFullYear()).toBeGreaterThanOrEqual(new Date().getFullYear());
+    expect(d.getMonth()).toBe(5); // June (0-indexed)
+    expect(d.getDate()).toBe(15);
+  });
+
+  it("applies monthly recurrence to advance past date", () => {
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2020-03-10",
+      countdownCardTime: "12:00",
+      countdownCardRecurrence: "monthly",
+    } as unknown as DashboardConfig);
+    const d = getCountdownTargetDate();
+    // Should be in the future
+    expect(d.getTime()).toBeGreaterThan(Date.now());
+    expect(d.getDate()).toBe(10);
+  });
+});
+
+// ── S559: getCountdownTitle/DoneMsg custom config values ─────────────────
+
+describe("Countdown — custom title and done message from config", () => {
+  it("returns custom title when countdownCardTitle is truthy", () => {
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardTitle: "יום הולדת לאבא",
+    } as unknown as DashboardConfig);
+    expect(getCountdownTitle()).toBe("יום הולדת לאבא");
+  });
+
+  it("returns custom done message when countdownCardDoneMsg is truthy", () => {
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDoneMsg: "🎂 יום הולדת שמח!",
+    } as unknown as DashboardConfig);
+    expect(getCountdownDoneMsg()).toBe("🎂 יום הולדת שמח!");
+  });
+});
+
+// ── S559: getNextCalEventForCountdown with incomplete events ─────────────
+
+describe("Countdown — getNextCalEventForCountdown malformed events", () => {
+  it("skips event blocks missing DTSTART", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "SUMMARY:Missing date",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "SUMMARY:Valid event",
+      `DTSTART:${new Date(Date.now() + 30 * 86400_000).toISOString().replace(/[-:]/g, "").slice(0, 15)}Z`,
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    const result = getNextCalEventForCountdown(ics, 1);
+    expect(result).not.toBeNull();
+    expect(result!.title).toBe("Valid event");
+  });
+
+  it("skips event blocks missing SUMMARY", () => {
+    const futureDate = new Date(Date.now() + 30 * 86400_000)
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .slice(0, 15) + "Z";
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      `DTSTART:${futureDate}`,
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "SUMMARY:Has both",
+      `DTSTART:${futureDate}`,
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    const result = getNextCalEventForCountdown(ics, 1);
+    expect(result).not.toBeNull();
+    expect(result!.title).toBe("Has both");
+  });
+
+  it("returns null when no valid events found", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "SUMMARY:No date",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    const result = getNextCalEventForCountdown(ics, 1);
+    expect(result).toBeNull();
+  });
+});
