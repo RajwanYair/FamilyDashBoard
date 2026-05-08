@@ -298,4 +298,122 @@ describe("getGPUInfo()", () => {
     expect(gpu.renderer).toBe("unknown");
     vi.restoreAllMocks();
   });
+
+  it("classifies low-tier GPU via renderer matching GPU_LOW_RE", () => {
+    const UNMASKED_RENDERER = 0x9246;
+    const UNMASKED_VENDOR = 0x9245;
+    const mockExt = { UNMASKED_RENDERER_WEBGL: UNMASKED_RENDERER, UNMASKED_VENDOR_WEBGL: UNMASKED_VENDOR };
+    const mockGl = {
+      getExtension: vi.fn().mockImplementation((name: string) => {
+        if (name === "WEBGL_debug_renderer_info") return mockExt;
+        if (name === "WEBGL_lose_context") return { loseContext: vi.fn() };
+        return null;
+      }),
+      getParameter: vi.fn().mockImplementation((param: number) => {
+        if (param === UNMASKED_RENDERER) return "Google SwiftShader";
+        if (param === UNMASKED_VENDOR) return "Google Inc.";
+        return null;
+      }),
+    };
+    const mockCanvas = {
+      getContext: vi.fn().mockImplementation((type: string) => {
+        if (type === "webgl") return mockGl;
+        return null;
+      }),
+    };
+    const origCreate = document.createElement.bind(document);
+    vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+      if (tag === "canvas") return mockCanvas as unknown as HTMLElement;
+      return origCreate(tag);
+    });
+    _resetHardwareProfile();
+    const gpu = getGPUInfo();
+    expect(gpu.tier).toBe("low");
+    expect(gpu.renderer).toBe("Google SwiftShader");
+    vi.restoreAllMocks();
+  });
+
+  it("classifies high-tier GPU via renderer matching GPU_HIGH_RE", () => {
+    const UNMASKED_RENDERER = 0x9246;
+    const UNMASKED_VENDOR = 0x9245;
+    const mockExt = { UNMASKED_RENDERER_WEBGL: UNMASKED_RENDERER, UNMASKED_VENDOR_WEBGL: UNMASKED_VENDOR };
+    const mockGl = {
+      getExtension: vi.fn().mockImplementation((name: string) => {
+        if (name === "WEBGL_debug_renderer_info") return mockExt;
+        if (name === "WEBGL_lose_context") return { loseContext: vi.fn() };
+        return null;
+      }),
+      getParameter: vi.fn().mockImplementation((param: number) => {
+        if (param === UNMASKED_RENDERER) return "NVIDIA GeForce RTX 4090";
+        if (param === UNMASKED_VENDOR) return "NVIDIA Corporation";
+        return null;
+      }),
+    };
+    const mockCanvas = {
+      getContext: vi.fn().mockImplementation((type: string) => {
+        if (type === "webgl") return mockGl;
+        return null;
+      }),
+    };
+    const origCreate = document.createElement.bind(document);
+    vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+      if (tag === "canvas") return mockCanvas as unknown as HTMLElement;
+      return origCreate(tag);
+    });
+    _resetHardwareProfile();
+    const gpu = getGPUInfo();
+    expect(gpu.tier).toBe("high");
+    expect(gpu.renderer).toBe("NVIDIA GeForce RTX 4090");
+    vi.restoreAllMocks();
+  });
+
+  it("classifies mid-tier GPU when renderer matches neither regex", () => {
+    const UNMASKED_RENDERER = 0x9246;
+    const UNMASKED_VENDOR = 0x9245;
+    const mockExt = { UNMASKED_RENDERER_WEBGL: UNMASKED_RENDERER, UNMASKED_VENDOR_WEBGL: UNMASKED_VENDOR };
+    const mockGl = {
+      getExtension: vi.fn().mockImplementation((name: string) => {
+        if (name === "WEBGL_debug_renderer_info") return mockExt;
+        if (name === "WEBGL_lose_context") return { loseContext: vi.fn() };
+        return null;
+      }),
+      getParameter: vi.fn().mockImplementation((param: number) => {
+        if (param === UNMASKED_RENDERER) return "Intel Iris Xe Graphics";
+        if (param === UNMASKED_VENDOR) return "Intel Inc.";
+        return null;
+      }),
+    };
+    const mockCanvas = {
+      getContext: vi.fn().mockImplementation((type: string) => {
+        if (type === "webgl") return mockGl;
+        return null;
+      }),
+    };
+    const origCreate = document.createElement.bind(document);
+    vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+      if (tag === "canvas") return mockCanvas as unknown as HTMLElement;
+      return origCreate(tag);
+    });
+    _resetHardwareProfile();
+    const gpu = getGPUInfo();
+    expect(gpu.tier).toBe("mid");
+    expect(gpu.renderer).toBe("Intel Iris Xe Graphics");
+    vi.restoreAllMocks();
+  });
+
+  it("returns 'unknown' renderer when getContext('webgl') returns null", () => {
+    const mockCanvas = {
+      getContext: vi.fn().mockReturnValue(null),
+    };
+    const origCreate = document.createElement.bind(document);
+    vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+      if (tag === "canvas") return mockCanvas as unknown as HTMLElement;
+      return origCreate(tag);
+    });
+    _resetHardwareProfile();
+    const gpu = getGPUInfo();
+    expect(gpu.renderer).toBe("unknown");
+    expect(gpu.tier).toBe("mid");
+    vi.restoreAllMocks();
+  });
 });
