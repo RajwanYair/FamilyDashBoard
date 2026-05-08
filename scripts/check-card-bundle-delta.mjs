@@ -166,3 +166,61 @@ if (groupFailed) {
 }
 
 console.log("✅  All group budgets within limits.\n");
+
+// ── Per-card source folder delta (v14.10.0) ────────────────────────────────
+// Compare cardSource sizes from bundle-trend.json baseline to current state.
+// Warns on > 5% growth, fails on > 15% growth.
+const SOURCE_DELTA_WARN = 0.05;
+const SOURCE_DELTA_FAIL = 0.15;
+const baselineSource = baseline.cardSource ?? {};
+
+if (Object.keys(baselineSource).length > 0) {
+  const SRC_CARDS_DIR = resolve(process.cwd(), "src", "cards");
+  let srcFailed = false;
+  const srcRows = [];
+
+  /** @param {string} dir @returns {number} */
+  function dirSizeKb(dir) {
+    if (!existsSync(dir)) return 0;
+    let total = 0;
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, entry.name);
+      if (entry.isDirectory()) total += dirSizeKb(p);
+      else if (entry.isFile() && (entry.name.endsWith(".ts") || entry.name.endsWith(".css")))
+        total += readFileSync(p).length;
+    }
+    return parseFloat((total / 1024).toFixed(1));
+  }
+
+  for (const [card, baseKb] of Object.entries(baselineSource)) {
+    const cardDir = join(SRC_CARDS_DIR, card);
+    const currentKb = dirSizeKb(cardDir);
+    if (currentKb === 0) continue; // card dir not found — skip
+    const delta = (currentKb - baseKb) / baseKb;
+    const deltaStr = (delta >= 0 ? "+" : "") + (delta * 100).toFixed(1) + "%";
+    const sign =
+      delta > SOURCE_DELTA_FAIL ? "❌" : delta > SOURCE_DELTA_WARN ? "⚠️ " : "✅";
+    srcRows.push(
+      `  ${sign}  ${card.padEnd(14)} ${baseKb} KB → ${currentKb} KB  (${deltaStr})`,
+    );
+    if (delta > SOURCE_DELTA_FAIL) srcFailed = true;
+  }
+
+  if (srcRows.length > 0) {
+    console.log(
+      `Per-card source folder delta vs baseline (warn >${SOURCE_DELTA_WARN * 100}%, fail >${SOURCE_DELTA_FAIL * 100}%):\n`,
+    );
+    for (const row of srcRows) console.log(row);
+    console.log("");
+
+    if (srcFailed) {
+      console.error(
+        "❌  One or more card source folders grew by more than " +
+          `${SOURCE_DELTA_FAIL * 100}%.\n` +
+          "    Investigate and refactor before releasing.\n",
+      );
+      process.exit(1);
+    }
+    console.log("✅  All card source folder deltas within threshold.\n");
+  }
+}
