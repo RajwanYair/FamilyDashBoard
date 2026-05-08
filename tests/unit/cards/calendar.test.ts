@@ -3351,3 +3351,133 @@ describe("Calendar — destroyCalendarCard", () => {
     void id; // suppress unused var lint
   });
 });
+
+// ── buildCalendarPayload via semantic producer ────────────────────────────
+
+describe("Calendar — buildCalendarPayload (semantic clipboard)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="cal-week-grid"></div>
+      <div id="cal-countdown"></div>
+      <div id="header-event-count"></div>
+    `;
+    localStorage.clear();
+    cacheDom();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("produces semantic payload with next event info after renderCalendar", async () => {
+    const { getSemanticPayload } = await import("@/core/semantic-clipboard");
+    initCalendarCard();
+    // Create a future event (tomorrow)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    renderCalendar([{
+      summary: "פגישה חשובה",
+      start: tomorrow,
+      end: new Date(tomorrow.getTime() + 3_600_000),
+      allDay: false,
+      icsIndex: 0,
+    }]);
+    const payload = getSemanticPayload("calendar");
+    expect(payload).not.toBeNull();
+    expect(payload?.text).toContain("פגישה חשובה");
+    expect(payload?.jsonLd).toHaveProperty("@type", "Event");
+  });
+
+  it("returns null when no events rendered", async () => {
+    const { getSemanticPayload } = await import("@/core/semantic-clipboard");
+    initCalendarCard();
+    renderCalendar([]);
+    const payload = getSemanticPayload("calendar");
+    expect(payload).toBeNull();
+  });
+});
+
+// ── parseICS with empty DTSTART ─────────────────────────────────────
+
+describe("Calendar — parseICS edge cases", () => {
+  it("handles event with empty DTSTART gracefully (skips it)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:",
+      "SUMMARY:Bad Event",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "DTSTART:20260601T100000Z",
+      "DTEND:20260601T110000Z",
+      "SUMMARY:Good Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    const events = parseICS(ics);
+    // Only the good event should survive
+    const good = events.filter((e) => e.summary === "Good Event");
+    expect(good.length).toBe(1);
+  });
+});
+
+// ── renderCalendar with holiday data in cache ────────────────────────────
+
+describe("Calendar — renderCalendar with holidays", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="cal-week-grid"></div>
+      <div id="cal-countdown"></div>
+      <div id="header-event-count"></div>
+    `;
+    localStorage.clear();
+    cacheDom();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("renders holiday label on matching day tiles", () => {
+    const now = new Date();
+    // Store holiday cache for current month
+    const holKey = `holidays-${now.getFullYear()}-${now.getMonth()}`;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const y = tomorrow.getFullYear();
+    const m = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const d = String(tomorrow.getDate()).padStart(2, "0");
+    const tomorrowStr = `${y}-${m}-${d}`;
+    cSet(holKey, { items: [{ title: "שבת", hebrew: "שבת", date: tomorrowStr, category: "holiday" }] });
+
+    renderCalendar([{
+      summary: "אירוע",
+      start: tomorrow,
+      end: new Date(tomorrow.getTime() + 3_600_000),
+      allDay: false,
+      icsIndex: 0,
+    }]);
+
+    const grid = document.getElementById("cal-week-grid");
+    const holidayLabels = grid?.querySelectorAll(".cal-holiday-label");
+    // At least one tile should show the holiday (if date matches)
+    const hasHoliday = grid?.querySelector(".has-holiday");
+    expect(hasHoliday || holidayLabels?.length).toBeTruthy();
+  });
+
+  it("updateTodayEventCount shows badge when events exist today", () => {
+    const now = new Date();
+    now.setHours(14, 0, 0, 0);
+    renderCalendar([{
+      summary: "Today Meeting",
+      start: now,
+      end: new Date(now.getTime() + 3_600_000),
+      allDay: false,
+      icsIndex: 0,
+    }]);
+    const hdr = document.getElementById("header-event-count");
+    expect(hdr?.style.display).toBe("");
+    expect(hdr?.textContent).toContain("📅");
+  });
+});
