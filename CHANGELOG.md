@@ -9,6 +9,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.12.0] — 2026-05-08
+
+> **7178 tests / 282 suites / 0 failures**
+
+### Testing & Quality
+
+- **tasks.ts branch coverage 80→87%** (S552): buildTasksPayload semantic clipboard + recurring auto-advance tests
+- **cron.ts branch coverage 14→100%** (S554): handleWeeklyDigest — email, KV stats, NaN, error handling
+- **Coverage threshold ratchet** (S555): 95.0/87.0/94.8/96.0 → 95.6/88.4/95.0/96.6
+
+### Infrastructure
+
+- **Per-card warn budget ratchet** (S553): 17→16 KB
+
+---
+
 ## [14.11.0] — 2026-05-08
 
 > **7135 tests / 282 suites / 0 failures**

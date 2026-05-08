@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-08 · **Shipped baseline**: v14.11.0  · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-08 · **Shipped baseline**: v14.12.0  · **Active stream**: V15-OPEN.
 >
 > **Inventory**: 7138 tests / 282 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
 > **Coverage **: 95.0 / 87.0 / 94.8 / 96.0 (statements / branches / functions / lines).
