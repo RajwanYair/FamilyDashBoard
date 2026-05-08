@@ -1103,3 +1103,75 @@ describe("Cache — fast-check property invariants (CAP1-CAP5 )", () => {
     );
   });
 });
+
+// ── S561: cGetAsync/cGetStaleAsync IDB L2 hit path (L125, L166) ──────────
+
+describe("Cache — cGetAsync IDB L2 hit (L125)", () => {
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
+  afterEach(() => {
+    cClear();
+    vi.restoreAllMocks();
+  });
+
+  it("returns fresh data from IDB when not in memory", async () => {
+    const freshTs = Date.now() - 1000; // 1s ago, well within TTL
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: "idb-value", ts: freshTs });
+    const result = await cGetAsync<string>("idb-fresh-key", 60_000);
+    expect(result).toBe("idb-value");
+  });
+
+  it("promotes IDB hit to memory for future sync access", async () => {
+    const freshTs = Date.now() - 500;
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: { x: 42 }, ts: freshTs });
+    await cGetAsync<{ x: number }>("idb-promote", 60_000);
+    // Second call should hit memory (no IDB needed)
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue(null);
+    const result = await cGetAsync<{ x: number }>("idb-promote", 60_000);
+    expect(result).toEqual({ x: 42 });
+  });
+
+  it("records cache hit and sets layer to idb on IDB hit", async () => {
+    const freshTs = Date.now() - 100;
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: "hit", ts: freshTs });
+    await cGetAsync("idb-stat", 60_000);
+    const stats = cacheStats();
+    expect(stats.hits).toBe(1);
+  });
+
+  it("skips IDB entry when TTL expired (falls through to LS)", async () => {
+    const staleTs = Date.now() - 120_000; // 2 min ago
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: "stale", ts: staleTs });
+    const result = await cGetAsync("idb-stale", 60_000); // TTL=60s
+    expect(result).toBeNull(); // no LS entry either
+  });
+});
+
+describe("Cache — cGetStaleAsync IDB L2 hit (L166)", () => {
+  beforeEach(() => {
+    cClear();
+  });
+  afterEach(() => {
+    cClear();
+    vi.restoreAllMocks();
+  });
+
+  it("returns data from IDB regardless of age when not in memory", async () => {
+    const ancientTs = Date.now() - 999_999_999;
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: "ancient-idb", ts: ancientTs });
+    const result = await cGetStaleAsync<string>("stale-idb-key");
+    expect(result).toBe("ancient-idb");
+  });
+
+  it("promotes IDB stale entry to memory", async () => {
+    const ts = Date.now() - 500_000;
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: [1, 2], ts });
+    await cGetStaleAsync<number[]>("stale-idb-promote");
+    // Verify promoted to memory
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue(null);
+    const result = await cGetStaleAsync<number[]>("stale-idb-promote");
+    expect(result).toEqual([1, 2]);
+  });
+});
