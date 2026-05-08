@@ -38,6 +38,10 @@
  *   - news-adapter.ts        : mutation score ≥ 75%
  *   - open-meteo-adapter.ts  : mutation score ≥ 75%
  *   - auto-loop-scroll.ts    : mutation score ≥ 75%
+ *   - first-run-tour.ts      : mutation score ≥ 75%
+ *   - offline-banner.ts      : mutation score ≥ 75%
+ *   - status-bar.ts          : mutation score ≥ 75%
+ *   - scroll.ts              : mutation score ≥ 75%
  *
  * (Roadmap #9): hard break threshold raised 75 → 85.
  * error-tracker, config, diag confirmed in scope. Overall gate: ≥ 85% or CI fails.
@@ -61,6 +65,7 @@
  * (v14.7.0): extended scope to news.ts, theme.ts, toast.ts, boi-adapter.ts, tase-adapter.ts.
  * (v14.8.0): extended scope to alerts-adapter.ts, calendar-adapter.ts, currency-adapter.ts, hebcal-adapter.ts, stocks-adapter.ts.
  * (v14.9.0): extended scope to nws-adapter.ts, provider-toast.ts, news-adapter.ts, open-meteo-adapter.ts, auto-loop-scroll.ts.
+ * (v14.10.0): extended scope to first-run-tour.ts, offline-banner.ts, status-bar.ts, scroll.ts.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -199,6 +204,11 @@ export default {
     "src/cards/news/news-adapter.ts",
     "src/cards/weather/open-meteo-adapter.ts",
     "src/core/auto-loop-scroll.ts",
+    // (v14.10.0): first-run-tour, offline-banner, status-bar, scroll
+    "src/core/first-run-tour.ts",
+    "src/ui/offline-banner.ts",
+    "src/ui/status-bar.ts",
+    "src/ui/scroll.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
