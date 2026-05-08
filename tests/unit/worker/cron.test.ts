@@ -27,7 +27,11 @@ vi.mock("../../../worker/src/utils/d1-reports", () => ({
   pruneOldReports: vi.fn().mockResolvedValue(undefined),
 }));
 
-import { handleScheduled, handleNextYearPreWarm } from "../../../worker/src/routes/cron";
+import {
+  handleScheduled,
+  handleNextYearPreWarm,
+  handleWeeklyDigest,
+} from "../../../worker/src/routes/cron";
 import {
   handleCurrency,
   handleHebcal,
@@ -149,5 +153,189 @@ describe("handleNextYearPreWarm", () => {
     );
     const env = makeEnv();
     await expect(handleNextYearPreWarm(env)).resolves.toBeUndefined();
+  });
+});
+
+// ── handleWeeklyDigest ────────────────────────────────────────────────────────
+
+describe("handleWeeklyDigest", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns early (no-op) when EMAIL_SEND_FROM is not set", async () => {
+    const env = makeEnv({ EMAIL_SEND_FROM: undefined, EMAIL_SEND_TO: "test@test.com" });
+    await expect(handleWeeklyDigest(env)).resolves.toBeUndefined();
+  });
+
+  it("returns early (no-op) when EMAIL_SEND_TO is not set", async () => {
+    const env = makeEnv({ EMAIL_SEND_FROM: "noreply@test.com", EMAIL_SEND_TO: undefined });
+    await expect(handleWeeklyDigest(env)).resolves.toBeUndefined();
+  });
+
+  it("logs and returns when send_email binding is absent", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const env = makeEnv({
+      EMAIL_SEND_FROM: "noreply@test.com",
+      EMAIL_SEND_TO: "user@test.com",
+      CACHE_KV: {
+        get: vi.fn().mockResolvedValue(null),
+        list: vi.fn().mockResolvedValue({ keys: [], list_complete: true, cacheStatus: null }),
+      },
+    });
+    await handleWeeklyDigest(env);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("[FDB-digest] send_email binding absent"));
+    logSpy.mockRestore();
+  });
+
+  it("sends email when send_email binding and env vars are present", async () => {
+    const sendMock = vi.fn().mockResolvedValue(undefined);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const env = makeEnv({
+      EMAIL_SEND_FROM: "noreply@test.com",
+      EMAIL_SEND_TO: "user@test.com",
+      send_email: { send: sendMock },
+      CACHE_KV: {
+        get: vi.fn().mockResolvedValue(null),
+        list: vi.fn().mockResolvedValue({ keys: [], list_complete: true, cacheStatus: null }),
+      },
+    });
+    await handleWeeklyDigest(env);
+    expect(sendMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        from: "noreply@test.com",
+        to: ["user@test.com"],
+        subject: expect.stringContaining("Weekly Digest"),
+        text: expect.stringContaining("FamilyDashBoard Weekly Digest"),
+      }),
+    );
+    logSpy.mockRestore();
+  });
+
+  it("reads error counts from KV when CACHE_KV is present", async () => {
+    const kvGet = vi.fn().mockImplementation((key: string) => {
+      if (key.startsWith("errors:count:")) return Promise.resolve("5");
+      return Promise.resolve(null);
+    });
+    const kvList = vi.fn().mockResolvedValue({
+      keys: [{ name: "errors:msg:TypeError" }, { name: "errors:msg:NetworkError" }],
+      list_complete: true,
+      cacheStatus: null,
+    });
+    const sendMock = vi.fn().mockResolvedValue(undefined);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const env = makeEnv({
+      EMAIL_SEND_FROM: "noreply@test.com",
+      EMAIL_SEND_TO: "user@test.com",
+      send_email: { send: sendMock },
+      CACHE_KV: { get: kvGet, list: kvList },
+    });
+    await handleWeeklyDigest(env);
+    expect(kvGet).toHaveBeenCalled();
+    expect(kvList).toHaveBeenCalledWith({ prefix: "errors:msg:", limit: 5 });
+    // The email body should contain the error count
+    const sentText = sendMock.mock.calls[0]?.[0]?.text as string;
+    expect(sentText).toContain("5");
+    expect(sentText).toContain("TypeError");
+    logSpy.mockRestore();
+  });
+
+  it("ignores non-numeric KV values (NaN branch)", async () => {
+    const kvGet = vi.fn().mockResolvedValue("not-a-number");
+    const kvList = vi.fn().mockResolvedValue({ keys: [], list_complete: true, cacheStatus: null });
+    const sendMock = vi.fn().mockResolvedValue(undefined);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const env = makeEnv({
+      EMAIL_SEND_FROM: "noreply@test.com",
+      EMAIL_SEND_TO: "user@test.com",
+      send_email: { send: sendMock },
+      CACHE_KV: { get: kvGet, list: kvList },
+    });
+    await handleWeeklyDigest(env);
+    // Should still send with 0 counts since values are NaN
+    const sentText = sendMock.mock.calls[0]?.[0]?.text as string;
+    expect(sentText).toContain("Client errors today (KV counter): 0");
+    expect(sentText).toContain("Client errors past 7 days: 0");
+    logSpy.mockRestore();
+  });
+
+  it("handles KV get rejection gracefully (non-fatal)", async () => {
+    const kvGet = vi.fn().mockRejectedValue(new Error("KV unavailable"));
+    const kvList = vi.fn().mockRejectedValue(new Error("KV unavailable"));
+    const sendMock = vi.fn().mockResolvedValue(undefined);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const env = makeEnv({
+      EMAIL_SEND_FROM: "noreply@test.com",
+      EMAIL_SEND_TO: "user@test.com",
+      send_email: { send: sendMock },
+      CACHE_KV: { get: kvGet, list: kvList },
+    });
+    await expect(handleWeeklyDigest(env)).resolves.toBeUndefined();
+    // Should still attempt to send email (with 0 stats)
+    expect(sendMock).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  it("logs error when send_email.send rejects", async () => {
+    const sendMock = vi.fn().mockRejectedValue(new Error("email send failed"));
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const env = makeEnv({
+      EMAIL_SEND_FROM: "noreply@test.com",
+      EMAIL_SEND_TO: "user@test.com",
+      send_email: { send: sendMock },
+      CACHE_KV: {
+        get: vi.fn().mockResolvedValue(null),
+        list: vi.fn().mockResolvedValue({ keys: [], list_complete: true, cacheStatus: null }),
+      },
+    });
+    await handleWeeklyDigest(env);
+    expect(errSpy).toHaveBeenCalledWith(
+      expect.stringContaining("[FDB-digest] Failed"),
+      expect.any(Error),
+    );
+    errSpy.mockRestore();
+  });
+
+  it("produces top errors section when topErrors exist", async () => {
+    const kvGet = vi.fn().mockResolvedValue(null);
+    const kvList = vi.fn().mockResolvedValue({
+      keys: [
+        { name: "errors:msg:FetchFailed" },
+        { name: "errors:msg:TimeoutError" },
+      ],
+      list_complete: true,
+      cacheStatus: null,
+    });
+    const sendMock = vi.fn().mockResolvedValue(undefined);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const env = makeEnv({
+      EMAIL_SEND_FROM: "noreply@test.com",
+      EMAIL_SEND_TO: "user@test.com",
+      send_email: { send: sendMock },
+      CACHE_KV: { get: kvGet, list: kvList },
+    });
+    await handleWeeklyDigest(env);
+    const sentText = sendMock.mock.calls[0]?.[0]?.text as string;
+    expect(sentText).toContain("Top errors this week");
+    expect(sentText).toContain("FetchFailed");
+    expect(sentText).toContain("TimeoutError");
+    logSpy.mockRestore();
+  });
+
+  it("handles CACHE_KV being absent (no KV stats collected)", async () => {
+    const sendMock = vi.fn().mockResolvedValue(undefined);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const env = makeEnv({
+      EMAIL_SEND_FROM: "noreply@test.com",
+      EMAIL_SEND_TO: "user@test.com",
+      send_email: { send: sendMock },
+      CACHE_KV: undefined,
+    });
+    await handleWeeklyDigest(env);
+    // Should still send email (with 0 stats)
+    expect(sendMock).toHaveBeenCalled();
+    const sentText = sendMock.mock.calls[0]?.[0]?.text as string;
+    expect(sentText).toContain("Client errors today (KV counter): 0");
+    logSpy.mockRestore();
   });
 });
