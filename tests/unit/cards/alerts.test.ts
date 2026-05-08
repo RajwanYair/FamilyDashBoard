@@ -2177,7 +2177,6 @@ describe("Alerts — buildAlertItem missing cities/threat fields", () => {
   });
 
   it("returns null when alerts[0] is undefined (sparse array — L234)", () => {
-    // eslint-disable-next-line no-sparse-arrays
     const ev = { id: "sparse", alerts: [, { cities: ["א"], threat: 1, time: NOW_SEC - 60 }] } as unknown as AlertEvent;
     const el = buildAlertItem(ev, NOW_SEC, false, false);
     expect(el).toBeNull();
