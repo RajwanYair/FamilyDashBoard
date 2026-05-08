@@ -9,6 +9,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.11.0] — 2026-05-08
+
+> **7135 tests / 282 suites / 0 failures**
+
+### Testing & Quality
+
+- **config-panel branch coverage 60→76%** (S537): collectForm deep branches — dimWarmTint, nightDimLevel, fontScale, tickerSpeed, countdown fields, tasksResetHour, motivationInterval, animLevel, per-card booleans, newsMaxItems, alertVolume, network-mode
+- **main.ts branch coverage 74→88%** (S538): English keyboard labels + MCP bridge lazy-load
+- **currency.ts branch coverage 77→81%** (S539): stale error/ok paths, fresh cache skip, scheduleCurrencyRefresh, silver negative change, trend arrows with history
+- **motivation.ts branch coverage** (S540): fav heart click handler + interval reset
+- **card-settings-dialog.ts branch coverage 78→85%** (S542): save guards (no body, no cardId) + gear button click handler + primitive config values
+- **resizer.ts branch coverage 78→80%** (S543): getComputedStyle fallback path
+- **Coverage threshold ratchet** (S544): 94.4/85.6/94.7/95.8 → 95.0/87.0/94.8/96.0
+- **Property-based tests** (S545): fast-check fuzz for config-panel collectForm (string, numeric, select inputs)
+
+### Infrastructure
+
+- **Per-card warn budget ratchet** (S541): 18→17 KB
+
+---
+
 ## [14.10.0] — 2026-05-08
 
 > **7097 tests / 281 suites / 0 failures**

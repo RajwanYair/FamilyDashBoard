@@ -1,9 +1,9 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-08 · **Shipped baseline**: v14.10.0  · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-08 · **Shipped baseline**: v14.11.0  · **Active stream**: V15-OPEN.
 >
-> **Inventory**: 7097 tests / 281 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
-> **Coverage **: 94.4 / 85.6 / 94.7 / 95.8 (statements / branches / functions / lines).
+> **Inventory**: 7138 tests / 282 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Coverage **: 95.0 / 87.0 / 94.8 / 96.0 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -172,7 +172,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | End-to-end       | Playwright                             | Keep.                                                                             |
 | Accessibility    | axe-core (CI gate)                     | Keep + manual screen-reader pass per major.                                       |
 | Performance      | Lighthouse CI (`error 0.98`)           | At final target. Consider 0.99 for v15.                                            |
-| Coverage         | 94.4/85.6/94.7/95.8                    | Ratchet path → 95/90/95/96 by v15. +0.5 % per minor release.                      |
+| Coverage         | 95.0/87.0/94.8/96.0                    | Ratchet path → 95/90/95/96 by v15. +0.5 % per minor release.                      |
 
 ### 1.8 Observability, security, supply chain
 
