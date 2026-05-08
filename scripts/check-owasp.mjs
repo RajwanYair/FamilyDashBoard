@@ -31,6 +31,7 @@
  * (v14.7.0) — added A03 srcdoc template injection, A09 PII in telemetry, A02 weak PBKDF2 iterations.
  * (v14.7.0) — added A04 Object.assign proto pollution, A06 weak hash (MD5/SHA1), A10 fetch without catch.
  * (v14.8.0) — added A03 innerHTML template literal, A05 fetch without AbortController, A02 crypto short key length, A01 window.name abuse.
+ * (v14.9.0) — added A03 createTreeWalker SHOW_ALL, A05 SharedArrayBuffer without isolation, A02 hardcoded IV/nonce, A07 Authorization header literal.
  * (v14.5.0) — added A03 insertBefore DOM injection, A05 credentials include, A07 authorization header leak,
  *             A08 importScripts dynamic URL, A09 stack trace in response, A01 location redirect from input.
  *
@@ -1129,6 +1130,44 @@ const RULES = [
     severity: "warn",
     pattern: /\bwindow\.name\b/,
     safeMarkers: ["test", "spec", "// owasp-allow:A01", "assign", "="],
+  },
+
+  // ── v14.9.0 ──────────────────────────────────────────────────────────────
+
+  // A03 — Injection: document.createTreeWalker with SHOW_ALL + innerHTML sink
+  {
+    category: "A03",
+    label: "createTreeWalker SHOW_ALL — review for DOM clobbering vectors",
+    severity: "warn",
+    pattern: /createTreeWalker\([^)]*NodeFilter\.SHOW_ALL\b/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A03", "sanitize"],
+  },
+
+  // A05 — Security Misconfiguration: SharedArrayBuffer without COOP/COEP headers
+  {
+    category: "A05",
+    label: "SharedArrayBuffer usage — requires Cross-Origin-Isolation headers",
+    severity: "warn",
+    pattern: /\bnew\s+SharedArrayBuffer\b/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A05"],
+  },
+
+  // A02 — Cryptographic Failures: hardcoded IV/nonce (must be random per encryption)
+  {
+    category: "A02",
+    label: "hardcoded IV/nonce — must be random per encryption",
+    severity: "error",
+    pattern: /\b(?:iv|nonce)\s*[:=]\s*(?:new Uint8Array\(\[|Uint8Array\.from\(\[|\[)\s*\d/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A02", "random", "getRandomValues"],
+  },
+
+  // A07 — Authentication Failures: Authorization header constructed from literal
+  {
+    category: "A07",
+    label: "Authorization header with string literal — may leak credentials in source",
+    severity: "warn",
+    pattern: /['"]Authorization['"]\s*:\s*[`'"]/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A07", "Bearer ${", "getToken", "authToken"],
   },
 ];
 
