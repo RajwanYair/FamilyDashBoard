@@ -9,6 +9,30 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.9.0] — 2026-05-08
+
+> **7085 tests / 280 suites / 0 failures** (commit `6d7b89d`)
+
+### Testing & Quality
+
+- **Fix flaky mcp-bridge test** (S517): handle `-0` → `+0` JSON semantics in deepFreezeJson property test
+- **Per-card budget ratchet** (S518): warn threshold 20→18 KB (hard-cap held at 66 KB)
+- **OWASP scanner +4 rules** (S519): createTreeWalker SHOW_ALL, SharedArrayBuffer, hardcoded IV/nonce, Authorization header literal
+- **Stryker scope +5 files** (S520): nws-adapter, provider-toast, news-adapter, open-meteo-adapter, auto-loop-scroll
+- **Property tests FP6-FP10 + OM1-OM5** (S521): classifyFetchError exhaustive categories + open-meteo-adapter shape invariants
+- **idb-cache branch coverage 88→91%** (S524): transaction-throw + openDB error/upgrade branch tests
+
+### Infrastructure
+
+- **Bundle trend --ci mode** (S522): `--ci` flag outputs JSON to stdout; CI artifact upload in workflow
+- **Module boundary core→cards rule** (S523): `src/core/*` must not import from `src/cards/*`
+
+### Documentation
+
+- **ROADMAP housekeeping** (S525): test count 7085/280, D12 tighten note, D13 warn 18 KB ratchet
+
+---
+
 ## [14.8.0] — 2026-05-18
 
 > **7067 tests / 279 suites / 0 failures**
