@@ -9,6 +9,30 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.8.0] — 2026-05-18
+
+> **7067 tests / 279 suites / 0 failures**
+
+### Testing & Quality
+
+- **Per-card budget ratchet** (Sprint 507): hard-cap 68→66 KB, warn 22→20 KB (weather 64.5 KB safe)
+- **OWASP scanner +4 rules** (Sprint 508): innerHTML template literal, fetch without AbortController, crypto short key, window.name abuse
+- **Stryker scope +5 adapter files** (Sprint 509): alerts, calendar, currency, hebcal, stocks adapters
+- **Property tests NW1-NW7 + PT1-PT6** (Sprint 510): nws-adapter (fToC, WMO codes) + provider-toast (rate-limit) fast-check suites
+- **GPU tier classification tests** (Sprint 511): low/high/mid/null-ctx WebGL mock branches in hardware.ts
+
+### Infrastructure
+
+- **check-dead-exports --json output** (Sprint 512): structured JSON for CI artifact collection
+- **check-reproducible +2 input hashes** (Sprint 513): index.html + lockfile hashes in rebuild manifest
+- **check-reproducible --verify mode** (Sprint 514): compare current inputs against saved manifest
+
+### Documentation
+
+- **ROADMAP housekeeping** (Sprint 515): test/suite/fast-check/module counts refreshed
+
+---
+
 ## [14.7.0] — 2026-05-14
 
 > **7050 tests / 277 suites / 0 failures**
