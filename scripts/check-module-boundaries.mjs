@@ -5,6 +5,7 @@
  * Enforces the architectural rule that:
  *   - `src/cards/*` MUST NOT import from `src/ui/*`
  *   - `src/ui/*`    MUST NOT import from `src/cards/*`
+ *   - `src/core/*`  MUST NOT import from `src/cards/*` (core is card-agnostic)
  *   - `src/cards/X/*` MUST NOT import from `src/cards/Y/*` (cross-card coupling)
  *
  * Cards talk to UI through the registry (`src/core/card-registry.ts`),
@@ -28,6 +29,7 @@ const SRC = join(ROOT, "src");
 const FORBIDDEN = [
   { from: /[\\/]src[\\/]cards[\\/]/, importing: /from\s+["'][^"']*[\\/]ui[\\/]/, why: "src/cards/* must not import from src/ui/*" },
   { from: /[\\/]src[\\/]ui[\\/]/, importing: /from\s+["'][^"']*[\\/]cards[\\/]/, why: "src/ui/* must not import from src/cards/*" },
+  { from: /[\\/]src[\\/]core[\\/]/, importing: /from\s+["'][^"']*[\\/]cards[\\/]/, why: "src/core/* must not import from src/cards/* (core is card-agnostic)" },
 ];
 
 /**
