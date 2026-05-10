@@ -79,6 +79,8 @@
  * (v14.16.0): extended scope to config-panel.ts, config-auto-render.ts, video-news.ts,
  *   card-auto-scroll.ts, card-settings-dialog.ts, diag-overlay.ts, document-pip.ts,
  *   layout-drag.ts, resizer.ts, ai-synthesis.ts. Total scope: 107 files.
+ * (v14.17.0): extended scope to 12 fdb-* web component files (per-card custom elements).
+ *   Total scope: 119 files.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -233,6 +235,19 @@ export default {
     "src/ui/layout-drag.ts",
     "src/ui/resizer.ts",
     "src/cards/ai-synthesis/ai-synthesis.ts",
+    // (v14.17.0): fdb-* web component per-card custom elements
+    "src/cards/weather/fdb-weather.ts",
+    "src/cards/hebrew-cal/fdb-hebrew-cal.ts",
+    "src/cards/video-news/fdb-video-news.ts",
+    "src/cards/currency/fdb-currency.ts",
+    "src/cards/tasks/fdb-tasks.ts",
+    "src/cards/countdown/fdb-countdown.ts",
+    "src/cards/system-info/fdb-system-info.ts",
+    "src/cards/alerts/fdb-alerts.ts",
+    "src/cards/calendar/fdb-calendar.ts",
+    "src/cards/stocks/fdb-stocks.ts",
+    "src/cards/motivation/fdb-motivation.ts",
+    "src/cards/news/fdb-news.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
