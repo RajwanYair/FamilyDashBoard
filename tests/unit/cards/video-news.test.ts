@@ -339,6 +339,18 @@ describe("initVideoNews DOM paths ", () => {
     });
   });
 
+  it("iframes have sandbox and restricted allow policy", () => {
+    initVideoNews(root);
+    const iframes = root.querySelectorAll<HTMLIFrameElement>(".video-news__iframe");
+    expect(iframes.length).toBeGreaterThan(0);
+    iframes.forEach((iframe) => {
+      expect(iframe.getAttribute("sandbox")).toBe("allow-scripts allow-same-origin");
+      expect(iframe.allow).toBe("autoplay; encrypted-media; picture-in-picture");
+      expect(iframe.getAttribute("referrerpolicy")).toBe("no-referrer");
+      expect(iframe.hasAttribute("allowfullscreen")).toBe(false);
+    });
+  });
+
   it("destroyVideoNews sets all iframe src to about:blank", () => {
     initVideoNews(root);
     destroy();

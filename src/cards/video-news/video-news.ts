@@ -175,10 +175,13 @@ function buildChannelTile(id: VideoChannelId): HTMLElement {
   iframe.className = "video-news__iframe";
   iframe.src = desc.url;
   iframe.title = desc.titleHe;
-  iframe.allow = "autoplay; fullscreen; encrypted-media; picture-in-picture";
-  iframe.setAttribute("allowfullscreen", "");
+  // Permissions-Policy delegation audit: restrict iframe capabilities to the
+  // minimum needed for embedded video playback. Sandbox limits scripting to
+  // same-origin and blocks forms, popups, and top-navigation.
+  iframe.allow = "autoplay; encrypted-media; picture-in-picture";
+  iframe.setAttribute("sandbox", "allow-scripts allow-same-origin");
   iframe.setAttribute("loading", "lazy");
-  iframe.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
+  iframe.setAttribute("referrerpolicy", "no-referrer");
   tile.appendChild(iframe);
 
   return tile;
