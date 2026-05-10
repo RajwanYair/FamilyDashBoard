@@ -1,9 +1,9 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-10 · **Shipped baseline**: v14.15.0 · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-10 · **Shipped baseline**: v14.16.0 · **Active stream**: V15-OPEN.
 >
-> **Inventory**: 7252 tests / 282 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
-> **Coverage**: 95.9 / 88.9 / 95.2 / 96.9 (statements / branches / functions / lines).
+> **Inventory**: 7307 tests / 287 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Coverage**: 96.0 / 89.2 / 95.2 / 97.0 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -153,7 +153,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Prettier           | 3.x                   | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML parity.                                                                                |
 | Stylelint          | 16.x                  | Keep; consider Lightning-CSS-only validation v15.                                                                                          |
 | Playwright         | 1.5x                  | Quarterly baseline regen.                                                                                                                  |
-| Stryker (mutation) | 8.x                   | Threshold ≥ 87 %; 65+ files in scope (expanded v14.7 +5: news, theme, toast, boi-adapter, tase-adapter); extend to remaining core modules. |
+| Stryker (mutation) | 8.x                   | Threshold ≥ 87 %; 107 files in scope (expanded v14.16 +10: config-panel, config-auto-render, video-news, card-auto-scroll, card-settings-dialog, diag-overlay, document-pip, layout-drag, resizer, ai-synthesis); extend to remaining core modules. |
 | `fast-check`       | 3.x                   | 79 property suites across 23 modules (v14.7: +BOI1-BOI6, +TA1-TA6 for IL provider adapters); continue expanding.                           |
 | `axe-core`         | latest                | Keep CI gate.                                                                                                                              |
 | Lighthouse CI      | latest                | At `error 0.98` cached (final target v14.x).                                                                                               |
@@ -167,7 +167,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Unit              | Vitest 4.1 + happy-dom 20           | Keep. Suite split per file.                                                                |
 | Component         | `@vitest/browser` (Playwright)      | Shipped v13.16.                                                                            |
 | Property-based    | fast-check (79 suites, ADR-054/055) | 23 modules covered; v14.7 added BOI1-BOI6, TA1-TA6 for IL provider adapters.               |
-| Mutation          | Stryker (65+ files)                 | Threshold ≥ 87 %; expanded v14.7 +5 files (news, theme, toast, boi-adapter, tase-adapter). |
+| Mutation          | Stryker (107 files)                 | Threshold ≥ 87 %; expanded v14.16 +10 files (config-panel, video-news, ai-synthesis, etc.). |
 | Visual regression | Playwright (108 baselines)          | Extend to DO-SSE alert states + maximise-FLIP.                                             |
 | End-to-end        | Playwright                          | Keep.                                                                                      |
 | Accessibility     | axe-core (CI gate)                  | Keep + manual screen-reader pass per major.                                                |
@@ -487,7 +487,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 ### 6.1 — Tooling acceleration & supply-chain tightening (v14.0, Q1 2027)
 
 - [x] D12 module-boundary linting in `tooling/eslint/`. _(v14.9.0: added `src/core/*` must-not-import `src/cards/*` rule)_
-- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** ; warn lowered 36 → **32 KB** ; hard-cap **66 KB** ; warn **30 KB** → **18 KB** (v14.9.0); hard-cap **65 KB** (v14.10.0); warn **16 KB** (v14.12.0); warn **15 KB** (v14.15.0); target warn 12 / hard 60 at v14 GA)_
+- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** ; warn lowered 36 → **32 KB** ; hard-cap **66 KB** ; warn **30 KB** → **18 KB** (v14.9.0); hard-cap **65 KB** (v14.10.0); warn **16 KB** (v14.12.0); warn **15 KB** (v14.15.0); hard-cap **64 KB**, warn **14 KB** (v14.16.0); target warn 12 / hard 60 at v14 GA)_
 - [x] D14 Renovate group rules.
 - [x] D11 `popover=` for diag toasts + bookmark menu.
 - [x] D9 CSS `if()` + `@function` migration (tokens). _(partial: `@supports`-gated `if()` + `@function` sketch added in v14.0 ; full migration pending Baseline 2026)_
