@@ -344,6 +344,23 @@ describe("Cache — getOldestCacheAgeMinutes (F6 v7.2)", () => {
     localStorage.setItem("other_key", JSON.stringify({ ts: Date.now() - 100 * 60_000 }));
     expect(getOldestCacheAgeMinutes()).toBe(0);
   });
+
+  it("returns 0 when entry ts is in the future (ageMs < 0 guard)", () => {
+    const futureTs = Date.now() + 60_000;
+    localStorage.setItem("dash_v2_future", JSON.stringify({ data: "x", ts: futureTs }));
+    expect(getOldestCacheAgeMinutes()).toBe(0);
+  });
+
+  it("ignores entries where ts is not a number", () => {
+    localStorage.setItem("dash_v2_string-ts", JSON.stringify({ data: "x", ts: "not-a-num" }));
+    expect(getOldestCacheAgeMinutes()).toBe(0);
+  });
+
+  it("ignores entries where raw is empty", () => {
+    // Directly set an empty string (will fail JSON.parse → caught)
+    localStorage.setItem("dash_v2_empty", "");
+    expect(getOldestCacheAgeMinutes()).toBe(0);
+  });
 });
 
 // ── cacheStats ─────────────────────────────────────────────────────

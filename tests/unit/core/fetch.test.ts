@@ -1134,3 +1134,208 @@ describe("fetchViaWorker — Sefaria and Coingecko routes (lines 70, 74-82)", ()
     expect(calledUrl).toContain("/api/crypto");
   });
 });
+
+// ── buildWorkerRoute branch coverage (lines 24-86) ────────────────────────
+
+describe("fetchViaWorker — buildWorkerRoute branch coverage", () => {
+  const mockOkFetch = () =>
+    vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ ok: true }),
+    } as Response);
+
+  beforeEach(() => {
+    resetWorkerEnabledCache();
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    resetWorkerBreaker();
+    resetWorkerEnabledCache();
+  });
+
+  it("returns null for an invalid URL (catch branch, L27)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const result = await fetchViaWorker("not-a-url");
+    expect(result).toBeNull();
+  });
+
+  it("routes CURRENCY_FALLBACK to /api/currency (L33 OR branch)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const result = await fetchViaWorker(API.CURRENCY_FALLBACK);
+    expect(result).toEqual({ ok: true });
+    const url = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+    expect(url).toContain("/api/currency");
+  });
+
+  it("routes WEATHER URL with lat/lon to /api/weather (L38-44)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const url = `${API.WEATHER}?latitude=32.08&longitude=34.78&hourly=temperature_2m`;
+    const result = await fetchViaWorker(url);
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
+    expect(calledUrl).toContain("/api/weather");
+    expect(calledUrl).toContain("lat=32.08");
+  });
+
+  it("returns null for WEATHER URL without lat (L43 guard)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const url = `${API.WEATHER}?longitude=34.78`;
+    const result = await fetchViaWorker(url);
+    expect(result).toBeNull();
+  });
+
+  it("routes YAHOO_CHART URL to /api/stocks (L47-50)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const result = await fetchViaWorker(`${API.YAHOO_CHART}AAPL`);
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
+    expect(calledUrl).toContain("/api/stocks");
+    expect(calledUrl).toContain("sym=AAPL");
+  });
+
+  it("returns null for YAHOO_CHART with empty symbol (L49 guard)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const result = await fetchViaWorker(API.YAHOO_CHART);
+    expect(result).toBeNull();
+  });
+
+  it("routes ALERTS URL to /api/alerts (L53)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const result = await fetchViaWorker(API.ALERTS);
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
+    expect(calledUrl).toContain("/api/alerts");
+  });
+
+  it("routes hebcal shabbat URL with geonameid (L56-59)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const url = "https://www.hebcal.com/shabbat?geonameid=293397";
+    const result = await fetchViaWorker(url);
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
+    expect(calledUrl).toContain("/api/hebcal");
+    expect(calledUrl).toContain("geonameid=293397");
+  });
+
+  it("routes hebcal shabbat URL without geonameid (L58 else)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const url = "https://www.hebcal.com/shabbat";
+    const result = await fetchViaWorker(url);
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
+    expect(calledUrl).toContain("/api/hebcal");
+    expect(calledUrl).not.toContain("geonameid");
+  });
+
+  it("routes hebcal holidays URL with year (L61-64)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const url = `${API.HEBCAL}?year=2025`;
+    const result = await fetchViaWorker(url);
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
+    expect(calledUrl).toContain("/api/hebcal/holidays");
+    expect(calledUrl).toContain("year=2025");
+  });
+
+  it("routes hebcal holidays URL without year (L63 else)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const result = await fetchViaWorker(API.HEBCAL);
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
+    expect(calledUrl).toContain("/api/hebcal/holidays");
+    expect(calledUrl).not.toContain("year");
+  });
+
+  it("returns null for unrecognised URL (L86 fallthrough)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", mockOkFetch());
+    const result = await fetchViaWorker("https://unknown-api.example.com/data");
+    expect(result).toBeNull();
+  });
+});
+
+// ── classifyFetchError ─────────────────────────────────────────────────
+
+import { classifyFetchError } from "@/core/fetch";
+
+describe("classifyFetchError", () => {
+  it('returns "timeout" for DOMException AbortError', () => {
+    const err = new DOMException("signal timed out", "AbortError");
+    expect(classifyFetchError(err)).toBe("timeout");
+  });
+
+  it('returns "network" for TypeError "failed to fetch"', () => {
+    expect(classifyFetchError(new TypeError("Failed to fetch"))).toBe("network");
+  });
+
+  it('returns "network" for TypeError "NetworkError"', () => {
+    expect(classifyFetchError(new TypeError("NetworkError when attempting"))).toBe("network");
+  });
+
+  it('returns "cors" for TypeError with "cors"', () => {
+    expect(classifyFetchError(new TypeError("CORS request blocked"))).toBe("cors");
+  });
+
+  it('returns "cors" for TypeError with "cross-origin"', () => {
+    expect(classifyFetchError(new TypeError("cross-origin request failed"))).toBe("cors");
+  });
+
+  it('returns "invalid-json" for SyntaxError', () => {
+    expect(classifyFetchError(new SyntaxError("Unexpected token"))).toBe("invalid-json");
+  });
+
+  it('returns "timeout" for generic Error with "timeout"', () => {
+    expect(classifyFetchError(new Error("Request timeout exceeded"))).toBe("timeout");
+  });
+
+  it('returns "timeout" for generic Error with "aborted"', () => {
+    expect(classifyFetchError(new Error("Request aborted by user"))).toBe("timeout");
+  });
+
+  it('returns "network" for generic Error with "network"', () => {
+    expect(classifyFetchError(new Error("Network unavailable"))).toBe("network");
+  });
+
+  it('returns "network" for generic Error with "offline"', () => {
+    expect(classifyFetchError(new Error("Browser is offline"))).toBe("network");
+  });
+
+  it('returns "http-error" for generic Error with HTTP status code', () => {
+    expect(classifyFetchError(new Error("HTTP 404 Not Found"))).toBe("http-error");
+    expect(classifyFetchError(new Error("Server returned 500"))).toBe("http-error");
+  });
+
+  it('returns "unknown" for unrecognised Error message', () => {
+    expect(classifyFetchError(new Error("Something happened"))).toBe("unknown");
+  });
+
+  it('returns "unknown" for non-Error values', () => {
+    expect(classifyFetchError("string error")).toBe("unknown");
+    expect(classifyFetchError(42)).toBe("unknown");
+    expect(classifyFetchError(null)).toBe("unknown");
+    expect(classifyFetchError(undefined)).toBe("unknown");
+  });
+
+  it('returns "unknown" for TypeError without matching keywords', () => {
+    expect(classifyFetchError(new TypeError("Cannot read property"))).toBe("unknown");
+  });
+});

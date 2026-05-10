@@ -62,10 +62,10 @@ export default defineConfig({
       include: ["src/**/*.ts"],
       exclude: ["src/vite-env.d.ts", "src/**/*.d.ts", "src/preview.ts"],
       thresholds: {
-        // Actuals: 95.91 / 88.96 / 95.30 / 96.95 — thresholds set with ~0.06% safety margin.
-        // (v14.15.0): +7 tests for diffConfigs/auditLocalStorageKeys; branches 88.92→88.96.
+        // Actuals: 95.99 / 89.16 / 95.30 / 97.00 — thresholds set with ~0.06% safety margin.
+        // (v14.16.0): +29 tests for classifyFetchError, buildWorkerRoute branches, cache edge cases.
         statements: 95.9,
-        branches: 88.9,
+        branches: 89.1,
         functions: 95.2,
         lines: 96.9,
       },
