@@ -378,6 +378,31 @@ describe("CardAutoScroll — rAF tick reaches bottom", () => {
     expect(body.scrollTop).toBe(0);
   });
 
+  it("skips tick when content shrinks below overflow threshold mid-scroll", () => {
+    const { body } = makeCard("weather", 200);
+    mod.evaluateAll();
+
+    // Frame 1: sets lastTs
+    _rafCbs[0]?.(1000);
+
+    // Content shrinks so max < OVERFLOW_THRESHOLD (24px)
+    Object.defineProperty(body, "scrollHeight", { value: 210, configurable: true });
+    Object.defineProperty(body, "clientHeight", { value: 200, configurable: true });
+    // max = 210 - 200 = 10 < 24 → should skip
+
+    _rafCbs[1]?.(1050);
+    expect(body.scrollTop).toBe(0);
+  });
+
+  it("skips first frame where dt equals zero", () => {
+    const { body } = makeCard("weather", 200);
+    mod.evaluateAll();
+
+    // Frame 1: lastTs starts null → dt = 0 → skip
+    _rafCbs[0]?.(1000);
+    expect(body.scrollTop).toBe(0);
+  });
+
   it("cancels existing resume timer when wheel fires twice", () => {
     const { body } = makeCard("weather", 200);
     mod.evaluateAll();

@@ -1383,6 +1383,82 @@ describe("Countdown — coverage: tickSecondary + initCountdownCard", () => {
     const title3 = document.getElementById("cd3-title");
     expect(title3?.textContent).toBe("טיול משפחתי");
   });
+
+  it("auto-populate slot 2 skips when holiday cache is null", () => {
+    buildMainDOM();
+    buildCd2DOM();
+    buildCd3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      ...FUTURE_CFG,
+      countdownCard2Date: undefined,
+      countdownCard3Date: "2099-01-01",
+    } as DashboardConfig);
+    // No holiday cache → holData is null → skip
+    initCountdownCard();
+    const title2 = document.getElementById("cd2-title");
+    expect(title2?.textContent).toBe("");
+  });
+
+  it("auto-populate slot 2 skips when getNextYomTov returns null", () => {
+    buildMainDOM();
+    buildCd2DOM();
+    buildCd3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      ...FUTURE_CFG,
+      countdownCard2Date: undefined,
+      countdownCard3Date: "2099-01-01",
+    } as DashboardConfig);
+    // Seed holiday cache with no future Yom Tov items (all in the past)
+    const now = new Date();
+    const holKey = `holidays-${now.getFullYear()}-${now.getMonth()}`;
+    cSet(holKey, {
+      items: [
+        { title: "Pesach", hebrew: "פסח", date: "2020-04-08", category: "holiday" },
+      ],
+    });
+    initCountdownCard();
+    const title2 = document.getElementById("cd2-title");
+    expect(title2?.textContent).toBe("");
+  });
+
+  it("auto-populate slot 3 skips when ICS cache is null", () => {
+    buildMainDOM();
+    buildCd2DOM();
+    buildCd3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      ...FUTURE_CFG,
+      countdownCard2Date: "2099-01-01",
+      countdownCard3Date: undefined,
+    } as DashboardConfig);
+    // No ICS cache → icsText is null → skip
+    initCountdownCard();
+    const title3 = document.getElementById("cd3-title");
+    expect(title3?.textContent).toBe("");
+  });
+
+  it("auto-populate slot 3 skips when ICS has no future event >= 7 days", () => {
+    buildMainDOM();
+    buildCd2DOM();
+    buildCd3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      ...FUTURE_CFG,
+      countdownCard2Date: "2099-01-01",
+      countdownCard3Date: undefined,
+    } as DashboardConfig);
+    // Seed ICS cache with only past events
+    const icsText = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20200101T180000Z",
+      "SUMMARY:ישן",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    cSet("cal-ics", icsText);
+    initCountdownCard();
+    const title3 = document.getElementById("cd3-title");
+    expect(title3?.textContent).toBe("");
+  });
 });
 
 // ── fast-check property tests (CDP1–CDP4) ─────────────────────
