@@ -9,6 +9,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.14.0] — 2026-05-10
+
+> Coverage: 95.9 / 88.9 / 95.2 / 96.9
+
+### Added
+
+- **Hebrew Calendar**: yahrzeit manager UI — `<dialog>`-based drawer for adding/removing yahrzeit entries (§3.6 H-Yahrzeit); IDB-backed list with Hebrew month picker
+- **Tasks**: subtask tree rendering with collapsible groups (§3.9 T-Subtasks) — parent rows get a toggle button; child rows render indented under `.tasks-subtask-group`
+- **News**: bookmark popover menu (D11 completion) — clicking the `🔖 מועדפים` pill opens a Popover API menu with "exit bookmark mode" and "clear all bookmarks" actions; third popover in the dashboard
+- **News**: `clearAllBookmarks()` export — wipes all bookmarked article keys + exits bookmark mode
+- **Security**: Permissions-Policy `allow=""` audit on video-news iframes — tightened delegation surface
+
+### Changed
+
+- **Coverage**: ratcheted thresholds from 95.7/88.8/95.1/96.7 → 95.9/88.9/95.2/96.9 (+0.2/+0.1/+0.1/+0.2)
+- **Bundle trend**: recorded v14.14.0 baseline — JS 109.5 KB gzip, CSS 29.0 KB gzip
+
+---
+
 ## [14.13.2] — 2026-05-10
 
 > **7228 tests / 282 suites / 0 failures** · Coverage: 95.7 / 88.8 / 95.1 / 96.7

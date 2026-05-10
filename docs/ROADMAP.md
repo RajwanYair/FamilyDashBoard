@@ -77,7 +77,7 @@ Stamps: **Keep**, **Adopt**, **Replace**, **Defer**, **Reject**, **Track**, **Su
 | Streams API for news ingestion                       | **Defer v15**              | Quantify perceived-TTI win first; current p95 already < 1.0 s cached.                        |
 | `<selectlist>` + Open UI                             | **Reject**                 | `<dialog>` is GA; Open UI experimental.                                                      |
 | Speculation Rules API (prerender)                    | **Track v14.x**            | Worth audit on the help / config panels; gate by bundle delta < 1 KB.                        |
-| `popover=` attribute                                 | **Adopt v14.x**            | Harvest for diag toasts + bookmark menu; replaces ad-hoc focus traps.                        |
+| `popover=` attribute                                 | **Adopt v14.x**            | Harvested for diag toasts + bookmark menu; 3 popovers live (D11 complete v14.14.0).          |
 | **WebNN (on-device inference)**                      | **Track v15**              | News rerank + motivation curator on-device once Chrome ships GA + falls back gracefully.     |
 | **CSS `@function`**                                  | **Track**                  | Theme tokens may compress 20% once Chrome ships GA.                                          |
 | **CSS `if()`**                                       | **Adopt v14.x**            | Replaces some token-based light-dark gymnastics.                                             |
@@ -228,7 +228,7 @@ These were not on the v1 roadmap. Each gets an ADR before the work lands.
 | D8      | **IMS / TASE / BoI native sources** for IL-geo users (`weather`, `stocks`, `currency`).                                                                                                                                             | **Adopt v14.0** (contract ADR-061 shipped v13.35.0 )                                                           | Adapter contract: provider-health emits same envelope; KV stale + provider chain unchanged.              | v14.0  |
 | D9      | **CSS `if()` + `@function`** for theme-token compression.                                                                                                                                                                           | **Adopt v14.x** (decision ADR-062 shipped v13.36.0 )                                                           | Behind progressive-enhancement; theme `@layer` keeps fallback.                                           | v14.x  |
 | D10     | **Speculation Rules API (prerender)** for help / config panels.                                                                                                                                                                     | **Adopt v14.x**                                                                                                | Bundle delta < 1 KB; gate by LHCI no-regression on TTI.                                                  | v14.x  |
-| D11     | **`popover=` attribute** for diag toasts + bookmark menu.                                                                                                                                                                           | **Adopt v14.x** (status ADR-065 shipped v13.36.0 2 popovers live, bookmark menu remains, diag toasts rejected) | Replaces ad-hoc focus traps; gate by zero a11y regression on axe.                                        | v14.x  |
+| D11     | **`popover=` attribute** for diag toasts + bookmark menu.                                                                                                                                                                           | **Adopt v14.x** (status ADR-065 shipped v13.36.0 3 popovers live — currency reload, stock detail, bookmark menu; D11 complete v14.14.0) | Replaces ad-hoc focus traps; gate by zero a11y regression on axe.                                        | v14.x  |
 | ~~D12~~ | ~~**TS module boundary linting** — disallow `src/cards/*` from importing `src/ui/*` and vice-versa beyond declared interfaces.~~ — shipped v13.35.0 (, ADR-057) as zero-dep custom script                                           |                                                                                                                |                                                                                                          |        |
 | ~~D13~~ | ~~**Per-card budget hard-cap** — each card module ≤ 6 KB gzip individually.~~ — interim 80 KB raw hard-cap shipped v13.35.0 (, ADR-057); aspirational target tracked as backlog                                                     |                                                                                                                |                                                                                                          |        |
 | ~~D14~~ | ~~**Renovate group rules: security weekly, minors monthly, majors manual.**~~ — shipped v13.34.0                                                                                                                                    |                                                                                                                |                                                                                                          |        |
@@ -344,7 +344,7 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.6 Hebrew calendar
 
-- ~~**H-Yahrzeit**~~ — IDB API shipped (`addYahrzeit` / `getUpcomingYahrzeits` / `removeYahrzeit`); manager UI deferred to v14.x.
+- ~~**H-Yahrzeit**~~ — IDB API shipped (`addYahrzeit` / `getUpcomingYahrzeits` / `removeYahrzeit`); manager UI shipped v14.14.0 (`<dialog>` drawer with Hebrew month picker).
 - **H-Temporal** · P1 · M · Mid · v14.x — Replace internal date math with TC39 Temporal. [H7 carry-over] _(gate check: gate CLOSED — same polyfill gate as CAL-Temporal; deferred to v14.x)_
 - **H-Sefaria-Audio** · P2 · M · Lo · v15 — Optional parashat haftarah audio link (gated by audio-CSP audit; OpenSiddur public dataset).
 
@@ -359,7 +359,7 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.9 Tasks
 
-- ~~**T-Subtasks**~~ — core API shipped (`addSubtask`, `getSubtasks`, `parentId` field); deeper UI integration deferred to v14.x.
+- ~~**T-Subtasks**~~ — core API shipped (`addSubtask`, `getSubtasks`, `parentId` field); subtask tree UI with collapsible groups shipped v14.14.0.
 - **T-WebRTC** · P2 · L · Mid · v14.x — WebRTC mirror sync (gated 3+; ADR-049). [T5 carry-over]
 
 ### 3.10 System-info
