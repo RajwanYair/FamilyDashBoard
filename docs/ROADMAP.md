@@ -3,7 +3,7 @@
 > **Refresh date**: 2026-05-10 · **Shipped baseline**: v14.13.2 · **Active stream**: V15-OPEN.
 >
 > **Inventory**: 7221 tests / 282 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
-> **Coverage**: 95.7 / 88.8 / 95.1 / 96.7 (statements / branches / functions / lines).
+> **Coverage**: 95.8 / 88.9 / 95.2 / 96.8 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >

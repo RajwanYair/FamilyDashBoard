@@ -9,7 +9,7 @@ TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RT
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`. Shared tooling configs are vendored into `tooling/` (tsconfig/, eslint/, vitest/).
 > **Tests**: 7228 / 282 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
-> **Coverage**: 95.7 / 88.8 / 95.1 / 96.7 (statements / branches / functions / lines) — see `vitest.config.ts`
+> **Coverage**: 95.8 / 88.9 / 95.2 / 96.8 (statements / branches / functions / lines) — see `vitest.config.ts`
 
 ## Shell / Terminal
 

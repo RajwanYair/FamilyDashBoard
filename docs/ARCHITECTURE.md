@@ -334,7 +334,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; global styles in `src/styles/`
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only; `__USE_PROXIES__=false` disables proxy chain in production builds
-15. **7228 tests / 282 suites / 0 failures** — coverage thresholds: 95.7% statements, 88.8% branches, 95.1% functions, 96.7% lines
+15. **7228 tests / 282 suites / 0 failures** — coverage thresholds: 95.8% statements, 88.9% branches, 95.2% functions, 96.8% lines
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module
