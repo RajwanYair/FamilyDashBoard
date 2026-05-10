@@ -11,7 +11,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [14.14.0] — 2026-05-10
 
-> Coverage: 95.9 / 88.9 / 95.2 / 96.9
+> **7245 tests / 282 suites / 0 failures** · Coverage: 95.9 / 88.9 / 95.2 / 96.9
 
 ### Added
 
