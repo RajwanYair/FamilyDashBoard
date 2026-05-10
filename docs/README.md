@@ -37,6 +37,14 @@ This directory is the canonical entry point for product documentation in FamilyD
 | [adding-a-card.md](adding-a-card.md) | Step-by-step guide for adding a new card                        |
 | [deployment.md](deployment.md)       | GitHub Pages and Cloudflare Pages deployment                    |
 | [data-sources.md](data-sources.md)   | All external APIs, worker routes, cache keys, and failure modes |
+| [error-viewer.md](error-viewer.md)   | Diagnostic overlay and error inspection                         |
+| [keyboard.md](keyboard.md)           | Keyboard shortcuts reference                                    |
+| [local-dev.md](local-dev.md)         | Local development setup and hot-reload guide                    |
+| [privacy.md](privacy.md)             | Privacy policy and data handling                                |
+| [screen-reader.md](screen-reader.md) | Accessibility and screen-reader support                         |
+| [security.md](security.md)           | Security architecture and threat model                          |
+| [sync.md](sync.md)                   | Configuration sync and export/import                            |
+| [video-cards.md](video-cards.md)     | Video news card architecture and CSP considerations             |
 
 ## Archived / Historical
 

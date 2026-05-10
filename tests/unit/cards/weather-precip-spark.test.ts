@@ -2,6 +2,8 @@
  * Tests for 7-day precipitation probability sparkline in weather.ts
  *
  * Isolates @/core/history with vi.mock so assertions are deterministic.
+ * Uses vi.resetModules() before each test to ensure fresh imports under
+ * isolate: false (shared fork module registry).
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
@@ -90,6 +92,7 @@ function buildDom() {
 
 describe("Weather — precipitation sparkline ", () => {
   beforeEach(() => {
+    vi.resetModules();
     localStorage.clear();
     mockAppend.mockClear();
     mockGet.mockClear();

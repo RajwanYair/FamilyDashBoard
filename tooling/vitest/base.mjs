@@ -37,5 +37,6 @@ export const sharedVitestTestConfig = {
   globals: true,
   testTimeout: 10000,
   hookTimeout: 10000,
+  teardownTimeout: 3000,
   restoreMocks: true,
 };
