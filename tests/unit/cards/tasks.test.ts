@@ -2373,3 +2373,58 @@ describe("Tasks — recurring task auto-advance", () => {
     expect(updatedChore).not.toContain(`@${dateStr}`);
   });
 });
+
+// ── Subtask tree rendering ────────────────────────────────────────────────
+
+describe("Tasks — subtask tree rendering", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("renders subtasks indented under their parent", () => {
+    const parent: ChoreItem = { person: "אבא", chore: "ניקיון הבית" };
+    const items = addSubtask(
+      `${parent.person}::${parent.chore}`,
+      { person: "אבא", chore: "מטבח" },
+      [parent],
+    );
+    setupDOM(JSON.stringify(items));
+    renderTasksCard();
+    const list = document.getElementById("tasks-list")!;
+    expect(list.querySelector(".tasks-subtask-group")).not.toBeNull();
+    expect(list.querySelector(".tasks-subtask")).not.toBeNull();
+    expect(list.querySelector(".tasks-subtask-toggle")).not.toBeNull();
+  });
+
+  it("collapse toggle hides subtasks", () => {
+    const parent: ChoreItem = { person: "אבא", chore: "ניקיון" };
+    const items = addSubtask(
+      `${parent.person}::${parent.chore}`,
+      { person: "אבא", chore: "סלון" },
+      [parent],
+    );
+    setupDOM(JSON.stringify(items));
+    renderTasksCard();
+    const toggle = document.querySelector(".tasks-subtask-toggle") as HTMLButtonElement;
+    const group = document.querySelector(".tasks-subtask-group") as HTMLElement;
+    expect(group.classList.contains("collapsed")).toBe(false);
+    toggle.click();
+    expect(group.classList.contains("collapsed")).toBe(true);
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    toggle.click();
+    expect(group.classList.contains("collapsed")).toBe(false);
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("tasks without subtasks render without subtask-group", () => {
+    const items: ChoreItem[] = [{ person: "אמא", chore: "קניות" }];
+    setupDOM(JSON.stringify(items));
+    renderTasksCard();
+    const list = document.getElementById("tasks-list")!;
+    expect(list.querySelector(".tasks-subtask-group")).toBeNull();
+    expect(list.querySelector(".tasks-subtask-toggle")).toBeNull();
+    expect(list.querySelectorAll(".tasks-row").length).toBe(1);
+  });
+});

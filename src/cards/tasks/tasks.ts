@@ -316,6 +316,143 @@ export function getTasksForToday(): ChoreItem[] {
   return chores.filter((item) => !doneMap[fingerprint(item)]);
 }
 
+function buildTaskRow(
+  item: ChoreItem,
+  fp: string,
+  doneMap: Record<string, boolean>,
+  allChores: ChoreItem[],
+): HTMLDivElement {
+  const row = document.createElement("div");
+  row.className = "tasks-row" + (doneMap[fp] ? " done" : "");
+  row.tabIndex = 0;
+  row.addEventListener("keydown", (e: KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      const next = row.nextElementSibling as HTMLElement | null;
+      next?.focus();
+      e.preventDefault();
+    } else if (e.key === "ArrowUp") {
+      const prev = row.previousElementSibling as HTMLElement | null;
+      prev?.focus();
+      e.preventDefault();
+    }
+  });
+
+  const cb = document.createElement("input");
+  cb.type = "checkbox";
+  cb.className = "tasks-cb";
+  cb.checked = !!doneMap[fp];
+  cb.title = cb.checked ? "סמן כלא בוצע" : "סמן כבוצע";
+  cb.addEventListener("change", () => {
+    const map = loadDoneMap();
+    map[fp] = cb.checked;
+    saveDoneMap(map);
+    row.classList.toggle("done", cb.checked);
+    const total2 = allChores.length;
+    const pending2 = allChores.filter((c) => !map[fingerprint(c)]).length;
+    const done2 = total2 - pending2;
+    const badge = document.getElementById("tasks-pending-badge");
+    const doneMsg = document.getElementById("tasks-all-done-msg");
+    if (badge) {
+      const pct2 = total2 > 0 ? Math.round((done2 / total2) * 100) : 0;
+      badge.textContent = `${done2} / ${total2} ✓ (${pct2}%)`;
+      badge.style.display = total2 > 0 ? "" : "none";
+    }
+    if (doneMsg) {
+      doneMsg.style.display = pending2 === 0 ? "" : "none";
+    }
+    diagLog(`FDB-048: [tasks] ${fp} = ${String(cb.checked)}`);
+    if (cb.checked && item.recurrence) {
+      const newDate = advanceRecurringDueDate(item);
+      if (newDate !== null) {
+        const currentChores = loadChores();
+        const { dueDate: oldDate } = parseTaskDueDate(item.chore);
+        const updatedChores = currentChores.map((c) => {
+          if (fingerprint(c) !== fp) return c;
+          const newChore = oldDate
+            ? c.chore.replace(/@\d{4}-\d{2}-\d{2}$/u, `@${newDate}`)
+            : c.chore + ` @${newDate}`;
+          return { ...c, chore: newChore };
+        });
+        try {
+          localStorage.setItem(LS_CHORES, JSON.stringify(updatedChores));
+        } catch {
+          /* quota */
+        }
+        const freshMap = loadDoneMap();
+        delete freshMap[fp];
+        saveDoneMap(freshMap);
+        renderTasksCard();
+      }
+    }
+  });
+
+  const label = document.createElement("span");
+  label.className = "tasks-chore";
+  const { priority, cleanText: afterPri } = parseTaskPriority(item.chore);
+  const { dueDate, cleanText } = parseTaskDueDate(afterPri);
+  label.textContent = cleanText;
+
+  if (priority !== "none") {
+    const pBadge = document.createElement("span");
+    pBadge.className = `tasks-priority tasks-pri-${priority}`;
+    pBadge.style.color = PRIORITY_COLORS[priority];
+    pBadge.textContent = priority === "high" ? "🔴" : priority === "medium" ? "🟡" : "🔵";
+    pBadge.title =
+      priority === "high"
+        ? "עדיפות גבוהה"
+        : priority === "medium"
+          ? "עדיפות בינונית"
+          : "עדיפות נמוכה";
+    row.appendChild(pBadge);
+  }
+
+  if (dueDate) {
+    const overdue = isOverdue(dueDate);
+    const dueToday = !overdue && isDueToday(dueDate);
+    const dueWeek = !overdue && !dueToday && isDueThisWeek(dueDate);
+    if (overdue) row.classList.add("overdue");
+    if (dueToday) row.classList.add("due-today");
+    if (dueWeek) row.classList.add("due-week");
+    const chip = document.createElement("span");
+    chip.className = `tasks-due${overdue ? " tasks-due-overdue" : dueToday ? " tasks-due-today" : dueWeek ? " tasks-due-week" : ""}`;
+    chip.textContent = `📅 ${formatTaskDueDate(dueDate)}`;
+    row.appendChild(chip);
+  }
+
+  if (item.tags && item.tags.length > 0) {
+    const tagWrap = document.createElement("span");
+    tagWrap.className = "tasks-tags";
+    const maxTags = Math.min(item.tags.length, 6);
+    for (let ti = 0; ti < maxTags; ti++) {
+      const tag = item.tags[ti];
+      if (!tag) continue;
+      const tagChip = document.createElement("span");
+      tagChip.className = "tasks-tag";
+      tagChip.textContent = tag;
+      tagChip.title = tag;
+      tagWrap.appendChild(tagChip);
+    }
+    row.appendChild(tagWrap);
+  }
+
+  if (item.recurrence) {
+    const recBadge = document.createElement("span");
+    recBadge.className = `tasks-recurrence tasks-recur-${item.recurrence}`;
+    const RECUR_ICONS: Record<string, string> = {
+      daily: "🔄 יומי",
+      weekly: "📅 שבועי",
+      monthly: "📆 חודשי",
+      yearly: "📅 שנתי",
+    };
+    recBadge.textContent = RECUR_ICONS[item.recurrence] ?? "🔄";
+    recBadge.title = `משימה חוזרת: ${item.recurrence}`;
+    row.appendChild(recBadge);
+  }
+
+  row.append(cb, label);
+  return row;
+}
+
 export function renderTasksCard(): void {
   const container = document.getElementById("tasks-list");
   if (!container) return;
@@ -358,146 +495,50 @@ export function renderTasksCard(): void {
       fragment.appendChild(personHdr);
     }
 
-    for (const item of items) {
+    // Separate top-level items from subtasks
+    const topLevel = items.filter((i) => !i.parentId);
+    const subtaskMap = new Map<string, ChoreItem[]>();
+    for (const i of items) {
+      if (!i.parentId) continue;
+      const list = subtaskMap.get(i.parentId) ?? [];
+      list.push(i);
+      subtaskMap.set(i.parentId, list);
+    }
+
+    for (const item of topLevel) {
       const fp = fingerprint(item);
-      const row = document.createElement("div");
-      row.className = "tasks-row" + (doneMap[fp] ? " done" : "");
-      row.tabIndex = 0;
-      row.addEventListener("keydown", (e: KeyboardEvent) => {
-        if (e.key === "ArrowDown") {
-          const next = row.nextElementSibling as HTMLElement | null;
-          next?.focus();
-          e.preventDefault();
-        } else if (e.key === "ArrowUp") {
-          const prev = row.previousElementSibling as HTMLElement | null;
-          prev?.focus();
-          e.preventDefault();
-        }
-      });
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.className = "tasks-cb";
-      cb.checked = !!doneMap[fp];
-      cb.title = cb.checked ? "סמן כלא בוצע" : "סמן כבוצע";
-      cb.addEventListener("change", () => {
-        const map = loadDoneMap();
-        map[fp] = cb.checked;
-        saveDoneMap(map);
-        row.classList.toggle("done", cb.checked);
-        // Refresh N/M badge count and all-done message (uses full chores list)
-        const total2 = chores.length;
-        const pending2 = chores.filter((c) => !map[fingerprint(c)]).length;
-        const done2 = total2 - pending2;
-        const badge = document.getElementById("tasks-pending-badge");
-        const doneMsg = document.getElementById("tasks-all-done-msg");
-        if (badge) {
-          const pct2 = total2 > 0 ? Math.round((done2 / total2) * 100) : 0;
-          badge.textContent = `${done2} / ${total2} ✓ (${pct2}%)`;
-          badge.style.display = total2 > 0 ? "" : "none";
-        }
-        if (doneMsg) {
-          doneMsg.style.display = pending2 === 0 ? "" : "none";
-        }
-        diagLog(`FDB-048: [tasks] ${fp} = ${String(cb.checked)}`);
-        // auto-advance due date for recurring tasks when marked done
-        if (cb.checked && item.recurrence) {
-          const newDate = advanceRecurringDueDate(item);
-          if (newDate !== null) {
-            const allChores = loadChores();
-            const { dueDate: oldDate } = parseTaskDueDate(item.chore);
-            const updatedChores = allChores.map((c) => {
-              if (fingerprint(c) !== fp) return c;
-              const newChore = oldDate
-                ? c.chore.replace(/@\d{4}-\d{2}-\d{2}$/u, `@${newDate}`)
-                : c.chore + ` @${newDate}`;
-              return { ...c, chore: newChore };
-            });
-            try {
-              localStorage.setItem(LS_CHORES, JSON.stringify(updatedChores));
-            } catch {
-              /* quota */
-            }
-            // Clear old fingerprint's done state so re-render picks up fresh task
-            const freshMap = loadDoneMap();
-            delete freshMap[fp];
-            saveDoneMap(freshMap);
-            renderTasksCard();
-          }
-        }
-      });
-
-      const label = document.createElement("span");
-      label.className = "tasks-chore";
-      // Parse priority + due date from the chore text
-      const { priority, cleanText: afterPri } = parseTaskPriority(item.chore);
-      const { dueDate, cleanText } = parseTaskDueDate(afterPri);
-      label.textContent = cleanText;
-
-      // Priority badge
-      if (priority !== "none") {
-        const badge = document.createElement("span");
-        badge.className = `tasks-priority tasks-pri-${priority}`;
-        badge.style.color = PRIORITY_COLORS[priority];
-        // emoji icons for better TV readability
-        badge.textContent = priority === "high" ? "🔴" : priority === "medium" ? "🟡" : "🔵";
-        badge.title =
-          priority === "high"
-            ? "עדיפות גבוהה"
-            : priority === "medium"
-              ? "עדיפות בינונית"
-              : "עדיפות נמוכה";
-        row.appendChild(badge);
-      }
-
-      // Due date chip + overdue / due-today / due-week class
-      if (dueDate) {
-        const overdue = isOverdue(dueDate);
-        const dueToday = !overdue && isDueToday(dueDate);
-        const dueWeek = !overdue && !dueToday && isDueThisWeek(dueDate);
-        if (overdue) row.classList.add("overdue");
-        if (dueToday) row.classList.add("due-today");
-        if (dueWeek) row.classList.add("due-week");
-        const chip = document.createElement("span");
-        chip.className = `tasks-due${overdue ? " tasks-due-overdue" : dueToday ? " tasks-due-today" : dueWeek ? " tasks-due-week" : ""}`;
-        chip.textContent = `📅 ${formatTaskDueDate(dueDate)}`;
-        row.appendChild(chip);
-      }
-
-      // Tag chips (max 6)
-      if (item.tags && item.tags.length > 0) {
-        const tagWrap = document.createElement("span");
-        tagWrap.className = "tasks-tags";
-        const maxTags = Math.min(item.tags.length, 6);
-        for (let ti = 0; ti < maxTags; ti++) {
-          const tag = item.tags[ti];
-          if (!tag) continue;
-          const chip = document.createElement("span");
-          chip.className = "tasks-tag";
-          chip.textContent = tag;
-          chip.title = tag;
-          tagWrap.appendChild(chip);
-        }
-        row.appendChild(tagWrap);
-      }
-
-      // Recurrence badge (daily/weekly/monthly)
-      if (item.recurrence) {
-        const recBadge = document.createElement("span");
-        recBadge.className = `tasks-recurrence tasks-recur-${item.recurrence}`;
-        const RECUR_ICONS: Record<string, string> = {
-          daily: "🔄 יומי",
-          weekly: "📅 שבועי",
-          monthly: "📆 חודשי",
-          yearly: "📅 שנתי",
-        };
-        recBadge.textContent = RECUR_ICONS[item.recurrence] ?? "🔄";
-        recBadge.title = `משימה חוזרת: ${item.recurrence}`;
-        row.appendChild(recBadge);
-      }
-
-      row.append(cb, label);
+      const children = subtaskMap.get(fp) ?? [];
+      const row = buildTaskRow(item, fp, doneMap, chores);
       fragment.appendChild(row);
+
+      // Render subtasks indented under parent
+      if (children.length > 0) {
+        const subGroup = document.createElement("div");
+        subGroup.className = "tasks-subtask-group";
+        for (const sub of children) {
+          const sfp = fingerprint(sub);
+          const subRow = buildTaskRow(sub, sfp, doneMap, chores);
+          subRow.classList.add("tasks-subtask");
+          subGroup.appendChild(subRow);
+        }
+
+        // Collapse toggle on parent row
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "tasks-subtask-toggle";
+        toggle.textContent = "▾";
+        toggle.title = "הצג/הסתר משימות משנה";
+        toggle.setAttribute("aria-label", "הצג/הסתר משימות משנה");
+        toggle.setAttribute("aria-expanded", "true");
+        toggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const collapsed = subGroup.classList.toggle("collapsed");
+          toggle.textContent = collapsed ? "▸" : "▾";
+          toggle.setAttribute("aria-expanded", String(!collapsed));
+        });
+        row.appendChild(toggle);
+        fragment.appendChild(subGroup);
+      }
     }
   }
 

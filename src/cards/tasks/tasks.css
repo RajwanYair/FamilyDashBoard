@@ -264,3 +264,35 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ── Subtask tree ── */
+
+.tasks-subtask-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-inline-start: 1.2rem;
+  border-inline-start: 2px solid color-mix(in sRGB, var(--accent) 30%, transparent);
+  margin-block: 2px;
+}
+.tasks-subtask-group.collapsed {
+  display: none;
+}
+
+.tasks-subtask {
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+.tasks-subtask-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0 4px;
+  margin-inline-start: auto;
+}
+.tasks-subtask-toggle:hover {
+  color: var(--accent);
+}
