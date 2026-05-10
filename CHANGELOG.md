@@ -9,6 +9,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.17.0] — 2026-05-10
+
+> **7331 tests / 287 suites / 0 failures** · Coverage: 96.4 / 89.5 / 95.7 / 97.4
+
+- **Fix flaky idb-store-props**: replaced `vi.stubGlobal("indexedDB")` with per-test instance stubs to eliminate race conditions in property tests
+- **config-panel branch coverage**: +14 tests for `createControlRow`, `renderSection`, `mountPanel` uncovered branches (73.9→83.3%)
+- **feeds.ts branch coverage**: +9 tests covering embedding dedup, alerts validation, calendar stale KV, Finnhub fallthrough, crypto schema (76.5→92.9%)
+- **Stryker scope expansion**: +12 fdb-* web component files added to mutate scope (107→119 total)
+- **OWASP audit**: +6 new rules — `Range.createContextualFragment`, `no-cors` fetch, AES-ECB, hardcoded API keys, `JSON.parse` prototype pollution, EventSource SSRF (121→127 total)
+- **D13 per-card budget ratchet**: warn 14→13 KB (hard-cap held at 64 KB)
+- **main.ts + perf.ts branch coverage**: +7 tests for cache hydration, LCP loadTime fallback, dimWarmTint, markStartupComplete idempotence (main 87.8→89.9%, perf 92.2→93.5%)
+- **Coverage threshold ratchet**: statements 96.0→96.4, branches 89.2→89.5, functions 95.2→95.7, lines 97.0→97.4
+
+---
+
 ## [14.16.0] — 2026-05-18
 
 > **7307 tests / 287 suites / 0 failures** · Coverage: 96.0 / 89.2 / 95.2 / 97.0 (commit `15ce535`)

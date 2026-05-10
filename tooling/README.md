@@ -28,7 +28,7 @@ Each project extends these shared configs and adds only project-specific overrid
 | commitlint.base.cjs | ✗            | ✅ exists                    | vendor into FDB     |
 | vite.base.ts        | ✗            | ✅ exists                    | vendor into FDB     |
 
-**Next action**: Copy FDB-enriched configs → parent, then vendor remaining parent configs into FDB. Target: v14.16.0.
+**Next action**: Copy FDB-enriched configs → parent, then vendor remaining parent configs into FDB. Target: v14.17.0.
 
 ---
 

@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-10 · **Shipped baseline**: v14.16.0 · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-10 · **Shipped baseline**: v14.17.0 · **Active stream**: V15-OPEN.
 >
 > **Inventory**: 7331 tests / 287 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
 > **Coverage**: 96.4 / 89.5 / 95.7 / 97.4 (statements / branches / functions / lines).
@@ -487,7 +487,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 ### 6.1 — Tooling acceleration & supply-chain tightening (v14.0, Q1 2027)
 
 - [x] D12 module-boundary linting in `tooling/eslint/`. _(v14.9.0: added `src/core/*` must-not-import `src/cards/*` rule)_
-- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** ; warn lowered 36 → **32 KB** ; hard-cap **66 KB** ; warn **30 KB** → **18 KB** (v14.9.0); hard-cap **65 KB** (v14.10.0); warn **16 KB** (v14.12.0); warn **15 KB** (v14.15.0); hard-cap **64 KB**, warn **14 KB** (v14.16.0); target warn 12 / hard 60 at v14 GA)_
+- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** ; warn lowered 36 → **32 KB** ; hard-cap **66 KB** ; warn **30 KB** → **18 KB** (v14.9.0); hard-cap **65 KB** (v14.10.0); warn **16 KB** (v14.12.0); warn **15 KB** (v14.15.0); hard-cap **64 KB**, warn **14 KB** (v14.16.0); warn **13 KB** (v14.17.0); target warn 12 / hard 60 at v14 GA)_
 - [x] D14 Renovate group rules.
 - [x] D11 `popover=` for diag toasts + bookmark menu.
 - [x] D9 CSS `if()` + `@function` migration (tokens). _(partial: `@supports`-gated `if()` + `@function` sketch added in v14.0 ; full migration pending Baseline 2026)_
