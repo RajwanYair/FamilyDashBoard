@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/keyboard.ts 
+ * fast-check property tests — src/ui/keyboard.ts
  *
  * Properties under test:
  *  KB1. registerKey: adds an entry to getKeyboardActions()
@@ -49,15 +49,12 @@ describe("keyboard — KB1: registerKey adds entry", () => {
 describe("keyboard — KB2: key is lowercased", () => {
   it("registered key is always lowercase", () => {
     fc.assert(
-      fc.property(
-        fc.string({ minLength: 1, maxLength: 1 }),
-        (key) => {
-          registerKey(key, "test", () => {});
-          const actions = getKeyboardActions();
-          const last = actions[actions.length - 1];
-          expect(last.key).toBe(key.toLowerCase());
-        },
-      ),
+      fc.property(fc.string({ minLength: 1, maxLength: 1 }), (key) => {
+        registerKey(key, "test", () => {});
+        const actions = getKeyboardActions();
+        const last = actions[actions.length - 1];
+        expect(last.key).toBe(key.toLowerCase());
+      }),
       { numRuns: 30 },
     );
   });
@@ -68,16 +65,13 @@ describe("keyboard — KB2: key is lowercased", () => {
 describe("keyboard — KB3: reflects all registered", () => {
   it("N registrations → N entries (cumulative within test)", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 1, max: 5 }),
-        (count) => {
-          const baseLenForThisRun = getKeyboardActions().length;
-          for (let i = 0; i < count; i++) {
-            registerKey(String(i), `desc-${i}`, () => {});
-          }
-          expect(getKeyboardActions().length).toBe(baseLenForThisRun + count);
-        },
-      ),
+      fc.property(fc.integer({ min: 1, max: 5 }), (count) => {
+        const baseLenForThisRun = getKeyboardActions().length;
+        for (let i = 0; i < count; i++) {
+          registerKey(String(i), `desc-${i}`, () => {});
+        }
+        expect(getKeyboardActions().length).toBe(baseLenForThisRun + count);
+      }),
       { numRuns: 10 },
     );
   });
@@ -88,15 +82,12 @@ describe("keyboard — KB3: reflects all registered", () => {
 describe("keyboard — KB4: description preserved", () => {
   it("description is stored verbatim", () => {
     fc.assert(
-      fc.property(
-        fc.string({ minLength: 1, maxLength: 50 }),
-        (desc) => {
-          registerKey("x", desc, () => {});
-          const actions = getKeyboardActions();
-          const last = actions[actions.length - 1];
-          expect(last.description).toBe(desc);
-        },
-      ),
+      fc.property(fc.string({ minLength: 1, maxLength: 50 }), (desc) => {
+        registerKey("x", desc, () => {});
+        const actions = getKeyboardActions();
+        const last = actions[actions.length - 1];
+        expect(last.description).toBe(desc);
+      }),
       { numRuns: 20 },
     );
   });

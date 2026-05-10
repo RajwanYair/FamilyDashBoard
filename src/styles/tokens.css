@@ -120,34 +120,34 @@
   inherits: true;
   initial-value: rgba(200, 144, 144, 0.18);
 }
-  :root {
-    /* F11: light-dark() token adoption — supports both dark (default) and
+:root {
+  /* F11: light-dark() token adoption — supports both dark (default) and
      * system light mode when no explicit theme is selected.
      * Explicit body.theme-* classes lock to color-scheme: dark in themes.css.
      *
      * light-dark() spec: first arg = light scheme, second arg = dark scheme.
      * So light-dark(LIGHT_VALUE, DARK_VALUE). Smart contrast: text auto-flips
      * to black on light backgrounds and white on dark backgrounds. */
-    color-scheme: dark light;
-    /* ── Colors: System Light / Warm Dark (default) ── */
-    --bg-primary: light-dark(#f5f0ea, #1a1410);
-    --bg-card: light-dark(rgba(255, 252, 248, 0.96), rgba(42, 34, 26, 0.82));
-    --bg-card-header: light-dark(rgba(244, 238, 232, 0.98), rgba(56, 46, 36, 0.88));
-    --bg-card-inner: light-dark(rgba(248, 244, 240, 0.8), rgba(48, 40, 30, 0.55));
-    --bg-card-hover: light-dark(rgba(235, 230, 224, 0.98), rgba(66, 54, 42, 0.65));
-    --accent: light-dark(#8a6020, #c8a87a);
-    --accent-bright: light-dark(#704a10, #d9bc9e);
-    --accent-glow: rgba(200, 168, 122, 0.18);
-    --accent-border: rgba(200, 168, 122, 0.2);
-    --text-primary: light-dark(#1c1008, #faf5ef);
-    --text-secondary: light-dark(#4a3d30, #c4b8a8);
-    --text-muted: light-dark(#6a5e50, #8a7e70);
-    --positive: light-dark(#3a7d44, #86c490);
-    --positive-glow: rgba(134, 196, 144, 0.18);
-    --negative: light-dark(#8b2020, #c89090);
-    --negative-glow: rgba(200, 144, 144, 0.18);
-    --warning: light-dark(#8a6520, #d4b870);
-    /* Semantic contrast tokens — for text/icons placed on colored or
+  color-scheme: dark light;
+  /* ── Colors: System Light / Warm Dark (default) ── */
+  --bg-primary: light-dark(#f5f0ea, #1a1410);
+  --bg-card: light-dark(rgba(255, 252, 248, 0.96), rgba(42, 34, 26, 0.82));
+  --bg-card-header: light-dark(rgba(244, 238, 232, 0.98), rgba(56, 46, 36, 0.88));
+  --bg-card-inner: light-dark(rgba(248, 244, 240, 0.8), rgba(48, 40, 30, 0.55));
+  --bg-card-hover: light-dark(rgba(235, 230, 224, 0.98), rgba(66, 54, 42, 0.65));
+  --accent: light-dark(#8a6020, #c8a87a);
+  --accent-bright: light-dark(#704a10, #d9bc9e);
+  --accent-glow: rgba(200, 168, 122, 0.18);
+  --accent-border: rgba(200, 168, 122, 0.2);
+  --text-primary: light-dark(#1c1008, #faf5ef);
+  --text-secondary: light-dark(#4a3d30, #c4b8a8);
+  --text-muted: light-dark(#6a5e50, #8a7e70);
+  --positive: light-dark(#3a7d44, #86c490);
+  --positive-glow: rgba(134, 196, 144, 0.18);
+  --negative: light-dark(#8b2020, #c89090);
+  --negative-glow: rgba(200, 144, 144, 0.18);
+  --warning: light-dark(#8a6520, #d4b870);
+  /* Semantic contrast tokens — for text/icons placed on colored or
      * always-dark backgrounds (badges, accents, video panels, dimmer overlay,
      * skip-link). These are intentionally not light-dark()-flipping because
      * the underlying surface is itself non-flipping. Use these instead of
@@ -155,100 +155,100 @@
      *   --text-on-accent: text on golden/cyan/amber accent surfaces (light)
      *   --text-on-warn:   text on red/negative/red-gradient surfaces (dark)
      *   --text-on-dark:   generic white text on always-dark overlays */
-    --text-on-accent: #000;
-    --text-on-warn: #fff;
-    --text-on-dark: #fff;
-    --purple: #b8aad4;
-    --pink: #d4a4b4;
-    --orange: #c8a880;
-    --cyan: #82bec8;
-    --border-radius: 14px;
-    --card-border: 1px solid rgba(200, 168, 122, 0.15);
-    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-    --bg-gradient-1: rgba(200, 168, 122, 0.05);
-    --bg-gradient-2: rgba(134, 196, 144, 0.04);
-    --bg-gradient-3: rgba(184, 170, 212, 0.04);
-    --news-font-scale: 1;
+  --text-on-accent: #000;
+  --text-on-warn: #fff;
+  --text-on-dark: #fff;
+  --purple: #b8aad4;
+  --pink: #d4a4b4;
+  --orange: #c8a880;
+  --cyan: #82bec8;
+  --border-radius: 14px;
+  --card-border: 1px solid rgba(200, 168, 122, 0.15);
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --bg-gradient-1: rgba(200, 168, 122, 0.05);
+  --bg-gradient-2: rgba(134, 196, 144, 0.04);
+  --bg-gradient-3: rgba(184, 170, 212, 0.04);
+  --news-font-scale: 1;
 
-    /* ── Night Dimmer ── */
-    --dimmer-warm-color: #8b4513;
+  /* ── Night Dimmer ── */
+  --dimmer-warm-color: #8b4513;
 
-    /* ── Spacing Scale ── */
-    --space-1: 4px;
-    --space-2: 8px;
-    --space-3: 12px;
-    --space-4: 16px;
-    --space-5: 24px;
-    --space-6: 32px;
-    --space-7: 48px;
-    --space-8: 64px;
+  /* ── Spacing Scale ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
 
-    /* ── Radius Scale ── */
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
-    --radius-xl: 20px;
+  /* ── Radius Scale ── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
 
-    /* ── Shadow Scale ── */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.18);
-    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.35);
-    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+  /* ── Shadow Scale ── */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
 
-    /* ── Fluid Typography (R1.4) ── */
-    --text-xs: clamp(0.65rem, 0.6rem + 0.25vw, 0.75rem);
-    --text-sm: clamp(0.75rem, 0.7rem + 0.3vw, 0.88rem);
-    --text-base: clamp(0.88rem, 0.8rem + 0.4vw, 1.05rem);
-    --text-lg: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
-    --text-xl: clamp(1.15rem, 1rem + 0.7vw, 1.5rem);
-    --text-2xl: clamp(1.4rem, 1.2rem + 1vw, 2rem);
-    --text-3xl: clamp(1.8rem, 1.5rem + 1.5vw, 2.8rem);
-    --text-4xl: clamp(2.2rem, 1.8rem + 2vw, 3.6rem);
-    --font-body: "Segoe UI", tahoma, arial, "Noto Sans Hebrew", sans-serif;
-    --font-mono: "Consolas", "Courier New", monospace;
+  /* ── Fluid Typography (R1.4) ── */
+  --text-xs: clamp(0.65rem, 0.6rem + 0.25vw, 0.75rem);
+  --text-sm: clamp(0.75rem, 0.7rem + 0.3vw, 0.88rem);
+  --text-base: clamp(0.88rem, 0.8rem + 0.4vw, 1.05rem);
+  --text-lg: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  --text-xl: clamp(1.15rem, 1rem + 0.7vw, 1.5rem);
+  --text-2xl: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+  --text-3xl: clamp(1.8rem, 1.5rem + 1.5vw, 2.8rem);
+  --text-4xl: clamp(2.2rem, 1.8rem + 2vw, 3.6rem);
+  --font-body: "Segoe UI", tahoma, arial, "Noto Sans Hebrew", sans-serif;
+  --font-mono: "Consolas", "Courier New", monospace;
 
-    /* ── Grid Layout (R1.6) ── */
-    --grid-cols: 38fr 33fr 29fr;
-    --grid-gap: 8px;
-    --container-pad: 10px;
-    --card-min-height: 160px; /* minimum height for TV readability at 3 m distance */
+  /* ── Grid Layout (R1.6) ── */
+  --grid-cols: 38fr 33fr 29fr;
+  --grid-gap: 8px;
+  --container-pad: 10px;
+  --card-min-height: 160px; /* minimum height for TV readability at 3 m distance */
 
-    /* ── Animation Tokens (R1.9) ── */
-    --duration-fast: 0.15s;
-    --duration-normal: 0.3s;
-    --duration-slow: 0.6s;
-    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  /* ── Animation Tokens (R1.9) ── */
+  --duration-fast: 0.15s;
+  --duration-normal: 0.3s;
+  --duration-slow: 0.6s;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* ── Derived colors via color-mix() ── */
-    --accent-subtle: color-mix(in sRGB, var(--accent) 12%, transparent);
-    --accent-dim: color-mix(in sRGB, var(--accent) 40%, transparent);
-    --positive-subtle: color-mix(in sRGB, var(--positive) 12%, transparent);
-    --negative-subtle: color-mix(in sRGB, var(--negative) 12%, transparent);
-    --bg-overlay: color-mix(in sRGB, var(--bg-primary) 92%, transparent);
+  /* ── Derived colors via color-mix() ── */
+  --accent-subtle: color-mix(in sRGB, var(--accent) 12%, transparent);
+  --accent-dim: color-mix(in sRGB, var(--accent) 40%, transparent);
+  --positive-subtle: color-mix(in sRGB, var(--positive) 12%, transparent);
+  --negative-subtle: color-mix(in sRGB, var(--negative) 12%, transparent);
+  --bg-overlay: color-mix(in sRGB, var(--bg-primary) 92%, transparent);
 
-    /* ── Focus Ring Tokens (WCAG 2.4.7 AA / 2.4.11 AAA) ── */
-    --focus-outline-width: 3px;
-    --focus-outline-offset: 2px;
-    --focus-outline-color: var(--accent);
-    --focus-outline-color-card: var(--accent);
-    --focus-outline-width-card: 3px;
-    --focus-shadow-spread: 4px;
-    --focus-outline-offset-btn: 3px;
-    --focus-outline-width-input: 2px;
+  /* ── Focus Ring Tokens (WCAG 2.4.7 AA / 2.4.11 AAA) ── */
+  --focus-outline-width: 3px;
+  --focus-outline-offset: 2px;
+  --focus-outline-color: var(--accent);
+  --focus-outline-color-card: var(--accent);
+  --focus-outline-width-card: 3px;
+  --focus-shadow-spread: 4px;
+  --focus-outline-offset-btn: 3px;
+  --focus-outline-width-input: 2px;
 
-    /* ── WCAG 1.4.12 Text Spacing Tokens ── */
-    /* Minimum values required by WCAG 2.1 SC 1.4.12 (AA) when overridden by user styles */
-    --ts-line-height: 1.5; /* ≥ 1.5 × font-size */
-    --ts-letter-spacing: 0.12em; /* ≥ 0.12 × font-size */
-    --ts-word-spacing: 0.16em; /* ≥ 0.16 × font-size */
-    --ts-paragraph-spacing: 2em; /* ≥ 2 × font-size */
+  /* ── WCAG 1.4.12 Text Spacing Tokens ── */
+  /* Minimum values required by WCAG 2.1 SC 1.4.12 (AA) when overridden by user styles */
+  --ts-line-height: 1.5; /* ≥ 1.5 × font-size */
+  --ts-letter-spacing: 0.12em; /* ≥ 0.12 × font-size */
+  --ts-word-spacing: 0.16em; /* ≥ 0.16 × font-size */
+  --ts-paragraph-spacing: 2em; /* ≥ 2 × font-size */
 
-    /* ── WCAG 3.1.5 Reading Level Token ── */
-    /* 1.6 × font-size for Hebrew/RTL prose — improves cognitive reading ease (AAA). */
-    --reading-lh: 1.6;
-  }
+  /* ── WCAG 3.1.5 Reading Level Token ── */
+  /* 1.6 × font-size for Hebrew/RTL prose — improves cognitive reading ease (AAA). */
+  --reading-lh: 1.6;
+}
 
-  /*
+/*
    * D9 — CSS @function sketch (ADR-062, v14.0 )
    *
    * When CSS Functions L1 reaches Baseline 2026, these @function declarations
@@ -279,7 +279,7 @@
    * }
    */
 
-  /* D9 partial migration: @supports-gated if() for derived opacity tokens.
+/* D9 partial migration: @supports-gated if() for derived opacity tokens.
    *
    * The @supports guard ensures browsers that do not understand CSS if()
    * continue to use the color-mix() fallback values declared above.

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/validation.ts 
+ * fast-check property tests — worker/src/utils/validation.ts
  *
  * Properties under test:
  *  VL1. requireParam throws for missing/empty params, returns trimmed value otherwise.
@@ -72,13 +72,10 @@ describe("validation — VL2: requireLat", () => {
 
   it("rejects out-of-range", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 91, max: 9999, noNaN: true }),
-        (lat) => {
-          const url = makeUrl({ lat: String(lat) });
-          expect(() => requireLat(url)).toThrow(ValidationError);
-        },
-      ),
+      fc.property(fc.double({ min: 91, max: 9999, noNaN: true }), (lat) => {
+        const url = makeUrl({ lat: String(lat) });
+        expect(() => requireLat(url)).toThrow(ValidationError);
+      }),
       { numRuns: 10 },
     );
   });
@@ -127,13 +124,10 @@ describe("validation — VL4: requireYear", () => {
 describe("validation — VL5: requireSymbol", () => {
   it("accepts valid symbols", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^[\w.\-^]{1,20}$/),
-        (sym) => {
-          const url = makeUrl({ sym });
-          expect(requireSymbol(url)).toBe(sym);
-        },
-      ),
+      fc.property(fc.stringMatching(/^[\w.\-^]{1,20}$/), (sym) => {
+        const url = makeUrl({ sym });
+        expect(requireSymbol(url)).toBe(sym);
+      }),
       { numRuns: 30 },
     );
   });

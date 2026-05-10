@@ -16,7 +16,14 @@
 
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
-import { urgencyClass, daysLabel, advanceAnnualDate, advanceMonthlyDate, computeProgress, hebrewDayOfWeek } from "@/cards/countdown/countdown";
+import {
+  urgencyClass,
+  daysLabel,
+  advanceAnnualDate,
+  advanceMonthlyDate,
+  computeProgress,
+  hebrewDayOfWeek,
+} from "@/cards/countdown/countdown";
 
 // ── CD1: urgencyClass ≤ 1 → "cd-urgent-pulse" ───────────────────────────────
 
@@ -173,14 +180,11 @@ describe("countdown — CD8: computeProgress bounds", () => {
 describe("countdown — CD9: hebrewDayOfWeek non-empty", () => {
   it("returns a non-empty string for any valid date", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 6 }),
-        (dayOffset) => {
-          const d = new Date(2025, 0, 5 + dayOffset); // Sun-Sat
-          const result = hebrewDayOfWeek(d);
-          expect(result.length).toBeGreaterThan(0);
-        },
-      ),
+      fc.property(fc.integer({ min: 0, max: 6 }), (dayOffset) => {
+        const d = new Date(2025, 0, 5 + dayOffset); // Sun-Sat
+        const result = hebrewDayOfWeek(d);
+        expect(result.length).toBeGreaterThan(0);
+      }),
       { numRuns: 7 },
     );
   });

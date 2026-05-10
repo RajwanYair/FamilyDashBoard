@@ -1,5 +1,5 @@
 /**
- * Unit tests — ADR index staleness check 
+ * Unit tests — ADR index staleness check
  *
  * Tests the pure helper functions from scripts/check-adr-index.mjs:
  *   - parseAdrContent: extract title/date/status from ADR markdown

@@ -7,14 +7,8 @@
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { tick, initCountdownCard } from "../../../src/cards/countdown/countdown";
-import {
-  getCardSignal,
-  _resetCardSignals,
-} from "../../../src/core/card-signal-protocol";
-import {
-  getSemanticPayload,
-  _resetSemanticProducers,
-} from "../../../src/core/semantic-clipboard";
+import { getCardSignal, _resetCardSignals } from "../../../src/core/card-signal-protocol";
+import { getSemanticPayload, _resetSemanticProducers } from "../../../src/core/semantic-clipboard";
 
 interface CountdownNext {
   targetMs: number;

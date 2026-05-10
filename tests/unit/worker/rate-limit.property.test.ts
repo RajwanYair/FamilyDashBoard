@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/middleware/rate-limit.ts 
+ * fast-check property tests — worker/src/middleware/rate-limit.ts
  *
  * Properties under test:
  *  RL1. isRateLimited: first request from any IP is never blocked

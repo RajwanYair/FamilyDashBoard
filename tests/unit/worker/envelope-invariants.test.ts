@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker-client envelope invariants 
+ * fast-check property tests — worker-client envelope invariants
  *
  * Properties under test:
  *  E1. workerEnvelope always produces HTTP 200 regardless of payload shape.

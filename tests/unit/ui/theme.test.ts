@@ -370,7 +370,11 @@ describe("Theme — applyTheme startViewTransition rejection ", () => {
 describe("Theme — applyTheme L2 fallback to L1 when object form throws ", () => {
   afterEach(() => {
     document.body.className = "";
-    try { Reflect.deleteProperty(document, "startViewTransition"); } catch { /* ok */ }
+    try {
+      Reflect.deleteProperty(document, "startViewTransition");
+    } catch {
+      /* ok */
+    }
     vi.restoreAllMocks();
   });
 

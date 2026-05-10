@@ -141,12 +141,9 @@ describe("tasks — TK7: recurrenceResetKey monthly", () => {
 describe("tasks — TK8: recurrenceResetKey yearly", () => {
   it("returns YYYY", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (d) => {
-          expect(recurrenceResetKey("yearly", d)).toBe(String(d.getFullYear()));
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (d) => {
+        expect(recurrenceResetKey("yearly", d)).toBe(String(d.getFullYear()));
+      }),
       { numRuns: 15 },
     );
   });

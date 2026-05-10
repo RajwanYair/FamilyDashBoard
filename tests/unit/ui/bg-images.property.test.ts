@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/bg-images.ts 
+ * fast-check property tests — src/ui/bg-images.ts
  *
  * Properties under test:
  *  BG1. isValidBgUrl: valid https URL → true
@@ -18,12 +18,9 @@ import { isValidBgUrl } from "@/ui/bg-images";
 describe("bg-images — BG1: https URL is valid", () => {
   it("any well-formed https URL returns true", () => {
     fc.assert(
-      fc.property(
-        fc.webUrl({ validSchemes: ["https"] }),
-        (url) => {
-          expect(isValidBgUrl(url)).toBe(true);
-        },
-      ),
+      fc.property(fc.webUrl({ validSchemes: ["https"] }), (url) => {
+        expect(isValidBgUrl(url)).toBe(true);
+      }),
     );
   });
 });
@@ -33,12 +30,9 @@ describe("bg-images — BG1: https URL is valid", () => {
 describe("bg-images — BG2: http URL is invalid", () => {
   it("http URLs are rejected", () => {
     fc.assert(
-      fc.property(
-        fc.webUrl({ validSchemes: ["http"] }),
-        (url) => {
-          expect(isValidBgUrl(url)).toBe(false);
-        },
-      ),
+      fc.property(fc.webUrl({ validSchemes: ["http"] }), (url) => {
+        expect(isValidBgUrl(url)).toBe(false);
+      }),
     );
   });
 });
@@ -70,12 +64,9 @@ describe("bg-images — BG3: non-URL string", () => {
 describe("bg-images — BG4: data URL is invalid", () => {
   it("data: URLs are rejected", () => {
     fc.assert(
-      fc.property(
-        fc.string({ minLength: 4, maxLength: 20 }),
-        (payload) => {
-          expect(isValidBgUrl(`data:text/plain;base64,${payload}`)).toBe(false);
-        },
-      ),
+      fc.property(fc.string({ minLength: 4, maxLength: 20 }), (payload) => {
+        expect(isValidBgUrl(`data:text/plain;base64,${payload}`)).toBe(false);
+      }),
     );
   });
 });
@@ -85,12 +76,9 @@ describe("bg-images — BG4: data URL is invalid", () => {
 describe("bg-images — BG5: ftp URL is invalid", () => {
   it("ftp: URLs are rejected", () => {
     fc.assert(
-      fc.property(
-        fc.domain(),
-        (domain) => {
-          expect(isValidBgUrl(`ftp://${domain}/file.jpg`)).toBe(false);
-        },
-      ),
+      fc.property(fc.domain(), (domain) => {
+        expect(isValidBgUrl(`ftp://${domain}/file.jpg`)).toBe(false);
+      }),
     );
   });
 });

@@ -76,9 +76,7 @@ describe("mcp-bridge — MB4: handles null/primitives", () => {
   it("number passes through", () => {
     fc.assert(
       fc.property(
-        fc
-          .double({ noNaN: true, noDefaultInfinity: true })
-          .filter((n) => !Object.is(n, -0)),
+        fc.double({ noNaN: true, noDefaultInfinity: true }).filter((n) => !Object.is(n, -0)),
         (n) => {
           expect(deepFreezeJson(n)).toBe(n);
         },

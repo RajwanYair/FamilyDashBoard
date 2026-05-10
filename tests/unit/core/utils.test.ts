@@ -269,12 +269,9 @@ describe("Utils — fast-check properties (UP1-UP5 )", () => {
    */
   it("UP2 · pad2 always returns a string of length ≥ 2", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 9999 }),
-        (n: number) => {
-          return pad2(n).length >= 2;
-        },
-      ),
+      fc.property(fc.integer({ min: 0, max: 9999 }), (n: number) => {
+        return pad2(n).length >= 2;
+      }),
       { numRuns: 300 },
     );
   });
@@ -289,10 +286,14 @@ describe("Utils — fast-check properties (UP1-UP5 )", () => {
         (ms: number) => {
           const { days, hours, minutes, seconds } = decomposeDuration(ms);
           return (
-            Number.isInteger(days) && days >= 0 &&
-            Number.isInteger(hours) && hours >= 0 &&
-            Number.isInteger(minutes) && minutes >= 0 &&
-            Number.isInteger(seconds) && seconds >= 0
+            Number.isInteger(days) &&
+            days >= 0 &&
+            Number.isInteger(hours) &&
+            hours >= 0 &&
+            Number.isInteger(minutes) &&
+            minutes >= 0 &&
+            Number.isInteger(seconds) &&
+            seconds >= 0
           );
         },
       ),
@@ -326,8 +327,12 @@ describe("Utils — fast-check properties (UP1-UP5 )", () => {
         (d: Date) => {
           fc.pre(isFinite(d.getTime()));
           const { emoji, label } = computeMoonPhase(d);
-          return typeof emoji === "string" && emoji.length > 0 &&
-                 typeof label === "string" && label.length > 0;
+          return (
+            typeof emoji === "string" &&
+            emoji.length > 0 &&
+            typeof label === "string" &&
+            label.length > 0
+          );
         },
       ),
       { numRuns: 300 },

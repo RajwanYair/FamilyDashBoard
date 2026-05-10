@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/night-dimmer.ts 
+ * fast-check property tests — src/ui/night-dimmer.ts
  *
  * Properties under test:
  *  ND1. setDimLevel clamps below 0 to 0
@@ -28,13 +28,10 @@ import {
 describe("night-dimmer — ND1: setDimLevel lower clamp", () => {
   it("negative values are clamped to 0", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: -1000, max: -1 }),
-        (level) => {
-          setDimLevel(level);
-          // No direct getter for dimLevel, but it should not throw
-        },
-      ),
+      fc.property(fc.integer({ min: -1000, max: -1 }), (level) => {
+        setDimLevel(level);
+        // No direct getter for dimLevel, but it should not throw
+      }),
       { numRuns: 10 },
     );
   });
@@ -45,12 +42,9 @@ describe("night-dimmer — ND1: setDimLevel lower clamp", () => {
 describe("night-dimmer — ND2: setDimLevel upper clamp", () => {
   it("values above 100 are clamped (no throw)", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 101, max: 10000 }),
-        (level) => {
-          setDimLevel(level);
-        },
-      ),
+      fc.property(fc.integer({ min: 101, max: 10000 }), (level) => {
+        setDimLevel(level);
+      }),
       { numRuns: 10 },
     );
   });
@@ -61,12 +55,9 @@ describe("night-dimmer — ND2: setDimLevel upper clamp", () => {
 describe("night-dimmer — ND3: setDimLevel valid range", () => {
   it("valid values [0,100] do not throw", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 100 }),
-        (level) => {
-          setDimLevel(level);
-        },
-      ),
+      fc.property(fc.integer({ min: 0, max: 100 }), (level) => {
+        setDimLevel(level);
+      }),
       { numRuns: 10 },
     );
   });
@@ -111,13 +102,10 @@ describe("night-dimmer — ND6: isDimActive", () => {
 describe("night-dimmer — ND7: setIdleAutoDimMinutes", () => {
   it("positive values are preserved", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 1, max: 120 }),
-        (mins) => {
-          setIdleAutoDimMinutes(mins);
-          expect(getIdleAutoDimMinutes()).toBe(mins);
-        },
-      ),
+      fc.property(fc.integer({ min: 1, max: 120 }), (mins) => {
+        setIdleAutoDimMinutes(mins);
+        expect(getIdleAutoDimMinutes()).toBe(mins);
+      }),
       { numRuns: 5 },
     );
   });

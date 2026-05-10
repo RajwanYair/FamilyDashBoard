@@ -41,7 +41,9 @@ describe("weather — WX1: parseCityEntry valid", () => {
   it("parses 'name|lat|lon' correctly", () => {
     fc.assert(
       fc.property(
-        fc.string({ minLength: 1, maxLength: 20 }).filter((s) => !s.includes("|") && s.trim().length > 0),
+        fc
+          .string({ minLength: 1, maxLength: 20 })
+          .filter((s) => !s.includes("|") && s.trim().length > 0),
         fc.double({ min: -90, max: 90, noNaN: true, noDefaultInfinity: true }),
         fc.double({ min: -180, max: 180, noNaN: true, noDefaultInfinity: true }),
         (name, lat, lon) => {
@@ -213,14 +215,11 @@ describe("weather — WX10: formatCloudCover", () => {
 describe("weather — WX11: moonPhase tuple", () => {
   it("always returns [emoji, non-empty label]", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date(2020, 0, 1), max: new Date(2030, 0, 1) }),
-        (d) => {
-          const [emoji, label] = moonPhase(d);
-          expect(emoji.length).toBeGreaterThan(0);
-          expect(label.length).toBeGreaterThan(0);
-        },
-      ),
+      fc.property(fc.date({ min: new Date(2020, 0, 1), max: new Date(2030, 0, 1) }), (d) => {
+        const [emoji, label] = moonPhase(d);
+        expect(emoji.length).toBeGreaterThan(0);
+        expect(label.length).toBeGreaterThan(0);
+      }),
       { numRuns: 20 },
     );
   });

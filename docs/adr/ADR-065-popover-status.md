@@ -20,19 +20,19 @@ The remaining D11 candidates fall into two groups:
 
 ### Group A — Safe migration candidates
 
-| Element | Current pattern | Notes |
-| - | - | - |
-| News bookmark menu | Custom `<div>` + focus-trap | Trigger button is per-article; auto-dismiss fits the use case. |
+| Element                              | Current pattern                   | Notes                                                             |
+| ------------------------------------ | --------------------------------- | ----------------------------------------------------------------- |
+| News bookmark menu                   | Custom `<div>` + focus-trap       | Trigger button is per-article; auto-dismiss fits the use case.    |
 | Halacha overlay (`#halacha-overlay`) | `role="dialog" aria-modal="true"` | Modal-style; would need `popover="manual"` and a custom backdrop. |
 
 ### Group B — Do NOT migrate
 
-| Element | Why not |
-| - | - |
-| `#alerts-takeover` (`<dialog>`) | Civil-defense modal — `<dialog>.showModal()` already provides the right semantics + inert backdrop. `popover` would lose the inert behavior. |
-| `#refresh-toast`, `#offline-banner` | Opacity-driven transient toasts — `popover` adds UA `display:none` that conflicts with the existing show/hide animation (this is the original finding from ADR-056). |
-| `#diag-overlay`, `#help-overlay`, `#tour-overlay`, `#ecfg-dialog` | Already native `<dialog>` — `popover` would be a downgrade. |
-| `#config-overlay` | `role="dialog" aria-modal="true"` div with screen-reader-tested keyboard handling. Migration risk > savings. |
+| Element                                                           | Why not                                                                                                                                                              |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `#alerts-takeover` (`<dialog>`)                                   | Civil-defense modal — `<dialog>.showModal()` already provides the right semantics + inert backdrop. `popover` would lose the inert behavior.                         |
+| `#refresh-toast`, `#offline-banner`                               | Opacity-driven transient toasts — `popover` adds UA `display:none` that conflicts with the existing show/hide animation (this is the original finding from ADR-056). |
+| `#diag-overlay`, `#help-overlay`, `#tour-overlay`, `#ecfg-dialog` | Already native `<dialog>` — `popover` would be a downgrade.                                                                                                          |
+| `#config-overlay`                                                 | `role="dialog" aria-modal="true"` div with screen-reader-tested keyboard handling. Migration risk > savings.                                                         |
 
 ## Decision
 

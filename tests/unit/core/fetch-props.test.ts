@@ -77,18 +77,15 @@ describe("FP3: acquireLock succeeds again after releaseLock", () => {
 describe("FP4: clearFetchLocks re-enables all previously-held keys", () => {
   it("every key can be acquired after clearFetchLocks", () => {
     fc.assert(
-      fc.property(
-        fc.array(lockNameArb, { minLength: 1, maxLength: 10 }),
-        (names) => {
-          clearFetchLocks();
-          const unique = [...new Set(names)];
-          // Lock all unique names
-          for (const n of unique) acquireLock(n);
-          // After clear, all must be re-acquirable
-          clearFetchLocks();
-          return unique.every((n) => acquireLock(n) === true);
-        },
-      ),
+      fc.property(fc.array(lockNameArb, { minLength: 1, maxLength: 10 }), (names) => {
+        clearFetchLocks();
+        const unique = [...new Set(names)];
+        // Lock all unique names
+        for (const n of unique) acquireLock(n);
+        // After clear, all must be re-acquirable
+        clearFetchLocks();
+        return unique.every((n) => acquireLock(n) === true);
+      }),
       { numRuns: 100 },
     );
   });

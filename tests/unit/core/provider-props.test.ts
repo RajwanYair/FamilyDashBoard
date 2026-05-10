@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/provider.ts 
+ * fast-check property tests for src/core/provider.ts
  *
  * Verifies invariants of the provider-health model and backoff policy
  * across arbitrary success/failure sequences.
@@ -111,22 +111,19 @@ describe("provider — fast-check properties (PRP1-PRP6 )", () => {
 
   it("PRP6: success and failure counters are commutative-additive (sum is invariant under interleaving)", () => {
     fc.assert(
-      fc.property(
-        fc.array(fc.boolean(), { minLength: 0, maxLength: 30 }),
-        (events) => {
-          _resetProviderHealth();
-          const id = "p";
-          for (const ok of events) {
-            if (ok) recordProviderSuccess(id);
-            else recordProviderFailure(id);
-          }
-          const h = getProviderHealth(id);
-          const successes = events.filter(Boolean).length;
-          const failures = events.length - successes;
-          expect(h.successCount).toBe(successes);
-          expect(h.failureCount).toBe(failures);
-        },
-      ),
+      fc.property(fc.array(fc.boolean(), { minLength: 0, maxLength: 30 }), (events) => {
+        _resetProviderHealth();
+        const id = "p";
+        for (const ok of events) {
+          if (ok) recordProviderSuccess(id);
+          else recordProviderFailure(id);
+        }
+        const h = getProviderHealth(id);
+        const successes = events.filter(Boolean).length;
+        const failures = events.length - successes;
+        expect(h.successCount).toBe(successes);
+        expect(h.failureCount).toBe(failures);
+      }),
       { numRuns: 30 },
     );
   });

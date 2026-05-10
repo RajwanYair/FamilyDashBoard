@@ -58,17 +58,12 @@ describe("SP2: buildSnapshot timestamp is always valid ISO-8601", () => {
 // ── SP3: localStorageSummary keys are always dash_ / fdb_ prefixed ─────────────
 
 describe("SP3: localStorageSummary only includes dash/fdb prefixed keys", () => {
-  const prefixedKey = fc
-    .oneof(
-      fc.constant("dash_"),
-      fc.constant("fdb_"),
-    )
-    .chain((prefix) =>
-      fc
-        .string({ minLength: 1, maxLength: 20 })
-        .filter((s) => /^[a-zA-Z0-9_]+$/.test(s))
-        .map((suffix) => prefix + suffix),
-    );
+  const prefixedKey = fc.oneof(fc.constant("dash_"), fc.constant("fdb_")).chain((prefix) =>
+    fc
+      .string({ minLength: 1, maxLength: 20 })
+      .filter((s) => /^[a-zA-Z0-9_]+$/.test(s))
+      .map((suffix) => prefix + suffix),
+  );
 
   const unprefixedKey = fc
     .string({ minLength: 3, maxLength: 20 })
@@ -100,34 +95,28 @@ describe("SP3: localStorageSummary only includes dash/fdb prefixed keys", () => 
 describe("SP4: localStorageSummary values never exceed ~300 chars", () => {
   it("values stored are at most 301 chars (300 + ellipsis marker)", () => {
     fc.assert(
-      fc.property(
-        fc.string({ minLength: 301, maxLength: 1000 }),
-        (longVal) => {
-          localStorage.clear();
-          localStorage.setItem("dash_v2_prop_test", longVal);
-          const snap = buildSnapshot();
-          const v = snap.localStorageSummary["dash_v2_prop_test"];
-          if (v === null || v === undefined) return false;
-          // Truncated values are ≤ 301 chars (300 content + "…" ellipsis)
-          return v.length <= 302;
-        },
-      ),
+      fc.property(fc.string({ minLength: 301, maxLength: 1000 }), (longVal) => {
+        localStorage.clear();
+        localStorage.setItem("dash_v2_prop_test", longVal);
+        const snap = buildSnapshot();
+        const v = snap.localStorageSummary["dash_v2_prop_test"];
+        if (v === null || v === undefined) return false;
+        // Truncated values are ≤ 301 chars (300 content + "…" ellipsis)
+        return v.length <= 302;
+      }),
       { numRuns: 50 },
     );
   });
 
   it("short values are stored verbatim (no truncation)", () => {
     fc.assert(
-      fc.property(
-        fc.string({ minLength: 1, maxLength: 299 }),
-        (shortVal) => {
-          localStorage.clear();
-          localStorage.setItem("fdb_sp4_short", shortVal);
-          const snap = buildSnapshot();
-          const v = snap.localStorageSummary["fdb_sp4_short"];
-          return v === shortVal;
-        },
-      ),
+      fc.property(fc.string({ minLength: 1, maxLength: 299 }), (shortVal) => {
+        localStorage.clear();
+        localStorage.setItem("fdb_sp4_short", shortVal);
+        const snap = buildSnapshot();
+        const v = snap.localStorageSummary["fdb_sp4_short"];
+        return v === shortVal;
+      }),
       { numRuns: 50 },
     );
   });

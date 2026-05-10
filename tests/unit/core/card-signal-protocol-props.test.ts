@@ -39,11 +39,10 @@ const scalarArb = fc.oneof(
 );
 
 /** Shallow JSON-safe object */
-const objectArb = fc.dictionary(
-  fc.string({ minLength: 1, maxLength: 10 }),
-  scalarArb,
-  { minKeys: 1, maxKeys: 5 },
-) as fc.Arbitrary<Record<string, unknown>>;
+const objectArb = fc.dictionary(fc.string({ minLength: 1, maxLength: 10 }), scalarArb, {
+  minKeys: 1,
+  maxKeys: 5,
+}) as fc.Arbitrary<Record<string, unknown>>;
 
 // ── Setup ─────────────────────────────────────────────────────────────────────
 

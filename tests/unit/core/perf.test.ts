@@ -209,7 +209,8 @@ describe("checkAllVitalBudgets", () => {
 describe("rateVital — startup key", () => {
   it("good ≤ 3000ms", () => expect(rateVital("startup", 2000)).toBe("good"));
   it("good at exactly 3000ms", () => expect(rateVital("startup", 3000)).toBe("good"));
-  it("needs-improvement ≤ 6000ms", () => expect(rateVital("startup", 4000)).toBe("needs-improvement"));
+  it("needs-improvement ≤ 6000ms", () =>
+    expect(rateVital("startup", 4000)).toBe("needs-improvement"));
   it("poor > 6000ms", () => expect(rateVital("startup", 7000)).toBe("poor"));
 });
 
@@ -252,7 +253,9 @@ describe("downloadPerfJSON", () => {
     vi.restoreAllMocks();
     try {
       Reflect.deleteProperty(globalThis, "URL");
-    } catch { /* non-configurable */ }
+    } catch {
+      /* non-configurable */
+    }
   });
 
   it("creates a download link and clicks it", () => {
@@ -281,24 +284,32 @@ describe("downloadPerfJSON", () => {
     const revokeObjectURL = vi.fn();
     const createObjectURL = vi.fn().mockReturnValue("blob:url");
 
-    vi.stubGlobal("Blob", class MockBlob {
-      constructor(parts: BlobPart[]) {
-        blobContent = parts.join("");
-      }
-    });
+    vi.stubGlobal(
+      "Blob",
+      class MockBlob {
+        constructor(parts: BlobPart[]) {
+          blobContent = parts.join("");
+        }
+      },
+    );
     vi.stubGlobal("URL", { createObjectURL, revokeObjectURL });
 
     const origCreate = document.createElement.bind(document);
     vi.spyOn(document, "createElement").mockImplementation((tag) => {
       const el = origCreate(tag);
-      if (tag === "a") vi.spyOn(el as HTMLAnchorElement, "click").mockImplementation(() => undefined);
+      if (tag === "a")
+        vi.spyOn(el as HTMLAnchorElement, "click").mockImplementation(() => undefined);
       return el;
     });
 
     recordCardInitTime("test-card", 42.0);
     downloadPerfJSON();
 
-    const parsed = JSON.parse(blobContent) as { vitals: unknown; cardTimings: unknown; timestamp: string };
+    const parsed = JSON.parse(blobContent) as {
+      vitals: unknown;
+      cardTimings: unknown;
+      timestamp: string;
+    };
     expect(parsed).toHaveProperty("vitals");
     expect(parsed).toHaveProperty("cardTimings");
     expect(parsed).toHaveProperty("timestamp");
@@ -311,11 +322,15 @@ describe("initPerfObserver — PerformanceObserver callbacks", () => {
   afterEach(() => {
     _resetPerfObserver();
     vi.restoreAllMocks();
-    try { Reflect.deleteProperty(globalThis, "PerformanceObserver"); } catch { /* non-config */ }
+    try {
+      Reflect.deleteProperty(globalThis, "PerformanceObserver");
+    } catch {
+      /* non-config */
+    }
   });
 
   function makeObserverStub(
-    callbackMap: Map<string, (list: { getEntries: () => unknown[] }) => void>
+    callbackMap: Map<string, (list: { getEntries: () => unknown[] }) => void>,
   ) {
     return class MockPerfObserver {
       private readonly cb: (list: { getEntries: () => unknown[] }) => void;

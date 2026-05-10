@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/event-bus.ts 
+ * fast-check property tests — src/core/event-bus.ts
  *
  * Properties under test:
  *  EB1. broadcastSync idempotence — broadcasting the same state for a card
@@ -40,9 +40,14 @@ const cardIdArb = fc
   .string({ minLength: 1, maxLength: 12 })
   .filter((s) => s.trim().length > 0 && !/[\x00-\x1f]/.test(s));
 
-const themeArb = fc.constantFrom<
-  "black" | "blue" | "matrix" | "amber" | "purple" | "rose"
->("black", "blue", "matrix", "amber", "purple", "rose");
+const themeArb = fc.constantFrom<"black" | "blue" | "matrix" | "amber" | "purple" | "rose">(
+  "black",
+  "blue",
+  "matrix",
+  "amber",
+  "purple",
+  "rose",
+);
 
 const alertTypeArb = fc.constantFrom<"pause" | "resume">("pause", "resume");
 
@@ -78,19 +83,24 @@ describe("event-bus — EB2: globalSync is 'loading' when any card is loading", 
   it("globalSync === 'loading' when at least one card broadcasts 'loading'", () => {
     fc.assert(
       fc.property(
-        fc.array(fc.tuple(cardIdArb, syncStateArb), { minLength: 1, maxLength: 6 }).chain(
-          (pairs) => {
+        fc
+          .array(fc.tuple(cardIdArb, syncStateArb), { minLength: 1, maxLength: 6 })
+          .chain((pairs) => {
             // inject exactly one "loading" entry
             const loadingIdx = fc.integer({ min: 0, max: pairs.length - 1 });
             return loadingIdx.map((i) => {
               const updated = pairs.map(([id, s], idx) =>
-                idx === i ? ([id, "loading"] as [string, "ok" | "loading" | "error"]) : [id, s] as [string, "ok" | "loading" | "error"],
+                idx === i
+                  ? ([id, "loading"] as [string, "ok" | "loading" | "error"])
+                  : ([id, s] as [string, "ok" | "loading" | "error"]),
               );
               // Make sure there's one guaranteed unique loading card
-              return [...updated, ["__loading__", "loading"] as [string, "ok" | "loading" | "error"]];
+              return [
+                ...updated,
+                ["__loading__", "loading"] as [string, "ok" | "loading" | "error"],
+              ];
             });
-          },
-        ),
+          }),
         (entries) => {
           _resetBusForTesting();
           for (const [id, state] of entries) {
@@ -137,9 +147,9 @@ describe("event-bus — EB4: globalSync is 'ok' when all cards are 'ok'", () => 
   it("globalSync === 'ok' when all registered card states are 'ok'", () => {
     fc.assert(
       fc.property(
-        fc.array(cardIdArb, { minLength: 1, maxLength: 6 }).filter(
-          (ids) => new Set(ids).size === ids.length,
-        ),
+        fc
+          .array(cardIdArb, { minLength: 1, maxLength: 6 })
+          .filter((ids) => new Set(ids).size === ids.length),
         (ids) => {
           _resetBusForTesting();
           for (const id of ids) {

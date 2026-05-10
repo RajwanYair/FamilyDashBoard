@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/keymap.ts 
+ * fast-check property tests — src/core/keymap.ts
  *
  * Properties under test:
  *  KM1. buildHelpRows returns a fragment with exactly N children for N actions.
@@ -28,10 +28,9 @@ const actionArb: fc.Arbitrary<KeyboardAction> = fc.record({
   description: fc.oneof(
     fc.string({ minLength: 1, maxLength: 30 }),
     // bilingual format: "english / עברית"
-    fc.tuple(
-      fc.string({ minLength: 1, maxLength: 20 }),
-      fc.string({ minLength: 1, maxLength: 20 }),
-    ).map(([en, he]) => `${en} / ${he}`),
+    fc
+      .tuple(fc.string({ minLength: 1, maxLength: 20 }), fc.string({ minLength: 1, maxLength: 20 }))
+      .map(([en, he]) => `${en} / ${he}`),
   ),
   handler: fc.constant(() => {}),
 });

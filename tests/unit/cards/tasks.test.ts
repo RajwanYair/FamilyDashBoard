@@ -1655,9 +1655,7 @@ describe("Tasks — overdueBadge display when overdue tasks exist (lines 414-422
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const dueYest = yesterday.toISOString().split("T")[0]!;
-    const chores: ChoreItem[] = [
-      { person: "יאיר", chore: `להוריד אשפה @${dueYest}` },
-    ];
+    const chores: ChoreItem[] = [{ person: "יאיר", chore: `להוריד אשפה @${dueYest}` }];
     document.body.innerHTML = `
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
@@ -1674,9 +1672,7 @@ describe("Tasks — overdueBadge display when overdue tasks exist (lines 414-422
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const dueTomorrow = tomorrow.toISOString().split("T")[0]!;
-    const chores: ChoreItem[] = [
-      { person: "יאיר", chore: `🟡 [due:${dueTomorrow}] קניות` },
-    ];
+    const chores: ChoreItem[] = [{ person: "יאיר", chore: `🟡 [due:${dueTomorrow}] קניות` }];
     document.body.innerHTML = `
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
@@ -1770,7 +1766,7 @@ describe("Tasks — row ArrowDown/ArrowUp keyboard navigation ", () => {
     expect(rows.length).toBeGreaterThanOrEqual(2);
     const focusSpy = vi.spyOn(rows[1]!, "focus");
     rows[0]!.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true })
+      new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }),
     );
     expect(focusSpy).toHaveBeenCalled();
   });
@@ -1781,7 +1777,7 @@ describe("Tasks — row ArrowDown/ArrowUp keyboard navigation ", () => {
     expect(rows.length).toBeGreaterThanOrEqual(2);
     const focusSpy = vi.spyOn(rows[0]!, "focus");
     rows[1]!.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true, cancelable: true })
+      new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true, cancelable: true }),
     );
     expect(focusSpy).toHaveBeenCalled();
   });
@@ -1792,8 +1788,8 @@ describe("Tasks — row ArrowDown/ArrowUp keyboard navigation ", () => {
     const last = rows[rows.length - 1]!;
     expect(() =>
       last.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true })
-      )
+        new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }),
+      ),
     ).not.toThrow();
   });
 
@@ -1803,8 +1799,8 @@ describe("Tasks — row ArrowDown/ArrowUp keyboard navigation ", () => {
     const first = rows[0]!;
     expect(() =>
       first.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true, cancelable: true })
-      )
+        new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true, cancelable: true }),
+      ),
     ).not.toThrow();
   });
 
@@ -1814,7 +1810,7 @@ describe("Tasks — row ArrowDown/ArrowUp keyboard navigation ", () => {
     // Should not throw and should not call focus on adjacent rows
     const focusSpy = vi.spyOn(rows[1]!, "focus");
     rows[0]!.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true })
+      new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true }),
     );
     expect(focusSpy).not.toHaveBeenCalled();
   });
@@ -2122,49 +2118,37 @@ describe("TP3 · recurrenceResetKey — property: output format matches recurren
 
   it("yearly → YYYY", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (d) => {
-          fc.pre(isFinite(d.getTime()));
-          return YYYY.test(recurrenceResetKey("yearly", d));
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (d) => {
+        fc.pre(isFinite(d.getTime()));
+        return YYYY.test(recurrenceResetKey("yearly", d));
+      }),
     );
   });
 
   it("monthly → YYYY-MM", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (d) => {
-          fc.pre(isFinite(d.getTime()));
-          return YYYY_MM.test(recurrenceResetKey("monthly", d));
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (d) => {
+        fc.pre(isFinite(d.getTime()));
+        return YYYY_MM.test(recurrenceResetKey("monthly", d));
+      }),
     );
   });
 
   it("weekly → YYYY-WNN", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (d) => {
-          fc.pre(isFinite(d.getTime()));
-          return YYYY_WNN.test(recurrenceResetKey("weekly", d));
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (d) => {
+        fc.pre(isFinite(d.getTime()));
+        return YYYY_WNN.test(recurrenceResetKey("weekly", d));
+      }),
     );
   });
 
   it("daily → YYYY-MM-DD", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (d) => {
-          fc.pre(isFinite(d.getTime()));
-          return YYYY_MM_DD.test(recurrenceResetKey("daily", d));
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (d) => {
+        fc.pre(isFinite(d.getTime()));
+        return YYYY_MM_DD.test(recurrenceResetKey("daily", d));
+      }),
     );
   });
 });
@@ -2213,7 +2197,9 @@ describe("TP4 · taskCompletionRatio — property: pct in [0, 100] and done ≤ 
           chore: `item ${i}`,
         }));
         const doneMap: Record<string, boolean> = {};
-        chores.forEach((c) => { doneMap[`${c.person}::${c.chore}`] = true; });
+        chores.forEach((c) => {
+          doneMap[`${c.person}::${c.chore}`] = true;
+        });
         const { pct } = taskCompletionRatio(chores, doneMap);
         return pct === 100;
       }),
@@ -2343,7 +2329,8 @@ describe("Tasks — buildTasksPayload (semantic clipboard)", () => {
   });
 
   it("returns null when no tasks configured", async () => {
-    const { getSemanticPayload, _resetSemanticProducers } = await import("@/core/semantic-clipboard");
+    const { getSemanticPayload, _resetSemanticProducers } =
+      await import("@/core/semantic-clipboard");
     _resetSemanticProducers();
     setupDOM("[]");
     initTasksCard();

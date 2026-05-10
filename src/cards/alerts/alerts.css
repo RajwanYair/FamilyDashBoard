@@ -152,8 +152,12 @@
   }
 
   @keyframes takeover-pulse {
-    from { background: color-mix(in sRGB, var(--negative) 92%, black 8%); }
-    to   { background: color-mix(in sRGB, var(--negative) 75%, black 25%); }
+    from {
+      background: color-mix(in sRGB, var(--negative) 92%, black 8%);
+    }
+    to {
+      background: color-mix(in sRGB, var(--negative) 75%, black 25%);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/video-news/ 
+ * fast-check property tests — src/cards/video-news/
  *
  * Properties under test:
  *  VN1. getStreamDescriptor: known channel → correct id field
@@ -12,10 +12,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import {
-  getStreamDescriptor,
-  listChannels,
-} from "@/cards/video-news/video-news-adapter";
+import { getStreamDescriptor, listChannels } from "@/cards/video-news/video-news-adapter";
 
 const KNOWN_CHANNELS = ["c14", "i24he", "kan11", "n12", "keshet13", "arutz7"] as const;
 

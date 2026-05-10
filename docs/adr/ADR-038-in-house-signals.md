@@ -1,10 +1,10 @@
 # ADR-038 — In-house Signals Primitive (Zero-dep TC39 / Lit Signals Mirror)
 
-| Field        | Value                                           |
-| ------------ | ----------------------------------------------- |
-| **Date**     | 2026-04-26                                      |
-| **Status**   | Accepted                                        |
-| **Deciders** | @RajwanYair                                     |
+| Field        | Value                               |
+| ------------ | ----------------------------------- |
+| **Date**     | 2026-04-26                          |
+| **Status**   | Accepted                            |
+| **Deciders** | @RajwanYair                         |
 | **Tags**     | core, state, reactivity, , zero-dep |
 
 ---
@@ -51,7 +51,7 @@ isSignal(v): v is ReadonlySignal<unk>   // type guard
 | `@lit-labs/signals`                  | **Reject** | First runtime dep on the client; ADR-002 violation.               |
 | `@preact/signals-core`               | Reject     | Adds 2 KB and a vendor lock-in to Preact's release cadence.       |
 | `solid-js` reactivity primitive only | Reject     | Bundling Solid's reactivity drags > 5 KB with tree-shake leakage. |
-| Stay on `state.ts` only              | Reject     | No derivation primitive blocks migration.            |
+| Stay on `state.ts` only              | Reject     | No derivation primitive blocks migration.                         |
 | Wait for TC39 Stage 4 polyfill       | Reject     | Could be 12+ months; we want the migration to start now.          |
 
 ## Consequences

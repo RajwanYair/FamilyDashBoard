@@ -78,8 +78,7 @@ export function syncAppSignal(key: string, value: unknown): void {
       motivationInterval.value = typeof value === "number" ? value : 0;
       break;
     case "config.screenMode":
-      if (value === "tv" || value === "tablet" || value === "phone")
-        screenMode.value = value;
+      if (value === "tv" || value === "tablet" || value === "phone") screenMode.value = value;
       break;
     case "config.alertsEnabled":
       alertsEnabled.value = Boolean(value);

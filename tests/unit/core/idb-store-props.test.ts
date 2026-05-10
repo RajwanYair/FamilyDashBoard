@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/idb-store.ts 
+ * fast-check property tests for src/core/idb-store.ts
  *
  * Properties verified:
  *  IDB1 — set → get round-trip: arbitrary JSON values are returned unchanged
@@ -126,9 +126,7 @@ describe("idb-store — fast-check property tests ", () => {
       fc.asyncProperty(
         nameArb,
         nameArb,
-        fc
-          .tuple(nameArb, nameArb)
-          .filter(([a, b]) => a !== b), // keyA !== keyB
+        fc.tuple(nameArb, nameArb).filter(([a, b]) => a !== b), // keyA !== keyB
         jsonValArb,
         jsonValArb,
         async (db, store, [keyA, keyB], valueA, valueB) => {
@@ -157,9 +155,7 @@ describe("idb-store — fast-check property tests ", () => {
     await fc.assert(
       fc.asyncProperty(
         nameArb,
-        fc
-          .tuple(nameArb, nameArb)
-          .filter(([a, b]) => a !== b), // storeA !== storeB
+        fc.tuple(nameArb, nameArb).filter(([a, b]) => a !== b), // storeA !== storeB
         nameArb,
         jsonValArb,
         jsonValArb,

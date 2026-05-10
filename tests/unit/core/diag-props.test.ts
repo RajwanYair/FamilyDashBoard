@@ -17,13 +17,7 @@ import {
 } from "@/core/diag";
 import { DIAG_BUFFER_SIZE } from "@/core/constants";
 
-const KNOWN_KINDS: ProviderErrorKind[] = [
-  "network",
-  "parse",
-  "timeout",
-  "upstream",
-  "unknown",
-];
+const KNOWN_KINDS: ProviderErrorKind[] = ["network", "parse", "timeout", "upstream", "unknown"];
 
 beforeEach(() => {
   clearDiag();

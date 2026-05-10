@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/worker-client.ts 
+ * fast-check property tests for src/core/worker-client.ts
  *
  * Property-based tests that verify:
  *  1. URL construction: arbitrary valid params always produce parseable URLs
@@ -193,20 +193,16 @@ describe("worker-client — fast-check property tests", () => {
   it("P8: WorkerEnvelope.ts is always a finite number (arbitrary timestamp values)", async () => {
     const { wc } = await import("@/core/worker-client");
     await fc.assert(
-      fc.asyncProperty(
-        fc.integer({ min: 0, max: Number.MAX_SAFE_INTEGER }),
-        async (ts) => {
-          fetchSpy.mockResolvedValue({
-            ok: true,
-            status: 200,
-            json: () =>
-              Promise.resolve({ data: {}, source: "worker", stale: false, ts }),
-          });
-          const result = await wc.health();
-          expect(typeof result.ts).toBe("number");
-          expect(Number.isFinite(result.ts)).toBe(true);
-        },
-      ),
+      fc.asyncProperty(fc.integer({ min: 0, max: Number.MAX_SAFE_INTEGER }), async (ts) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ data: {}, source: "worker", stale: false, ts }),
+        });
+        const result = await wc.health();
+        expect(typeof result.ts).toBe("number");
+        expect(Number.isFinite(result.ts)).toBe(true);
+      }),
       { numRuns: 20 },
     );
   });
@@ -220,7 +216,12 @@ describe("worker-client — fast-check property tests", () => {
           ok: true,
           status: 200,
           json: () =>
-            Promise.resolve({ data: { ok: true, status: "ok", ts: 0 }, source: "kv", stale, ts: 0 }),
+            Promise.resolve({
+              data: { ok: true, status: "ok", ts: 0 },
+              source: "kv",
+              stale,
+              ts: 0,
+            }),
         });
         const result = await wc.health();
         expect(typeof result.stale).toBe("boolean");
@@ -275,8 +276,7 @@ describe("worker-client — fast-check property tests", () => {
         fetchSpy.mockResolvedValue({
           ok: true,
           status: 200,
-          json: () =>
-            Promise.resolve({ data: {}, source: "kv", stale: false, ts: 0 }),
+          json: () => Promise.resolve({ data: {}, source: "kv", stale: false, ts: 0 }),
         });
         await wc.calendar({ url: calUrl });
         const rawUrl: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
@@ -291,21 +291,17 @@ describe("worker-client — fast-check property tests", () => {
   it("P12: WorkerEnvelope.source is always a non-empty string for any successful response", async () => {
     const { wc } = await import("@/core/worker-client");
     await fc.assert(
-      fc.asyncProperty(
-        fc.stringMatching(/^[a-z][a-z0-9-]{0,19}$/),
-        async (source) => {
-          fetchSpy.mockResolvedValue({
-            ok: true,
-            status: 200,
-            json: () =>
-              Promise.resolve({ data: [], source, stale: false, ts: Date.now() }),
-          });
-          const result = await wc.alerts();
-          expect(typeof result.source).toBe("string");
-          expect(result.source.length).toBeGreaterThan(0);
-          expect(result.source).toBe(source);
-        },
-      ),
+      fc.asyncProperty(fc.stringMatching(/^[a-z][a-z0-9-]{0,19}$/), async (source) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ data: [], source, stale: false, ts: Date.now() }),
+        });
+        const result = await wc.alerts();
+        expect(typeof result.source).toBe("string");
+        expect(result.source.length).toBeGreaterThan(0);
+        expect(result.source).toBe(source);
+      }),
       { numRuns: 20 },
     );
   });
@@ -406,8 +402,7 @@ describe("worker-client — fast-check property tests", () => {
         fetchSpy.mockResolvedValue({
           ok: true,
           status: 200,
-          json: () =>
-            Promise.resolve({ data: {}, source: "coingecko", stale: false, ts: 0 }),
+          json: () => Promise.resolve({ data: {}, source: "coingecko", stale: false, ts: 0 }),
         });
         await wc.crypto({ ids });
         const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
@@ -430,8 +425,7 @@ describe("worker-client — fast-check property tests", () => {
         fetchSpy.mockResolvedValue({
           ok: true,
           status: 200,
-          json: () =>
-            Promise.resolve({ data: {}, source: "coingecko", stale: false, ts: 0 }),
+          json: () => Promise.resolve({ data: {}, source: "coingecko", stale: false, ts: 0 }),
         });
         await wc.crypto({ vs_currencies });
         const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
@@ -450,8 +444,7 @@ describe("worker-client — fast-check property tests", () => {
         fetchSpy.mockResolvedValue({
           ok: true,
           status: 200,
-          json: () =>
-            Promise.resolve({ data: {}, source: "kv", stale: false, ts: 0 }),
+          json: () => Promise.resolve({ data: {}, source: "kv", stale: false, ts: 0 }),
         });
         await wc.hebcalHolidays({ year });
         const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/middleware/cors.ts + early-hints.ts 
+ * fast-check property tests — worker/src/middleware/cors.ts + early-hints.ts
  *
  * Properties under test:
  *  CO1. isPreflight returns true only for OPTIONS method
@@ -12,7 +12,11 @@
 
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
-import { isPreflight, handlePreflight, CORS_PREFLIGHT_HEADERS } from "../../../worker/src/middleware/cors";
+import {
+  isPreflight,
+  handlePreflight,
+  CORS_PREFLIGHT_HEADERS,
+} from "../../../worker/src/middleware/cors";
 import { buildEarlyHintsLinkHeader } from "../../../worker/src/middleware/early-hints";
 
 // ── CO1: isPreflight only for OPTIONS ────────────────────────────────────────

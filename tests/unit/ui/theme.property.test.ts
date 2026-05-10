@@ -19,13 +19,10 @@ import { applyTheme, cycleTheme, currentTheme, checkAutoTheme, THEMES } from "@/
 describe("theme — TH1: invalid theme fallback", () => {
   it("random invalid names fall back to black", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^invalid-[a-z]{3,10}$/),
-        (name) => {
-          applyTheme(name);
-          expect(document.body.classList.contains("theme-black")).toBe(true);
-        },
-      ),
+      fc.property(fc.stringMatching(/^invalid-[a-z]{3,10}$/), (name) => {
+        applyTheme(name);
+        expect(document.body.classList.contains("theme-black")).toBe(true);
+      }),
       { numRuns: 10 },
     );
   });

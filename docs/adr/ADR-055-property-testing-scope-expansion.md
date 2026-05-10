@@ -1,12 +1,12 @@
 # ADR-055 — Property-Based Testing Scope Expansion (Sprints 317–323)
 
-| Field      | Value                                                                                    |
-| ---------- | ---------------------------------------------------------------------------------------- |
-| Date       | 2026-05-15                                                                               |
-| Status     | Accepted                                                                                 |
-| Sprint     | 324 (ADR formalised) / Sprints 317–323 (implementation)                                  |
-| Supersedes | n/a (extends ADR-054)                                                                    |
-| Related    | ADR-054 (property-testing scope), ROADMAP §G.2.2                                         |
+| Field      | Value                                                   |
+| ---------- | ------------------------------------------------------- |
+| Date       | 2026-05-15                                              |
+| Status     | Accepted                                                |
+| Sprint     | 324 (ADR formalised) / Sprints 317–323 (implementation) |
+| Supersedes | n/a (extends ADR-054)                                   |
+| Related    | ADR-054 (property-testing scope), ROADMAP §G.2.2        |
 
 ## Context
 
@@ -33,15 +33,15 @@ behaviour is invariant-shaped rather than example-shaped:
 
 Sprints 317–323 add seven property test files under `tests/unit/core/`:
 
-| File                                    | Suite prefix  | Target module                | Tests |
-| --------------------------------------- | ------------- | ---------------------------- | ----- |
-| `i18n-props.test.ts`                    | IP1–IP5       | `src/core/i18n.ts`           | 5     |
-| `card-registry-props.test.ts`           | CRP1–CRP5     | `src/core/card-registry.ts`  | 5     |
-| `anim-level-props.test.ts`              | ALP1–ALP4     | `src/core/anim-level.ts`     | 4     |
-| `provider-props.test.ts`                | PRP1–PRP6     | `src/core/provider-health.ts`| 6     |
-| `error-tracker-props.test.ts`           | ETP1–ETP5     | `src/core/error-tracker.ts`  | 5     |
-| `hardware-props.test.ts`                | HWP1–HWP4     | `src/core/hardware.ts`       | 4     |
-| `idle-props.test.ts`                    | IDP1–IDP3     | `src/core/idle.ts`           | 3     |
+| File                          | Suite prefix | Target module                 | Tests |
+| ----------------------------- | ------------ | ----------------------------- | ----- |
+| `i18n-props.test.ts`          | IP1–IP5      | `src/core/i18n.ts`            | 5     |
+| `card-registry-props.test.ts` | CRP1–CRP5    | `src/core/card-registry.ts`   | 5     |
+| `anim-level-props.test.ts`    | ALP1–ALP4    | `src/core/anim-level.ts`      | 4     |
+| `provider-props.test.ts`      | PRP1–PRP6    | `src/core/provider-health.ts` | 6     |
+| `error-tracker-props.test.ts` | ETP1–ETP5    | `src/core/error-tracker.ts`   | 5     |
+| `hardware-props.test.ts`      | HWP1–HWP4    | `src/core/hardware.ts`        | 4     |
+| `idle-props.test.ts`          | IDP1–IDP3    | `src/core/idle.ts`            | 3     |
 
 **Total**: 32 new property tests across Sprints 317–323. Combined with
 ADR-054's 23 tests, the codebase now has **55 fast-check property tests**

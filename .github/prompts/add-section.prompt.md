@@ -1,6 +1,24 @@
 ---
 description: "Add a new modular dashboard card. Provide the card name, data source, and refresh interval."
-tools: ["read_file", "grep_search", "file_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "create_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "vscode_askQuestions", "manage_todo_list", "memory", "tool_search", "runSubagent", "view_image"]
+tools:
+  [
+    "read_file",
+    "grep_search",
+    "file_search",
+    "get_errors",
+    "replace_string_in_file",
+    "multi_replace_string_in_file",
+    "create_file",
+    "run_in_terminal",
+    "get_terminal_output",
+    "vscode_listCodeUsages",
+    "vscode_askQuestions",
+    "manage_todo_list",
+    "memory",
+    "tool_search",
+    "runSubagent",
+    "view_image",
+  ]
 ---
 
 # Add New Dashboard Card

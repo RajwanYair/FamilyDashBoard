@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/perf.ts 
+ * fast-check property tests — src/core/perf.ts
  *
  * Properties under test:
  *  PF1. formatVital returns "–" for null regardless of key.
@@ -42,7 +42,12 @@ const vitalKeyArb = fc.constantFrom<keyof PerfVitals>(
 
 const msKeyArb = fc.constantFrom<keyof PerfVitals>("lcp", "inp", "fcp", "ttfb", "startup");
 
-const finitePositiveArb = fc.double({ min: 0, max: 1_000_000, noNaN: true, noDefaultInfinity: true });
+const finitePositiveArb = fc.double({
+  min: 0,
+  max: 1_000_000,
+  noNaN: true,
+  noDefaultInfinity: true,
+});
 
 const ratingLiterals = ["good", "needs-improvement", "poor", "unknown"] as const;
 

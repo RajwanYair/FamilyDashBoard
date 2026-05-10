@@ -1043,13 +1043,10 @@ describe("Cache — fast-check property invariants (CAP1-CAP5 )", () => {
    */
   it("CAP3 · cGetStale miss always returns null", () => {
     fc.assert(
-      fc.property(
-        fc.string({ minLength: 1, maxLength: 40 }),
-        (key: string) => {
-          cClear();
-          return cGetStale(key) === null;
-        },
-      ),
+      fc.property(fc.string({ minLength: 1, maxLength: 40 }), (key: string) => {
+        cClear();
+        return cGetStale(key) === null;
+      }),
       { numRuns: 200 },
     );
   });
@@ -1081,7 +1078,11 @@ describe("Cache — fast-check property invariants (CAP1-CAP5 )", () => {
         fc.array(
           fc.oneof(
             fc.tuple(fc.constant("set"), fc.string({ minLength: 1, maxLength: 15 }), fc.integer()),
-            fc.tuple(fc.constant("get"), fc.string({ minLength: 1, maxLength: 15 }), fc.integer({ min: 0, max: 3_600_000 })),
+            fc.tuple(
+              fc.constant("get"),
+              fc.string({ minLength: 1, maxLength: 15 }),
+              fc.integer({ min: 0, max: 3_600_000 }),
+            ),
           ),
           { minLength: 1, maxLength: 10 },
         ),

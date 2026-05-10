@@ -10,22 +10,22 @@ All shortcuts are single-key (no modifier required) and fire from the global
 `keydown` handler in `src/ui/keyboard.ts`. Shortcuts are silenced when focus
 is inside an `<input>`, `<textarea>`, or `<select>`.
 
-| Key       | Action                       | Notes                                                        |
-| --------- | ---------------------------- | ------------------------------------------------------------ |
-| `T`       | Cycle theme                  | Cycles through 6 themes: black→blue→matrix→amber→purple→rose |
-| `D`       | Toggle diagnostics overlay   | Shows provider health, error log, version                    |
-| `A`       | Toggle alerts pane           | Flashes the Tzeva Adom alert card                            |
-| `S`       | Open Settings / Config panel | `<dialog>` opened via `showModal()`                          |
-| `N`       | Toggle night dimmer          | Overlay that reduces screen brightness                       |
-| `M`       | Toggle video mute            | Mute / unmute the video-news card audio                      |
-| `V`       | Cycle video channel          | Cycle through news channels (C14 → i24 → …)                  |
-| `+` / `=` | Increase font size           | Step +1px on `<html>` font-size                              |
-| `-`       | Decrease font size           | Step -1px on `<html>` font-size                              |
-| `P`       | Print                        | Opens browser print dialog                                   |
-| `B`       | Toggle bookmarks sidebar     | Quick-access bookmark panel                                  |
+| Key       | Action                       | Notes                                                         |
+| --------- | ---------------------------- | ------------------------------------------------------------- |
+| `T`       | Cycle theme                  | Cycles through 6 themes: black→blue→matrix→amber→purple→rose  |
+| `D`       | Toggle diagnostics overlay   | Shows provider health, error log, version                     |
+| `A`       | Toggle alerts pane           | Flashes the Tzeva Adom alert card                             |
+| `S`       | Open Settings / Config panel | `<dialog>` opened via `showModal()`                           |
+| `N`       | Toggle night dimmer          | Overlay that reduces screen brightness                        |
+| `M`       | Toggle video mute            | Mute / unmute the video-news card audio                       |
+| `V`       | Cycle video channel          | Cycle through news channels (C14 → i24 → …)                   |
+| `+` / `=` | Increase font size           | Step +1px on `<html>` font-size                               |
+| `-`       | Decrease font size           | Step -1px on `<html>` font-size                               |
+| `P`       | Print                        | Opens browser print dialog                                    |
+| `B`       | Toggle bookmarks sidebar     | Quick-access bookmark panel                                   |
 | `Y`       | Yank focused card content    | X15: copies `text/plain` + `application/ld+json` to clipboard |
-| `H` / `?` | Help overlay                 | Shows this key table in a `<dialog>`                         |
-| `Esc`     | Close active overlay         | Closes config, help, diag, dimmer                            |
+| `H` / `?` | Help overlay                 | Shows this key table in a `<dialog>`                          |
+| `Esc`     | Close active overlay         | Closes config, help, diag, dimmer                             |
 
 > **TV remote / smart display**: Most Samsung/LG smart TVs map the color buttons
 > and D-pad to standard keyboard events. `Enter`/`OK` activates focused elements;

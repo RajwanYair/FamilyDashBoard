@@ -1,11 +1,11 @@
 # ADR-048 — OpenTelemetry Worker Opt-in Plan
 
-| Field        | Value                                         |
-| ------------ | --------------------------------------------- |
-| **Status**   | Proposed                                      |
-| **Sprint**   | 238 (v13.26.0)                                |
-| **Deciders** | @RajwanYair                                   |
-| **Tags**     | observability, worker, telemetry, opt-in      |
+| Field        | Value                                    |
+| ------------ | ---------------------------------------- |
+| **Status**   | Proposed                                 |
+| **Sprint**   | 238 (v13.26.0)                           |
+| **Deciders** | @RajwanYair                              |
+| **Tags**     | observability, worker, telemetry, opt-in |
 
 ## Context
 

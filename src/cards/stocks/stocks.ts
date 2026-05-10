@@ -560,7 +560,8 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
       const showIls = loadConfig().stocksShowIls;
       if (showIls && cur != null) {
         const ilsVal = convertUsdToIls(cur);
-        ilsSubEl.textContent = ilsVal != null ? `₪${Math.round(ilsVal).toLocaleString("he-IL")}` : "";
+        ilsSubEl.textContent =
+          ilsVal != null ? `₪${Math.round(ilsVal).toLocaleString("he-IL")}` : "";
         ilsSubEl.hidden = ilsVal === null;
       } else {
         ilsSubEl.hidden = true;
@@ -662,7 +663,7 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
     blk.querySelector(".stk-vals")?.appendChild(afterEl);
   }
 
-  // 7-day IDB history sparkline 
+  // 7-day IDB history sparkline
   if (cur != null && isFinite(cur)) {
     void updateStockHistory(blk, sym, cur);
   }
@@ -892,8 +893,14 @@ export function getTopMovers(stocks: HTMLElement[]): MoverPill[] {
     if (!sym || !isFinite(rawPct) || Math.abs(rawPct) < 0.1) continue;
     movers.push({ sym, pct: rawPct, dir: rawPct > 0 ? "up" : "down" });
   }
-  const gainers = movers.filter((m) => m.dir === "up").sort((a, b) => b.pct - a.pct).slice(0, 3);
-  const losers = movers.filter((m) => m.dir === "down").sort((a, b) => a.pct - b.pct).slice(0, 3);
+  const gainers = movers
+    .filter((m) => m.dir === "up")
+    .sort((a, b) => b.pct - a.pct)
+    .slice(0, 3);
+  const losers = movers
+    .filter((m) => m.dir === "down")
+    .sort((a, b) => a.pct - b.pct)
+    .slice(0, 3);
   return [...gainers, ...losers];
 }
 

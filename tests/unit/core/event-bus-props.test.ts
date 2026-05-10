@@ -64,10 +64,10 @@ describe("EB2: globalSync — error when any error and no loading", () => {
   it("globalSync is 'error' when at least one error and no loading card", () => {
     fc.assert(
       fc.property(
-        fc.array(
-          fc.tuple(cardIdArb, fc.constantFrom<SyncState>("ok", "error")),
-          { minLength: 1, maxLength: 8 },
-        ),
+        fc.array(fc.tuple(cardIdArb, fc.constantFrom<SyncState>("ok", "error")), {
+          minLength: 1,
+          maxLength: 8,
+        }),
         (pairs) => {
           // Deduplicate by cardId (last write wins per broadcastSync semantics)
           const deduped = new Map(pairs);
@@ -89,16 +89,13 @@ describe("EB2: globalSync — error when any error and no loading", () => {
 describe("EB3: globalSync is ok when all cards report ok", () => {
   it("globalSync.value === 'ok' when every card state is 'ok'", () => {
     fc.assert(
-      fc.property(
-        fc.array(cardIdArb, { minLength: 1, maxLength: 10 }),
-        (ids) => {
-          _resetBusForTesting();
-          // Deduplicate ids
-          const unique = [...new Set(ids)];
-          for (const id of unique) broadcastSync(id, "ok");
-          return globalSync.value === "ok";
-        },
-      ),
+      fc.property(fc.array(cardIdArb, { minLength: 1, maxLength: 10 }), (ids) => {
+        _resetBusForTesting();
+        // Deduplicate ids
+        const unique = [...new Set(ids)];
+        for (const id of unique) broadcastSync(id, "ok");
+        return globalSync.value === "ok";
+      }),
       { numRuns: 100 },
     );
   });

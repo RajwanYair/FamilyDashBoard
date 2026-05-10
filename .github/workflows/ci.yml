@@ -55,8 +55,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - run: npx tsc --noEmit
@@ -78,8 +76,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: oxlint (fast Rust pre-pass, errors only)
@@ -104,8 +100,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Forbid focused/skipped tests
@@ -123,8 +117,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: npm audit (high+critical)
@@ -157,8 +149,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Worker tests (gate for CF Worker regressions)
@@ -176,8 +166,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Build
@@ -240,8 +228,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Build for Lighthouse
@@ -284,8 +270,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Generate SBOM (CycloneDX JSON)

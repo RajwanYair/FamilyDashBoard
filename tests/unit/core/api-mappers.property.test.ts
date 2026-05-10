@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/types/api.ts domain mappers 
+ * fast-check property tests — src/types/api.ts domain mappers
  *
  * Properties under test:
  *  DM1. mapToStockDomain: null when result missing
@@ -44,15 +44,17 @@ describe("api-mappers — DM2: mapToStockDomain change", () => {
         (price, prev) => {
           const resp = {
             chart: {
-              result: [{
-                meta: {
-                  regularMarketPrice: price,
-                  previousClose: prev,
-                  currency: "USD",
-                  symbol: "TST",
+              result: [
+                {
+                  meta: {
+                    regularMarketPrice: price,
+                    previousClose: prev,
+                    currency: "USD",
+                    symbol: "TST",
+                  },
+                  indicators: { quote: [{ close: [] }] },
                 },
-                indicators: { quote: [{ close: [] }] },
-              }],
+              ],
             },
           };
           const d = mapToStockDomain("TST", resp as never);
@@ -71,10 +73,12 @@ describe("api-mappers — DM3: changePct zero div", () => {
   it("changePct is 0 when previousClose is 0", () => {
     const resp = {
       chart: {
-        result: [{
-          meta: { regularMarketPrice: 100, previousClose: 0, currency: "USD", symbol: "X" },
-          indicators: { quote: [{ close: [] }] },
-        }],
+        result: [
+          {
+            meta: { regularMarketPrice: 100, previousClose: 0, currency: "USD", symbol: "X" },
+            indicators: { quote: [{ close: [] }] },
+          },
+        ],
       },
     };
     const d = mapToStockDomain("X", resp as never);
@@ -159,7 +163,10 @@ describe("api-mappers — DM8: mapToAlertsDomain count", () => {
       fc.property(
         fc.array(
           fc.record({
-            cities: fc.array(fc.string({ minLength: 1, maxLength: 10 }), { minLength: 1, maxLength: 3 }),
+            cities: fc.array(fc.string({ minLength: 1, maxLength: 10 }), {
+              minLength: 1,
+              maxLength: 3,
+            }),
             threat: fc.nat({ max: 10 }),
             time: fc.integer({ min: 1700000000, max: 1800000000 }),
           }),
@@ -181,7 +188,10 @@ describe("api-mappers — DM8: mapToAlertsDomain count", () => {
 
 describe("api-mappers — DM9: mapToAlertsDomain ageMin", () => {
   it("ageMin is non-negative", () => {
-    const ev = { id: 1, alerts: [{ cities: ["A"], threat: 0, time: Math.floor(Date.now() / 1000) - 120 }] } as never;
+    const ev = {
+      id: 1,
+      alerts: [{ cities: ["A"], threat: 0, time: Math.floor(Date.now() / 1000) - 120 }],
+    } as never;
     const d = mapToAlertsDomain(ev);
     expect(d.zones[0]!.ageMin).toBeGreaterThanOrEqual(0);
   });
@@ -191,7 +201,9 @@ describe("api-mappers — DM9: mapToAlertsDomain ageMin", () => {
 
 describe("api-mappers — DM10: isWorkerResponse", () => {
   it("accepts valid shape", () => {
-    expect(isWorkerResponse({ data: { foo: 1 }, stale: false, timestamp: 123, provider: "test" })).toBe(true);
+    expect(
+      isWorkerResponse({ data: { foo: 1 }, stale: false, timestamp: 123, provider: "test" }),
+    ).toBe(true);
   });
   it("rejects primitive", () => {
     expect(isWorkerResponse("hello")).toBe(false);

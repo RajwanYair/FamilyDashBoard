@@ -1,11 +1,11 @@
 # ADR-029 — Workers Analytics Engine Request Tracking
 
-| Field   | Value       |
-| ------- | ----------- |
-| Status  | Accepted    |
-| Date    | 2025-07-13  |
-| Sprint  | 29          |
-| Roadmap | b |
+| Field   | Value      |
+| ------- | ---------- |
+| Status  | Accepted   |
+| Date    | 2025-07-13 |
+| Sprint  | 29         |
+| Roadmap | b          |
 
 ## Context
 

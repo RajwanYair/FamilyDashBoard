@@ -44,7 +44,7 @@ const WILDCARD_PATTERNS = [
     label: "unsafe-eval",
     severity: SEVERITY.HIGH,
     narrowHint:
-      "Eliminate eval() / new Function() usage. Vite's dev server needs this — confirm it is dev-only." // owasp-allow:A03 — advisory text string, not a code call,
+      "Eliminate eval() / new Function() usage. Vite's dev server needs this — confirm it is dev-only.", // owasp-allow:A03 — advisory text string, not a code call,
   },
   {
     pattern: /(?<![a-zA-Z])\*(?![a-zA-Z.])(?!\s*(\.html|\.js|\.css))/,

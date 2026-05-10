@@ -9,10 +9,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { renderCurrency } from "../../../src/cards/currency/currency";
 import { renderAlerts, cacheDom as cacheAlertsDom } from "../../../src/cards/alerts/alerts";
 import { renderNews, cacheDom as cacheNewsDom } from "../../../src/cards/news/news";
-import {
-  getCardSignal,
-  _resetCardSignals,
-} from "../../../src/core/card-signal-protocol";
+import { getCardSignal, _resetCardSignals } from "../../../src/core/card-signal-protocol";
 import type { AlertEvent, NewsItem } from "../../../src/types/api";
 
 beforeEach(() => {

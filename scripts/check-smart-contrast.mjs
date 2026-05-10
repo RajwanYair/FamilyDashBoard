@@ -35,7 +35,8 @@ const ALLOWED_FILES = new Set([
 ]);
 
 /** Color literals that the audit forbids in non-allowlisted files. */
-const FORBIDDEN = /\b(?:color|background(?:-color)?)\s*:\s*(#fff(?:fff)?|#000(?:000)?|white|black)\b/gi;
+const FORBIDDEN =
+  /\b(?:color|background(?:-color)?)\s*:\s*(#fff(?:fff)?|#000(?:000)?|white|black)\b/gi;
 
 /** Allow-line marker that, if present on the prior non-blank line, exempts
  * the next declaration. Use sparingly. */

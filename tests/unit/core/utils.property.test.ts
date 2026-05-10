@@ -26,13 +26,11 @@ import { clamp, pad2, decomposeDuration, computeMoonPhase } from "@/core/utils";
 const finiteArb = fc.double({ noNaN: true, noDefaultInfinity: true, min: -1e9, max: 1e9 });
 
 /** A valid (min, max) pair where min ≤ max, and a value in any position. */
-const clampTripleArb = fc
-  .tuple(finiteArb, finiteArb, finiteArb)
-  .map(([a, b, c]) => {
-    const lo = Math.min(a, b);
-    const hi = Math.max(a, b);
-    return { value: c, min: lo, max: hi };
-  });
+const clampTripleArb = fc.tuple(finiteArb, finiteArb, finiteArb).map(([a, b, c]) => {
+  const lo = Math.min(a, b);
+  const hi = Math.max(a, b);
+  return { value: c, min: lo, max: hi };
+});
 
 /** A value already in [min, max]. */
 const inRangeTripleArb = fc
@@ -50,9 +48,7 @@ const inRangeTripleArb = fc
 const durationMsArb = fc.integer({ min: 0, max: 365 * 24 * 3600 * 1000 });
 
 /** Any Date representable as a safe integer timestamp. */
-const anyDateArb = fc
-  .integer({ min: 0, max: 2_000_000_000_000 })
-  .map((ms) => new Date(ms));
+const anyDateArb = fc.integer({ min: 0, max: 2_000_000_000_000 }).map((ms) => new Date(ms));
 
 // ── UT1: clamp — result always in [min, max] ──────────────────────────────────
 

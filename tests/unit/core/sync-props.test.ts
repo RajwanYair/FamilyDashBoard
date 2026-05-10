@@ -7,12 +7,7 @@
 
 import fc from "fast-check";
 import { afterEach, describe, it, expect } from "vitest";
-import {
-  recordFailure,
-  recordSuccess,
-  getBackoffDelay,
-  getFailedPanes,
-} from "@/core/sync";
+import { recordFailure, recordSuccess, getBackoffDelay, getFailedPanes } from "@/core/sync";
 
 /** Unique-ish key generator to avoid cross-test state bleed. */
 const keyArb = fc.uuid();
@@ -104,24 +99,21 @@ describe("SYP4: getBackoffDelay is bounded between 1 and 32 inclusive", () => {
 describe("SYP5: getFailedPanes includes keys with ≥1 failure", () => {
   it("every key with recordFailure appears in getFailedPanes", () => {
     fc.assert(
-      fc.property(
-        fc.array(keyArb, { minLength: 1, maxLength: 6 }),
-        (keys) => {
-          // Ensure clean slate for each key
-          const unique = [...new Set(keys)];
-          for (const k of unique) recordSuccess(k);
+      fc.property(fc.array(keyArb, { minLength: 1, maxLength: 6 }), (keys) => {
+        // Ensure clean slate for each key
+        const unique = [...new Set(keys)];
+        for (const k of unique) recordSuccess(k);
 
-          // Record at least 1 failure per key
-          for (const k of unique) recordFailure(k);
+        // Record at least 1 failure per key
+        for (const k of unique) recordFailure(k);
 
-          const failed = new Set(getFailedPanes().map((p) => p.key));
-          const allPresent = unique.every((k) => failed.has(k));
+        const failed = new Set(getFailedPanes().map((p) => p.key));
+        const allPresent = unique.every((k) => failed.has(k));
 
-          // Cleanup
-          for (const k of unique) recordSuccess(k);
-          return allPresent;
-        },
-      ),
+        // Cleanup
+        for (const k of unique) recordSuccess(k);
+        return allPresent;
+      }),
       { numRuns: 50 },
     );
   });

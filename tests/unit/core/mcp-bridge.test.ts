@@ -113,9 +113,9 @@ describe("dispatchTool", () => {
   });
 
   it("throws for an unknown tool name", () => {
-    expect(() =>
-      dispatchTool("today.unknown" as Parameters<typeof dispatchTool>[0]),
-    ).toThrow("unknown tool");
+    expect(() => dispatchTool("today.unknown" as Parameters<typeof dispatchTool>[0])).toThrow(
+      "unknown tool",
+    );
   });
 
   it("dispatches all 6 known tools without throwing (null signals)", () => {
@@ -140,21 +140,18 @@ describe("dispatchTool", () => {
     ["today.synthesis", "ai-synthesis", "synthesis"],
     ["today.calendar", "calendar", "events"],
     ["today.hebrew_cal", "hebrew-cal", "zmanim"],
-  ] as const)(
-    "%s returns frozen payload when card signal is set",
-    (tool, cardId, key) => {
-      vi.mocked(getCardSignal).mockReturnValue({
-        v: 1,
-        cardId,
-        key,
-        value: { data: "test" },
-        ts: Date.now(),
-      });
-      const result = dispatchTool(tool);
-      expect(result).not.toBeNull();
-      expect(Object.isFrozen(result)).toBe(true);
-    },
-  );
+  ] as const)("%s returns frozen payload when card signal is set", (tool, cardId, key) => {
+    vi.mocked(getCardSignal).mockReturnValue({
+      v: 1,
+      cardId,
+      key,
+      value: { data: "test" },
+      ts: Date.now(),
+    });
+    const result = dispatchTool(tool);
+    expect(result).not.toBeNull();
+    expect(Object.isFrozen(result)).toBe(true);
+  });
 });
 
 // ── initMcpBridge / closeMcpBridge / isMcpActive ─────────────────────────────

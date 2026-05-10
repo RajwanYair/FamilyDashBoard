@@ -1,12 +1,12 @@
 # ADR-046 — Vectorize Shadow Run Before Retiring SimHash
 
-| Field      | Value                                                      |
-| ---------- | ---------------------------------------------------------- |
-| Date       | 2026-04-30                                                 |
-| Status     | Accepted (Plan)                                            |
-| Sprint     | 229                                                        |
-| Supersedes | n/a                                                        |
-| Related    | Roadmap item N1, `worker/src/utils/simhash.ts`, ADR-003    |
+| Field      | Value                                                   |
+| ---------- | ------------------------------------------------------- |
+| Date       | 2026-04-30                                              |
+| Status     | Accepted (Plan)                                         |
+| Sprint     | 229                                                     |
+| Supersedes | n/a                                                     |
+| Related    | Roadmap item N1, `worker/src/utils/simhash.ts`, ADR-003 |
 
 ## Context
 
@@ -84,21 +84,18 @@ After 30 days of shadow data:
 
 ## Alternatives Considered
 
-| Option                        | Why Not Chosen                                   |
-| ----------------------------- | ------------------------------------------------ |
-| Replace SimHash immediately   | Too risky; shadow run validates the approach first |
-| Use Pinecone / Weaviate       | Adds external vendor dependency; CF Vectorize is  |
-|                               | already in-stack at zero egress cost              |
-| Keep SimHash indefinitely     | Does not support semantic dedup or related-articles |
+| Option                      | Why Not Chosen                                      |
+| --------------------------- | --------------------------------------------------- |
+| Replace SimHash immediately | Too risky; shadow run validates the approach first  |
+| Use Pinecone / Weaviate     | Adds external vendor dependency; CF Vectorize is    |
+|                             | already in-stack at zero egress cost                |
+| Keep SimHash indefinitely   | Does not support semantic dedup or related-articles |
 
 ## Implementation Notes
 
 ```typescript
 // worker/src/utils/vectorize.ts (stub — Shadow mode only)
-export async function vectorizeArticle(
-  text: string,
-  env: AppEnv,
-): Promise<string | null> {
+export async function vectorizeArticle(text: string, env: AppEnv): Promise<string | null> {
   if (!env.VECTORIZE || !env.AI) return null;
   try {
     const embedding = await env.AI.run("@cf/baai/bge-small-en-v1.5", {

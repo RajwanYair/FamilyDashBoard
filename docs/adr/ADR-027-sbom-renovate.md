@@ -4,7 +4,7 @@
 | ---------- | ----------------------------------------------------------- |
 | Status     | Accepted                                                    |
 | Date       | 2026-05-19                                                  |
-| Sprint     | |
+| Sprint     |                                                             |
 | Supersedes | —                                                           |
 | See also   | ADR-014 (shared tooling), ADR-023 (Valibot), ADR-026 (Hono) |
 
@@ -84,4 +84,4 @@ With v12.0 shipping Valibot + Hono in the worker (8) and a growing supply-chain 
 | SPDX JSON                             | Less native npm tooling; CycloneDX has better GitHub integration                   |
 | Dependabot                            | Less configurable than Renovate for monorepo/shared-tooling patterns; no CycloneDX |
 | Manual SBOM (anchore/syft)            | Requires Docker; heavier than `@cyclonedx/cyclonedx-npm` for an npm project        |
-| Attach SBOM to release in same sprint | Deferred (needs `gh release upload` step) — planned |
+| Attach SBOM to release in same sprint | Deferred (needs `gh release upload` step) — planned                                |

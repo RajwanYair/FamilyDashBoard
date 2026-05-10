@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/screen-mode.ts 
+ * fast-check property tests — src/ui/screen-mode.ts
  *
  * Properties under test:
  *  SM1. applyFontScale clamps below 0.7 to 0.7
@@ -19,14 +19,11 @@ import { applyFontScale, applyScreenMode } from "@/ui/screen-mode";
 describe("screen-mode — SM1: applyFontScale lower clamp", () => {
   it("any value < 0.7 results in 0.7", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: -100, max: 0.69, noNaN: true }),
-        (val) => {
-          applyFontScale(val);
-          const prop = document.documentElement.style.getPropertyValue("--font-scale");
-          expect(prop).toBe("0.7");
-        },
-      ),
+      fc.property(fc.double({ min: -100, max: 0.69, noNaN: true }), (val) => {
+        applyFontScale(val);
+        const prop = document.documentElement.style.getPropertyValue("--font-scale");
+        expect(prop).toBe("0.7");
+      }),
       { numRuns: 10 },
     );
   });
@@ -37,14 +34,11 @@ describe("screen-mode — SM1: applyFontScale lower clamp", () => {
 describe("screen-mode — SM2: applyFontScale upper clamp", () => {
   it("any value > 1.5 results in 1.5", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 1.51, max: 1000, noNaN: true }),
-        (val) => {
-          applyFontScale(val);
-          const prop = document.documentElement.style.getPropertyValue("--font-scale");
-          expect(prop).toBe("1.5");
-        },
-      ),
+      fc.property(fc.double({ min: 1.51, max: 1000, noNaN: true }), (val) => {
+        applyFontScale(val);
+        const prop = document.documentElement.style.getPropertyValue("--font-scale");
+        expect(prop).toBe("1.5");
+      }),
       { numRuns: 10 },
     );
   });
@@ -55,19 +49,16 @@ describe("screen-mode — SM2: applyFontScale upper clamp", () => {
 describe("screen-mode — SM3: applyFontScale precision", () => {
   it("within [0.7, 1.5] rounds to 2 decimal places", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 0.7, max: 1.5, noNaN: true }),
-        (val) => {
-          applyFontScale(val);
-          const prop = document.documentElement.style.getPropertyValue("--font-scale");
-          const parsed = Number(prop);
-          // rounded to 2dp
-          expect(parsed).toBe(Math.round(parsed * 100) / 100);
-          // within range
-          expect(parsed).toBeGreaterThanOrEqual(0.7);
-          expect(parsed).toBeLessThanOrEqual(1.5);
-        },
-      ),
+      fc.property(fc.double({ min: 0.7, max: 1.5, noNaN: true }), (val) => {
+        applyFontScale(val);
+        const prop = document.documentElement.style.getPropertyValue("--font-scale");
+        const parsed = Number(prop);
+        // rounded to 2dp
+        expect(parsed).toBe(Math.round(parsed * 100) / 100);
+        // within range
+        expect(parsed).toBeGreaterThanOrEqual(0.7);
+        expect(parsed).toBeLessThanOrEqual(1.5);
+      }),
       { numRuns: 15 },
     );
   });

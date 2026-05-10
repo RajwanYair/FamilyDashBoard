@@ -83,10 +83,10 @@ jobs:
       - name: SW version check
         run: node scripts/check-sw-version.mjs
 
-      - name: Mermaid diagram validation 
+      - name: Mermaid diagram validation
         run: node scripts/check-mermaid.mjs
 
-      - name: Container-query audit 
+      - name: Container-query audit
         run: node scripts/check-container-queries.mjs
 
       - name: Worker-client / OpenAPI sync check (F18)
@@ -164,10 +164,10 @@ jobs:
       #   --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
       #   dist.zip
       # SHA-pin: verify against sigstore/cosign-installer releases before next tag.
-      - name: Install Cosign 
-        uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcbfce4d4e74b90a25 # v3.8.2
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@7e8b541eb2e61bf99390e1afd4be13a184e9ebc5 # v3.10.1
 
-      - name: Sign artefacts with Cosign 
+      - name: Sign artefacts with Cosign
         run: |
           cosign sign-blob --bundle=dist.zip.bundle --yes dist.zip
           cosign sign-blob --bundle=sw.js.bundle --yes sw.js
@@ -175,5 +175,5 @@ jobs:
           echo "dist.zip signed: dist.zip.bundle" >> "$GITHUB_STEP_SUMMARY"
           echo "sw.js signed: sw.js.bundle" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Generate rebuilder manifest 
+      - name: Generate rebuilder manifest
         run: node scripts/check-reproducible.mjs

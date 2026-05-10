@@ -84,9 +84,7 @@ for (const { file, regex, label } of targets) {
     continue;
   }
   if (match[1] !== expected) {
-    console.error(
-      `❌  ${label}: found v${match[1]}, expected v${expected} (package.json)`,
-    );
+    console.error(`❌  ${label}: found v${match[1]}, expected v${expected} (package.json)`);
     failed++;
   }
 }

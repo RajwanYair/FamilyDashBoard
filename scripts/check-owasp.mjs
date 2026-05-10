@@ -1112,7 +1112,16 @@ const RULES = [
     label: "fetch() without signal/AbortController — may hang indefinitely",
     severity: "warn",
     pattern: /\bfetch\(\s*[^,)]+\s*\)\s*(?!\s*\.)/,
-    safeMarkers: ["test", "spec", "// owasp-allow:A05", "signal", "AbortController", "fetchWithTimeout", "fetchViaWorker", "fetchJSON"],
+    safeMarkers: [
+      "test",
+      "spec",
+      "// owasp-allow:A05",
+      "signal",
+      "AbortController",
+      "fetchWithTimeout",
+      "fetchViaWorker",
+      "fetchJSON",
+    ],
   },
 
   // A02 — Cryptographic Failures: crypto.subtle with short key length
@@ -1249,7 +1258,9 @@ function collectMjsFiles(dir) {
 // Collect from src/, worker/src/, and scripts/
 const files = [
   ...collectTsFiles(SRC),
-  ...(statSync(WORKER_SRC, { throwIfNoEntry: false })?.isDirectory() ? collectTsFiles(WORKER_SRC) : []),
+  ...(statSync(WORKER_SRC, { throwIfNoEntry: false })?.isDirectory()
+    ? collectTsFiles(WORKER_SRC)
+    : []),
   ...collectMjsFiles(SCRIPTS_DIR),
 ];
 
@@ -1269,10 +1280,10 @@ for (const file of files) {
       // Per-line suppression: // owasp-allow:A03 etc.
       if (line.includes(`owasp-allow:${rule.category}`)) continue;
       // Generic allow-all suppression
-      if (line.includes("owasp-allow:all")) continue;        // Per-rule safe markers (e.g. trustedHTML( makes innerHTML safe)
-        // Check current line + next 2 lines for multi-line statements
-        const context = [line, lines[i + 1] ?? "", lines[i + 2] ?? ""].join(" ");
-        if (rule.safeMarkers?.some((m) => context.includes(m))) continue;
+      if (line.includes("owasp-allow:all")) continue; // Per-rule safe markers (e.g. trustedHTML( makes innerHTML safe)
+      // Check current line + next 2 lines for multi-line statements
+      const context = [line, lines[i + 1] ?? "", lines[i + 2] ?? ""].join(" ");
+      if (rule.safeMarkers?.some((m) => context.includes(m))) continue;
       if (rule.pattern.test(line)) {
         findings.push({
           severity: rule.severity,

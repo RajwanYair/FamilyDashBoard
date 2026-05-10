@@ -1,6 +1,23 @@
 ---
 description: "Audit all 12 cards for a specific contract requirement (configSchema, FdbCard, destroy lifecycle, etc.) and produce a gap report with fixes."
-tools: ["grep_search", "read_file", "file_search", "replace_string_in_file", "multi_replace_string_in_file", "semantic_search", "run_in_terminal", "get_terminal_output", "get_errors", "vscode_listCodeUsages", "vscode_renameSymbol", "manage_todo_list", "tool_search", "memory", "runSubagent"]
+tools:
+  [
+    "grep_search",
+    "read_file",
+    "file_search",
+    "replace_string_in_file",
+    "multi_replace_string_in_file",
+    "semantic_search",
+    "run_in_terminal",
+    "get_terminal_output",
+    "get_errors",
+    "vscode_listCodeUsages",
+    "vscode_renameSymbol",
+    "manage_todo_list",
+    "tool_search",
+    "memory",
+    "runSubagent",
+  ]
 ---
 
 # Card Contract Audit — FamilyDashBoard

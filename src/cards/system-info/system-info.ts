@@ -272,7 +272,9 @@ export async function renderSystemInfo(): Promise<void> {
       const rttHistory = getRttHistory();
       const rttSparkEl = document.getElementById("sysinfo-rtt-spark");
       if (rttSparkEl !== null && rttHistory.length >= 2) {
-        rttSparkEl.innerHTML = trustedHTML(sparklineSvg(Array.from(rttHistory), "var(--accent-2, var(--accent))", 44, 12));
+        rttSparkEl.innerHTML = trustedHTML(
+          sparklineSvg(Array.from(rttHistory), "var(--accent-2, var(--accent))", 44, 12),
+        );
       }
     } else {
       setText("sysinfo-rtt", "—");
@@ -480,7 +482,6 @@ export async function getStorageBuckets(): Promise<string> {
   }
 }
 
-
 // In-memory RTT ring buffer (10-minute window) ──────────
 
 const RTT_RING_SIZE = 10;
@@ -511,7 +512,9 @@ export function _resetRttHistory(): void {
  * Returns one of: "active" | "installing" | "waiting" | "none" | "unsupported".
  * Safe to call in non-SW environments.
  */
-export async function getSwState(): Promise<"active" | "installing" | "waiting" | "none" | "unsupported"> {
+export async function getSwState(): Promise<
+  "active" | "installing" | "waiting" | "none" | "unsupported"
+> {
   if (!("serviceWorker" in navigator)) return "unsupported";
   try {
     const reg = await navigator.serviceWorker.getRegistration();
@@ -556,10 +559,13 @@ export function initPressureObserver(): void {
     .PressureObserver;
   if (!Ctor) return;
   try {
-    const obs = new Ctor((records) => {
-      const last = records[records.length - 1];
-      if (last) _pressureState = last.state;
-    }, { sampleInterval: 30_000 });
+    const obs = new Ctor(
+      (records) => {
+        const last = records[records.length - 1];
+        if (last) _pressureState = last.state;
+      },
+      { sampleInterval: 30_000 },
+    );
     void obs.observe("cpu").catch(() => {
       _pressureState = "unsupported";
     });

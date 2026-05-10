@@ -6,7 +6,14 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { tempUnit, appTheme, motivationInterval, screenMode, alertsEnabled, syncAppSignal } from "@/core/app-signals";
+import {
+  tempUnit,
+  appTheme,
+  motivationInterval,
+  screenMode,
+  alertsEnabled,
+  syncAppSignal,
+} from "@/core/app-signals";
 
 // Reset signals to known defaults before each test.
 beforeEach(() => {

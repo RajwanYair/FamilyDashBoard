@@ -107,7 +107,9 @@ app.use("*", async (c, next) => {
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
-app.get("/health", earlyHintsMiddleware, (c) => c.json({ ok: true, status: "healthy", ts: Date.now() }));
+app.get("/health", earlyHintsMiddleware, (c) =>
+  c.json({ ok: true, status: "healthy", ts: Date.now() }),
+);
 
 // V13-EDGE-5: Canary health endpoint — reveals canary percentage and current tag status
 app.get("/api/canary", (c) => {

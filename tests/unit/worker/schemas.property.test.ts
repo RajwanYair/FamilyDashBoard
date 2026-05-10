@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/schemas.ts 
+ * fast-check property tests — worker/src/utils/schemas.ts
  *
  * Properties under test:
  *  SC1. WeatherSchema: valid structure passes
@@ -43,18 +43,36 @@ describe("schemas — SC1: WeatherSchema valid", () => {
             uv_index: fc.double({ min: 0, max: 15, noNaN: true }),
           }),
           hourly: fc.record({
-            temperature_2m: fc.array(fc.double({ min: -50, max: 60, noNaN: true }), { minLength: 1, maxLength: 3 }),
-            precipitation_probability: fc.array(fc.double({ min: 0, max: 100, noNaN: true }), { minLength: 1, maxLength: 3 }),
+            temperature_2m: fc.array(fc.double({ min: -50, max: 60, noNaN: true }), {
+              minLength: 1,
+              maxLength: 3,
+            }),
+            precipitation_probability: fc.array(fc.double({ min: 0, max: 100, noNaN: true }), {
+              minLength: 1,
+              maxLength: 3,
+            }),
             weather_code: fc.array(fc.integer({ min: 0, max: 99 }), { minLength: 1, maxLength: 3 }),
           }),
           daily: fc.record({
-            temperature_2m_max: fc.array(fc.double({ min: -50, max: 60, noNaN: true }), { minLength: 1, maxLength: 3 }),
-            temperature_2m_min: fc.array(fc.double({ min: -50, max: 60, noNaN: true }), { minLength: 1, maxLength: 3 }),
+            temperature_2m_max: fc.array(fc.double({ min: -50, max: 60, noNaN: true }), {
+              minLength: 1,
+              maxLength: 3,
+            }),
+            temperature_2m_min: fc.array(fc.double({ min: -50, max: 60, noNaN: true }), {
+              minLength: 1,
+              maxLength: 3,
+            }),
             weather_code: fc.array(fc.integer({ min: 0, max: 99 }), { minLength: 1, maxLength: 3 }),
             sunrise: fc.array(fc.constant("2025-01-01T06:00:00"), { minLength: 1, maxLength: 3 }),
             sunset: fc.array(fc.constant("2025-01-01T17:00:00"), { minLength: 1, maxLength: 3 }),
-            precipitation_probability_max: fc.array(fc.double({ min: 0, max: 100, noNaN: true }), { minLength: 1, maxLength: 3 }),
-            uv_index_max: fc.array(fc.double({ min: 0, max: 15, noNaN: true }), { minLength: 1, maxLength: 3 }),
+            precipitation_probability_max: fc.array(fc.double({ min: 0, max: 100, noNaN: true }), {
+              minLength: 1,
+              maxLength: 3,
+            }),
+            uv_index_max: fc.array(fc.double({ min: 0, max: 15, noNaN: true }), {
+              minLength: 1,
+              maxLength: 3,
+            }),
           }),
         }),
         (data) => {
@@ -131,7 +149,8 @@ describe("schemas — SC6: NewsRssSchema valid RSS", () => {
   });
 
   it("accepts Atom 1.0 content", () => {
-    const atom = '<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Test</title></entry></feed>';
+    const atom =
+      '<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Test</title></entry></feed>';
     expect(v.safeParse(NewsRssSchema, atom).success).toBe(true);
   });
 });

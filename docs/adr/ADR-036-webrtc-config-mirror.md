@@ -1,10 +1,10 @@
 # ADR-036 — WebRTC Config Mirror (QR-Code Pairing)
 
-| Field        | Value                                                        |
-| ------------ | ------------------------------------------------------------ |
-| **Date**     | 2026-04-24                                                   |
-| **Status**   | Proposed                                                     |
-| **Deciders** | @RajwanYair                                                  |
+| Field        | Value                                          |
+| ------------ | ---------------------------------------------- |
+| **Date**     | 2026-04-24                                     |
+| **Status**   | Proposed                                       |
+| **Deciders** | @RajwanYair                                    |
 | **Tags**     | config, webrtc, mobile, qr-code, , zero-server |
 
 ---

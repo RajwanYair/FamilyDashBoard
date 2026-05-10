@@ -50,25 +50,19 @@ if (!existsSync(RELEASE_YML)) {
 const content = readFileSync(RELEASE_YML, "utf-8");
 
 // ── Check 1: cosign-installer action or cosign binary installation ─────────
-const hasCosignInstall =
-  content.includes("cosign-installer") || content.includes("cosign version");
+const hasCosignInstall = content.includes("cosign-installer") || content.includes("cosign version");
 if (hasCosignInstall) {
   pass("cosign installer step is present in release.yml");
 } else {
-  fail(
-    "cosign installer step is missing from release.yml — add sigstore/cosign-installer action",
-  );
+  fail("cosign installer step is missing from release.yml — add sigstore/cosign-installer action");
 }
 
 // ── Check 2: cosign sign-blob for dist.zip ─────────────────────────────────
-const hasSignDist =
-  content.includes("cosign sign-blob") && content.includes("dist.zip");
+const hasSignDist = content.includes("cosign sign-blob") && content.includes("dist.zip");
 if (hasSignDist) {
   pass("cosign sign-blob dist.zip step is present");
 } else {
-  fail(
-    "cosign sign-blob for dist.zip is missing from release.yml — artefacts are unsigned",
-  );
+  fail("cosign sign-blob for dist.zip is missing from release.yml — artefacts are unsigned");
 }
 
 // ── Check 3: cosign sign-blob for sw.js ───────────────────────────────────
@@ -76,9 +70,7 @@ const hasSignSw = content.includes("cosign sign-blob") && content.includes("sw.j
 if (hasSignSw) {
   pass("cosign sign-blob sw.js step is present");
 } else {
-  fail(
-    "cosign sign-blob for sw.js is missing from release.yml — service worker is unsigned",
-  );
+  fail("cosign sign-blob for sw.js is missing from release.yml — service worker is unsigned");
 }
 
 // ── Check 4: bundle files included in release artefacts ────────────────────

@@ -19,8 +19,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const workflowsDir = join(__dirname, "..", ".github", "workflows");
 
 const EXEMPT_FLAGS = [
-  "--package-lock-only",  // resolves lockfile, no scripts run
-  "--no-package-lock",    // transient install (link-check etc.)
+  "--package-lock-only", // resolves lockfile, no scripts run
+  "--no-package-lock", // transient install (link-check etc.)
 ];
 
 /** Returns true if the npm command line should be exempt from the --ignore-scripts requirement. */
@@ -57,9 +57,7 @@ for (const file of files) {
 }
 
 if (violations === 0) {
-  console.log(
-    `[check-npm-ignore-scripts] OK — ${files.length} workflow(s) scanned, 0 violations.`,
-  );
+  console.log(`[check-npm-ignore-scripts] OK — ${files.length} workflow(s) scanned, 0 violations.`);
   process.exit(0);
 } else {
   console.error(

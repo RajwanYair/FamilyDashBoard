@@ -637,7 +637,8 @@ describe("Night Dimmer — idle handler fires resetIdleTimer on mousemove (line 
 
 describe("initNightDimmer — localStorage fallback + setInterval no-dim path (lines 206-222)", () => {
   beforeEach(() => {
-    document.body.innerHTML = '<div id="night-dim" style="display:none"></div><div id="dim-level-indicator"></div>';
+    document.body.innerHTML =
+      '<div id="night-dim" style="display:none"></div><div id="dim-level-indicator"></div>';
     vi.useFakeTimers();
     localStorage.clear();
   });

@@ -1,12 +1,12 @@
 # ADR-052 — Shadow-Vectorize 30-Day Client-Side Observation Plan
 
-| Field      | Value                                                                             |
-| ---------- | --------------------------------------------------------------------------------- |
-| Date       | 2026-05-28                                                                        |
-| Status     | Accepted (Active)                                                                 |
-| Sprint     | 267 (implementation) / 270 (ADR formalised)                                      |
-| Supersedes | n/a                                                                               |
-| Related    | ADR-046 (Vectorize shadow run), Roadmap item N1, `src/cards/news/news.ts`         |
+| Field      | Value                                                                     |
+| ---------- | ------------------------------------------------------------------------- |
+| Date       | 2026-05-28                                                                |
+| Status     | Accepted (Active)                                                         |
+| Sprint     | 267 (implementation) / 270 (ADR formalised)                               |
+| Supersedes | n/a                                                                       |
+| Related    | ADR-046 (Vectorize shadow run), Roadmap item N1, `src/cards/news/news.ts` |
 
 ## Context
 
@@ -25,8 +25,8 @@ paths are no-ops.
 
 Implement three exported functions in `src/cards/news/news.ts`:
 
-| Symbol                             | Purpose                                                                                   |
-| ---------------------------------- | ----------------------------------------------------------------------------------------- |
+| Symbol                              | Purpose                                                                                   |
+| ----------------------------------- | ----------------------------------------------------------------------------------------- |
 | `isShadowVectorizeEnabled()`        | Returns `true` when shadow mode is active (module-level boolean, synced to localStorage). |
 | `setShadowVectorize(enabled)`       | Toggles shadow mode; persists flag to `localStorage`.                                     |
 | `loadShadowVectorizeFlag()`         | Reads `localStorage` at card init time to restore the flag after a page reload.           |
@@ -37,10 +37,10 @@ Implement three exported functions in `src/cards/news/news.ts`:
 
 ```typescript
 interface VectorizeShadowEntry {
-  ts: number;           // Unix ms timestamp of the fetch
-  simhashDeduped: number;    // Items remaining after SimHash dedup
+  ts: number; // Unix ms timestamp of the fetch
+  simhashDeduped: number; // Items remaining after SimHash dedup
   vectorizeCandidates: number; // Items Vectorize flagged as near-dup
-  overlap: number;      // min(simhashDeduped, vectorizeCandidates) — shared signal
+  overlap: number; // min(simhashDeduped, vectorizeCandidates) — shared signal
 }
 ```
 
@@ -59,12 +59,12 @@ long-running dashboard sessions.
 
 ## Rationale
 
-| Option                                  | Verdict  | Reason                                                              |
-| --------------------------------------- | -------- | ------------------------------------------------------------------- |
-| No client instrumentation               | Rejected | Worker-only data misses client-perceived duplicate rate             |
-| Always-on logging                       | Rejected | Noisy for all users; leaks debug data into production logs          |
-| Feature-flag via `localStorage` (chosen)| Accepted | Zero overhead by default; easy to enable/disable per browser        |
-| Remote config flag                      | Rejected | Requires network call; adds complexity; violates static PWA rule    |
+| Option                                   | Verdict  | Reason                                                           |
+| ---------------------------------------- | -------- | ---------------------------------------------------------------- |
+| No client instrumentation                | Rejected | Worker-only data misses client-perceived duplicate rate          |
+| Always-on logging                        | Rejected | Noisy for all users; leaks debug data into production logs       |
+| Feature-flag via `localStorage` (chosen) | Accepted | Zero overhead by default; easy to enable/disable per browser     |
+| Remote config flag                       | Rejected | Requires network call; adds complexity; violates static PWA rule |
 
 ## Consequences
 

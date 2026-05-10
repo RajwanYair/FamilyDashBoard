@@ -247,9 +247,8 @@ describe("X15 — video-news semantic producer", () => {
   });
 
   it("producer is registerable and returns payload for known channel", async () => {
-    const { getStreamDescriptor } = await import(
-      "../../../src/cards/video-news/video-news-adapter"
-    );
+    const { getStreamDescriptor } =
+      await import("../../../src/cards/video-news/video-news-adapter");
     const { registerSemanticProducer } = await import("../../../src/core/semantic-clipboard");
     const desc = getStreamDescriptor("c14" as Parameters<typeof getStreamDescriptor>[0]);
     registerSemanticProducer("video-news", () => ({
@@ -271,9 +270,8 @@ describe("X15 — video-news semantic producer", () => {
   });
 
   it("payload jsonLd @type is BroadcastChannel", async () => {
-    const { getStreamDescriptor } = await import(
-      "../../../src/cards/video-news/video-news-adapter"
-    );
+    const { getStreamDescriptor } =
+      await import("../../../src/cards/video-news/video-news-adapter");
     const { registerSemanticProducer } = await import("../../../src/core/semantic-clipboard");
     const desc = getStreamDescriptor("i24he" as Parameters<typeof getStreamDescriptor>[0]);
     registerSemanticProducer("video-news", () => ({
@@ -294,9 +292,8 @@ describe("X15 — video-news semantic producer", () => {
   });
 
   it("all known channels have valid Hebrew titles", async () => {
-    const { getStreamDescriptor, listChannels } = await import(
-      "../../../src/cards/video-news/video-news-adapter"
-    );
+    const { getStreamDescriptor, listChannels } =
+      await import("../../../src/cards/video-news/video-news-adapter");
     for (const id of listChannels()) {
       const desc = getStreamDescriptor(id);
       expect(desc.titleHe.length).toBeGreaterThan(0);
@@ -304,9 +301,8 @@ describe("X15 — video-news semantic producer", () => {
   });
 
   it("payload inLanguage is 'he'", async () => {
-    const { getStreamDescriptor } = await import(
-      "../../../src/cards/video-news/video-news-adapter"
-    );
+    const { getStreamDescriptor } =
+      await import("../../../src/cards/video-news/video-news-adapter");
     const { registerSemanticProducer } = await import("../../../src/core/semantic-clipboard");
     const desc = getStreamDescriptor("kan11" as Parameters<typeof getStreamDescriptor>[0]);
     registerSemanticProducer("video-news", () => ({

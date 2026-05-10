@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/anim-level.ts 
+ * fast-check property tests for src/core/anim-level.ts
  *
  * Verifies `effectiveAnimLevel` and `applyAnimLevel` invariants over the
  * full level domain (none / minimal / normal / full) and arbitrary
@@ -28,21 +28,19 @@ describe("anim-level — fast-check properties (ALP1-ALP4 )", () => {
 
   function mockReducedMotion(reduced: boolean): void {
     mmSpy?.mockRestore();
-    mmSpy = vi
-      .spyOn(window, "matchMedia")
-      .mockImplementation(
-        (q) =>
-          ({
-            matches: q === "(prefers-reduced-motion: reduce)" ? reduced : false,
-            media: q,
-            onchange: null,
-            addListener: vi.fn(),
-            removeListener: vi.fn(),
-            addEventListener: vi.fn(),
-            removeEventListener: vi.fn(),
-            dispatchEvent: vi.fn(),
-          }) as unknown as MediaQueryList,
-      );
+    mmSpy = vi.spyOn(window, "matchMedia").mockImplementation(
+      (q) =>
+        ({
+          matches: q === "(prefers-reduced-motion: reduce)" ? reduced : false,
+          media: q,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
   }
 
   it("ALP1: applyAnimLevel always stamps data-anim-level to a valid level (defaults to 'normal' for invalid input)", () => {

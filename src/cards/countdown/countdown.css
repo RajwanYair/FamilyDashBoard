@@ -159,12 +159,24 @@
 /* ── CSS-only confetti on T-0 ─────────────────────────── */
 @layer components {
   @keyframes cd-confetti-fall-a {
-    0%   { transform: translateY(-60px) rotate(0deg);   opacity: 1; }
-    100% { transform: translateY(180px) rotate(360deg); opacity: 0; }
+    0% {
+      transform: translateY(-60px) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(180px) rotate(360deg);
+      opacity: 0;
+    }
   }
   @keyframes cd-confetti-fall-b {
-    0%   { transform: translateY(-60px) rotate(0deg);   opacity: 1; }
-    100% { transform: translateY(180px) rotate(-270deg); opacity: 0; }
+    0% {
+      transform: translateY(-60px) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(180px) rotate(-270deg);
+      opacity: 0;
+    }
   }
 
   /*
@@ -185,18 +197,18 @@
       pointer-events: none;
       /* Each shadow offset is a confetti particle position */
       box-shadow:
-        -80px  10px 0 var(--accent),
-        -55px  30px 0 var(--positive, #34d399),
-        -30px  50px 0 var(--cyan, #67e8f9),
-         -5px  20px 0 var(--accent-bright, var(--accent)),
-         20px  40px 0 var(--positive, #34d399),
-         45px  15px 0 var(--purple, #a78bfa),
-         70px  55px 0 var(--danger, #f87171),
-         90px  25px 0 var(--cyan, #67e8f9),
-        -70px  70px 0 var(--purple, #a78bfa),
-         -40px 90px 0 var(--accent),
-         10px  85px 0 var(--positive, #34d399),
-         60px  75px 0 var(--accent-bright, var(--accent));
+        -80px 10px 0 var(--accent),
+        -55px 30px 0 var(--positive, #34d399),
+        -30px 50px 0 var(--cyan, #67e8f9),
+        -5px 20px 0 var(--accent-bright, var(--accent)),
+        20px 40px 0 var(--positive, #34d399),
+        45px 15px 0 var(--purple, #a78bfa),
+        70px 55px 0 var(--danger, #f87171),
+        90px 25px 0 var(--cyan, #67e8f9),
+        -70px 70px 0 var(--purple, #a78bfa),
+        -40px 90px 0 var(--accent),
+        10px 85px 0 var(--positive, #34d399),
+        60px 75px 0 var(--accent-bright, var(--accent));
       animation: cd-confetti-fall-a 2.4s ease-in forwards;
     }
     .countdown-body.cd-confetti::after {
@@ -204,18 +216,18 @@
       height: 10px;
       border-radius: 50%;
       box-shadow:
-        -65px  20px 0 var(--cyan, #67e8f9),
-        -40px  45px 0 var(--danger, #f87171),
-        -15px  65px 0 var(--accent),
-         15px  30px 0 var(--purple, #a78bfa),
-         40px  60px 0 var(--positive, #34d399),
-         65px  35px 0 var(--accent-bright, var(--accent)),
-         85px  80px 0 var(--cyan, #67e8f9),
-        -85px  80px 0 var(--danger, #f87171),
+        -65px 20px 0 var(--cyan, #67e8f9),
+        -40px 45px 0 var(--danger, #f87171),
+        -15px 65px 0 var(--accent),
+        15px 30px 0 var(--purple, #a78bfa),
+        40px 60px 0 var(--positive, #34d399),
+        65px 35px 0 var(--accent-bright, var(--accent)),
+        85px 80px 0 var(--cyan, #67e8f9),
+        -85px 80px 0 var(--danger, #f87171),
         -50px 100px 0 var(--accent),
-         25px  95px 0 var(--purple, #a78bfa),
-         75px 100px 0 var(--positive, #34d399),
-          5px  50px 0 var(--cyan, #67e8f9);
+        25px 95px 0 var(--purple, #a78bfa),
+        75px 100px 0 var(--positive, #34d399),
+        5px 50px 0 var(--cyan, #67e8f9);
       animation: cd-confetti-fall-b 2.8s ease-in 0.3s forwards;
     }
   }

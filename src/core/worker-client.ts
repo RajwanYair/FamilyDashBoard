@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — Typed Worker HTTP Client 
+ * FamilyDashBoard v13 — Typed Worker HTTP Client
  *
  * Single place that knows:
  *   - The worker base URL

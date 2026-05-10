@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/card-registry.ts 
+ * fast-check property tests — src/core/card-registry.ts
  *
  * Properties under test:
  *  CR1. registerCard + getCard round-trip: any registered entry is retrievable by id
@@ -8,10 +8,10 @@
  *  CR4. registerCard last-wins: re-registering same id overwrites
  *  CR5. listCards length equals distinct registered ids count
  *  CR6. loadCard throws for unregistered id
- *  CR7. createShell returns section with data-card-id attribute 
- *  CR8. createShell throws for unregistered id 
- *  CR9. listCards always contains any just-registered id 
- *  CR10. loadCard succeeds for registered card 
+ *  CR7. createShell returns section with data-card-id attribute
+ *  CR8. createShell throws for unregistered id
+ *  CR9. listCards always contains any just-registered id
+ *  CR10. loadCard succeeds for registered card
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -27,7 +27,16 @@ const makeEntry = (id: string, titleHe: string, titleEn = "EN") => ({
   icon: "🔲",
   titleHe,
   titleEn,
-  load: async () => ({ id, icon: "🔲", titleHe, titleEn, defaultSlot: { col: 0 as const, order: 0, flexGrow: 1, hidden: false }, defaultSize: "md" as const, render: () => document.createElement("div"), init: () => {} }),
+  load: async () => ({
+    id,
+    icon: "🔲",
+    titleHe,
+    titleEn,
+    defaultSlot: { col: 0 as const, order: 0, flexGrow: 1, hidden: false },
+    defaultSize: "md" as const,
+    render: () => document.createElement("div"),
+    init: () => {},
+  }),
   defaultSlot: { col: 0 as const, order: 0, flexGrow: 1, hidden: false },
   defaultSize: "md" as const,
 });
@@ -37,16 +46,13 @@ const makeEntry = (id: string, titleHe: string, titleEn = "EN") => ({
 describe("card-registry — CR1: register+get round-trip", () => {
   it("registered card is retrievable", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^test-cr1-[a-z]{3,8}$/),
-        (id) => {
-          const entry = makeEntry(id, "בדיקה");
-          registerCard(entry);
-          const got = getCard(id);
-          expect(got).toBeDefined();
-          expect(got!.id).toBe(id);
-        },
-      ),
+      fc.property(fc.stringMatching(/^test-cr1-[a-z]{3,8}$/), (id) => {
+        const entry = makeEntry(id, "בדיקה");
+        registerCard(entry);
+        const got = getCard(id);
+        expect(got).toBeDefined();
+        expect(got!.id).toBe(id);
+      }),
       { numRuns: 10 },
     );
   });
@@ -57,12 +63,9 @@ describe("card-registry — CR1: register+get round-trip", () => {
 describe("card-registry — CR2: getCard undefined", () => {
   it("returns undefined for random non-existent id", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^nonexist-[a-z0-9]{10,20}$/),
-        (id) => {
-          expect(getCard(id)).toBeUndefined();
-        },
-      ),
+      fc.property(fc.stringMatching(/^nonexist-[a-z0-9]{10,20}$/), (id) => {
+        expect(getCard(id)).toBeUndefined();
+      }),
       { numRuns: 10 },
     );
   });
@@ -122,18 +125,15 @@ describe("card-registry — CR6: loadCard throws", () => {
 describe("card-registry — CR7: createShell structural output", () => {
   it("returns a section element with correct data-card-id", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^test-cr7-[a-z]{3,6}$/),
-        (id) => {
-          registerCard(makeEntry(id, "בדיקה"));
-          const shell = createShell(id);
-          expect(shell.root.tagName).toBe("SECTION");
-          expect(shell.root.dataset["cardId"]).toBe(id);
-          expect(shell.body).toBeDefined();
-          expect(shell.header).toBeDefined();
-          expect(shell.footer).toBeDefined();
-        },
-      ),
+      fc.property(fc.stringMatching(/^test-cr7-[a-z]{3,6}$/), (id) => {
+        registerCard(makeEntry(id, "בדיקה"));
+        const shell = createShell(id);
+        expect(shell.root.tagName).toBe("SECTION");
+        expect(shell.root.dataset["cardId"]).toBe(id);
+        expect(shell.body).toBeDefined();
+        expect(shell.header).toBeDefined();
+        expect(shell.footer).toBeDefined();
+      }),
       { numRuns: 8 },
     );
   });
@@ -144,12 +144,9 @@ describe("card-registry — CR7: createShell structural output", () => {
 describe("card-registry — CR8: createShell throws for missing", () => {
   it("throws for unregistered id", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^noexist-cr8-[a-z0-9]{5,10}$/),
-        (id) => {
-          expect(() => createShell(id)).toThrow(/not registered/i);
-        },
-      ),
+      fc.property(fc.stringMatching(/^noexist-cr8-[a-z0-9]{5,10}$/), (id) => {
+        expect(() => createShell(id)).toThrow(/not registered/i);
+      }),
       { numRuns: 5 },
     );
   });
@@ -160,14 +157,11 @@ describe("card-registry — CR8: createShell throws for missing", () => {
 describe("card-registry — CR9: listCards includes registered entry", () => {
   it("newly registered card appears in listCards", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^test-cr9-[a-z]{3,8}$/),
-        (id) => {
-          registerCard(makeEntry(id, "בדיקה"));
-          const ids = listCards().map((c) => c.id);
-          expect(ids).toContain(id);
-        },
-      ),
+      fc.property(fc.stringMatching(/^test-cr9-[a-z]{3,8}$/), (id) => {
+        registerCard(makeEntry(id, "בדיקה"));
+        const ids = listCards().map((c) => c.id);
+        expect(ids).toContain(id);
+      }),
       { numRuns: 8 },
     );
   });

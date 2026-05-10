@@ -184,7 +184,9 @@ describe("handleWeeklyDigest", () => {
       },
     });
     await handleWeeklyDigest(env);
-    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("[FDB-digest] send_email binding absent"));
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining("[FDB-digest] send_email binding absent"),
+    );
     logSpy.mockRestore();
   });
 
@@ -299,10 +301,7 @@ describe("handleWeeklyDigest", () => {
   it("produces top errors section when topErrors exist", async () => {
     const kvGet = vi.fn().mockResolvedValue(null);
     const kvList = vi.fn().mockResolvedValue({
-      keys: [
-        { name: "errors:msg:FetchFailed" },
-        { name: "errors:msg:TimeoutError" },
-      ],
+      keys: [{ name: "errors:msg:FetchFailed" }, { name: "errors:msg:TimeoutError" }],
       list_complete: true,
       cacheStatus: null,
     });

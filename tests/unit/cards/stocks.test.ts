@@ -2538,7 +2538,9 @@ describe("Stocks — getTopMovers ( S3)", () => {
 
 // ── isPreMarket, isPostMarket, getMarketStateForDisplay ────
 describe("Stocks — S5 pre/post-market helpers ", () => {
-  afterEach(() => { vi.useRealTimers(); });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   it("isPreMarket returns true at 7:00 AM ET Monday", () => {
     // Monday 2024-01-08 07:00 ET = 12:00 UTC (7*60=420, 240≤420<570)
@@ -2602,15 +2604,30 @@ describe("Stocks — Watchlist groups IDB ", () => {
 
   it("saveWatchlistGroup inserts new group", async () => {
     vi.mocked(idbGet).mockResolvedValue(null);
-    const g: WatchlistGroup = { id: "g1", name: "Tech", symbols: ["AAPL"], createdAt: "2026-01-01T00:00:00Z" };
+    const g: WatchlistGroup = {
+      id: "g1",
+      name: "Tech",
+      symbols: ["AAPL"],
+      createdAt: "2026-01-01T00:00:00Z",
+    };
     await saveWatchlistGroup(g);
     expect(idbSet).toHaveBeenCalledWith("fdb-stocks", "watchlist-groups", "__list__", [g]);
   });
 
   it("saveWatchlistGroup replaces existing group by id", async () => {
-    const original: WatchlistGroup = { id: "g1", name: "Tech", symbols: ["AAPL"], createdAt: "2026-01-01T00:00:00Z" };
+    const original: WatchlistGroup = {
+      id: "g1",
+      name: "Tech",
+      symbols: ["AAPL"],
+      createdAt: "2026-01-01T00:00:00Z",
+    };
     vi.mocked(idbGet).mockResolvedValue([original]);
-    const updated: WatchlistGroup = { id: "g1", name: "Tech+", symbols: ["AAPL", "MSFT"], createdAt: "2026-01-01T00:00:00Z" };
+    const updated: WatchlistGroup = {
+      id: "g1",
+      name: "Tech+",
+      symbols: ["AAPL", "MSFT"],
+      createdAt: "2026-01-01T00:00:00Z",
+    };
     await saveWatchlistGroup(updated);
     expect(idbSet).toHaveBeenCalledWith("fdb-stocks", "watchlist-groups", "__list__", [updated]);
   });
@@ -2629,8 +2646,18 @@ describe("Stocks — Watchlist groups IDB ", () => {
   });
 
   it("removeWatchlistGroup removes group from list and calls idbDelete", async () => {
-    const g1: WatchlistGroup = { id: "g1", name: "Tech", symbols: ["AAPL"], createdAt: "2026-01-01T00:00:00Z" };
-    const g2: WatchlistGroup = { id: "g2", name: "Finance", symbols: ["JPM"], createdAt: "2026-01-01T00:00:00Z" };
+    const g1: WatchlistGroup = {
+      id: "g1",
+      name: "Tech",
+      symbols: ["AAPL"],
+      createdAt: "2026-01-01T00:00:00Z",
+    };
+    const g2: WatchlistGroup = {
+      id: "g2",
+      name: "Finance",
+      symbols: ["JPM"],
+      createdAt: "2026-01-01T00:00:00Z",
+    };
     vi.mocked(idbGet).mockResolvedValue([g1, g2]);
     await removeWatchlistGroup("g1");
     expect(idbSet).toHaveBeenCalledWith("fdb-stocks", "watchlist-groups", "__list__", [g2]);
@@ -2674,22 +2701,18 @@ describe("Stocks — Watchlist groups IDB ", () => {
 describe("SP1: formatVolume(vol) — always returns a non-empty string", () => {
   it("any positive finite number produces a non-empty string", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 0.01, max: 1e13, noNaN: true }),
-        (vol) => {
-          const result = formatVolume(vol);
-          return typeof result === "string" && result.length > 0;
-        },
-      ),
+      fc.property(fc.double({ min: 0.01, max: 1e13, noNaN: true }), (vol) => {
+        const result = formatVolume(vol);
+        return typeof result === "string" && result.length > 0;
+      }),
       { numRuns: 300 },
     );
   });
 
   it("volumes ≥ 1B contain 'B' suffix", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 1e9, max: 1e13, noNaN: true }),
-        (vol) => formatVolume(vol).includes("B"),
+      fc.property(fc.double({ min: 1e9, max: 1e13, noNaN: true }), (vol) =>
+        formatVolume(vol).includes("B"),
       ),
       { numRuns: 100 },
     );
@@ -2697,9 +2720,8 @@ describe("SP1: formatVolume(vol) — always returns a non-empty string", () => {
 
   it("volumes ≥ 1M and < 1B contain 'M' suffix", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 1e6, max: 999_999_999, noNaN: true }),
-        (vol) => formatVolume(vol).includes("M"),
+      fc.property(fc.double({ min: 1e6, max: 999_999_999, noNaN: true }), (vol) =>
+        formatVolume(vol).includes("M"),
       ),
       { numRuns: 100 },
     );
@@ -2710,13 +2732,10 @@ describe("SP1: formatVolume(vol) — always returns a non-empty string", () => {
 describe("SP2: sectorEmoji(sym) — always returns a non-empty string", () => {
   it("any ticker symbol string yields a non-empty emoji string", () => {
     fc.assert(
-      fc.property(
-        fc.string({ minLength: 1, maxLength: 6 }),
-        (sym) => {
-          const result = sectorEmoji(sym.toUpperCase());
-          return typeof result === "string" && result.length > 0;
-        },
-      ),
+      fc.property(fc.string({ minLength: 1, maxLength: 6 }), (sym) => {
+        const result = sectorEmoji(sym.toUpperCase());
+        return typeof result === "string" && result.length > 0;
+      }),
       { numRuns: 200 },
     );
   });
@@ -2758,18 +2777,15 @@ describe("SP4: isPreMarket() + isPostMarket() — cannot both be true simultaneo
   it("isPreMarket and isPostMarket are mutually exclusive for any time", () => {
     const baseMs = new Date("2026-04-27T08:00:00Z").getTime();
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 7 * 24 * 60 }),
-        (offsetMins) => {
-          vi.useFakeTimers();
-          vi.setSystemTime(baseMs + offsetMins * 60_000);
-          const pre = isPreMarket();
-          const post = isPostMarket();
-          vi.useRealTimers();
-          // Both cannot be true at the same time
-          return !(pre && post);
-        },
-      ),
+      fc.property(fc.integer({ min: 0, max: 7 * 24 * 60 }), (offsetMins) => {
+        vi.useFakeTimers();
+        vi.setSystemTime(baseMs + offsetMins * 60_000);
+        const pre = isPreMarket();
+        const post = isPostMarket();
+        vi.useRealTimers();
+        // Both cannot be true at the same time
+        return !(pre && post);
+      }),
       { numRuns: 300 },
     );
   });
@@ -2784,16 +2800,13 @@ describe("SP5: getMinutesToNextTransition() — always returns a non-negative in
   it("minutes to next market transition is ≥ 0 for any time", () => {
     const baseMs = new Date("2026-04-27T08:00:00Z").getTime();
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 7 * 24 * 60 }),
-        (offsetMins) => {
-          vi.useFakeTimers();
-          vi.setSystemTime(baseMs + offsetMins * 60_000);
-          const mins = getMinutesToNextTransition();
-          vi.useRealTimers();
-          return typeof mins === "number" && mins >= 0;
-        },
-      ),
+      fc.property(fc.integer({ min: 0, max: 7 * 24 * 60 }), (offsetMins) => {
+        vi.useFakeTimers();
+        vi.setSystemTime(baseMs + offsetMins * 60_000);
+        const mins = getMinutesToNextTransition();
+        vi.useRealTimers();
+        return typeof mins === "number" && mins >= 0;
+      }),
       { numRuns: 200 },
     );
   });
@@ -2808,16 +2821,13 @@ describe("SP6: marketStatusLabel() — always returns a non-empty string", () =>
   it("label is non-empty for any time-of-day", () => {
     const baseMs = new Date("2026-04-27T08:00:00Z").getTime();
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 7 * 24 * 60 }),
-        (offsetMins) => {
-          vi.useFakeTimers();
-          vi.setSystemTime(baseMs + offsetMins * 60_000);
-          const label = marketStatusLabel();
-          vi.useRealTimers();
-          return typeof label === "string" && label.length > 0;
-        },
-      ),
+      fc.property(fc.integer({ min: 0, max: 7 * 24 * 60 }), (offsetMins) => {
+        vi.useFakeTimers();
+        vi.setSystemTime(baseMs + offsetMins * 60_000);
+        const label = marketStatusLabel();
+        vi.useRealTimers();
+        return typeof label === "string" && label.length > 0;
+      }),
       { numRuns: 200 },
     );
   });
@@ -2882,10 +2892,12 @@ describe("Stocks — renderStock edge cases", () => {
     const blk = buildBlock();
     const singlePrice = {
       chart: {
-        result: [{
-          meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD" },
-          indicators: { quote: [{ close: [150] }] },
-        }],
+        result: [
+          {
+            meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD" },
+            indicators: { quote: [{ close: [150] }] },
+          },
+        ],
         error: null,
       },
     };
@@ -2936,10 +2948,12 @@ describe("Stocks — convertUsdToIls (via renderStock with ILS display)", () => 
     const blk = buildBlockWithIls();
     const data = {
       chart: {
-        result: [{
-          meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD" },
-          indicators: { quote: [{ close: [148, 150] }] },
-        }],
+        result: [
+          {
+            meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD" },
+            indicators: { quote: [{ close: [148, 150] }] },
+          },
+        ],
         error: null,
       },
     };
@@ -2955,10 +2969,12 @@ describe("Stocks — convertUsdToIls (via renderStock with ILS display)", () => 
     const blk = buildBlockWithIls();
     const data = {
       chart: {
-        result: [{
-          meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD" },
-          indicators: { quote: [{ close: [148, 150] }] },
-        }],
+        result: [
+          {
+            meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD" },
+            indicators: { quote: [{ close: [148, 150] }] },
+          },
+        ],
         error: null,
       },
     };
@@ -2999,10 +3015,12 @@ describe("Stocks — buildStocksPayload (semantic clipboard)", () => {
     const { cSet } = await import("@/core/cache");
     const stockData = {
       chart: {
-        result: [{
-          meta: { regularMarketPrice: 195, previousClose: 188.37, currency: "USD" },
-          indicators: { quote: [{ close: [188, 190, 195] }] },
-        }],
+        result: [
+          {
+            meta: { regularMarketPrice: 195, previousClose: 188.37, currency: "USD" },
+            indicators: { quote: [{ close: [188, 190, 195] }] },
+          },
+        ],
         error: null,
       },
     };
@@ -3021,7 +3039,8 @@ describe("Stocks — buildStocksPayload (semantic clipboard)", () => {
   });
 
   it("returns null when producer not registered", async () => {
-    const { getSemanticPayload, _resetSemanticProducers } = await import("@/core/semantic-clipboard");
+    const { getSemanticPayload, _resetSemanticProducers } =
+      await import("@/core/semantic-clipboard");
     _resetSemanticProducers();
     const payload = getSemanticPayload("stocks");
     expect(payload).toBeNull();

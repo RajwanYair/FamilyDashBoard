@@ -39,7 +39,12 @@ vi.mock("@/core/cache", () => ({
   cSet: vi.fn(),
   cSetAsync: vi.fn(),
 }));
-vi.mock("@/core/sync", () => ({ setSync: vi.fn(), syncBurst: vi.fn(), recordSuccess: vi.fn(), recordFailure: vi.fn() }));
+vi.mock("@/core/sync", () => ({
+  setSync: vi.fn(),
+  syncBurst: vi.fn(),
+  recordSuccess: vi.fn(),
+  recordFailure: vi.fn(),
+}));
 vi.mock("@/core/fetch", () => ({
   fetchJSONWithWorker: vi.fn(),
   runConcurrent: vi.fn(),
@@ -141,14 +146,11 @@ describe("CP2: recurrenceResetKey — idempotent for same date", () => {
 
   it("yearly key is always a 4-digit year string", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (date) => {
-          fc.pre(isFinite(date.getTime())); // skip NaN dates
-          const key = recurrenceResetKey("yearly", date);
-          return /^\d{4}$/.test(key);
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (date) => {
+        fc.pre(isFinite(date.getTime())); // skip NaN dates
+        const key = recurrenceResetKey("yearly", date);
+        return /^\d{4}$/.test(key);
+      }),
       { numRuns: 200 },
     );
   });

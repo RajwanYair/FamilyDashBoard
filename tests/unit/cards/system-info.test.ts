@@ -983,7 +983,9 @@ describe("System-info — getSwState ", () => {
 
 // ── getStorageQuota ──────────────────────────────
 describe("System-info — getStorageQuota ", () => {
-  afterEach(() => { vi.unstubAllGlobals(); });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
 
   it("returns formatted string when estimate succeeds", async () => {
     vi.stubGlobal("navigator", {
@@ -1027,7 +1029,9 @@ describe("System-info — getStorageQuota ", () => {
 
 // ── RTT ring buffer ──────────────────────────────────
 describe("System-info — RTT ring buffer ", () => {
-  beforeEach(() => { _resetRttHistory(); });
+  beforeEach(() => {
+    _resetRttHistory();
+  });
 
   it("getRttHistory returns empty initially", () => {
     expect(getRttHistory()).toEqual([]);
@@ -1106,13 +1110,10 @@ describe("SIP2 · gpuShortName — property: output is always ≤ 30 chars and a
 describe("SIP3 · encodeConnType — property: always returns 0–4", () => {
   it("valid type strings return 1–4", () => {
     fc.assert(
-      fc.property(
-        fc.constantFrom("slow-2g", "2g", "3g", "4g"),
-        (t) => {
-          const v = encodeConnType(t);
-          return v >= 1 && v <= 4;
-        },
-      ),
+      fc.property(fc.constantFrom("slow-2g", "2g", "3g", "4g"), (t) => {
+        const v = encodeConnType(t);
+        return v >= 1 && v <= 4;
+      }),
     );
   });
 

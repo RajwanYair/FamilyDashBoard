@@ -63,4 +63,3 @@ describe("FdbHebrewCalCard", () => {
     expect(customElements.get("fdb-hebrew-cal")).toBeDefined();
   });
 });
-

@@ -158,6 +158,9 @@ describe("state — _resetForTest", () => {
   });
 
   it("is callable multiple times without throwing", () => {
-    expect(() => { _resetForTest(); _resetForTest(); }).not.toThrow();
+    expect(() => {
+      _resetForTest();
+      _resetForTest();
+    }).not.toThrow();
   });
 });

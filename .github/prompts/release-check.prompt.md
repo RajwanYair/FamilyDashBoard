@@ -1,6 +1,22 @@
 ---
 description: "Run the full FamilyDashBoard pre-release checklist before tagging a version. All gates must be green before creating a git tag."
-tools: ["read_file", "grep_search", "run_in_terminal", "get_terminal_output", "get_errors", "file_search", "replace_string_in_file", "multi_replace_string_in_file", "manage_todo_list", "memory", "tool_search", "vscode_listCodeUsages", "view_image", "runSubagent"]
+tools:
+  [
+    "read_file",
+    "grep_search",
+    "run_in_terminal",
+    "get_terminal_output",
+    "get_errors",
+    "file_search",
+    "replace_string_in_file",
+    "multi_replace_string_in_file",
+    "manage_todo_list",
+    "memory",
+    "tool_search",
+    "vscode_listCodeUsages",
+    "view_image",
+    "runSubagent",
+  ]
 ---
 
 # Release Check — FamilyDashBoard

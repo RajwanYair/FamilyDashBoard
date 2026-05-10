@@ -1,6 +1,26 @@
 ---
 description: "Implement the next N roadmap sprints in priority order — commit each sprint, release at end of session."
-tools: ["read_file", "grep_search", "semantic_search", "file_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "create_file", "run_in_terminal", "get_terminal_output", "send_to_terminal", "manage_todo_list", "vscode_listCodeUsages", "vscode_renameSymbol", "view_image", "memory", "tool_search", "runSubagent"]
+tools:
+  [
+    "read_file",
+    "grep_search",
+    "semantic_search",
+    "file_search",
+    "get_errors",
+    "replace_string_in_file",
+    "multi_replace_string_in_file",
+    "create_file",
+    "run_in_terminal",
+    "get_terminal_output",
+    "send_to_terminal",
+    "manage_todo_list",
+    "vscode_listCodeUsages",
+    "vscode_renameSymbol",
+    "view_image",
+    "memory",
+    "tool_search",
+    "runSubagent",
+  ]
 ---
 
 # Sprint Runner — FamilyDashBoard

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/middleware 
+ * fast-check property tests — worker/src/middleware
  *
  * Properties under test:
  *  MW1. shouldTagCanary: undefined/null/"0" → false
@@ -16,9 +16,7 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import * as fc from "fast-check";
-import {
-  shouldTagCanary,
-} from "../../../worker/src/middleware/canary";
+import { shouldTagCanary } from "../../../worker/src/middleware/canary";
 import {
   isRateLimited,
   getRemainingRequests,
@@ -59,7 +57,9 @@ describe("middleware — MW3: shouldTagCanary invalid", () => {
   it("returns false for non-numeric strings", () => {
     fc.assert(
       fc.property(
-        fc.string({ minLength: 1, maxLength: 10 }).filter((s) => isNaN(parseInt(s, 10)) || parseInt(s, 10) <= 0),
+        fc
+          .string({ minLength: 1, maxLength: 10 })
+          .filter((s) => isNaN(parseInt(s, 10)) || parseInt(s, 10) <= 0),
         (s) => {
           expect(shouldTagCanary(s)).toBe(false);
         },

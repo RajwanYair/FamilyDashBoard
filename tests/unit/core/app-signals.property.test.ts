@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/app-signals.ts 
+ * fast-check property tests — src/core/app-signals.ts
  *
  * Properties under test:
  *  AS1. syncAppSignal("config.tempUnit", "C"|"F") updates tempUnit signal.
@@ -8,10 +8,10 @@
  *  AS4. syncAppSignal("config.motivationInterval", number) updates motivationInterval.
  *  AS5. syncAppSignal("config.screenMode", valid) updates screenMode.
  *  AS6. syncAppSignal with unknown key is no-op (doesn't throw).
- *  AS7. syncAppSignal("config.alertsEnabled", any) coerces to boolean 
- *  AS8. syncAppSignal("config.theme", invalid) still updates (no guard) 
- *  AS9. syncAppSignal("config.screenMode", invalid) is no-op 
- *  AS10. Multiple syncs in sequence — last value wins for each signal 
+ *  AS7. syncAppSignal("config.alertsEnabled", any) coerces to boolean
+ *  AS8. syncAppSignal("config.theme", invalid) still updates (no guard)
+ *  AS9. syncAppSignal("config.screenMode", invalid) is no-op
+ *  AS10. Multiple syncs in sequence — last value wins for each signal
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -143,7 +143,13 @@ describe("app-signals — AS7: alertsEnabled coerces to boolean", () => {
   it("any value is coerced via Boolean()", () => {
     fc.assert(
       fc.property(
-        fc.oneof(fc.boolean(), fc.integer(), fc.string(), fc.constant(null), fc.constant(undefined)),
+        fc.oneof(
+          fc.boolean(),
+          fc.integer(),
+          fc.string(),
+          fc.constant(null),
+          fc.constant(undefined),
+        ),
         (val) => {
           syncAppSignal("config.alertsEnabled", val);
           expect(alertsEnabled.value).toBe(Boolean(val));
@@ -196,26 +202,20 @@ describe("app-signals — AS9: screenMode invalid is no-op", () => {
 describe("app-signals — AS10: last sync wins per signal", () => {
   it("after multiple tempUnit syncs, last value is the signal value", () => {
     fc.assert(
-      fc.property(
-        fc.array(tempUnitArb, { minLength: 1, maxLength: 10 }),
-        (units) => {
-          for (const u of units) syncAppSignal("config.tempUnit", u);
-          expect(tempUnit.value).toBe(units[units.length - 1]);
-        },
-      ),
+      fc.property(fc.array(tempUnitArb, { minLength: 1, maxLength: 10 }), (units) => {
+        for (const u of units) syncAppSignal("config.tempUnit", u);
+        expect(tempUnit.value).toBe(units[units.length - 1]);
+      }),
       { numRuns: 30 },
     );
   });
 
   it("after multiple motivationInterval syncs, last value is the signal value", () => {
     fc.assert(
-      fc.property(
-        fc.array(positiveInt, { minLength: 1, maxLength: 10 }),
-        (nums) => {
-          for (const n of nums) syncAppSignal("config.motivationInterval", n);
-          expect(motivationInterval.value).toBe(nums[nums.length - 1]);
-        },
-      ),
+      fc.property(fc.array(positiveInt, { minLength: 1, maxLength: 10 }), (nums) => {
+        for (const n of nums) syncAppSignal("config.motivationInterval", n);
+        expect(motivationInterval.value).toBe(nums[nums.length - 1]);
+      }),
       { numRuns: 30 },
     );
   });

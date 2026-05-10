@@ -1,12 +1,12 @@
 # ADR-053 — Card configSchema Architecture
 
-| Field      | Value                                                                                    |
-| ---------- | ---------------------------------------------------------------------------------------- |
-| Date       | 2026-04-30                                                                               |
-| Status     | Accepted                                                                                 |
-| Sprint     | 297 (ADR formalised) / Sprints 277–289 (implementation — SETTINGS stream)      |
-| Supersedes | n/a                                                                                      |
-| Related    | ADR-004 (config namespacing), ADR-009 (config schema evolution), ROADMAP §3.13, §6.11   |
+| Field      | Value                                                                                 |
+| ---------- | ------------------------------------------------------------------------------------- |
+| Date       | 2026-04-30                                                                            |
+| Status     | Accepted                                                                              |
+| Sprint     | 297 (ADR formalised) / Sprints 277–289 (implementation — SETTINGS stream)             |
+| Supersedes | n/a                                                                                   |
+| Related    | ADR-004 (config namespacing), ADR-009 (config schema evolution), ROADMAP §3.13, §6.11 |
 
 ## Context
 
@@ -32,28 +32,28 @@ imperative DOM manipulation is permitted for settings fields.
 
 ```ts
 interface CardConfigField {
-  key: string;          // DashboardConfig key or card-level settings key
+  key: string; // DashboardConfig key or card-level settings key
   type: "boolean" | "number" | "select" | "text" | "range";
-  label: string;        // Hebrew-first display label
-  default: unknown;     // Must match the type literal
+  label: string; // Hebrew-first display label
+  default: unknown; // Must match the type literal
   // type-specific extras:
-  min?: number;         // range
-  max?: number;         // range
-  step?: number;        // range
-  options?: { value: string; label: string }[];  // select
-  maxLength?: number;   // text
+  min?: number; // range
+  max?: number; // range
+  step?: number; // range
+  options?: { value: string; label: string }[]; // select
+  maxLength?: number; // text
 }
 ```
 
 ### Naming conventions
 
-| Setting category        | Key pattern             | Example                  |
-| ----------------------- | ----------------------- | ------------------------ |
-| Card feature toggle     | `cardIdShowFeature`     | `weatherShowAqi`         |
-| Card display toggle     | `cardIdShowField`       | `sysInfoShowBattery`     |
-| Card sort/order         | `cardIdSortOrder`       | `tasksSortOrder`         |
-| Card interval/refresh   | `cardIdInterval`        | `sysInfoRefreshInterval` |
-| Card base/root selector | `cardIdBase`            | `currencyBase`           |
+| Setting category        | Key pattern         | Example                  |
+| ----------------------- | ------------------- | ------------------------ |
+| Card feature toggle     | `cardIdShowFeature` | `weatherShowAqi`         |
+| Card display toggle     | `cardIdShowField`   | `sysInfoShowBattery`     |
+| Card sort/order         | `cardIdSortOrder`   | `tasksSortOrder`         |
+| Card interval/refresh   | `cardIdInterval`    | `sysInfoRefreshInterval` |
+| Card base/root selector | `cardIdBase`        | `currencyBase`           |
 
 ### Mandatory export structure (per card file)
 
@@ -97,19 +97,19 @@ Cards with `configSchema.length === 0` **fail the CI check** added by
 
 ## Compliance checklist (updated each release)
 
-| Card       | `configSchema.length` | Status (v13.30.0) |
-| ---------- | --------------------- | ------------------ |
-| news       | 6                     | ✅ CS-N1           |
-| weather    | 12                    | ✅ CS-W1 + CS-W2   |
-| stocks     | 5                     | ✅ CS-S1           |
-| currency   | 6                     | ✅ CS-C1           |
-| calendar   | 6                     | ✅ CS-CAL1         |
-| hebrew-cal | 8                     | ✅ CS-H1           |
-| alerts     | 8                     | ✅ CS-A1           |
-| motivation | 6                     | ✅ CS-M1           |
-| tasks      | 7                     | ✅ CS-T1           |
-| system-info| 8                     | ✅ CS-SI1          |
-| countdown  | 5                     | ✅ CS-CD1          |
-| video-news | 6                     | ✅ CS-VN1          |
+| Card        | `configSchema.length` | Status (v13.30.0) |
+| ----------- | --------------------- | ----------------- |
+| news        | 6                     | ✅ CS-N1          |
+| weather     | 12                    | ✅ CS-W1 + CS-W2  |
+| stocks      | 5                     | ✅ CS-S1          |
+| currency    | 6                     | ✅ CS-C1          |
+| calendar    | 6                     | ✅ CS-CAL1        |
+| hebrew-cal  | 8                     | ✅ CS-H1          |
+| alerts      | 8                     | ✅ CS-A1          |
+| motivation  | 6                     | ✅ CS-M1          |
+| tasks       | 7                     | ✅ CS-T1          |
+| system-info | 8                     | ✅ CS-SI1         |
+| countdown   | 5                     | ✅ CS-CD1         |
+| video-news  | 6                     | ✅ CS-VN1         |
 
 All 19 UI-gap (G) items from §3.13 are resolved as of v13.30.0.

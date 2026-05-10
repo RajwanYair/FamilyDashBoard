@@ -67,7 +67,9 @@
   opacity: 0.6;
   line-height: 1;
 }
-.news-mute-btn:hover { opacity: 1; }
+.news-mute-btn:hover {
+  opacity: 1;
+}
 
 /* Feature 57: News copy-to-clipboard button */
 .news-copy {
@@ -505,7 +507,9 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   padding: 0;
   align-self: start;
 }
-.news-starred-remove:hover { color: var(--danger, #e55); }
+.news-starred-remove:hover {
+  color: var(--danger, #e55);
+}
 
 .news-starred-title {
   grid-area: title;
@@ -515,7 +519,9 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   line-height: 1.35;
   font-weight: 500;
 }
-.news-starred-title:hover { text-decoration: underline; }
+.news-starred-title:hover {
+  text-decoration: underline;
+}
 
 .news-starred-meta {
   grid-area: meta;

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/state.ts 
+ * fast-check property tests — src/core/state.ts
  *
  * Properties under test:
  *  ST1. get(key) after set(key, v) returns exactly v (round-trip identity).
@@ -32,7 +32,9 @@ afterEach(_resetForTest);
 
 // Arbitraries
 const FORBIDDEN_FIELDS = ["__proto__", "constructor", "prototype", "toString", "valueOf"];
-const fieldArb = fc.string({ minLength: 1, maxLength: 30 }).filter((s) => !s.includes(".") && !FORBIDDEN_FIELDS.includes(s));
+const fieldArb = fc
+  .string({ minLength: 1, maxLength: 30 })
+  .filter((s) => !s.includes(".") && !FORBIDDEN_FIELDS.includes(s));
 const scalarArb: fc.Arbitrary<string | number | boolean> = fc.oneof(
   fc.string({ maxLength: 40 }),
   fc.integer({ min: -1_000_000, max: 1_000_000 }),
@@ -215,7 +217,9 @@ describe("state — ST7: invalid slice key is silently ignored", () => {
   it("set on unknown slice does not throw and get returns undefined", () => {
     fc.assert(
       fc.property(
-        fc.string({ minLength: 2, maxLength: 20 }).filter((s) => !["config", "cache", "ui"].includes(s) && /^[a-z]+$/.test(s)),
+        fc
+          .string({ minLength: 2, maxLength: 20 })
+          .filter((s) => !["config", "cache", "ui"].includes(s) && /^[a-z]+$/.test(s)),
         fieldArb,
         scalarArb,
         (badSlice, field, value) => {
@@ -272,7 +276,9 @@ describe("state — ST9: off() stops event delivery", () => {
         const key = `config.${field}` as const;
 
         let count = 0;
-        const handler = (): void => { count++; };
+        const handler = (): void => {
+          count++;
+        };
         state.on(key, handler);
         state.set(key, v1);
         expect(count).toBe(1);
@@ -294,10 +300,7 @@ describe("state — ST10: seedConfig fires change event per field", () => {
   it("each field in cfg dispatches exactly one event", () => {
     fc.assert(
       fc.property(
-        fc.array(
-          fc.tuple(fieldArb, scalarArb),
-          { minLength: 1, maxLength: 5 },
-        ),
+        fc.array(fc.tuple(fieldArb, scalarArb), { minLength: 1, maxLength: 5 }),
         (pairs) => {
           _resetForTest();
           // Deduplicate fields
@@ -360,7 +363,9 @@ describe("state — ST12: listeners are key-scoped", () => {
           const keyB = `cache.${fieldB}` as const;
 
           let aFired = false;
-          state.on(keyA, () => { aFired = true; });
+          state.on(keyA, () => {
+            aFired = true;
+          });
 
           state.set(keyB, value);
           expect(aFired).toBe(false);

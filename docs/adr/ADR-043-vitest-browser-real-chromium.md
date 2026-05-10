@@ -58,16 +58,16 @@ both configs in the same workflow step via
 
 ## Alternatives Considered
 
-| Option | Outcome |
-| --- | --- |
-| Polyfill `getBoundingClientRect` in happy-dom | Fragile; geometry still static; doesn't help VT |
-| Puppeteer | Heavier setup; Playwright already a dependency for E2E |
-| Playwright test (`@playwright/test`) for unit specs | Loses Vitest DX (expect matchers, coverage) |
+| Option                                              | Outcome                                                |
+| --------------------------------------------------- | ------------------------------------------------------ |
+| Polyfill `getBoundingClientRect` in happy-dom       | Fragile; geometry still static; doesn't help VT        |
+| Puppeteer                                           | Heavier setup; Playwright already a dependency for E2E |
+| Playwright test (`@playwright/test`) for unit specs | Loses Vitest DX (expect matchers, coverage)            |
 
 ## Status history
 
-| Date       | Status   | Note                                      |
-| ---------- | -------- | ----------------------------------------- |
-| 2026-04-26 | Draft    | initial activation           |
+| Date       | Status   | Note                                            |
+| ---------- | -------- | ----------------------------------------------- |
+| 2026-04-26 | Draft    | initial activation                              |
 | 2026-04-26 | Accepted | layout-drag spec added (27 total browser tests) |
-| 2026-04-29 | Accepted | ADR written and committed    |
+| 2026-04-29 | Accepted | ADR written and committed                       |

@@ -943,19 +943,21 @@ describe("FdbCard.loadData ", () => {
 
 // ── onThemeChange + onAlert lifecycle hooks ─────────────
 
-import {
-  broadcastTheme,
-  broadcastAlert,
-  _resetBusForTesting,
-} from "@/core/event-bus";
+import { broadcastTheme, broadcastAlert, _resetBusForTesting } from "@/core/event-bus";
 
 class LifecycleHookCard extends FdbCard {
   themeChanges: Array<string> = [];
   alertEvents: Array<ReturnType<typeof broadcastAlert> | null> = [];
 
-  override connect(): void { /* no-op */ }
-  override disconnect(): void { /* no-op */ }
-  override refresh(): Promise<void> { return Promise.resolve(); }
+  override connect(): void {
+    /* no-op */
+  }
+  override disconnect(): void {
+    /* no-op */
+  }
+  override refresh(): Promise<void> {
+    return Promise.resolve();
+  }
 
   override onThemeChange(theme: string): void {
     this.themeChanges.push(theme);
@@ -1038,9 +1040,15 @@ describe("FdbCard — onThemeChange + onAlert ", () => {
 
   it("onThemeChange default no-op does not throw", () => {
     class MinimalCard extends FdbCard {
-      override connect(): void { /* no-op */ }
-      override disconnect(): void { /* no-op */ }
-      override refresh(): Promise<void> { return Promise.resolve(); }
+      override connect(): void {
+        /* no-op */
+      }
+      override disconnect(): void {
+        /* no-op */
+      }
+      override refresh(): Promise<void> {
+        return Promise.resolve();
+      }
     }
     if (!customElements.get("fdb-minimal-theme-test")) {
       customElements.define("fdb-minimal-theme-test", MinimalCard);

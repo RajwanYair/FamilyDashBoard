@@ -117,9 +117,30 @@ describe("calendar — CAL7: calDaysUntilLabel N days", () => {
 describe("calendar — CAL8: findConflicts non-overlapping", () => {
   it("no conflicts when events are sequential", () => {
     const events = [
-      { summary: "A", start: new Date(2025, 0, 1, 9, 0), end: new Date(2025, 0, 1, 10, 0), allDay: false, icsIndex: 0, category: "default" },
-      { summary: "B", start: new Date(2025, 0, 1, 10, 0), end: new Date(2025, 0, 1, 11, 0), allDay: false, icsIndex: 0, category: "default" },
-      { summary: "C", start: new Date(2025, 0, 1, 11, 0), end: new Date(2025, 0, 1, 12, 0), allDay: false, icsIndex: 0, category: "default" },
+      {
+        summary: "A",
+        start: new Date(2025, 0, 1, 9, 0),
+        end: new Date(2025, 0, 1, 10, 0),
+        allDay: false,
+        icsIndex: 0,
+        category: "default",
+      },
+      {
+        summary: "B",
+        start: new Date(2025, 0, 1, 10, 0),
+        end: new Date(2025, 0, 1, 11, 0),
+        allDay: false,
+        icsIndex: 0,
+        category: "default",
+      },
+      {
+        summary: "C",
+        start: new Date(2025, 0, 1, 11, 0),
+        end: new Date(2025, 0, 1, 12, 0),
+        allDay: false,
+        icsIndex: 0,
+        category: "default",
+      },
     ];
     expect(findConflicts(events).size).toBe(0);
   });
@@ -130,8 +151,22 @@ describe("calendar — CAL8: findConflicts non-overlapping", () => {
 describe("calendar — CAL9: findConflicts overlapping", () => {
   it("detects overlapping pair", () => {
     const events = [
-      { summary: "A", start: new Date(2025, 0, 1, 9, 0), end: new Date(2025, 0, 1, 10, 30), allDay: false, icsIndex: 0, category: "default" },
-      { summary: "B", start: new Date(2025, 0, 1, 10, 0), end: new Date(2025, 0, 1, 11, 0), allDay: false, icsIndex: 0, category: "default" },
+      {
+        summary: "A",
+        start: new Date(2025, 0, 1, 9, 0),
+        end: new Date(2025, 0, 1, 10, 30),
+        allDay: false,
+        icsIndex: 0,
+        category: "default",
+      },
+      {
+        summary: "B",
+        start: new Date(2025, 0, 1, 10, 0),
+        end: new Date(2025, 0, 1, 11, 0),
+        allDay: false,
+        icsIndex: 0,
+        category: "default",
+      },
     ];
     const conflicts = findConflicts(events);
     expect(conflicts.size).toBe(2);
@@ -155,13 +190,10 @@ describe("calendar — CAL10: parseICS empty", () => {
 describe("calendar — CAL11: groupEventsByDay bucket count", () => {
   it("always returns 7 day buckets", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date(2020, 0, 1), max: new Date(2030, 0, 1) }),
-        (now) => {
-          const result = groupEventsByDay([], now);
-          expect(result.length).toBe(21);
-        },
-      ),
+      fc.property(fc.date({ min: new Date(2020, 0, 1), max: new Date(2030, 0, 1) }), (now) => {
+        const result = groupEventsByDay([], now);
+        expect(result.length).toBe(21);
+      }),
       { numRuns: 20 },
     );
   });
@@ -173,8 +205,20 @@ describe("calendar — CAL12: groupEventsByDay sorted", () => {
   it("events within each bucket are in chronological order", () => {
     const now = new Date(2025, 5, 15);
     const events = [
-      { summary: "B", start: new Date(2025, 5, 15, 14, 0), end: new Date(2025, 5, 15, 15, 0), allDay: false, icsIndex: 0 },
-      { summary: "A", start: new Date(2025, 5, 15, 9, 0), end: new Date(2025, 5, 15, 10, 0), allDay: false, icsIndex: 0 },
+      {
+        summary: "B",
+        start: new Date(2025, 5, 15, 14, 0),
+        end: new Date(2025, 5, 15, 15, 0),
+        allDay: false,
+        icsIndex: 0,
+      },
+      {
+        summary: "A",
+        start: new Date(2025, 5, 15, 9, 0),
+        end: new Date(2025, 5, 15, 10, 0),
+        allDay: false,
+        icsIndex: 0,
+      },
     ];
     const result = groupEventsByDay(events, now);
     const todayBucket = result[0]!;
@@ -189,12 +233,9 @@ describe("calendar — CAL12: groupEventsByDay sorted", () => {
 describe("calendar — CAL13: getHolidaysByDate empty", () => {
   it("returns null for empty items array", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date(2020, 0, 1), max: new Date(2030, 0, 1) }),
-        (d) => {
-          expect(getHolidaysByDate([], d)).toBeNull();
-        },
-      ),
+      fc.property(fc.date({ min: new Date(2020, 0, 1), max: new Date(2030, 0, 1) }), (d) => {
+        expect(getHolidaysByDate([], d)).toBeNull();
+      }),
       { numRuns: 15 },
     );
   });

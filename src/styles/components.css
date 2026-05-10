@@ -307,7 +307,10 @@ dialog.diag-overlay::backdrop {
     inset-block-start: auto;
     inset-inline-start: auto;
     margin: 0 0 6px 0;
-    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+    position-try-fallbacks:
+      flip-block,
+      flip-inline,
+      flip-block flip-inline;
   }
 }
 
@@ -1927,7 +1930,6 @@ select.cfg-input {
   }
 }
 
-
 /* Keyboard shortcut key chip (used in help overlay) */
 .help-key {
   background: var(--bg-card-inner);
@@ -1952,13 +1954,23 @@ select.cfg-input {
   margin-right: 4px;
   vertical-align: middle;
 }
-#elec-badge.peak-on { display: inline; }
+#elec-badge.peak-on {
+  display: inline;
+}
 
 /* Seasonal CSS tint (body-level, F27) */
-body.season-spring { --season-tint: rgba(134, 239, 172, 0.03); }
-body.season-summer { --season-tint: rgba(253, 224, 71, 0.04); }
-body.season-autumn { --season-tint: rgba(249, 115, 22, 0.04); }
-body.season-winter { --season-tint: rgba(147, 197, 253, 0.04); }
+body.season-spring {
+  --season-tint: rgba(134, 239, 172, 0.03);
+}
+body.season-summer {
+  --season-tint: rgba(253, 224, 71, 0.04);
+}
+body.season-autumn {
+  --season-tint: rgba(249, 115, 22, 0.04);
+}
+body.season-winter {
+  --season-tint: rgba(147, 197, 253, 0.04);
+}
 
 /* Multi-photo slideshow fade (body-level, F85) */
 body.slideshow-fade::after {
@@ -1982,8 +1994,12 @@ body.slideshow-fade::after {
   transform: scale(1.012);
   transition: transform 0.12s;
 }
-.card-header[draggable="true"] { cursor: grab; }
-.card-header[draggable="true"]:active { cursor: grabbing; }
+.card-header[draggable="true"] {
+  cursor: grab;
+}
+.card-header[draggable="true"]:active {
+  cursor: grabbing;
+}
 
 /* SW update banner (F101) */
 #sw-update-banner {
@@ -2003,9 +2019,13 @@ body.slideshow-fade::after {
   font-weight: 600;
   text-align: center;
 }
-#sw-update-banner.visible { display: flex; }
+#sw-update-banner.visible {
+  display: flex;
+}
 #sw-update-banner[data-sw-state="downloading"],
-#sw-update-banner[data-sw-state="installing"] { background: #c4a060; }
+#sw-update-banner[data-sw-state="installing"] {
+  background: #c4a060;
+}
 #sw-update-reload-btn {
   background: rgba(0, 0, 0, 0.18);
   color: inherit;
@@ -2037,7 +2057,9 @@ body.slideshow-fade::after {
 }
 
 /* Print datetime (hidden on screen) */
-#print-datetime { display: none; }
+#print-datetime {
+  display: none;
+}
 
 /* Help overlay 2-column grid (F150) */
 #help-panel .help-grid {
@@ -2063,11 +2085,17 @@ body.slideshow-fade::after {
   font-size: 0.75em;
   padding: 0 2px;
   margin-inline-end: 4px;
-  transition: transform 0.25s ease, color 0.2s;
+  transition:
+    transform 0.25s ease,
+    color 0.2s;
   line-height: 1;
 }
-.card-collapse-btn:hover { color: var(--accent); }
-.card.collapsed .card-collapse-btn { transform: rotate(-90deg); }
+.card-collapse-btn:hover {
+  color: var(--accent);
+}
+.card.collapsed .card-collapse-btn {
+  transform: rotate(-90deg);
+}
 .card.collapsed > .card-body,
 .card.collapsed > .weather-body,
 .card.collapsed > .news-body,
@@ -2082,8 +2110,13 @@ body.slideshow-fade::after {
 .card.collapsed > .tasks-body,
 .card.collapsed > .sysinfo-grid,
 .card.collapsed > .card__body,
-.card.collapsed > .card__footer { display: none !important; }
-.card.collapsed { flex: 0 0 auto; min-height: 0; }
+.card.collapsed > .card__footer {
+  display: none !important;
+}
+.card.collapsed {
+  flex: 0 0 auto;
+  min-height: 0;
+}
 
 /* Card mini-info (collapsed header summary) */
 .card-mini-info {
@@ -2097,7 +2130,9 @@ body.slideshow-fade::after {
   vertical-align: middle;
   margin-inline-start: 5px;
 }
-.card.collapsed .card-mini-info:not(:empty) { display: inline; }
+.card.collapsed .card-mini-info:not(:empty) {
+  display: inline;
+}
 
 /* First-run tour dialog (0-PWA-1) */
 #tour-overlay {
@@ -2110,7 +2145,9 @@ body.slideshow-fade::after {
   color: var(--text);
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
 }
-#tour-overlay::backdrop { background: rgba(0, 0, 0, 0.72); }
+#tour-overlay::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+}
 .tour-inner {
   padding: 28px 32px 24px;
   display: flex;
@@ -2119,8 +2156,16 @@ body.slideshow-fade::after {
   gap: 14px;
   text-align: center;
 }
-#tour-dialog-title { margin: 0; font-size: 1.3em; color: var(--accent); }
-.tour-subtitle { margin: 0; color: var(--text-muted); font-size: 0.9em; }
+#tour-dialog-title {
+  margin: 0;
+  font-size: 1.3em;
+  color: var(--accent);
+}
+.tour-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
 .tour-keys {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -2157,4 +2202,6 @@ body.slideshow-fade::after {
   cursor: pointer;
   transition: opacity 0.15s;
 }
-.tour-dismiss-btn:hover { opacity: 0.85; }
+.tour-dismiss-btn:hover {
+  opacity: 0.85;
+}

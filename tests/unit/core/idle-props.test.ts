@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/idle.ts 
+ * fast-check property tests for src/core/idle.ts
  *
  * Verifies invariants of `shouldWakeRefresh` and `pageVisibleSignal`
  * across arbitrary visibility transitions.

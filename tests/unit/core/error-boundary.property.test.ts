@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/error-boundary.ts 
+ * fast-check property tests — src/core/error-boundary.ts
  *
  * Properties under test:
  *  EB1. withErrorBoundary never throws/rejects regardless of the wrapped function's behavior.
@@ -26,9 +26,7 @@ import { recordError } from "@/core/error-tracker";
 
 // ── Arbitraries ───────────────────────────────────────────────────────────────
 
-const cardIdArb = fc
-  .stringMatching(/^[a-z][a-z0-9-]{0,23}$/)
-  .filter((s) => s.length >= 1);
+const cardIdArb = fc.stringMatching(/^[a-z][a-z0-9-]{0,23}$/).filter((s) => s.length >= 1);
 
 const jsonValueArb = fc.oneof(
   fc.string({ maxLength: 30 }),

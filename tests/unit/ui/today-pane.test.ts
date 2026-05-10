@@ -241,10 +241,7 @@ describe("TodayPane — renderTodayPane", () => {
 
   it("applies urgency class to pill", () => {
     const container = document.createElement("div");
-    renderTodayPane(
-      [{ type: "alert", icon: "🚨", label: "x", urgency: "critical" }],
-      container,
-    );
+    renderTodayPane([{ type: "alert", icon: "🚨", label: "x", urgency: "critical" }], container);
     const pill = container.querySelector(".today-pill");
     expect(pill?.classList.contains("today-pill--critical")).toBe(true);
   });
@@ -252,10 +249,7 @@ describe("TodayPane — renderTodayPane", () => {
   it("sets textContent not innerHTML (XSS safety)", () => {
     const container = document.createElement("div");
     const malicious = "<img src=x onerror=alert(1)>";
-    renderTodayPane(
-      [{ type: "test", icon: "⚠️", label: malicious, urgency: "normal" }],
-      container,
-    );
+    renderTodayPane([{ type: "test", icon: "⚠️", label: malicious, urgency: "normal" }], container);
     const label = container.querySelector(".today-pill-label");
     expect(label?.textContent).toBe(malicious);
     expect(label?.innerHTML).not.toContain("<img");
@@ -332,10 +326,9 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP1-TDP5)", () =
         fc.record({
           nowMs: fc.integer({ min: 1_000_000_000_000, max: 2_000_000_000_000 }),
           alerts: fc.constant([]),
-          countdownTargetMs: fc.option(
-            fc.integer({ min: 0, max: 1_000_000_000_000 }),
-            { nil: null },
-          ),
+          countdownTargetMs: fc.option(fc.integer({ min: 0, max: 1_000_000_000_000 }), {
+            nil: null,
+          }),
           countdownTitle: fc.string({ maxLength: 20 }),
           chores: fc.constant([]),
           stockMovers: fc.array(
@@ -409,10 +402,9 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP1-TDP5)", () =
           ),
           countdownTitle: fc.string({ maxLength: 20 }),
           chores: fc.constant([]),
-          stockMovers: fc.array(
-            fc.oneof(fc.constant("AAPL +5%"), fc.constant("MSFT -2%")),
-            { maxLength: 2 },
-          ),
+          stockMovers: fc.array(fc.oneof(fc.constant("AAPL +5%"), fc.constant("MSFT -2%")), {
+            maxLength: 2,
+          }),
           nextCalEvent: fc.option(
             fc.record({
               label: fc.string({ maxLength: 15 }),
@@ -481,17 +473,14 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP6-TDP8 )", () 
    */
   it("TDP7 · every result item label is a non-empty string", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 1, max: 360 }),
-        (minutesUntil: number) => {
-          const items = buildTodayItems({
-            ...EMPTY_INPUTS,
-            nowMs: NOW_MS,
-            nextCalEvent: { label: "ישיבה", minutesUntil },
-          });
-          return items.every((i: TodayPaneItem) => typeof i.label === "string" && i.label.length > 0);
-        },
-      ),
+      fc.property(fc.integer({ min: 1, max: 360 }), (minutesUntil: number) => {
+        const items = buildTodayItems({
+          ...EMPTY_INPUTS,
+          nowMs: NOW_MS,
+          nextCalEvent: { label: "ישיבה", minutesUntil },
+        });
+        return items.every((i: TodayPaneItem) => typeof i.label === "string" && i.label.length > 0);
+      }),
       { numRuns: 200 },
     );
   });
@@ -510,7 +499,13 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP6-TDP8 )", () 
         }),
         ({ hasAlert, hasCountdown, minutesUntil, stockPct }) => {
           const alertArr = hasAlert
-            ? [{ alerts: [{ cities: ["תל אביב"], threat: 0, time: Math.floor(NOW_MS / 1000) - 60 }] }]
+            ? [
+                {
+                  alerts: [
+                    { cities: ["תל אביב"], threat: 0, time: Math.floor(NOW_MS / 1000) - 60 },
+                  ],
+                },
+              ]
             : [];
           const countdownTargetMs = hasCountdown ? NOW_MS + minutesUntil * 60 * 1000 : null;
           const stockMovers = [`TSLA +${stockPct.toFixed(1)}%`];
@@ -598,7 +593,9 @@ describe("TodayPane — refreshTodayPane signal non-null branches (X12 )", () =>
   it("shows alert pill when alerts signal has count > 0", () => {
     vi.mocked(getCardSignal).mockImplementation((cardId: string, key: string) => {
       if (cardId === "alerts" && key === "active") {
-        return { value: { count: 2, areas: ["תל אביב", "רמת גן"], latestTs: Date.now() / 1000 - 30 } } as ReturnType<typeof getCardSignal>;
+        return {
+          value: { count: 2, areas: ["תל אביב", "רמת גן"], latestTs: Date.now() / 1000 - 30 },
+        } as ReturnType<typeof getCardSignal>;
       }
       return null;
     });
@@ -610,7 +607,9 @@ describe("TodayPane — refreshTodayPane signal non-null branches (X12 )", () =>
   it("shows countdown pill when countdown signal is present", () => {
     vi.mocked(getCardSignal).mockImplementation((cardId: string, key: string) => {
       if (cardId === "countdown" && key === "next") {
-        return { value: { targetMs: Date.now() + 3 * 60 * 60 * 1000, title: "אירוע" } } as ReturnType<typeof getCardSignal>;
+        return {
+          value: { targetMs: Date.now() + 3 * 60 * 60 * 1000, title: "אירוע" },
+        } as ReturnType<typeof getCardSignal>;
       }
       return null;
     });
@@ -636,7 +635,9 @@ describe("TodayPane — refreshTodayPane signal non-null branches (X12 )", () =>
     const startMs = Date.now() + 2 * 60 * 60 * 1000; // 2h from now
     vi.mocked(getCardSignal).mockImplementation((cardId: string, key: string) => {
       if (cardId === "calendar" && key === "next-event") {
-        return { value: { title: "ישיבה", startMs, isAllDay: false } } as ReturnType<typeof getCardSignal>;
+        return { value: { title: "ישיבה", startMs, isAllDay: false } } as ReturnType<
+          typeof getCardSignal
+        >;
       }
       return null;
     });
@@ -649,7 +650,9 @@ describe("TodayPane — refreshTodayPane signal non-null branches (X12 )", () =>
     const startMs = Date.now() + 2 * 60 * 60 * 1000;
     vi.mocked(getCardSignal).mockImplementation((cardId: string, key: string) => {
       if (cardId === "calendar" && key === "next-event") {
-        return { value: { title: "חג", startMs, isAllDay: true } } as ReturnType<typeof getCardSignal>;
+        return { value: { title: "חג", startMs, isAllDay: true } } as ReturnType<
+          typeof getCardSignal
+        >;
       }
       return null;
     });

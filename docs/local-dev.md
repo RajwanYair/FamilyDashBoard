@@ -1,6 +1,6 @@
 # Local Development & Verification
 
-> FamilyDashBoard v14.13.0 · TypeScript · Vite 8 · Hebrew RTL
+> FamilyDashBoard v14.13.1 · TypeScript · Vite 8 · Hebrew RTL
 
 Three verified workflows for running and testing the dashboard locally.
 
@@ -163,13 +163,13 @@ sequence:
 
 ## Troubleshooting
 
-| Problem                       | Fix                                                                                           |
-| ----------------------------- | --------------------------------------------------------------------------------------------- |
-| `npx: not found`              | Run from `MyScripts/` first: `cd ..\; npm install`                                            |
-| Cards show "Loading…" forever | Cloudflare Worker may be down — check <https://github.com/RajwanYair/FamilyDashBoard/actions> |
-| Blank screen on `file://`     | Use `npm run build:local`, not `npm run build`                                                |
-| SW not updating               | DevTools → Application → Service Workers → "Update on reload"                                 |
-| Hebrew text garbled           | Ensure `<html lang="he" dir="rtl">` is present in `src/index.html`                            |
+| Problem                       | Fix                                                                                                                                                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npx: not found`              | Run from `MyScripts/` first: `cd ..\; npm install`                                                                                                                                                       |
+| Cards show "Loading…" forever | Cloudflare Worker may be down — check <https://github.com/RajwanYair/FamilyDashBoard/actions>                                                                                                            |
+| Blank screen on `file://`     | Use `npm run build:local`, not `npm run build`                                                                                                                                                           |
+| SW not updating               | DevTools → Application → Service Workers → "Update on reload"                                                                                                                                            |
+| Hebrew text garbled           | Ensure `<html lang="he" dir="rtl">` is present in `src/index.html`                                                                                                                                       |
 | Behind a corporate proxy      | Dev server auto-strips CSP meta (`stripDevCsp` plugin). For built `dist/`, append `?nosw=1` to bypass the SW; in DevTools console run `await __fdbUnregisterSW()` to purge prior registrations + caches. |
 
 ---

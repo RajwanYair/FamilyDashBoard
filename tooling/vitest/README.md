@@ -11,11 +11,11 @@ These three presets are the building blocks for every `vitest.config.ts` under
 
 ## Files
 
-| File | Exports | Purpose |
-| --- | --- | --- |
-| `base.mjs` | `sharedVitestPoolConfig`, `sharedVitestTestConfig` | Core defaults used by all presets |
-| `happy-dom.mjs` | `sharedHappyDomTestConfig` | DOM-heavy browser unit tests |
-| `node.mjs` | `sharedNodeTestConfig` | Server-side / Worker / pure-TS unit tests |
+| File            | Exports                                            | Purpose                                   |
+| --------------- | -------------------------------------------------- | ----------------------------------------- |
+| `base.mjs`      | `sharedVitestPoolConfig`, `sharedVitestTestConfig` | Core defaults used by all presets         |
+| `happy-dom.mjs` | `sharedHappyDomTestConfig`                         | DOM-heavy browser unit tests              |
+| `node.mjs`      | `sharedNodeTestConfig`                             | Server-side / Worker / pure-TS unit tests |
 
 ---
 
@@ -34,12 +34,12 @@ export default defineConfig({
 });
 ```
 
-| Option | Value | Rationale |
-| --- | --- | --- |
-| `pool` | `"forks"` | Avoids happy-dom global-state contamination between suites |
-| `poolOptions.forks.maxForks` | `min(cpuCount, 8)` | Caps parallelism to avoid excessive fork overhead |
-| `poolOptions.forks.minForks` | `max(2, cpuCount / 2)` | Always uses at least 2 forks for small machines |
-| `poolOptions.forks.isolate` | `false` | Re-uses module registry within a fork; per-suite isolation is handled by `beforeEach`/`afterEach` |
+| Option                       | Value                  | Rationale                                                                                         |
+| ---------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------- |
+| `pool`                       | `"forks"`              | Avoids happy-dom global-state contamination between suites                                        |
+| `poolOptions.forks.maxForks` | `min(cpuCount, 8)`     | Caps parallelism to avoid excessive fork overhead                                                 |
+| `poolOptions.forks.minForks` | `max(2, cpuCount / 2)` | Always uses at least 2 forks for small machines                                                   |
+| `poolOptions.forks.isolate`  | `false`                | Re-uses module registry within a fork; per-suite isolation is handled by `beforeEach`/`afterEach` |
 
 ### `sharedVitestTestConfig`
 
@@ -53,13 +53,13 @@ test: {
 },
 ```
 
-| Option | Value | Notes |
-| --- | --- | --- |
-| `environment` | `"happy-dom"` | Default; overridden by `node.mjs` preset |
-| `globals` | `true` | `describe`/`it`/`expect` available without import |
-| `testTimeout` | `10 000 ms` | Generous for integration tests that hit IDB/LS |
-| `hookTimeout` | `10 000 ms` | Matches `testTimeout` |
-| `restoreMocks` | `true` | Auto-restores `vi.spyOn` mocks after each test |
+| Option         | Value         | Notes                                             |
+| -------------- | ------------- | ------------------------------------------------- |
+| `environment`  | `"happy-dom"` | Default; overridden by `node.mjs` preset          |
+| `globals`      | `true`        | `describe`/`it`/`expect` available without import |
+| `testTimeout`  | `10 000 ms`   | Generous for integration tests that hit IDB/LS    |
+| `hookTimeout`  | `10 000 ms`   | Matches `testTimeout`                             |
+| `restoreMocks` | `true`        | Auto-restores `vi.spyOn` mocks after each test    |
 
 ---
 
@@ -118,8 +118,8 @@ any test that must not have a DOM environment.
 
 ## Version History
 
-| Preset version | Vitest | Change |
-| --- | --- | --- |
-| / v13.17.0 | 4.x | Initial README — documents `base.mjs`, `happy-dom.mjs`, `node.mjs` |
-| | 2.x | `pool: "forks"` introduced for happy-dom isolation |
-| | 1.x | `sharedVitestTestConfig` extracted to base |
+| Preset version | Vitest | Change                                                             |
+| -------------- | ------ | ------------------------------------------------------------------ |
+| / v13.17.0     | 4.x    | Initial README — documents `base.mjs`, `happy-dom.mjs`, `node.mjs` |
+|                | 2.x    | `pool: "forks"` introduced for happy-dom isolation                 |
+|                | 1.x    | `sharedVitestTestConfig` extracted to base                         |

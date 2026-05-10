@@ -368,7 +368,9 @@ if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
 const PER_CARD_HARD_CAP_KB = 65;
 const PER_CARD_WARN_KB = 16;
 let perCardCapOk = true;
-console.log(`📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`);
+console.log(
+  `📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`,
+);
 for (const { name, sourceKb } of cardSourceRows) {
   if (sourceKb > PER_CARD_HARD_CAP_KB) {
     console.error(

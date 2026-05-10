@@ -22,7 +22,10 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
-const WORKER_SRC = new URL("../worker/src", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
+const WORKER_SRC = new URL("../worker/src", import.meta.url).pathname.replace(
+  /^\/([A-Za-z]:)/,
+  "$1",
+);
 
 // ── Cloudflare-specific API catalogue ─────────────────────────────────────
 // Each entry describes one CF API and its portability alternatives.
@@ -52,7 +55,8 @@ const CF_APIS = [
     files: ["types.ts", "durable-objects/rate-limiter-do.ts", "durable-objects/orchestrator.ts"],
     denoEquivalent: "No direct equivalent — use Deno KV atomic transactions or Deno Cron",
     bunEquivalent: "No direct equivalent — use in-process state + Redis for distributed lock",
-    portabilityRisk: "HIGH — Durable Objects are a CF-exclusive primitive; 2 usages (rate-limiter, orchestrator)",
+    portabilityRisk:
+      "HIGH — Durable Objects are a CF-exclusive primitive; 2 usages (rate-limiter, orchestrator)",
     adapterFile: "worker/src/durable-objects/",
   },
   {
@@ -134,7 +138,9 @@ for (const api of CF_APIS) {
   if (detected) detectedApis++;
 
   const icon = detected ? "⚠️ " : "✅";
-  const status = detected ? `IN USE (${hits.length} file${hits.length > 1 ? "s" : ""})` : "NOT DETECTED";
+  const status = detected
+    ? `IN USE (${hits.length} file${hits.length > 1 ? "s" : ""})`
+    : "NOT DETECTED";
 
   console.log(`${icon}  ${api.name}`);
   console.log(`   Status          : ${status}`);
@@ -154,7 +160,9 @@ for (const api of CF_APIS) {
 
 console.log(`\nSummary: ${detectedApis}/${totalApis} Cloudflare-specific APIs detected.`);
 if (highRiskUnmitigated > 0) {
-  console.log(`         ${highRiskUnmitigated} HIGH-risk API${highRiskUnmitigated > 1 ? "s" : ""} in use.\n`);
+  console.log(
+    `         ${highRiskUnmitigated} HIGH-risk API${highRiskUnmitigated > 1 ? "s" : ""} in use.\n`,
+  );
 } else {
   console.log();
 }

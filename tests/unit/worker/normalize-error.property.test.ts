@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/normalize-error.ts 
+ * fast-check property tests — worker/src/utils/normalize-error.ts
  *
  * Properties under test:
  *  NE1. normalizeWorkerError always produces ok:false regardless of input.
@@ -18,10 +18,7 @@
 
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
-import {
-  normalizeWorkerError,
-  errorResponse,
-} from "../../../worker/src/utils/normalize-error";
+import { normalizeWorkerError, errorResponse } from "../../../worker/src/utils/normalize-error";
 
 // ── Arbitraries ───────────────────────────────────────────────────────────────
 
@@ -31,14 +28,17 @@ const routeArb = fc
   .filter((s) => s.trim().length > 0 && !/[\x00-\x1f]/.test(s));
 
 /** Arbitrary Error with any message */
-const errorArb = fc
-  .string({ minLength: 0, maxLength: 200 })
-  .map((msg) => new Error(msg));
+const errorArb = fc.string({ minLength: 0, maxLength: 200 }).map((msg) => new Error(msg));
 
 /** Messages that reliably trigger the timeout branch */
 const timeoutMsgArb = fc
   .tuple(
-    fc.constantFrom("timeout occurred", "Timeout error", "request timeout: 5000ms", "upstream Timeout"),
+    fc.constantFrom(
+      "timeout occurred",
+      "Timeout error",
+      "request timeout: 5000ms",
+      "upstream Timeout",
+    ),
     fc.string({ minLength: 0, maxLength: 30 }),
   )
   .map(([kw, suffix]) => new Error(kw + (suffix ? ` ${suffix}` : "")));
@@ -211,7 +211,7 @@ describe("normalizeWorkerError — NE10: errorResponse body JSON contains code",
       fc.asyncProperty(errorArb, routeArb, async (err, route) => {
         const normalized = normalizeWorkerError(err, route);
         const response = errorResponse(normalized);
-        const body = await response.json() as Record<string, unknown>;
+        const body = (await response.json()) as Record<string, unknown>;
         expect(body.code).toBe(normalized.code);
         expect(body.ok).toBe(false);
       }),

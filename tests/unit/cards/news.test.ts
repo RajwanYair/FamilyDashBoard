@@ -2242,7 +2242,9 @@ describe("News — renderNews mute filter ", () => {
 
 // ── Star / read-later IDB ──────────────────────────
 describe("News — star/read-later IDB ", () => {
-  beforeEach(() => { _idbClearFallback(); });
+  beforeEach(() => {
+    _idbClearFallback();
+  });
 
   it("getStarId returns trimmed link", () => {
     const id = getStarId({ link: "https://example.com/a", title: "Title" });
@@ -2325,13 +2327,10 @@ describe("NP2 · newsSourceDomain — property: output has no protocol or path",
 
   it("returns non-empty string for any ASCII URL-like string", () => {
     fc.assert(
-      fc.property(
-        fc.webUrl(),
-        (url) => {
-          const result = newsSourceDomain(url);
-          return typeof result === "string";
-        },
-      ),
+      fc.property(fc.webUrl(), (url) => {
+        const result = newsSourceDomain(url);
+        return typeof result === "string";
+      }),
     );
   });
 });
@@ -2359,13 +2358,10 @@ describe("NP3 · filterBySearch — property: result is always a subset of input
 
   it("empty query returns all items", () => {
     fc.assert(
-      fc.property(
-        fc.array(itemArb, { minLength: 1, maxLength: 10 }),
-        (items) => {
-          const result = filterBySearch(items as Parameters<typeof filterBySearch>[0], "");
-          return result.length === items.length;
-        },
-      ),
+      fc.property(fc.array(itemArb, { minLength: 1, maxLength: 10 }), (items) => {
+        const result = filterBySearch(items as Parameters<typeof filterBySearch>[0], "");
+        return result.length === items.length;
+      }),
     );
   });
 
@@ -2550,7 +2546,9 @@ describe("News configSchema — CS-N1 ", () => {
 // ── getStarredArticles + drawer functions ──────────
 
 describe("News — getStarredArticles ", () => {
-  beforeEach(() => { _idbClearFallback(); });
+  beforeEach(() => {
+    _idbClearFallback();
+  });
 
   it("returns empty array when no articles are starred", async () => {
     const articles = await getStarredArticles();
@@ -2596,7 +2594,9 @@ describe("News — closeStarredDrawer ", () => {
 });
 
 describe("News — openStarredDrawer ", () => {
-  beforeEach(() => { _idbClearFallback(); });
+  beforeEach(() => {
+    _idbClearFallback();
+  });
 
   it("does not throw when dialog element is absent", async () => {
     await expect(openStarredDrawer()).resolves.toBeUndefined();
@@ -2639,7 +2639,12 @@ describe("News — openStarredDrawer ", () => {
     document.body.appendChild(closeBtn);
     vi.spyOn(dialog, "showModal").mockImplementation(() => {});
     cacheDom();
-    await starArticle({ title: "כתבה מבחן", link: "https://news.example.com/1", pubDate: "", source: "מקור" });
+    await starArticle({
+      title: "כתבה מבחן",
+      link: "https://news.example.com/1",
+      pubDate: "",
+      source: "מקור",
+    });
     await openStarredDrawer();
     const tiles = list.querySelectorAll(".news-starred-tile");
     expect(tiles.length).toBe(1);
@@ -2651,7 +2656,9 @@ describe("News — openStarredDrawer ", () => {
 });
 
 describe("idbGetAll — ", () => {
-  beforeEach(() => { _idbClearFallback(); });
+  beforeEach(() => {
+    _idbClearFallback();
+  });
 
   it("returns empty array when store is empty", async () => {
     const result = await idbGetAll("fdb-test-db", "test-store");

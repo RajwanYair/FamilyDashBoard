@@ -45,9 +45,7 @@ const keyArb = fc
   .filter((s) => s.trim().length > 0 && !/[\x00-\x1f\x7f]/.test(s));
 
 /** Pair of distinct keys */
-const distinctKeyPairArb = fc
-  .tuple(keyArb, keyArb)
-  .filter(([a, b]) => a !== b);
+const distinctKeyPairArb = fc.tuple(keyArb, keyArb).filter(([a, b]) => a !== b);
 
 /** JSON-serializable scalar values */
 const scalarArb: fc.Arbitrary<unknown> = fc.oneof(
@@ -251,11 +249,16 @@ describe("cache — CS9: cOr round-trip", () => {
 
   it("returns stored value when fresh", () => {
     fc.assert(
-      fc.property(keyArb, jsonDataArb.filter((d) => d !== null), freshTtlArb, (key, data, ttl) => {
-        cSet(key, data);
-        const result = cOr(key, ttl, () => "FALLBACK");
-        expect(result).toEqual(data);
-      }),
+      fc.property(
+        keyArb,
+        jsonDataArb.filter((d) => d !== null),
+        freshTtlArb,
+        (key, data, ttl) => {
+          cSet(key, data);
+          const result = cOr(key, ttl, () => "FALLBACK");
+          expect(result).toEqual(data);
+        },
+      ),
       { numRuns: 50 },
     );
   });

@@ -1,5 +1,5 @@
 /**
- * Tests — Stocks Provider Adapter 
+ * Tests — Stocks Provider Adapter
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 

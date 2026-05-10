@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/d1-telemetry.ts + routes/metrics.ts 
+ * fast-check property tests — worker/src/utils/d1-telemetry.ts + routes/metrics.ts
  *
  * Properties under test:
  *  DT1. aggregateP95: sampleCount = total samples per route
@@ -21,7 +21,10 @@ import { toProviderHealthPrometheus } from "../../../worker/src/routes/metrics";
 describe("d1-telemetry — DT1: sampleCount", () => {
   it("sampleCount equals the number of samples for each route", () => {
     const routeArb = fc.constantFrom("/api/weather", "/api/stocks", "/api/news");
-    const sampleArb = fc.record({ route: routeArb, ms: fc.double({ min: 1, max: 5000, noNaN: true }) });
+    const sampleArb = fc.record({
+      route: routeArb,
+      ms: fc.double({ min: 1, max: 5000, noNaN: true }),
+    });
 
     fc.assert(
       fc.property(fc.array(sampleArb, { minLength: 1, maxLength: 30 }), (samples) => {
@@ -41,7 +44,10 @@ describe("d1-telemetry — DT1: sampleCount", () => {
 describe("d1-telemetry — DT2: p95ms ≤ max", () => {
   it("p95 never exceeds maximum latency for that route", () => {
     const routeArb = fc.constantFrom("/api/weather", "/api/stocks");
-    const sampleArb = fc.record({ route: routeArb, ms: fc.double({ min: 0, max: 10000, noNaN: true }) });
+    const sampleArb = fc.record({
+      route: routeArb,
+      ms: fc.double({ min: 0, max: 10000, noNaN: true }),
+    });
 
     fc.assert(
       fc.property(fc.array(sampleArb, { minLength: 1, maxLength: 30 }), (samples) => {
@@ -61,7 +67,10 @@ describe("d1-telemetry — DT2: p95ms ≤ max", () => {
 describe("d1-telemetry — DT3: sorted", () => {
   it("output is sorted by route name", () => {
     const routeArb = fc.constantFrom("/a", "/b", "/c", "/z");
-    const sampleArb = fc.record({ route: routeArb, ms: fc.double({ min: 1, max: 100, noNaN: true }) });
+    const sampleArb = fc.record({
+      route: routeArb,
+      ms: fc.double({ min: 1, max: 100, noNaN: true }),
+    });
 
     fc.assert(
       fc.property(fc.array(sampleArb, { minLength: 2, maxLength: 20 }), (samples) => {
@@ -111,7 +120,9 @@ describe("metrics — DT7: one line per route", () => {
         const unique = [...new Set(routes)];
         const rows = unique.map((r, i) => ({ route: r, p95ms: (i + 1) * 10, sampleCount: i + 1 }));
         const output = toProviderHealthPrometheus(rows);
-        const dataLines = output.split("\n").filter((l) => l.startsWith("fdb_provider_health_p95_ms{"));
+        const dataLines = output
+          .split("\n")
+          .filter((l) => l.startsWith("fdb_provider_health_p95_ms{"));
         expect(dataLines.length).toBe(unique.length);
       }),
       { numRuns: 10 },

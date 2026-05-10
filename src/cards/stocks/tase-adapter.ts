@@ -92,9 +92,7 @@ export function ilsToUsd(ilsPrice: number): number | null {
 export function taseToYahooResponse(share: TASEShareResponse): YahooChartResponse {
   const lastILS = typeof share.lastPrice === "number" ? share.lastPrice : 0;
   const prevILS =
-    typeof share.closingPrice === "number" && share.closingPrice > 0
-      ? share.closingPrice
-      : lastILS;
+    typeof share.closingPrice === "number" && share.closingPrice > 0 ? share.closingPrice : lastILS;
 
   const high52 = typeof share.high52W === "number" ? share.high52W : lastILS;
   const low52 = typeof share.low52W === "number" ? share.low52W : lastILS;

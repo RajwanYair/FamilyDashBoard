@@ -301,7 +301,6 @@
   }
 }
 
-
 /* UV index pill colour levels */
 .uv-pill {
   display: inline-block;
@@ -311,11 +310,22 @@
   font-weight: 700;
   color: var(--text-on-warn);
 }
-.uv-pill.uv-low    { background: #6aaa80; }
-.uv-pill.uv-mod    { background: #c8b060; color: var(--text-on-warn); }
-.uv-pill.uv-high   { background: #c88050; }
-.uv-pill.uv-vhigh  { background: #c07070; }
-.uv-pill.uv-extreme { background: #9070b8; }
+.uv-pill.uv-low {
+  background: #6aaa80;
+}
+.uv-pill.uv-mod {
+  background: #c8b060;
+  color: var(--text-on-warn);
+}
+.uv-pill.uv-high {
+  background: #c88050;
+}
+.uv-pill.uv-vhigh {
+  background: #c07070;
+}
+.uv-pill.uv-extreme {
+  background: #9070b8;
+}
 
 /* Air quality index pill */
 .aqi-pill {
@@ -326,26 +336,90 @@
   font-weight: 700;
   color: var(--text-on-warn);
 }
-.aqi-pill.aqi-good     { background: #4caf50; }
-.aqi-pill.aqi-fair     { background: #a5c400; color: #222; }
-.aqi-pill.aqi-moderate { background: #ffb300; color: #222; }
-.aqi-pill.aqi-poor     { background: #e64a19; }
-.aqi-pill.aqi-vpoor    { background: #880e4f; }
-.aqi-pill.aqi-extreme  { background: #7b1fa2; }
+.aqi-pill.aqi-good {
+  background: #4caf50;
+}
+.aqi-pill.aqi-fair {
+  background: #a5c400;
+  color: #222;
+}
+.aqi-pill.aqi-moderate {
+  background: #ffb300;
+  color: #222;
+}
+.aqi-pill.aqi-poor {
+  background: #e64a19;
+}
+.aqi-pill.aqi-vpoor {
+  background: #880e4f;
+}
+.aqi-pill.aqi-extreme {
+  background: #7b1fa2;
+}
 
 /* Nowcast 60-min precipitation bar */
-.wx-nowcast { display: flex; align-items: center; gap: 6px; padding: 4px 0; font-size: 0.78em; }
-.nc-label   { color: var(--text-muted, #888); white-space: nowrap; }
-.nc-bar     { display: flex; flex: 1; gap: 3px; }
-.nc-seg     { flex: 1; border-radius: 4px; padding: 3px 0; text-align: center; font-weight: 700; }
-.nc-pct     { font-size: 0.9em; }
-.nc-low     { background: #4caf5033; color: var(--text); }
-.nc-med     { background: #ffb30066; color: var(--text); }
-.nc-high    { background: #e53935; color: var(--text-on-warn); }
+.wx-nowcast {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  font-size: 0.78em;
+}
+.nc-label {
+  color: var(--text-muted, #888);
+  white-space: nowrap;
+}
+.nc-bar {
+  display: flex;
+  flex: 1;
+  gap: 3px;
+}
+.nc-seg {
+  flex: 1;
+  border-radius: 4px;
+  padding: 3px 0;
+  text-align: center;
+  font-weight: 700;
+}
+.nc-pct {
+  font-size: 0.9em;
+}
+.nc-low {
+  background: #4caf5033;
+  color: var(--text);
+}
+.nc-med {
+  background: #ffb30066;
+  color: var(--text);
+}
+.nc-high {
+  background: #e53935;
+  color: var(--text-on-warn);
+}
 
 /* SVG wind compass */
-.wx-compass { display: inline-block; vertical-align: middle; margin-inline-start: 4px; }
-.wc-ring    { fill: none; stroke: var(--border, #444); stroke-width: 1.5; }
-.wc-center  { fill: var(--accent, #4fc3f7); }
-.wc-needle  { stroke: var(--accent, #4fc3f7); stroke-width: 2.5; stroke-linecap: round; }
-.wc-gust    { fill: none; stroke: #ff7043; stroke-width: 2; stroke-linecap: round; opacity: 0.8; }
+.wx-compass {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline-start: 4px;
+}
+.wc-ring {
+  fill: none;
+  stroke: var(--border, #444);
+  stroke-width: 1.5;
+}
+.wc-center {
+  fill: var(--accent, #4fc3f7);
+}
+.wc-needle {
+  stroke: var(--accent, #4fc3f7);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.wc-gust {
+  fill: none;
+  stroke: #ff7043;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.8;
+}

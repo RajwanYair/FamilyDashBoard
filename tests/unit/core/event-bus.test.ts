@@ -232,7 +232,10 @@ describe("event-bus fast-check properties (EP1-EP5 )", () => {
   it("EP1: globalSync always returns a valid SyncState regardless of card set", () => {
     fc.assert(
       fc.property(
-        fc.array(fc.tuple(arbitraryCardId(), arbitrarySyncState()), { minLength: 1, maxLength: 10 }),
+        fc.array(fc.tuple(arbitraryCardId(), arbitrarySyncState()), {
+          minLength: 1,
+          maxLength: 10,
+        }),
         (pairs) => {
           _resetBusForTesting();
           for (const [id, state] of pairs) {
@@ -247,17 +250,13 @@ describe("event-bus fast-check properties (EP1-EP5 )", () => {
 
   it("EP2: broadcastSync is idempotent — same state twice does not change the aggregated result", () => {
     fc.assert(
-      fc.property(
-        arbitraryCardId(),
-        arbitrarySyncState(),
-        (cardId, state) => {
-          _resetBusForTesting();
-          broadcastSync(cardId, state);
-          const after1 = globalSync.value;
-          broadcastSync(cardId, state); // same again
-          return globalSync.value === after1;
-        },
-      ),
+      fc.property(arbitraryCardId(), arbitrarySyncState(), (cardId, state) => {
+        _resetBusForTesting();
+        broadcastSync(cardId, state);
+        const after1 = globalSync.value;
+        broadcastSync(cardId, state); // same again
+        return globalSync.value === after1;
+      }),
     );
   });
 
@@ -281,9 +280,9 @@ describe("event-bus fast-check properties (EP1-EP5 )", () => {
   it("EP4: globalSync returns 'ok' when every card is 'ok'", () => {
     fc.assert(
       fc.property(
-        fc.array(arbitraryCardId(), { minLength: 1, maxLength: 10 }).filter(
-          (ids) => new Set(ids).size === ids.length,
-        ),
+        fc
+          .array(arbitraryCardId(), { minLength: 1, maxLength: 10 })
+          .filter((ids) => new Set(ids).size === ids.length),
         (cardIds) => {
           _resetBusForTesting();
           for (const id of cardIds) {

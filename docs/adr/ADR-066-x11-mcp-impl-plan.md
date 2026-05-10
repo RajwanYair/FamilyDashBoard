@@ -38,19 +38,19 @@ with discriminated unions:
 ```ts
 type McpRequest = {
   type: "fdb-mcp/request";
-  id: string;            // companion-generated UUID
-  tool: McpToolName;     // see Tool surface below
+  id: string; // companion-generated UUID
+  tool: McpToolName; // see Tool surface below
   args?: Record<string, unknown>;
-  ts: number;            // companion clock; informational
+  ts: number; // companion clock; informational
 };
 
 type McpResponse = {
   type: "fdb-mcp/response";
-  id: string;            // mirrors request.id
+  id: string; // mirrors request.id
   ok: boolean;
-  data?: unknown;        // deep-frozen JSON copy of card state
+  data?: unknown; // deep-frozen JSON copy of card state
   error?: { code: string; message: string };
-  ts: number;            // dashboard clock
+  ts: number; // dashboard clock
 };
 ```
 
@@ -60,14 +60,14 @@ supported (avoids a config-panel surface).
 
 ### Tool surface (v14.x initial)
 
-| Tool | Returns | Source card |
-| ---- | ------- | ----------- |
-| `today.calendar` | next 5 events (title, start, end, location) | `calendar` |
-| `today.hebrew_cal` | active zmanim + next chag/Shabbat | `hebrew-cal` |
-| `today.alerts` | active alerts (severity ≥ orange) | `alerts` |
-| `today.weather` | current temp + 24h max/min + condition | `weather` |
-| `today.countdown` | countdowns < 24h | `countdown` |
-| `today.synthesis` | the daily AI synthesis (X9 shipped) | `ai-synthesis` |
+| Tool               | Returns                                     | Source card    |
+| ------------------ | ------------------------------------------- | -------------- |
+| `today.calendar`   | next 5 events (title, start, end, location) | `calendar`     |
+| `today.hebrew_cal` | active zmanim + next chag/Shabbat           | `hebrew-cal`   |
+| `today.alerts`     | active alerts (severity ≥ orange)           | `alerts`       |
+| `today.weather`    | current temp + 24h max/min + condition      | `weather`      |
+| `today.countdown`  | countdowns < 24h                            | `countdown`    |
+| `today.synthesis`  | the daily AI synthesis (X9 shipped)         | `ai-synthesis` |
 
 ### Privacy + Security
 

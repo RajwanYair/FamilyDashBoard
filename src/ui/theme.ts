@@ -39,9 +39,7 @@ export function applyTheme(theme: string): void {
     // Allows CSS to distinguish theme-change from default navigation cross-fade.
     const doc = document as Document & {
       startViewTransition(
-        callbackOrOpts:
-          | (() => void)
-          | { update: () => void; types?: string[] },
+        callbackOrOpts: (() => void) | { update: () => void; types?: string[] },
       ): ViewTransition;
     };
     let vt: ViewTransition;

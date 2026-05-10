@@ -174,9 +174,7 @@ function _setSpeakBtnState(speaking: boolean): void {
   if (!_elSpeakBtn) return;
   _elSpeakBtn.setAttribute("aria-pressed", speaking ? "true" : "false");
   _elSpeakBtn.textContent = speaking ? "⏹" : "🔊";
-  _elSpeakBtn.title = speaking
-    ? "PC-1: עצור קריאה — Stop reading"
-    : "PC-1: קרא בקול — Read aloud";
+  _elSpeakBtn.title = speaking ? "PC-1: עצור קריאה — Stop reading" : "PC-1: קרא בקול — Read aloud";
 }
 
 export function speakSynthesis(): void {
@@ -193,9 +191,15 @@ export function speakSynthesis(): void {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "he-IL";
   utterance.rate = 0.9;
-  utterance.onstart = () => { _setSpeakBtnState(true); };
-  utterance.onend = () => { _setSpeakBtnState(false); };
-  utterance.onerror = () => { _setSpeakBtnState(false); };
+  utterance.onstart = () => {
+    _setSpeakBtnState(true);
+  };
+  utterance.onend = () => {
+    _setSpeakBtnState(false);
+  };
+  utterance.onerror = () => {
+    _setSpeakBtnState(false);
+  };
   window.speechSynthesis.speak(utterance);
 }
 

@@ -81,7 +81,8 @@ function extractExports(src) {
   /** @type {Set<string>} */
   const suppressed = new Set();
   // Non-global versions of regexes for single-line exec
-  const EXPORT_RE_NG = /^export\s+(?:(?:async\s+)?function\s*\*?\s*|(?:const|let|var)\s+|class\s+|(?:abstract\s+)?enum\s+)(\w+)/;
+  const EXPORT_RE_NG =
+    /^export\s+(?:(?:async\s+)?function\s*\*?\s*|(?:const|let|var)\s+|class\s+|(?:abstract\s+)?enum\s+)(\w+)/;
   const EXPORT_DEFAULT_RE_NG = /^export\s+default\s+(?:function\s+|class\s+)?(\w+)/;
   for (const line of src.split("\n")) {
     if (!line.includes("dead-export-ok")) continue;
@@ -91,7 +92,11 @@ function extractExports(src) {
     const nm = /export\s*\{([^}]+)\}/.exec(line);
     if (nm?.[1]) {
       for (const part of nm[1].split(",")) {
-        const name = part.trim().split(/\s+as\s+/).pop()?.trim();
+        const name = part
+          .trim()
+          .split(/\s+as\s+/)
+          .pop()
+          ?.trim();
         if (name) suppressed.add(name);
       }
     }
@@ -198,7 +203,7 @@ if (flags["fail-on-dead"]) {
   process.exit(1);
 }
 
-const maxAllowed = flags["max-allowed"] ? parseInt(flags["max-allowed"], 10) : NaN;
+const maxAllowed = flags["max-allowed"] ? parseInt(String(flags["max-allowed"]), 10) : NaN;
 if (!Number.isNaN(maxAllowed) && dead.length > maxAllowed) {
   console.error(`::error::${dead.length} dead exports exceed --max-allowed ${maxAllowed}`);
   process.exit(1);

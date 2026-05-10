@@ -40,11 +40,7 @@ const _registry = new Map<string, SemanticLink>();
  * `toCardId`.  Only one resolver per direction is kept — a second call with
  * the same direction replaces the previous resolver.
  */
-export function registerLink(
-  fromCardId: string,
-  toCardId: string,
-  resolver: LinkResolver,
-): void {
+export function registerLink(fromCardId: string, toCardId: string, resolver: LinkResolver): void {
   _registry.set(linkKey(fromCardId, toCardId), {
     fromCardId,
     toCardId,

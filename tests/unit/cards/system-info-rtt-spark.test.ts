@@ -4,11 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import {
-  appendRttHistory,
-  getRttHistory,
-  _resetRttHistory,
-} from "@/cards/system-info/system-info";
+import { appendRttHistory, getRttHistory, _resetRttHistory } from "@/cards/system-info/system-info";
 
 describe("SI-RTT ring buffer ", () => {
   beforeEach(() => {

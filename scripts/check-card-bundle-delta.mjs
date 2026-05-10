@@ -130,11 +130,19 @@ console.log("\n✅  All card bundle deltas within threshold.\n");
  * exceed the budget (in KB). Fail CI with exit 1 if violated.
  */
 const GROUP_BUDGETS = [
-  { name: "news + video-news",              cards: ["news", "video-news"],                          budgetKb: 28 },
-  { name: "weather + hebrew-cal + countdown", cards: ["weather", "hebrew-cal", "countdown"],        budgetKb: 38 },
-  { name: "stocks + currency",              cards: ["stocks", "currency"],                          budgetKb: 33 },
-  { name: "calendar + alerts",              cards: ["calendar", "alerts"],                          budgetKb: 23 },
-  { name: "tasks + motivation + system-info", cards: ["tasks", "motivation", "system-info"],        budgetKb: 23 },
+  { name: "news + video-news", cards: ["news", "video-news"], budgetKb: 28 },
+  {
+    name: "weather + hebrew-cal + countdown",
+    cards: ["weather", "hebrew-cal", "countdown"],
+    budgetKb: 38,
+  },
+  { name: "stocks + currency", cards: ["stocks", "currency"], budgetKb: 33 },
+  { name: "calendar + alerts", cards: ["calendar", "alerts"], budgetKb: 23 },
+  {
+    name: "tasks + motivation + system-info",
+    cards: ["tasks", "motivation", "system-info"],
+    budgetKb: 23,
+  },
 ];
 
 let groupFailed = false;
@@ -147,9 +155,7 @@ for (const group of GROUP_BUDGETS) {
   const rounded = parseFloat(totalKb.toFixed(1));
   const over = rounded > group.budgetKb;
   const sign = over ? "❌" : "✅";
-  groupRows.push(
-    `  ${sign}  ${group.name.padEnd(36)} ${rounded} / ${group.budgetKb} KB`,
-  );
+  groupRows.push(`  ${sign}  ${group.name.padEnd(36)} ${rounded} / ${group.budgetKb} KB`);
   if (over) groupFailed = true;
 }
 
@@ -198,11 +204,8 @@ if (Object.keys(baselineSource).length > 0) {
     if (currentKb === 0) continue; // card dir not found — skip
     const delta = (currentKb - baseKb) / baseKb;
     const deltaStr = (delta >= 0 ? "+" : "") + (delta * 100).toFixed(1) + "%";
-    const sign =
-      delta > SOURCE_DELTA_FAIL ? "❌" : delta > SOURCE_DELTA_WARN ? "⚠️ " : "✅";
-    srcRows.push(
-      `  ${sign}  ${card.padEnd(14)} ${baseKb} KB → ${currentKb} KB  (${deltaStr})`,
-    );
+    const sign = delta > SOURCE_DELTA_FAIL ? "❌" : delta > SOURCE_DELTA_WARN ? "⚠️ " : "✅";
+    srcRows.push(`  ${sign}  ${card.padEnd(14)} ${baseKb} KB → ${currentKb} KB  (${deltaStr})`);
     if (delta > SOURCE_DELTA_FAIL) srcFailed = true;
   }
 

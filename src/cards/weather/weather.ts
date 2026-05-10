@@ -246,7 +246,8 @@ export function aqiLabel(aqi: number): { label: string; cls: string } {
   if (aqi <= 40) return { label: "\u05e1\u05d1\u05d9\u05e8", cls: "aqi-fair" }; // סביר
   if (aqi <= 60) return { label: "\u05d1\u05d9\u05e0\u05d5\u05e0\u05d9", cls: "aqi-moderate" }; // בינוני
   if (aqi <= 80) return { label: "\u05d2\u05e8\u05d5\u05e2", cls: "aqi-poor" }; // גרוע
-  if (aqi <= 100) return { label: "\u05d2\u05e8\u05d5\u05e2 \u05de\u05d0\u05d5\u05d3", cls: "aqi-vpoor" }; // גרוע מאוד
+  if (aqi <= 100)
+    return { label: "\u05d2\u05e8\u05d5\u05e2 \u05de\u05d0\u05d5\u05d3", cls: "aqi-vpoor" }; // גרוע מאוד
   return { label: "\u05e7\u05d9\u05e6\u05d5\u05e0\u05d9", cls: "aqi-extreme" }; // קיצוני
 }
 
@@ -271,9 +272,7 @@ export function renderAqiTile(aqi: number): void {
   const target = el.wxAqi ?? document.getElementById("wx-aqi");
   if (!target) return;
   const { label, cls } = aqiLabel(aqi);
-  target.innerHTML = trustedHTML(
-    `<span class="aqi-pill ${cls}">${aqi}</span> ${label}`,
-  );
+  target.innerHTML = trustedHTML(`<span class="aqi-pill ${cls}">${aqi}</span> ${label}`);
 }
 
 // ── end W4 ──────────────────────────────────────────────────────────────────────────
@@ -281,10 +280,7 @@ export function renderAqiTile(aqi: number): void {
 // Hyperlocal nowcast (next 60 min) ────────────────────────────────
 
 /** Fetch next-60-min precipitation probability using Open-Meteo minutely_15. */
-export async function fetchNowcast(
-  lat: number,
-  lon: number,
-): Promise<NowcastResponse | null> {
+export async function fetchNowcast(lat: number, lon: number): Promise<NowcastResponse | null> {
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&minutely_15=precipitation_probability&forecast_minutely_15=4&timezone=auto`;
     const data = await fetchJSONWithWorker<NowcastResponse>(url);
@@ -344,8 +340,10 @@ export function compassGustArc(startDeg: number, sweepDeg: number, r = 16): stri
  * show/hide the gust arc ring.
  */
 export function renderWindCompass(deg: number, speed: number, gust: number): void {
-  const needle = el.wxCompassNeedle ?? document.getElementById("wx-compass-needle") as SVGElement | null;
-  const gustEl = el.wxCompassGust ?? document.getElementById("wx-compass-gust") as SVGElement | null;
+  const needle =
+    el.wxCompassNeedle ?? (document.getElementById("wx-compass-needle") as SVGElement | null);
+  const gustEl =
+    el.wxCompassGust ?? (document.getElementById("wx-compass-gust") as SVGElement | null);
   if (!needle) return;
   needle.setAttribute("transform", `rotate(${deg})`);
   if (gustEl) {
@@ -476,13 +474,9 @@ export function computeGoldenHour(
   const rise = new Date(sunriseIso);
   const set = new Date(sunsetIso);
 
-  const morningEnd = isNaN(rise.getTime())
-    ? "--:--"
-    : fmt(new Date(rise.getTime() + 60 * 60_000));
+  const morningEnd = isNaN(rise.getTime()) ? "--:--" : fmt(new Date(rise.getTime() + 60 * 60_000));
 
-  const eveningStart = isNaN(set.getTime())
-    ? "--:--"
-    : fmt(new Date(set.getTime() - 60 * 60_000));
+  const eveningStart = isNaN(set.getTime()) ? "--:--" : fmt(new Date(set.getTime() - 60 * 60_000));
 
   return { morningEnd, eveningStart };
 }
@@ -657,7 +651,11 @@ export function renderWeather(d: WeatherResponse): void {
   }
 
   // SVG wind compass
-  renderWindCompass(cur.wind_direction_10m, Math.round(cur.wind_speed_10m), Math.round(cur.wind_gusts_10m));
+  renderWindCompass(
+    cur.wind_direction_10m,
+    Math.round(cur.wind_speed_10m),
+    Math.round(cur.wind_gusts_10m),
+  );
 
   // UV index pill (F122)
   if (el.wxUv) {
@@ -778,7 +776,9 @@ export function renderWeather(d: WeatherResponse): void {
     // clicking the moon emoji tile cross-links to hebrew-cal
     el.wxRise.title = "לחץ לפרטי לוח עברי";
     el.wxRise.style.cursor = "pointer";
-    el.wxRise.onclick = (): void => { scrollToLinkedCard("hebrew-cal"); };
+    el.wxRise.onclick = (): void => {
+      scrollToLinkedCard("hebrew-cal");
+    };
   }
 
   // Min/max today
@@ -867,7 +867,7 @@ export function initWeatherCard(): void {
     void switchWeatherCity(lat, lon);
   });
 
-  // Subscribe to tempUnit signal: re-render when tempUnit changes 
+  // Subscribe to tempUnit signal: re-render when tempUnit changes
   if (_tempUnitEffect === null) {
     _tempUnitEffect = effect(() => {
       void tempUnitSignal.value; // track dependency — fires on every tempUnit change
@@ -953,7 +953,7 @@ export const weatherConfigSchema: CardConfigField[] = [
   // US travel mode was config-only; now user-settable ──
   {
     key: "weatherUsTravelMode",
-    labelHe: "מצב נסיעה לארה\"ב (NWS)",
+    labelHe: 'מצב נסיעה לארה"ב (NWS)',
     labelEn: "US Travel Mode (NWS provider)",
     type: "boolean",
     defaultValue: false,
@@ -1004,7 +1004,7 @@ export const weatherConfigSchema: CardConfigField[] = [
     type: "select",
     defaultValue: "mm",
     options: [
-      { value: "mm", label: "מ\"מ (mm)" },
+      { value: "mm", label: 'מ"מ (mm)' },
       { value: "in", label: "אינץ' (in)" },
     ],
     tab: "display",

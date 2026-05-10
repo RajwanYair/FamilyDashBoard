@@ -48,7 +48,10 @@ describe("buildEarlyHintsLinkHeader", () => {
 
   it("is a comma-separated list of 6 entries", () => {
     const header = buildEarlyHintsLinkHeader();
-    const entries = header.split(",").map((s) => s.trim()).filter(Boolean);
+    const entries = header
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
     expect(entries).toHaveLength(6);
   });
 });

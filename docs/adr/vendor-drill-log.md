@@ -1,7 +1,7 @@
 # Vendor-Neutrality Drill Log — ADR-031
 
 Records the results of each annual vendor-neutrality drill per ADR-031 before
-major version tags.  Each entry covers one target runtime in the rotation:
+major version tags. Each entry covers one target runtime in the rotation:
 Deno Deploy → Bun Deploy → fly.io → repeat.
 
 ---
@@ -20,12 +20,12 @@ No new Cloudflare-specific APIs introduced since v14.0.0.
 Sprints 430–435 added property tests, bundle ratchet, and OWASP expansion — all
 pure TypeScript tooling with zero worker-layer changes.
 
-| API | Portability Risk | In Use | Delta Since v14.0.0 | Mitigation |
-| --- | --- | --- | --- | --- |
-| Workers KV | MEDIUM | ✅ Yes | No change | `StorageAdapter` / `MemoryKVAdapter` intact |
-| D1 Database | MEDIUM | ✅ Yes | No change | `D1Adapter` intact; `bun:sqlite` covers Bun |
-| Durable Objects | HIGH | ✅ Yes | No change | Still isolated; migration spike ROADMAP §4.4 |
-| Analytics Engine | LOW | ✅ Yes | No change | Removable with no functional impact |
+| API              | Portability Risk | In Use | Delta Since v14.0.0 | Mitigation                                   |
+| ---------------- | ---------------- | ------ | ------------------- | -------------------------------------------- |
+| Workers KV       | MEDIUM           | ✅ Yes | No change           | `StorageAdapter` / `MemoryKVAdapter` intact  |
+| D1 Database      | MEDIUM           | ✅ Yes | No change           | `D1Adapter` intact; `bun:sqlite` covers Bun  |
+| Durable Objects  | HIGH             | ✅ Yes | No change           | Still isolated; migration spike ROADMAP §4.4 |
+| Analytics Engine | LOW              | ✅ Yes | No change           | Removable with no functional impact          |
 
 ### Bun Deploy Portability Notes
 
@@ -46,7 +46,7 @@ node scripts/check-vendor-neutrality.mjs --gate
 # → ❌ Gate failed: 1 unmitigated HIGH-risk API detected. (Durable Objects)
 ```
 
-Same single HIGH-risk item as v14.0.0 (Durable Objects).  No regression.
+Same single HIGH-risk item as v14.0.0 (Durable Objects). No regression.
 Release proceeds — risk accepted as documented in v14.0.0 entry.
 
 ### Next Drill Target
@@ -65,14 +65,14 @@ Release proceeds — risk accepted as documented in v14.0.0 entry.
 
 ### Cloudflare-Specific APIs Detected
 
-| API | Portability Risk | In Use | Mitigation |
-| --- | --- | --- | --- |
-| Workers KV | MEDIUM | ✅ Yes | `StorageAdapter` interface wraps all KV calls in `worker/src/adapters/kv.ts`; a `MemoryKVAdapter` stub covers Deno/Bun builds |
-| D1 Database | MEDIUM | ✅ Yes | `D1Adapter` in `worker/src/adapters/d1.ts`; SQLite-over-fetch covers Deno; `bun:sqlite` covers Bun |
-| Durable Objects | HIGH | ✅ Yes | No direct Deno/Bun equivalent; WebSocket fanout logic isolated in `worker/src/durable-objects/`; migration spike documented in ROADMAP §4.4 (DO→Partykit/Rivet fallback) |
-| Analytics Engine | LOW | ✅ Yes | Pure logging — removable with no functional impact |
-| Email Routing | LOW | ❌ No | Not detected in source |
-| CF-specific globals (`caches`, `scheduler`) | LOW | ❌ No | Not detected in source |
+| API                                         | Portability Risk | In Use | Mitigation                                                                                                                                                               |
+| ------------------------------------------- | ---------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Workers KV                                  | MEDIUM           | ✅ Yes | `StorageAdapter` interface wraps all KV calls in `worker/src/adapters/kv.ts`; a `MemoryKVAdapter` stub covers Deno/Bun builds                                            |
+| D1 Database                                 | MEDIUM           | ✅ Yes | `D1Adapter` in `worker/src/adapters/d1.ts`; SQLite-over-fetch covers Deno; `bun:sqlite` covers Bun                                                                       |
+| Durable Objects                             | HIGH             | ✅ Yes | No direct Deno/Bun equivalent; WebSocket fanout logic isolated in `worker/src/durable-objects/`; migration spike documented in ROADMAP §4.4 (DO→Partykit/Rivet fallback) |
+| Analytics Engine                            | LOW              | ✅ Yes | Pure logging — removable with no functional impact                                                                                                                       |
+| Email Routing                               | LOW              | ❌ No  | Not detected in source                                                                                                                                                   |
+| CF-specific globals (`caches`, `scheduler`) | LOW              | ❌ No  | Not detected in source                                                                                                                                                   |
 
 ### Gate Result
 
@@ -82,7 +82,7 @@ node scripts/check-vendor-neutrality.mjs --gate
 ```
 
 **Decision**: Release proceeds because DO is isolated behind an adapter boundary
-and a migration spike is tracked in the ROADMAP.  The gate result is logged here
+and a migration spike is tracked in the ROADMAP. The gate result is logged here
 as documented evidence; the release owner (@RajwanYair) accepts the risk.
 
 ### Live-Drill Status

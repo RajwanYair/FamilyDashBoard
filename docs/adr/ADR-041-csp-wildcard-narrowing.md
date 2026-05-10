@@ -1,12 +1,12 @@
 # ADR-041 — CSP `https://*.intel.com` Wildcard Narrowing Plan
 
-| Field      | Value                            |
-| ---------- | -------------------------------- |
-| Date       | 2026-04-28                       |
-| Status     | Accepted (Plan)                  |
-| Sprint     | 133              |
-| Supersedes | n/a                              |
-| Related    | ADR-018 (CSP), Roadmap item #25  |
+| Field      | Value                           |
+| ---------- | ------------------------------- |
+| Date       | 2026-04-28                      |
+| Status     | Accepted (Plan)                 |
+| Sprint     | 133                             |
+| Supersedes | n/a                             |
+| Related    | ADR-018 (CSP), Roadmap item #25 |
 
 ## Context
 
@@ -29,11 +29,11 @@ Adopt a phased narrowing plan for `https://*.intel.com`:
 Document, in this file, the **exact set of intel.com subdomains we have observed
 the dashboard fetching through** in the last 30 days of corp-network use:
 
-| Subdomain                   | Purpose                                  | First seen |
-| --------------------------- | ---------------------------------------- | ---------- |
-| `proxy-dmz.intel.com`       | corp HTTPS forward proxy                 | 2025-Q4    |
-| `proxy-prc.intel.com`       | corp HTTPS forward proxy (Asia)          | 2025-Q4    |
-| `proxy-chain.intel.com`     | fallback HTTPS proxy                     | 2026-Q1    |
+| Subdomain               | Purpose                         | First seen |
+| ----------------------- | ------------------------------- | ---------- |
+| `proxy-dmz.intel.com`   | corp HTTPS forward proxy        | 2025-Q4    |
+| `proxy-prc.intel.com`   | corp HTTPS forward proxy (Asia) | 2025-Q4    |
+| `proxy-chain.intel.com` | fallback HTTPS proxy            | 2026-Q1    |
 
 (Add to this table when a new subdomain surfaces. Empty rows = no traffic in window.)
 
@@ -87,8 +87,8 @@ When the dashboard is no longer being developed primarily on the corporate netwo
 
 ## Quarterly review log
 
-| Quarter | Date       | Sprint | Reviewer | New subdomains observed | Stable? | Phase-2 gate progress |
-| ------- | ---------- | ------ | -------- | ----------------------- | ------- | --------------------- |
+| Quarter | Date       | Sprint | Reviewer | New subdomains observed | Stable? | Phase-2 gate progress      |
+| ------- | ---------- | ------ | -------- | ----------------------- | ------- | -------------------------- |
 | 2026-Q2 | 2026-04-29 | 163    | self     | None                    | ✅ Yes  | **1 of 2** stable quarters |
 
 > **Phase 2 readiness**: 1 of 2 required stable quarters completed. Re-review in 2026-Q3. If Q3 is

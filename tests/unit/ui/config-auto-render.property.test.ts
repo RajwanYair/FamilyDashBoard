@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/config-auto-render.ts 
+ * fast-check property tests — src/ui/config-auto-render.ts
  *
  * Properties under test:
  *  CA1. renderConfigField returns a div with class cfg-field
@@ -33,14 +33,11 @@ const textField = (key: string, label: string): CardConfigField => ({
 describe("config-auto-render — CA1: cfg-field class", () => {
   it("returns div with cfg-field class", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^[a-z]{3,8}$/),
-        (key) => {
-          const el = renderConfigField(textField(key, "לייבל"));
-          expect(el.className).toBe("cfg-field");
-          expect(el.tagName).toBe("DIV");
-        },
-      ),
+      fc.property(fc.stringMatching(/^[a-z]{3,8}$/), (key) => {
+        const el = renderConfigField(textField(key, "לייבל"));
+        expect(el.className).toBe("cfg-field");
+        expect(el.tagName).toBe("DIV");
+      }),
       { numRuns: 5 },
     );
   });
@@ -104,10 +101,7 @@ describe("config-auto-render — CA5: filterConfigFields hide", () => {
 
 describe("config-auto-render — CA6: empty filter shows all", () => {
   it("empty query shows all fields", () => {
-    const fields: CardConfigField[] = [
-      textField("a", "שדה א"),
-      textField("b", "שדה ב"),
-    ];
+    const fields: CardConfigField[] = [textField("a", "שדה א"), textField("b", "שדה ב")];
     const container = document.createElement("div");
     renderConfigFields(fields, {}, container);
     filterConfigFields(container, "שדה א"); // hide some first

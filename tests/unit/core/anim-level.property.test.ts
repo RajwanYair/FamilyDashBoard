@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/anim-level.ts 
+ * fast-check property tests — src/core/anim-level.ts
  *
  * Properties under test:
  *  AL1. effectiveAnimLevel("full") always returns "full" regardless of OS pref.

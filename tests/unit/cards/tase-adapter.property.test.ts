@@ -12,11 +12,7 @@
 
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
-import {
-  isTASETicker,
-  stripTASESuffix,
-  taseToYahooResponse,
-} from "@/cards/stocks/tase-adapter";
+import { isTASETicker, stripTASESuffix, taseToYahooResponse } from "@/cards/stocks/tase-adapter";
 
 // ── TA1: ".TA" suffix + no caret → true ─────────────────────────────────────
 
@@ -39,12 +35,9 @@ describe("tase-adapter — TA1: isTASETicker with .TA suffix", () => {
 describe("tase-adapter — TA2: isTASETicker index tickers", () => {
   it("returns false for index tickers starting with ^", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^[A-Z0-9]{2,8}$/),
-        (base) => {
-          expect(isTASETicker(`^${base}.TA`)).toBe(false);
-        },
-      ),
+      fc.property(fc.stringMatching(/^[A-Z0-9]{2,8}$/), (base) => {
+        expect(isTASETicker(`^${base}.TA`)).toBe(false);
+      }),
       { numRuns: 20 },
     );
   });
@@ -71,12 +64,9 @@ describe("tase-adapter — TA3: isTASETicker without .TA", () => {
 describe("tase-adapter — TA4: stripTASESuffix removes suffix", () => {
   it("strips .TA from end of symbol", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^[A-Z]{2,8}$/),
-        (base) => {
-          expect(stripTASESuffix(`${base}.TA`)).toBe(base);
-        },
-      ),
+      fc.property(fc.stringMatching(/^[A-Z]{2,8}$/), (base) => {
+        expect(stripTASESuffix(`${base}.TA`)).toBe(base);
+      }),
       { numRuns: 20 },
     );
   });
@@ -108,9 +98,15 @@ describe("tase-adapter — TA6: taseToYahooResponse structure", () => {
           id: fc.option(fc.integer({ min: 1, max: 99999 }), { nil: undefined }),
           name: fc.option(fc.string({ minLength: 1, maxLength: 30 }), { nil: undefined }),
           symbol: fc.option(fc.string({ minLength: 1, maxLength: 10 }), { nil: undefined }),
-          lastPrice: fc.option(fc.double({ min: 0.01, max: 10000, noNaN: true }), { nil: undefined }),
-          changePercent: fc.option(fc.double({ min: -100, max: 100, noNaN: true }), { nil: undefined }),
-          closingPrice: fc.option(fc.double({ min: 0.01, max: 10000, noNaN: true }), { nil: undefined }),
+          lastPrice: fc.option(fc.double({ min: 0.01, max: 10000, noNaN: true }), {
+            nil: undefined,
+          }),
+          changePercent: fc.option(fc.double({ min: -100, max: 100, noNaN: true }), {
+            nil: undefined,
+          }),
+          closingPrice: fc.option(fc.double({ min: 0.01, max: 10000, noNaN: true }), {
+            nil: undefined,
+          }),
           high52W: fc.option(fc.double({ min: 0.01, max: 10000, noNaN: true }), { nil: undefined }),
           low52W: fc.option(fc.double({ min: 0.01, max: 10000, noNaN: true }), { nil: undefined }),
           volume: fc.option(fc.integer({ min: 0, max: 1_000_000_000 }), { nil: undefined }),

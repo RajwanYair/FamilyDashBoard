@@ -1,5 +1,5 @@
 /**
- * Unit tests — NWS (api.weather.gov) adapter 
+ * Unit tests — NWS (api.weather.gov) adapter
  *
  * Covers:
  *  - fToC temperature conversion (via WeatherResponse current.temperature_2m)

@@ -27,9 +27,21 @@ const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const SRC = join(ROOT, "src");
 
 const FORBIDDEN = [
-  { from: /[\\/]src[\\/]cards[\\/]/, importing: /from\s+["'][^"']*[\\/]ui[\\/]/, why: "src/cards/* must not import from src/ui/*" },
-  { from: /[\\/]src[\\/]ui[\\/]/, importing: /from\s+["'][^"']*[\\/]cards[\\/]/, why: "src/ui/* must not import from src/cards/*" },
-  { from: /[\\/]src[\\/]core[\\/]/, importing: /from\s+["'][^"']*[\\/]cards[\\/]/, why: "src/core/* must not import from src/cards/* (core is card-agnostic)" },
+  {
+    from: /[\\/]src[\\/]cards[\\/]/,
+    importing: /from\s+["'][^"']*[\\/]ui[\\/]/,
+    why: "src/cards/* must not import from src/ui/*",
+  },
+  {
+    from: /[\\/]src[\\/]ui[\\/]/,
+    importing: /from\s+["'][^"']*[\\/]cards[\\/]/,
+    why: "src/ui/* must not import from src/cards/*",
+  },
+  {
+    from: /[\\/]src[\\/]core[\\/]/,
+    importing: /from\s+["'][^"']*[\\/]cards[\\/]/,
+    why: "src/core/* must not import from src/cards/* (core is card-agnostic)",
+  },
 ];
 
 /**
@@ -82,8 +94,8 @@ const BASELINE = new Set([
   "src/ui/ticker.ts",
   "src/ui/today-pane.ts",
   // D12-cross: pre-existing cross-card imports (refactor tracked in ROADMAP §3)
-  "src/cards/hebrew-cal/hebrew-cal.ts",  // imports from tasks
-  "src/cards/stocks/tase-adapter.ts",     // imports from currency
+  "src/cards/hebrew-cal/hebrew-cal.ts", // imports from tasks
+  "src/cards/stocks/tase-adapter.ts", // imports from currency
 ]);
 
 /** @returns {string[]} */

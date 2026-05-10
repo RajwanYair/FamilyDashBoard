@@ -25,7 +25,13 @@ import {
 } from "@/cards/motivation/motivation";
 
 const VALID_CATEGORIES = [
-  "gratitude", "courage", "calm", "general", "success", "morning", "shabbat",
+  "gratitude",
+  "courage",
+  "calm",
+  "general",
+  "success",
+  "morning",
+  "shabbat",
 ];
 
 // ── MO1: poolSize=1 → always 0 ──────────────────────────────────────────────
@@ -85,13 +91,10 @@ describe("motivation — MO3: avoids used", () => {
 describe("motivation — MO4: getThemeForDay valid", () => {
   it("always returns a valid category", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (d) => {
-          const cat = getThemeForDay(d);
-          expect(VALID_CATEGORIES).toContain(cat);
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (d) => {
+        const cat = getThemeForDay(d);
+        expect(VALID_CATEGORIES).toContain(cat);
+      }),
       { numRuns: 30 },
     );
   });
@@ -164,15 +167,12 @@ describe("motivation — MO8: getQuotesByCategory filtering", () => {
 describe("motivation — MO9: pickNextQuoteIndex full window", () => {
   it("when all indices used, still returns valid index", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 2, max: 20 }),
-        (poolSize) => {
-          const allUsed = Array.from({ length: poolSize }, (_, i) => i);
-          const result = pickNextQuoteIndex(poolSize, allUsed);
-          expect(result).toBeGreaterThanOrEqual(0);
-          expect(result).toBeLessThan(poolSize);
-        },
-      ),
+      fc.property(fc.integer({ min: 2, max: 20 }), (poolSize) => {
+        const allUsed = Array.from({ length: poolSize }, (_, i) => i);
+        const result = pickNextQuoteIndex(poolSize, allUsed);
+        expect(result).toBeGreaterThanOrEqual(0);
+        expect(result).toBeLessThan(poolSize);
+      }),
       { numRuns: 30 },
     );
   });

@@ -15,10 +15,7 @@ import * as fc from "fast-check";
 
 vi.mock("@/ui/toast", () => ({ showToast: vi.fn() }));
 
-import {
-  notifyProviderBlocked,
-  _resetProviderToast,
-} from "@/core/provider-toast";
+import { notifyProviderBlocked, _resetProviderToast } from "@/core/provider-toast";
 
 afterEach(() => {
   _resetProviderToast();

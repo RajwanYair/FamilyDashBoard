@@ -22,13 +22,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import {
-  idbGet,
-  idbSet,
-  idbDelete,
-  idbGetAll,
-  _idbClearFallback,
-} from "@/core/idb-store";
+import { idbGet, idbSet, idbDelete, idbGetAll, _idbClearFallback } from "@/core/idb-store";
 
 // ─── Fake IDB factory ─────────────────────────────────────────────────────────
 
@@ -50,7 +44,9 @@ function buildFakeIDB(opts: { failOnOpen?: boolean; failOnOp?: boolean } = {}): 
     let _result: T;
     const req = {
       error: null,
-      get result(): T { return _result; },
+      get result(): T {
+        return _result;
+      },
       onsuccess: null as ((e: Event) => void) | null,
       onerror: null as ((e: Event) => void) | null,
     };
@@ -69,7 +65,9 @@ function buildFakeIDB(opts: { failOnOpen?: boolean; failOnOp?: boolean } = {}): 
       onsuccess: null as ((e: Event) => void) | null,
       onerror: null as ((e: Event) => void) | null,
     };
-    queueMicrotask(() => { req.onerror?.({} as Event); });
+    queueMicrotask(() => {
+      req.onerror?.({} as Event);
+    });
     return req as unknown as IDBRequest<unknown>;
   }
 
@@ -102,16 +100,25 @@ function buildFakeIDB(opts: { failOnOpen?: boolean; failOnOp?: boolean } = {}): 
           transaction: (storeName: string, _mode: string): IDBTransaction => {
             const m = storeMap(dbName, storeName);
             return {
-              objectStore: (): IDBObjectStore => ({
-                get: (key: string) =>
-                  opts.failOnOp ? errorReq() : successReq(() => m.get(key) ?? undefined),
-                put: (value: unknown, key: string) =>
-                  opts.failOnOp ? errorReq() : successReq(() => { m.set(key, value); }),
-                delete: (key: string) =>
-                  opts.failOnOp ? errorReq() : successReq(() => { m.delete(key); }),
-                getAll: () =>
-                  opts.failOnOp ? errorReq() : successReq(() => Array.from(m.values())),
-              } as unknown as IDBObjectStore),
+              objectStore: (): IDBObjectStore =>
+                ({
+                  get: (key: string) =>
+                    opts.failOnOp ? errorReq() : successReq(() => m.get(key) ?? undefined),
+                  put: (value: unknown, key: string) =>
+                    opts.failOnOp
+                      ? errorReq()
+                      : successReq(() => {
+                          m.set(key, value);
+                        }),
+                  delete: (key: string) =>
+                    opts.failOnOp
+                      ? errorReq()
+                      : successReq(() => {
+                          m.delete(key);
+                        }),
+                  getAll: () =>
+                    opts.failOnOp ? errorReq() : successReq(() => Array.from(m.values())),
+                }) as unknown as IDBObjectStore,
             } as unknown as IDBTransaction;
           },
         };
@@ -124,7 +131,7 @@ function buildFakeIDB(opts: { failOnOpen?: boolean; failOnOp?: boolean } = {}): 
       return openReq as unknown as IDBOpenDBRequest;
     },
     cmp: () => 0,
-    deleteDatabase: () => ({} as IDBOpenDBRequest),
+    deleteDatabase: () => ({}) as IDBOpenDBRequest,
     databases: async () => [] as IDBDatabaseInfo[],
   } as unknown as IDBFactory;
 }

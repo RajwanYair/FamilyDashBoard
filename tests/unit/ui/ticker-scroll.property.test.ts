@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/ticker.ts applyTickerSpeed 
+ * fast-check property tests — src/ui/ticker.ts applyTickerSpeed
  *
  * Properties under test:
  *  TK1. applyTickerSpeed clamps input to [1,5]
@@ -20,14 +20,11 @@ import { injectScrollKeyframes } from "@/ui/scroll";
 describe("ticker — TK1: applyTickerSpeed clamp", () => {
   it("values below 1 result in 60s (speed 1)", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: -100, max: 0 }),
-        (speed) => {
-          applyTickerSpeed(speed);
-          const val = document.documentElement.style.getPropertyValue("--ticker-duration");
-          expect(val).toBe("60s");
-        },
-      ),
+      fc.property(fc.integer({ min: -100, max: 0 }), (speed) => {
+        applyTickerSpeed(speed);
+        const val = document.documentElement.style.getPropertyValue("--ticker-duration");
+        expect(val).toBe("60s");
+      }),
       { numRuns: 5 },
     );
   });
@@ -48,12 +45,9 @@ describe("ticker — TK2: valid speed CSS", () => {
 describe("ticker — TK3: extreme speeds safe", () => {
   it("does not throw for any integer", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: -1000, max: 1000 }),
-        (speed) => {
-          expect(() => applyTickerSpeed(speed)).not.toThrow();
-        },
-      ),
+      fc.property(fc.integer({ min: -1000, max: 1000 }), (speed) => {
+        expect(() => applyTickerSpeed(speed)).not.toThrow();
+      }),
       { numRuns: 10 },
     );
   });
@@ -87,15 +81,12 @@ describe("scroll — TK5: injectScrollKeyframes", () => {
 describe("scroll — TK6: keyframe content", () => {
   it("content includes translateY with the distance", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 10, max: 5000 }),
-        (distance) => {
-          const id = `scroll-prop-${distance}`;
-          injectScrollKeyframes(id, `scrollAnim${distance}`, distance);
-          const el = document.getElementById(id) as HTMLStyleElement | null;
-          expect(el?.textContent).toContain(`translateY(-${distance}px)`);
-        },
-      ),
+      fc.property(fc.integer({ min: 10, max: 5000 }), (distance) => {
+        const id = `scroll-prop-${distance}`;
+        injectScrollKeyframes(id, `scrollAnim${distance}`, distance);
+        const el = document.getElementById(id) as HTMLStyleElement | null;
+        expect(el?.textContent).toContain(`translateY(-${distance}px)`);
+      }),
       { numRuns: 5 },
     );
   });

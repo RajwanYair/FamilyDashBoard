@@ -1115,7 +1115,9 @@ describe("Maximize — startVtWithTypes L1 TypeError fallback (lines 41-44)", ()
     vi.restoreAllMocks();
     try {
       Reflect.deleteProperty(document, "startViewTransition");
-    } catch { /* non-configurable */ }
+    } catch {
+      /* non-configurable */
+    }
   });
 
   it("falls back to L1 when L2 call throws TypeError (line 41 TRUE branch)", async () => {
@@ -1140,7 +1142,11 @@ describe("Maximize — startVtWithTypes L1 TypeError fallback (lines 41-44)", ()
           (cbOrOpts as () => void)();
           l1UpdateFn();
         }
-        return { finished: Promise.resolve(), ready: Promise.resolve(), updateCallbackDone: Promise.resolve() };
+        return {
+          finished: Promise.resolve(),
+          ready: Promise.resolve(),
+          updateCallbackDone: Promise.resolve(),
+        };
       },
     });
 

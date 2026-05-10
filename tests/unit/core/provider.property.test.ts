@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/provider.ts 
+ * fast-check property tests — src/core/provider.ts
  *
  * Properties under test:
  *  PV1. recordProviderSuccess resets consecutiveFails to 0 and status to "ok".
@@ -9,10 +9,10 @@
  *  PV5. recordProviderLatency: ring buffer never exceeds LATENCY_MAX_SAMPLES (20).
  *  PV6. getProviderHealth returns a copy (mutation doesn't affect internal state).
  *  PV7. shouldBackoff returns false when status is ok.
- *  PV8. getAllProviderHealth includes every registered provider 
- *  PV9. recordProviderLatency: FIFO — latest sample is last in array 
- *  PV10. shouldBackoff returns true when down + recent attempt 
- *  PV11. recordProviderSuccess: successCount accumulates across calls 
+ *  PV8. getAllProviderHealth includes every registered provider
+ *  PV9. recordProviderLatency: FIFO — latest sample is last in array
+ *  PV10. shouldBackoff returns true when down + recent attempt
+ *  PV11. recordProviderSuccess: successCount accumulates across calls
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -44,20 +44,16 @@ beforeEach(() => {
 describe("provider — PV1: recordProviderSuccess resets to ok", () => {
   it("after any number of failures, success resets consecutiveFails and status", () => {
     fc.assert(
-      fc.property(
-        providerIdArb,
-        fc.integer({ min: 0, max: 20 }),
-        (id, failCount) => {
-          _resetProviderHealth();
-          for (let i = 0; i < failCount; i++) recordProviderFailure(id);
-          recordProviderSuccess(id);
-          const h = getProviderHealth(id);
-          expect(h.consecutiveFails).toBe(0);
-          expect(h.status).toBe("ok");
-          expect(h.successCount).toBe(1);
-          expect(h.lastOkAt).not.toBeNull();
-        },
-      ),
+      fc.property(providerIdArb, fc.integer({ min: 0, max: 20 }), (id, failCount) => {
+        _resetProviderHealth();
+        for (let i = 0; i < failCount; i++) recordProviderFailure(id);
+        recordProviderSuccess(id);
+        const h = getProviderHealth(id);
+        expect(h.consecutiveFails).toBe(0);
+        expect(h.status).toBe("ok");
+        expect(h.successCount).toBe(1);
+        expect(h.lastOkAt).not.toBeNull();
+      }),
       { numRuns: 50 },
     );
   });
@@ -68,17 +64,13 @@ describe("provider — PV1: recordProviderSuccess resets to ok", () => {
 describe("provider — PV2: recordProviderFailure increments consecutiveFails", () => {
   it("n failures → consecutiveFails === n", () => {
     fc.assert(
-      fc.property(
-        providerIdArb,
-        fc.integer({ min: 1, max: 30 }),
-        (id, n) => {
-          _resetProviderHealth();
-          for (let i = 0; i < n; i++) recordProviderFailure(id);
-          const h = getProviderHealth(id);
-          expect(h.consecutiveFails).toBe(n);
-          expect(h.failureCount).toBe(n);
-        },
-      ),
+      fc.property(providerIdArb, fc.integer({ min: 1, max: 30 }), (id, n) => {
+        _resetProviderHealth();
+        for (let i = 0; i < n; i++) recordProviderFailure(id);
+        const h = getProviderHealth(id);
+        expect(h.consecutiveFails).toBe(n);
+        expect(h.failureCount).toBe(n);
+      }),
       { numRuns: 50 },
     );
   });
@@ -89,18 +81,14 @@ describe("provider — PV2: recordProviderFailure increments consecutiveFails", 
 describe("provider — PV3: status transitions", () => {
   it("0 fails → ok, 1-2 → degraded, 3+ → down", () => {
     fc.assert(
-      fc.property(
-        providerIdArb,
-        fc.integer({ min: 0, max: 50 }),
-        (id, n) => {
-          _resetProviderHealth();
-          for (let i = 0; i < n; i++) recordProviderFailure(id);
-          const h = getProviderHealth(id);
-          if (n === 0) expect(h.status).toBe("ok");
-          else if (n <= 2) expect(h.status).toBe("degraded");
-          else expect(h.status).toBe("down");
-        },
-      ),
+      fc.property(providerIdArb, fc.integer({ min: 0, max: 50 }), (id, n) => {
+        _resetProviderHealth();
+        for (let i = 0; i < n; i++) recordProviderFailure(id);
+        const h = getProviderHealth(id);
+        if (n === 0) expect(h.status).toBe("ok");
+        else if (n <= 2) expect(h.status).toBe("degraded");
+        else expect(h.status).toBe("down");
+      }),
       { numRuns: 60 },
     );
   });
@@ -144,16 +132,12 @@ describe("provider — PV4: getBackoffMs is capped exponential", () => {
 describe("provider — PV5: latency ring buffer never exceeds 20", () => {
   it("after N recordings, length is min(N, 20)", () => {
     fc.assert(
-      fc.property(
-        providerIdArb,
-        fc.integer({ min: 1, max: 100 }),
-        (id, n) => {
-          _resetProviderHealth();
-          for (let i = 0; i < n; i++) recordProviderLatency(id, i * 10);
-          const samples = getProviderLatency(id);
-          expect(samples.length).toBe(Math.min(n, 20));
-        },
-      ),
+      fc.property(providerIdArb, fc.integer({ min: 1, max: 100 }), (id, n) => {
+        _resetProviderHealth();
+        for (let i = 0; i < n; i++) recordProviderLatency(id, i * 10);
+        const samples = getProviderLatency(id);
+        expect(samples.length).toBe(Math.min(n, 20));
+      }),
       { numRuns: 50 },
     );
   });
@@ -184,14 +168,10 @@ describe("provider — PV6: getProviderHealth returns defensive copy", () => {
 describe("provider — PV7: shouldBackoff returns false when status is ok", () => {
   it("fresh provider never backs off", () => {
     fc.assert(
-      fc.property(
-        providerIdArb,
-        fc.integer({ min: 0, max: Date.now() }),
-        (id, lastAttempt) => {
-          _resetProviderHealth();
-          expect(shouldBackoff(id, lastAttempt)).toBe(false);
-        },
-      ),
+      fc.property(providerIdArb, fc.integer({ min: 0, max: Date.now() }), (id, lastAttempt) => {
+        _resetProviderHealth();
+        expect(shouldBackoff(id, lastAttempt)).toBe(false);
+      }),
       { numRuns: 30 },
     );
   });
@@ -202,19 +182,16 @@ describe("provider — PV7: shouldBackoff returns false when status is ok", () =
 describe("provider — PV8: getAllProviderHealth includes registered", () => {
   it("each interacted provider appears in getAllProviderHealth", () => {
     fc.assert(
-      fc.property(
-        fc.array(providerIdArb, { minLength: 1, maxLength: 5 }),
-        (ids) => {
-          _resetProviderHealth();
-          const uniqueIds = [...new Set(ids)];
-          for (const id of uniqueIds) recordProviderFailure(id);
-          const all = getAllProviderHealth();
-          const allIds = all.map((h) => h.id);
-          for (const id of uniqueIds) {
-            expect(allIds).toContain(id);
-          }
-        },
-      ),
+      fc.property(fc.array(providerIdArb, { minLength: 1, maxLength: 5 }), (ids) => {
+        _resetProviderHealth();
+        const uniqueIds = [...new Set(ids)];
+        for (const id of uniqueIds) recordProviderFailure(id);
+        const all = getAllProviderHealth();
+        const allIds = all.map((h) => h.id);
+        for (const id of uniqueIds) {
+          expect(allIds).toContain(id);
+        }
+      }),
       { numRuns: 20 },
     );
   });
@@ -263,15 +240,11 @@ describe("provider — PV10: shouldBackoff true when down", () => {
 describe("provider — PV11: successCount accumulates", () => {
   it("N successes → successCount === N", () => {
     fc.assert(
-      fc.property(
-        providerIdArb,
-        fc.integer({ min: 1, max: 30 }),
-        (id, n) => {
-          _resetProviderHealth();
-          for (let i = 0; i < n; i++) recordProviderSuccess(id);
-          expect(getProviderHealth(id).successCount).toBe(n);
-        },
-      ),
+      fc.property(providerIdArb, fc.integer({ min: 1, max: 30 }), (id, n) => {
+        _resetProviderHealth();
+        for (let i = 0; i < n; i++) recordProviderSuccess(id);
+        expect(getProviderHealth(id).successCount).toBe(n);
+      }),
       { numRuns: 40 },
     );
   });

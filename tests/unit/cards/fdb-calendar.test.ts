@@ -59,4 +59,3 @@ describe("FdbCalendarCard", () => {
     expect(customElements.get("fdb-calendar")).toBeDefined();
   });
 });
-

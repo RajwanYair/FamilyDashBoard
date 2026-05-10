@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/system-info/system-info.ts 
+ * fast-check property tests — src/cards/system-info/system-info.ts
  *
  * Properties under test:
  *  SI1. formatHeapMb: zero inputs → ""
@@ -95,9 +95,9 @@ describe("system-info — SI6: encodeConnType unknown", () => {
   it("returns 0 for any unknown string", () => {
     fc.assert(
       fc.property(
-        fc.string({ minLength: 1, maxLength: 20 }).filter(
-          (s) => !["4g", "3g", "2g", "slow-2g"].includes(s),
-        ),
+        fc
+          .string({ minLength: 1, maxLength: 20 })
+          .filter((s) => !["4g", "3g", "2g", "slow-2g"].includes(s)),
         (s) => {
           expect(encodeConnType(s)).toBe(0);
         },

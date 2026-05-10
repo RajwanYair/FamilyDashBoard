@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/idb-store.ts 
+ * fast-check property tests — src/core/idb-store.ts
  *
  * Tests run against the in-memory fallback since Vitest jsdom doesn't provide IndexedDB.
  *
@@ -18,13 +18,7 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import * as fc from "fast-check";
-import {
-  idbGet,
-  idbSet,
-  idbDelete,
-  idbGetAll,
-  _idbClearFallback,
-} from "@/core/idb-store";
+import { idbGet, idbSet, idbDelete, idbGetAll, _idbClearFallback } from "@/core/idb-store";
 
 // ── Setup ─────────────────────────────────────────────────────────────────────
 
@@ -49,12 +43,18 @@ const jsonValueArb = fc.oneof(
 describe("idb-store — IDB1: set → get round-trip", () => {
   it("get returns what was set", async () => {
     await fc.assert(
-      fc.asyncProperty(dbNameArb, storeNameArb, keyArb, jsonValueArb, async (db, store, key, val) => {
-        _idbClearFallback();
-        await idbSet(db, store, key, val);
-        const result = await idbGet(db, store, key);
-        expect(result).toEqual(val);
-      }),
+      fc.asyncProperty(
+        dbNameArb,
+        storeNameArb,
+        keyArb,
+        jsonValueArb,
+        async (db, store, key, val) => {
+          _idbClearFallback();
+          await idbSet(db, store, key, val);
+          const result = await idbGet(db, store, key);
+          expect(result).toEqual(val);
+        },
+      ),
       { numRuns: 50 },
     );
   });
@@ -80,13 +80,19 @@ describe("idb-store — IDB2: get unknown key returns null", () => {
 describe("idb-store — IDB3: delete removes value", () => {
   it("get returns null after delete", async () => {
     await fc.assert(
-      fc.asyncProperty(dbNameArb, storeNameArb, keyArb, jsonValueArb, async (db, store, key, val) => {
-        _idbClearFallback();
-        await idbSet(db, store, key, val);
-        await idbDelete(db, store, key);
-        const result = await idbGet(db, store, key);
-        expect(result).toBeNull();
-      }),
+      fc.asyncProperty(
+        dbNameArb,
+        storeNameArb,
+        keyArb,
+        jsonValueArb,
+        async (db, store, key, val) => {
+          _idbClearFallback();
+          await idbSet(db, store, key, val);
+          await idbDelete(db, store, key);
+          const result = await idbGet(db, store, key);
+          expect(result).toBeNull();
+        },
+      ),
       { numRuns: 30 },
     );
   });

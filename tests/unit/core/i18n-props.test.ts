@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/i18n.ts 
+ * fast-check property tests for src/core/i18n.ts
  *
  * Verifies invariants of `t()` and `getLocalizedCardTitle()` over a wide
  * input space. These functions are pure (given a language argument) so
@@ -36,16 +36,12 @@ describe("i18n — fast-check properties (IP1-IP5 )", () => {
 
   it("IP2: t() with placeholder params substitutes every {key} occurrence", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 9999 }),
-        fc.constantFrom("he", "en"),
-        (count, lang) => {
-          const out = t("settingsImported", { count }, lang as "he" | "en");
-          expect(out).toContain(String(count));
-          // After substitution there should be no literal `{count}` left.
-          expect(out.includes("{count}")).toBe(false);
-        },
-      ),
+      fc.property(fc.integer({ min: 0, max: 9999 }), fc.constantFrom("he", "en"), (count, lang) => {
+        const out = t("settingsImported", { count }, lang as "he" | "en");
+        expect(out).toContain(String(count));
+        // After substitution there should be no literal `{count}` left.
+        expect(out.includes("{count}")).toBe(false);
+      }),
       { numRuns: 50 },
     );
   });

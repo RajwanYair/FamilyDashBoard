@@ -12,7 +12,15 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { setupConfigPanelTestDOM } from "../helpers/config-panel-dom";
-import { shareSettings, exportSettings, importSettings, cancelEcfgDialog, confirmEcfgDialog, encryptedShareSettings, openEcfgImportDialog } from "@/ui/config-panel";
+import {
+  shareSettings,
+  exportSettings,
+  importSettings,
+  cancelEcfgDialog,
+  confirmEcfgDialog,
+  encryptedShareSettings,
+  openEcfgImportDialog,
+} from "@/ui/config-panel";
 
 type CfgMod = {
   openConfigPanel: () => void;
@@ -1523,7 +1531,9 @@ describe("Config Panel — weatherUsTravelMode populateForm ", () => {
 // ── / coverage ratchet: ecfg dialog handlers ───────────────────────────────────────────
 
 describe("ConfigPanel — cancelEcfgDialog", () => {
-  afterEach(() => { document.body.innerHTML = ""; });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
 
   it("does not throw when dialog element is absent", () => {
     document.body.innerHTML = "";
@@ -1541,7 +1551,9 @@ describe("ConfigPanel — cancelEcfgDialog", () => {
 });
 
 describe("ConfigPanel — confirmEcfgDialog", () => {
-  afterEach(() => { document.body.innerHTML = ""; });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
 
   it("shows validation error when passphrase input is empty", () => {
     document.body.innerHTML = `
@@ -1564,7 +1576,9 @@ describe("ConfigPanel — confirmEcfgDialog", () => {
 // ── / coverage ratchet: openEcfgDialog callers ─────────────────
 
 describe("ConfigPanel — encryptedShareSettings ", () => {
-  afterEach(() => { document.body.innerHTML = ""; });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
 
   it("calls openEcfgDialog (export) and resolves null when dialog absent", async () => {
     document.body.innerHTML = "";
@@ -1593,7 +1607,9 @@ describe("ConfigPanel — encryptedShareSettings ", () => {
 });
 
 describe("ConfigPanel — openEcfgImportDialog ", () => {
-  afterEach(() => { document.body.innerHTML = ""; });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
 
   it("does not throw when dialog element is absent", async () => {
     document.body.innerHTML = "";
@@ -1693,7 +1709,9 @@ describe("Config Panel — collectForm deep branches", () => {
     mod.initConfigPanel();
     (document.getElementById("cfg-tasks-reset-hour") as HTMLInputElement).value = "25";
     document.getElementById("cfg-save-btn")!.click();
-    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { tasksResetHour?: number };
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as {
+      tasksResetHour?: number;
+    };
     expect(saved.tasksResetHour).toBe(23);
   });
 
@@ -1703,7 +1721,9 @@ describe("Config Panel — collectForm deep branches", () => {
     mod.initConfigPanel();
     (document.getElementById("cfg-moti-interval") as HTMLInputElement).value = "99";
     document.getElementById("cfg-save-btn")!.click();
-    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { motivationInterval?: number };
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as {
+      motivationInterval?: number;
+    };
     expect(saved.motivationInterval).toBe(60);
   });
 
@@ -1776,7 +1796,9 @@ describe("Config Panel — collectForm deep branches", () => {
     mod.initConfigPanel();
     (document.getElementById("cfg-cd-card-start-date") as HTMLInputElement).value = "2027-01-01";
     document.getElementById("cfg-save-btn")!.click();
-    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as { countdownCardStartDate?: string };
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config")!) as {
+      countdownCardStartDate?: string;
+    };
     expect(saved.countdownCardStartDate).toBe("2027-01-01");
   });
 
@@ -1794,15 +1816,29 @@ describe("Config Panel — collectForm deep branches", () => {
 // ── buildConfigAccordion tests ──────────────────────────────────────────
 
 describe("ConfigPanel — buildConfigAccordion", () => {
-  afterEach(() => { document.body.innerHTML = ""; });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
 
   it("renders ungrouped fields flat inside container", async () => {
     const { buildConfigAccordion } = await import("@/ui/config-panel");
     const container = document.createElement("div");
-    buildConfigAccordion([
-      { key: "f1", labelHe: "שדה", labelEn: "Field", type: "text", defaultValue: "abc" },
-      { key: "f2", labelHe: "מספר", labelEn: "Number", type: "number", defaultValue: 5, min: 0, max: 10, step: 1 },
-    ], container);
+    buildConfigAccordion(
+      [
+        { key: "f1", labelHe: "שדה", labelEn: "Field", type: "text", defaultValue: "abc" },
+        {
+          key: "f2",
+          labelHe: "מספר",
+          labelEn: "Number",
+          type: "number",
+          defaultValue: 5,
+          min: 0,
+          max: 10,
+          step: 1,
+        },
+      ],
+      container,
+    );
     const rows = container.querySelectorAll(".cfg-row");
     expect(rows.length).toBe(2);
     const input1 = container.querySelector<HTMLInputElement>("[name='f1']");
@@ -1817,9 +1853,10 @@ describe("ConfigPanel — buildConfigAccordion", () => {
   it("renders boolean field as checkbox with checked state", async () => {
     const { buildConfigAccordion } = await import("@/ui/config-panel");
     const container = document.createElement("div");
-    buildConfigAccordion([
-      { key: "b1", labelHe: "סימון", labelEn: "Check", type: "boolean", defaultValue: true },
-    ], container);
+    buildConfigAccordion(
+      [{ key: "b1", labelHe: "סימון", labelEn: "Check", type: "boolean", defaultValue: true }],
+      container,
+    );
     const input = container.querySelector<HTMLInputElement>("[name='b1']");
     expect(input?.type).toBe("checkbox");
     expect(input?.checked).toBe(true);
@@ -1828,11 +1865,22 @@ describe("ConfigPanel — buildConfigAccordion", () => {
   it("groups fields into <details> elements", async () => {
     const { buildConfigAccordion } = await import("@/ui/config-panel");
     const container = document.createElement("div");
-    buildConfigAccordion([
-      { key: "g1", labelHe: "א", labelEn: "A", type: "text", defaultValue: "", group: "קבוצה" },
-      { key: "g2", labelHe: "ב", labelEn: "B", type: "text", defaultValue: "", group: "קבוצה" },
-      { key: "g3", labelHe: "ג", labelEn: "C", type: "text", defaultValue: "", group: "אחר", groupOpenByDefault: true },
-    ], container);
+    buildConfigAccordion(
+      [
+        { key: "g1", labelHe: "א", labelEn: "A", type: "text", defaultValue: "", group: "קבוצה" },
+        { key: "g2", labelHe: "ב", labelEn: "B", type: "text", defaultValue: "", group: "קבוצה" },
+        {
+          key: "g3",
+          labelHe: "ג",
+          labelEn: "C",
+          type: "text",
+          defaultValue: "",
+          group: "אחר",
+          groupOpenByDefault: true,
+        },
+      ],
+      container,
+    );
     const details = container.querySelectorAll("details");
     expect(details.length).toBe(2);
     expect(details[0]?.querySelector("summary")?.textContent).toBe("קבוצה");
@@ -1845,9 +1893,19 @@ describe("ConfigPanel — buildConfigAccordion", () => {
   it("renders placeholder attribute when provided", async () => {
     const { buildConfigAccordion } = await import("@/ui/config-panel");
     const container = document.createElement("div");
-    buildConfigAccordion([
-      { key: "p1", labelHe: "מקום", labelEn: "Place", type: "text", defaultValue: "", placeholder: "הקלד..." },
-    ], container);
+    buildConfigAccordion(
+      [
+        {
+          key: "p1",
+          labelHe: "מקום",
+          labelEn: "Place",
+          type: "text",
+          defaultValue: "",
+          placeholder: "הקלד...",
+        },
+      ],
+      container,
+    );
     const input = container.querySelector<HTMLInputElement>("[name='p1']");
     expect(input?.placeholder).toBe("הקלד...");
   });
@@ -1860,7 +1918,10 @@ describe("ConfigPanel — tab keyboard navigation", () => {
     localStorage.clear();
     setupConfigPanelTestDOM();
   });
-  afterEach(() => { document.body.innerHTML = ""; localStorage.clear(); });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
 
   it("ArrowRight moves focus to next tab", async () => {
     const mod = await freshCfg();
@@ -1900,7 +1961,10 @@ describe("ConfigPanel — dirty indicator", () => {
     localStorage.clear();
     setupConfigPanelTestDOM();
   });
-  afterEach(() => { document.body.innerHTML = ""; localStorage.clear(); });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
 
   it("input event on overlay marks gear button with asterisk", async () => {
     const mod = await freshCfg();

@@ -40,12 +40,9 @@ const VALID_PSALMS = new Set([24, 48, 82, 94, 81, 93, 92]);
 describe("hebrew-cal — HC1: getPsalmOfDay valid", () => {
   it("always returns a known psalm number", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (d) => {
-          expect(VALID_PSALMS.has(getPsalmOfDay(d))).toBe(true);
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (d) => {
+        expect(VALID_PSALMS.has(getPsalmOfDay(d))).toBe(true);
+      }),
       { numRuns: 30 },
     );
   });
@@ -56,12 +53,9 @@ describe("hebrew-cal — HC1: getPsalmOfDay valid", () => {
 describe("hebrew-cal — HC2: getPsalmOfDay deterministic", () => {
   it("same date always returns same psalm", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (d) => {
-          expect(getPsalmOfDay(d)).toBe(getPsalmOfDay(new Date(d.getTime())));
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (d) => {
+        expect(getPsalmOfDay(d)).toBe(getPsalmOfDay(new Date(d.getTime())));
+      }),
       { numRuns: 15 },
     );
   });
@@ -72,19 +66,16 @@ describe("hebrew-cal — HC2: getPsalmOfDay deterministic", () => {
 describe("hebrew-cal — HC3: hebrewMonthName", () => {
   it("returns non-empty string", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (d) => {
-          let name: string;
-          try {
-            name = hebrewMonthName(d);
-          } catch {
-            fc.pre(false);
-            return;
-          }
-          expect(name.length).toBeGreaterThan(0);
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (d) => {
+        let name: string;
+        try {
+          name = hebrewMonthName(d);
+        } catch {
+          fc.pre(false);
+          return;
+        }
+        expect(name.length).toBeGreaterThan(0);
+      }),
       { numRuns: 20 },
     );
   });
@@ -126,7 +117,9 @@ describe("hebrew-cal — HC6: nextHolidayName empty", () => {
   });
 
   it("returns null when no holiday category", () => {
-    expect(nextHolidayName([{ title: "test", date: "2099-01-01", category: "parashat" }])).toBeNull();
+    expect(
+      nextHolidayName([{ title: "test", date: "2099-01-01", category: "parashat" }]),
+    ).toBeNull();
   });
 });
 
@@ -186,12 +179,9 @@ describe("hebrew-cal — HC9: todayHebrewMD ranges", () => {
 describe("hebrew-cal — HC10: nextHebrewYearGregorianApprox", () => {
   it("returns year + 1", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
-        (d) => {
-          expect(nextHebrewYearGregorianApprox(d)).toBe(d.getFullYear() + 1);
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }), (d) => {
+        expect(nextHebrewYearGregorianApprox(d)).toBe(d.getFullYear() + 1);
+      }),
       { numRuns: 15 },
     );
   });
@@ -219,14 +209,10 @@ describe("hebrew-cal — HC12: zmanimTimeLabel valid ISO", () => {
 describe("hebrew-cal — HC13: zmanimTimeLabel HH:MM", () => {
   it("HH:MM passes through unchanged", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 23 }),
-        fc.integer({ min: 0, max: 59 }),
-        (h, m) => {
-          const input = `${h}:${String(m).padStart(2, "0")}`;
-          expect(zmanimTimeLabel(input)).toBe(input);
-        },
-      ),
+      fc.property(fc.integer({ min: 0, max: 23 }), fc.integer({ min: 0, max: 59 }), (h, m) => {
+        const input = `${h}:${String(m).padStart(2, "0")}`;
+        expect(zmanimTimeLabel(input)).toBe(input);
+      }),
       { numRuns: 15 },
     );
   });

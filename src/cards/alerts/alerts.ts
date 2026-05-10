@@ -526,7 +526,8 @@ export function showAlertTakeover(events: AlertEvent[]): void {
   const closeBtn = document.getElementById("alerts-takeover-close");
 
   if (citiesEl) citiesEl.textContent = uniqueCities || "אזורים שונים";
-  if (threatEl) threatEl.textContent = `${alertThreatIcon(threat)} ${THREAT_LABELS[threat] ?? "⚠️ התרעה"}`;
+  if (threatEl)
+    threatEl.textContent = `${alertThreatIcon(threat)} ${THREAT_LABELS[threat] ?? "⚠️ התרעה"}`;
 
   // Countdown ticker
   if (_takeoverInterval) clearInterval(_takeoverInterval);

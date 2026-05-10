@@ -85,13 +85,13 @@ CSP: clipboard-write is already allowed via Permissions-Policy
 
 ### Per-card adoption (v14.x rollout)
 
-| Card | Producer | Notes |
-| ---- | -------- | ----- |
-| `hebrew-cal` | next zman | schema.org `Event` |
-| `calendar` | focused event | schema.org `Event` |
-| `weather` | current condition | schema.org `WeatherForecast` |
-| `alerts` | active alert | schema.org `EmergencyService` |
-| `countdown` | focused countdown | schema.org `Event` |
+| Card         | Producer          | Notes                         |
+| ------------ | ----------------- | ----------------------------- |
+| `hebrew-cal` | next zman         | schema.org `Event`            |
+| `calendar`   | focused event     | schema.org `Event`            |
+| `weather`    | current condition | schema.org `WeatherForecast`  |
+| `alerts`     | active alert      | schema.org `EmergencyService` |
+| `countdown`  | focused countdown | schema.org `Event`            |
 
 Other cards (news, stocks, etc.) implement opportunistically — not
 gating release.

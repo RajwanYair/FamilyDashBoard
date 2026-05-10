@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/hardware.ts 
+ * fast-check property tests — src/core/hardware.ts
  *
  * Properties under test:
  *  HW1. getHardwareProfile: tier is always "high"|"mid"|"low"
@@ -10,11 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import {
-  getHardwareProfile,
-  formatHardwareProfile,
-  _resetHardwareProfile,
-} from "@/core/hardware";
+import { getHardwareProfile, formatHardwareProfile, _resetHardwareProfile } from "@/core/hardware";
 
 beforeEach(() => {
   _resetHardwareProfile();

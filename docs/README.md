@@ -31,19 +31,19 @@ This directory is the canonical entry point for product documentation in FamilyD
 
 ## Technical Guides
 
-| File                                                     | Purpose                                                         |
-| -------------------------------------------------------- | --------------------------------------------------------------- |
-| [mcp.md](mcp.md)                                         | MCP bridge operator guide (X11 / D1, ADR-066)                  |
-| [adding-a-card.md](adding-a-card.md)                     | Step-by-step guide for adding a new card                        |
-| [deployment.md](deployment.md)                           | GitHub Pages and Cloudflare Pages deployment                    |
-| [data-sources.md](data-sources.md)                       | All external APIs, worker routes, cache keys, and failure modes |
+| File                                 | Purpose                                                         |
+| ------------------------------------ | --------------------------------------------------------------- |
+| [mcp.md](mcp.md)                     | MCP bridge operator guide (X11 / D1, ADR-066)                   |
+| [adding-a-card.md](adding-a-card.md) | Step-by-step guide for adding a new card                        |
+| [deployment.md](deployment.md)       | GitHub Pages and Cloudflare Pages deployment                    |
+| [data-sources.md](data-sources.md)   | All external APIs, worker routes, cache keys, and failure modes |
 
 ## Archived / Historical
 
-| File | Description |
-| ---- | ----------- |
+| File                                                                   | Description                                               |
+| ---------------------------------------------------------------------- | --------------------------------------------------------- |
 | [legacy/card-architecture-audit.md](legacy/card-architecture-audit.md) | Card migration audit: FdbCard adoption status (completed) |
-| [legacy/BestDashBoard.html](legacy/BestDashBoard.html) | Archived single-file dashboard (v13.10.0 snapshot) |
+| [legacy/BestDashBoard.html](legacy/BestDashBoard.html)                 | Archived single-file dashboard (v13.10.0 snapshot)        |
 
 ## Documentation Rules
 

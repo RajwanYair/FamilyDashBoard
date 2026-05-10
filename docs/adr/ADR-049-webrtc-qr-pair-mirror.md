@@ -59,15 +59,15 @@ card-state synchronisation between up to 2 FamilyDashBoard instances on the same
 
 ### Security model
 
-| Property | Value |
-|---|---|
-| Transport | DTLS 1.3 (WebRTC built-in, mandatory) |
-| Authentication | OOB via QR physical scan (attacker must be in the room) |
-| Data encrypted in transit | Yes — DTLS 1.3 |
-| Data at rest | No — config sent over DataChannel lives only in RAM |
-| Session lifetime | 5 min auto-disconnect timer; re-pair required |
-| Server involvement | None — STUN only (Google stun.l.google.com:19302) |
-| PII | None — config values only (same as URL-export) |
+| Property                  | Value                                                   |
+| ------------------------- | ------------------------------------------------------- |
+| Transport                 | DTLS 1.3 (WebRTC built-in, mandatory)                   |
+| Authentication            | OOB via QR physical scan (attacker must be in the room) |
+| Data encrypted in transit | Yes — DTLS 1.3                                          |
+| Data at rest              | No — config sent over DataChannel lives only in RAM     |
+| Session lifetime          | 5 min auto-disconnect timer; re-pair required           |
+| Server involvement        | None — STUN only (Google stun.l.google.com:19302)       |
+| PII                       | None — config values only (same as URL-export)          |
 
 STUN server is used only for candidate discovery (NAT traversal). No data is relayed.
 Fallback: if STUN fails (enterprise firewall), connection fails; local-network pair works
@@ -79,11 +79,11 @@ without STUN (direct ICE candidate on LAN).
 
 ### New files
 
-| File | Purpose |
-|---|---|
-| `src/core/webrtc-mirror.ts` | RTCPeerConnection lifecycle, QR generation, DataChannel |
-| `src/ui/webrtc-pair-dialog.ts` | `<dialog>` overlay with QR display and scan steps |
-| `src/ui/webrtc-pair-dialog.css` | Pair dialog styles |
+| File                            | Purpose                                                 |
+| ------------------------------- | ------------------------------------------------------- |
+| `src/core/webrtc-mirror.ts`     | RTCPeerConnection lifecycle, QR generation, DataChannel |
+| `src/ui/webrtc-pair-dialog.ts`  | `<dialog>` overlay with QR display and scan steps       |
+| `src/ui/webrtc-pair-dialog.css` | Pair dialog styles                                      |
 
 ### Integration points
 
@@ -110,24 +110,24 @@ without STUN (direct ICE candidate on LAN).
 
 ## Consequences
 
-| Positive | Negative |
-|---|---|
-| Real-time sync between home TVs without auth | Requires physical QR scan (intentional security feature) |
-| Zero server cost | TURN-less: fails behind strict enterprise NAT (acceptable — home use) |
-| In-browser DTLS encryption | 5-min session limit means no persistent shared state |
-| No PII to server | Complexity added to `config.ts` merge logic |
+| Positive                                     | Negative                                                              |
+| -------------------------------------------- | --------------------------------------------------------------------- |
+| Real-time sync between home TVs without auth | Requires physical QR scan (intentional security feature)              |
+| Zero server cost                             | TURN-less: fails behind strict enterprise NAT (acceptable — home use) |
+| In-browser DTLS encryption                   | 5-min session limit means no persistent shared state                  |
+| No PII to server                             | Complexity added to `config.ts` merge logic                           |
 
 ---
 
 ## Alternatives rejected
 
-| Alternative | Reason |
-|---|---|
-| Server-side relay (WebSocket) | Requires auth + server infra (ADR-002, rule 26) |
-| CRDT (Yjs) | Track only; adopt only if WebRTC delta insufficient AND core ≤ 12 KB gzip (currently 25+ KB) |
-| AES-GCM URL share (existing) | One-shot only; no live bidirectional sync |
-| localStorage broadcast API | Same-origin, same-device only |
-| BroadcastChannel | Same-origin, same-device only |
+| Alternative                   | Reason                                                                                       |
+| ----------------------------- | -------------------------------------------------------------------------------------------- |
+| Server-side relay (WebSocket) | Requires auth + server infra (ADR-002, rule 26)                                              |
+| CRDT (Yjs)                    | Track only; adopt only if WebRTC delta insufficient AND core ≤ 12 KB gzip (currently 25+ KB) |
+| AES-GCM URL share (existing)  | One-shot only; no live bidirectional sync                                                    |
+| localStorage broadcast API    | Same-origin, same-device only                                                                |
+| BroadcastChannel              | Same-origin, same-device only                                                                |
 
 ---
 

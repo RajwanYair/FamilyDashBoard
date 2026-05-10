@@ -1,14 +1,14 @@
 # ADR-037 — View Transitions Level 2 (Cross-Document) Opt-In
 
-| Field        | Value                                                                          |
-| ------------ | ------------------------------------------------------------------------------ |
-| **Date**     | 2026-04-25                                                                     |
-| **Status**   | Accepted                                                                       |
-| **Sprint**   | 120 (opt-in shipped) / 270 (ADR formalised to fill numbering gap)              |
-| **Deciders** | @RajwanYair                                                                    |
-| **Tags**     | css, transitions, progressive-enhancement, |
-| **Supersedes** | n/a                                                                          |
-| **Related**  | ADR-036 (WebRTC mirror), ADR-008 (CSS layer governance), Roadmap 1.2           |
+| Field          | Value                                                                |
+| -------------- | -------------------------------------------------------------------- |
+| **Date**       | 2026-04-25                                                           |
+| **Status**     | Accepted                                                             |
+| **Sprint**     | 120 (opt-in shipped) / 270 (ADR formalised to fill numbering gap)    |
+| **Deciders**   | @RajwanYair                                                          |
+| **Tags**       | css, transitions, progressive-enhancement,                           |
+| **Supersedes** | n/a                                                                  |
+| **Related**    | ADR-036 (WebRTC mirror), ADR-008 (CSS layer governance), Roadmap 1.2 |
 
 ---
 
@@ -42,11 +42,11 @@ card), giving a native-feeling back-navigation animation in Chrome 111+/Edge
 
 ## Rationale
 
-| Option                                         | Verdict  | Reason                                              |
-| ---------------------------------------------- | -------- | --------------------------------------------------- |
-| JavaScript-driven View Transitions Level 1     | Rejected | Requires JS orchestration; incompatible with card transitions already in use |
+| Option                                               | Verdict  | Reason                                                                           |
+| ---------------------------------------------------- | -------- | -------------------------------------------------------------------------------- |
+| JavaScript-driven View Transitions Level 1           | Rejected | Requires JS orchestration; incompatible with card transitions already in use     |
 | CSS `@view-transition { navigation: auto }` (chosen) | Accepted | Zero JS, progressive enhancement, spec-compliant, Baseline 2024 Widely Available |
-| No transition                                  | Rejected | Suboptimal UX on supported browsers for zero additional cost |
+| No transition                                        | Rejected | Suboptimal UX on supported browsers for zero additional cost                     |
 
 ## Consequences
 

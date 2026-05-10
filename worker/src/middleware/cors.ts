@@ -5,7 +5,8 @@
  * All actual responses have CORS headers added via utils/response.ts.
  */
 
-export const CORS_PREFLIGHT_HEADERS: HeadersInit = { // dead-export-ok: exported for potential external middleware consumers; used internally
+export const CORS_PREFLIGHT_HEADERS: HeadersInit = {
+  // dead-export-ok: exported for potential external middleware consumers; used internally
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",

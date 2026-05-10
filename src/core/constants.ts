@@ -80,7 +80,8 @@ export const API = {
     "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true",
   ALERTS: "https://api.tzevaadom.co.il/alerts-history",
   // D8/W-IMS (ADR-061): Israel Meteorological Service — current conditions for IL stations.
-  IMS_CURRENT_WEATHER: "https://ims.gov.il/sites/default/files/ims_data/map_data/currentWeather.json",
+  IMS_CURRENT_WEATHER:
+    "https://ims.gov.il/sites/default/files/ims_data/map_data/currentWeather.json",
   // D8/S-TASE (ADR-061): Tel-Aviv Stock Exchange — snapshot quotes for .TA tickers.
   TASE_QUOTE: "https://api.tase.co.il/api/share/GetAllShares",
 } as const;

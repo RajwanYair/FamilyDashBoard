@@ -10,11 +10,11 @@
 For IL-located dashboards three native authoritative sources are
 strictly better than the current internationally generic providers:
 
-| Card | Current primary | Authoritative IL source | Why |
-|---|---|---|---|
-| `weather` | Open-Meteo | **IMS (Israel Meteorological Service)** | Native forecast model, Hebrew warnings, official heatwave / khamsin advisories |
-| `stocks` | Yahoo / Stooq | **TASE (Tel-Aviv Stock Exchange)** | Authoritative `.TA` ticker prices, native ILS denomination, no FX round-trip |
-| `currency` | Frankfurter / ECB | **Bank of Israel** | Official daily ILS reference rate; legally referenced rate in IL |
+| Card       | Current primary   | Authoritative IL source                 | Why                                                                            |
+| ---------- | ----------------- | --------------------------------------- | ------------------------------------------------------------------------------ |
+| `weather`  | Open-Meteo        | **IMS (Israel Meteorological Service)** | Native forecast model, Hebrew warnings, official heatwave / khamsin advisories |
+| `stocks`   | Yahoo / Stooq     | **TASE (Tel-Aviv Stock Exchange)**      | Authoritative `.TA` ticker prices, native ILS denomination, no FX round-trip   |
+| `currency` | Frankfurter / ECB | **Bank of Israel**                      | Official daily ILS reference rate; legally referenced rate in IL               |
 
 D8 in `docs/ROADMAP.md` selected these as v14.0 adoption candidates.
 The challenge is that the existing card pipeline assumes a **single

@@ -43,13 +43,10 @@ const newsItemArb = fc.record({
 describe("news — NW1: filterBySearch empty query", () => {
   it("returns all items when query is empty", () => {
     fc.assert(
-      fc.property(
-        fc.array(newsItemArb, { minLength: 0, maxLength: 10 }),
-        (items) => {
-          expect(filterBySearch(items as never, "")).toHaveLength(items.length);
-          expect(filterBySearch(items as never, "  ")).toHaveLength(items.length);
-        },
-      ),
+      fc.property(fc.array(newsItemArb, { minLength: 0, maxLength: 10 }), (items) => {
+        expect(filterBySearch(items as never, "")).toHaveLength(items.length);
+        expect(filterBySearch(items as never, "  ")).toHaveLength(items.length);
+      }),
       { numRuns: 20 },
     );
   });
@@ -203,10 +200,15 @@ describe("news — NW11: ageFreshness invalid", () => {
   it("result is always one of the four buckets", () => {
     const valid = ["fresh2m", "fresh1h", "fresh1d", "old"];
     fc.assert(
-      fc.property(fc.date({ min: new Date(2020, 0, 1), max: new Date() }), (d) => {
-        const result = ageFreshness(d.toISOString());
-        expect(valid).toContain(result);
-      }),
+      fc.property(
+        fc
+          .date({ min: new Date(2020, 0, 1), max: new Date() })
+          .filter((d) => !Number.isNaN(d.getTime())),
+        (d) => {
+          const result = ageFreshness(d.toISOString());
+          expect(valid).toContain(result);
+        },
+      ),
       { numRuns: 20 },
     );
   });

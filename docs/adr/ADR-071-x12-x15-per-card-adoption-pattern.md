@@ -77,20 +77,20 @@ between cases and the gate would prevent re-registration).
 
 ## Per-card key conventions (current + planned)
 
-| cardId | X12 keys | X15 producer |
-| --- | --- | --- |
-| `countdown` | `next` (primary) | ✅ (v13.39.0 S377) |
-| `hebrew-cal` | `next-holiday`, `next-zman` (planned) | ✅ (v13.39.0 S379) |
-| `weather` | `current`, `nowcast` (planned) | planned v14.x |
-| `calendar` | `next-event` (planned) | planned v14.x |
-| `alerts` | `active` (planned) | planned v14.x |
-| `stocks` | `top-mover` (planned) | planned v14.x |
-| `currency` | `usd-ils`, `eur-ils` (planned) | planned v14.x |
-| `news` | `top` (planned) | planned v14.x |
-| `motivation` | — (no shareable state) | planned v14.x (current quote) |
-| `tasks` | `pending-count` (planned) | planned v14.x (today's tasks) |
-| `system-info` | `health` (planned) | not planned (debug-only) |
-| `video-news` | — | not planned (audio/video) |
+| cardId        | X12 keys                              | X15 producer                  |
+| ------------- | ------------------------------------- | ----------------------------- |
+| `countdown`   | `next` (primary)                      | ✅ (v13.39.0 S377)            |
+| `hebrew-cal`  | `next-holiday`, `next-zman` (planned) | ✅ (v13.39.0 S379)            |
+| `weather`     | `current`, `nowcast` (planned)        | planned v14.x                 |
+| `calendar`    | `next-event` (planned)                | planned v14.x                 |
+| `alerts`      | `active` (planned)                    | planned v14.x                 |
+| `stocks`      | `top-mover` (planned)                 | planned v14.x                 |
+| `currency`    | `usd-ils`, `eur-ils` (planned)        | planned v14.x                 |
+| `news`        | `top` (planned)                       | planned v14.x                 |
+| `motivation`  | — (no shareable state)                | planned v14.x (current quote) |
+| `tasks`       | `pending-count` (planned)             | planned v14.x (today's tasks) |
+| `system-info` | `health` (planned)                    | not planned (debug-only)      |
+| `video-news`  | —                                     | not planned (audio/video)     |
 
 ## Test pattern
 
@@ -103,9 +103,15 @@ beforeEach(() => {
   _resetSemanticProducers();
 });
 
-it("publishes signal on tick", () => { /* … */ });
-it("getSemanticPayload returns null before init", () => { /* … */ });
-it("returns SemanticPayload after init+tick", () => { /* … */ });
+it("publishes signal on tick", () => {
+  /* … */
+});
+it("getSemanticPayload returns null before init", () => {
+  /* … */
+});
+it("returns SemanticPayload after init+tick", () => {
+  /* … */
+});
 ```
 
 See `tests/unit/cards/countdown-signals.test.ts` for the canonical

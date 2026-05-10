@@ -302,7 +302,10 @@ describe("getGPUInfo()", () => {
   it("classifies low-tier GPU via renderer matching GPU_LOW_RE", () => {
     const UNMASKED_RENDERER = 0x9246;
     const UNMASKED_VENDOR = 0x9245;
-    const mockExt = { UNMASKED_RENDERER_WEBGL: UNMASKED_RENDERER, UNMASKED_VENDOR_WEBGL: UNMASKED_VENDOR };
+    const mockExt = {
+      UNMASKED_RENDERER_WEBGL: UNMASKED_RENDERER,
+      UNMASKED_VENDOR_WEBGL: UNMASKED_VENDOR,
+    };
     const mockGl = {
       getExtension: vi.fn().mockImplementation((name: string) => {
         if (name === "WEBGL_debug_renderer_info") return mockExt;
@@ -336,7 +339,10 @@ describe("getGPUInfo()", () => {
   it("classifies high-tier GPU via renderer matching GPU_HIGH_RE", () => {
     const UNMASKED_RENDERER = 0x9246;
     const UNMASKED_VENDOR = 0x9245;
-    const mockExt = { UNMASKED_RENDERER_WEBGL: UNMASKED_RENDERER, UNMASKED_VENDOR_WEBGL: UNMASKED_VENDOR };
+    const mockExt = {
+      UNMASKED_RENDERER_WEBGL: UNMASKED_RENDERER,
+      UNMASKED_VENDOR_WEBGL: UNMASKED_VENDOR,
+    };
     const mockGl = {
       getExtension: vi.fn().mockImplementation((name: string) => {
         if (name === "WEBGL_debug_renderer_info") return mockExt;
@@ -370,7 +376,10 @@ describe("getGPUInfo()", () => {
   it("classifies mid-tier GPU when renderer matches neither regex", () => {
     const UNMASKED_RENDERER = 0x9246;
     const UNMASKED_VENDOR = 0x9245;
-    const mockExt = { UNMASKED_RENDERER_WEBGL: UNMASKED_RENDERER, UNMASKED_VENDOR_WEBGL: UNMASKED_VENDOR };
+    const mockExt = {
+      UNMASKED_RENDERER_WEBGL: UNMASKED_RENDERER,
+      UNMASKED_VENDOR_WEBGL: UNMASKED_VENDOR,
+    };
     const mockGl = {
       getExtension: vi.fn().mockImplementation((name: string) => {
         if (name === "WEBGL_debug_renderer_info") return mockExt;

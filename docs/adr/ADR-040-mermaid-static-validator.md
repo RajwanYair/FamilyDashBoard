@@ -1,10 +1,10 @@
 # ADR-040 — Mermaid Static Validator in CI
 
-| Field  | Value                 |
-| ------ | --------------------- |
-| Date   | 2026-04-26            |
-| Status | Accepted              |
-| Sprint | 109  |
+| Field  | Value      |
+| ------ | ---------- |
+| Date   | 2026-04-26 |
+| Status | Accepted   |
+| Sprint | 109        |
 
 ## Context
 
@@ -38,7 +38,7 @@ all fenced Mermaid blocks in the repository:
 The script is wired into the CI `build` job:
 
 ```yaml
-- name: Mermaid diagram validation 
+- name: Mermaid diagram validation
   run: node scripts/check-mermaid.mjs
 ```
 

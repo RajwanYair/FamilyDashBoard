@@ -22,15 +22,15 @@ const root = join(__dirname, "..");
 // ── Known tooling file checksums (sizes in bytes at / v13.26.0) ──
 // Update these when a tooling file is intentionally changed.
 const TOOLING_BASELINE = [
-  { path: "tooling/ci/check.yml",                  size: 3114  },
-  { path: "tooling/eslint/web-ts-app.mjs",          size: 6562  },
-  { path: "tooling/eslint/node-ts-app.mjs",         size: 4425  },
-  { path: "tooling/eslint/js-browser-app.mjs",      size: 1857  },
-  { path: "tooling/tsconfig/base-typescript.json",  size: 478   },
-  { path: "tooling/tsconfig/base-node.json",        size: 473   },
-  { path: "tooling/vitest/base.mjs",                size: 1544  },
-  { path: "tooling/vitest/happy-dom.mjs",           size: 501   },
-  { path: "tooling/vitest/node.mjs",                size: 472   },
+  { path: "tooling/ci/check.yml", size: 3114 },
+  { path: "tooling/eslint/web-ts-app.mjs", size: 6562 },
+  { path: "tooling/eslint/node-ts-app.mjs", size: 4425 },
+  { path: "tooling/eslint/js-browser-app.mjs", size: 1857 },
+  { path: "tooling/tsconfig/base-typescript.json", size: 478 },
+  { path: "tooling/tsconfig/base-node.json", size: 473 },
+  { path: "tooling/vitest/base.mjs", size: 1544 },
+  { path: "tooling/vitest/happy-dom.mjs", size: 501 },
+  { path: "tooling/vitest/node.mjs", size: 472 },
 ];
 
 // ── Sibling repos that should adopt these presets (V14-HARMONISE backlog) ──
@@ -48,8 +48,7 @@ const SIBLING_REPOS = [
   {
     name: "Wedding",
     status: "pending",
-    notes:
-      "Needs to adopt tooling/eslint/web-ts-app.mjs and tooling/vitest/happy-dom.mjs",
+    notes: "Needs to adopt tooling/eslint/web-ts-app.mjs and tooling/vitest/happy-dom.mjs",
   },
 ];
 
@@ -58,13 +57,9 @@ const TOLERANCE_BYTES = 50; // allow ±50 bytes before flagging drift
 let driftCount = 0;
 let missingCount = 0;
 
-console.log(
-  "╔═══════════════════════════════════════════════════════════════╗",
-);
+console.log("╔═══════════════════════════════════════════════════════════════╗");
 console.log("║  Cross-project tooling drift & adoption check (V14-HARMONISE) ║");
-console.log(
-  "╚═══════════════════════════════════════════════════════════════╝\n",
-);
+console.log("╚═══════════════════════════════════════════════════════════════╝\n");
 
 // ── Check tooling file drift ──────────────────────────────────────────────
 console.log("── Tooling baseline drift check ────────────────────────────────");

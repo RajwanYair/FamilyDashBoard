@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/history.ts 
+ * fast-check property tests — src/core/history.ts
  *
  * Properties under test:
  *  HIS1. sparklineSvg with < 2 values always returns empty string.

@@ -1,5 +1,5 @@
 /**
- * Worker unit tests — NWS (api.weather.gov) normalizer 
+ * Worker unit tests — NWS (api.weather.gov) normalizer
  *
  * Verifies that the NWS-to-WeatherSchema normalization functions produce
  * correct Open-Meteo-compatible output from NWS forecast period data.

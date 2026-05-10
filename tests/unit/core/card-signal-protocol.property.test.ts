@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/card-signal-protocol.ts 
+ * fast-check property tests — src/core/card-signal-protocol.ts
  *
  * Properties under test:
  *  CSP1. setCardSignal → getCardSignal round-trip: value is preserved.
@@ -122,19 +122,13 @@ describe("card-signal-protocol — CSP5: unsubscribe stops callbacks", () => {
 describe("card-signal-protocol — CSP6: last write wins", () => {
   it("get returns the latest value", () => {
     fc.assert(
-      fc.property(
-        cardIdArb,
-        keyArb,
-        valueArb,
-        valueArb,
-        (cardId, key, val1, val2) => {
-          _resetCardSignals();
-          setCardSignal(cardId, key, val1);
-          setCardSignal(cardId, key, val2);
-          const result = getCardSignal(cardId, key);
-          expect(result!.value).toEqual(val2);
-        },
-      ),
+      fc.property(cardIdArb, keyArb, valueArb, valueArb, (cardId, key, val1, val2) => {
+        _resetCardSignals();
+        setCardSignal(cardId, key, val1);
+        setCardSignal(cardId, key, val2);
+        const result = getCardSignal(cardId, key);
+        expect(result!.value).toEqual(val2);
+      }),
       { numRuns: 30 },
     );
   });

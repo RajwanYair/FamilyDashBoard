@@ -15,9 +15,7 @@ let _idbAvailable: boolean | null = null;
 
 function isIDBAvailable(): boolean {
   if (_idbAvailable !== null) return _idbAvailable;
-  _idbAvailable =
-    typeof indexedDB !== "undefined" &&
-    typeof indexedDB.open === "function";
+  _idbAvailable = typeof indexedDB !== "undefined" && typeof indexedDB.open === "function";
   return _idbAvailable;
 }
 
@@ -35,11 +33,7 @@ function openStore(dbName: string, storeName: string): Promise<IDBDatabase> {
 }
 
 /** Get a value by key. Returns null if not found. */
-export async function idbGet<T>(
-  dbName: string,
-  storeName: string,
-  key: string,
-): Promise<T | null> {
+export async function idbGet<T>(dbName: string, storeName: string, key: string): Promise<T | null> {
   if (!isIDBAvailable()) return (_fallback.get(`${dbName}/${storeName}/${key}`) as T) ?? null;
   try {
     const db = await openStore(dbName, storeName);
@@ -77,11 +71,7 @@ export async function idbSet<T>(
 }
 
 /** Delete a key. */
-export async function idbDelete(
-  dbName: string,
-  storeName: string,
-  key: string,
-): Promise<void> {
+export async function idbDelete(dbName: string, storeName: string, key: string): Promise<void> {
   _fallback.delete(`${dbName}/${storeName}/${key}`);
   if (!isIDBAvailable()) return;
   try {
@@ -104,10 +94,7 @@ export function _idbClearFallback(): void {
 }
 
 /** Get all values in a store. Returns an empty array when the store is empty or unavailable. */
-export async function idbGetAll<T>(
-  dbName: string,
-  storeName: string,
-): Promise<T[]> {
+export async function idbGetAll<T>(dbName: string, storeName: string): Promise<T[]> {
   const prefix = `${dbName}/${storeName}/`;
   if (!isIDBAvailable()) {
     return Array.from(_fallback.entries())

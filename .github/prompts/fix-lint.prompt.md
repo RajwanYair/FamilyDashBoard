@@ -1,6 +1,21 @@
 ---
 description: "Fix all ESLint and TypeScript errors to reach zero warnings. Use when CI lint or typecheck fails, or after adding new code that introduced type/lint issues."
-tools: ["read_file", "grep_search", "file_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "vscode_renameSymbol", "manage_todo_list", "tool_search", "memory"]
+tools:
+  [
+    "read_file",
+    "grep_search",
+    "file_search",
+    "get_errors",
+    "replace_string_in_file",
+    "multi_replace_string_in_file",
+    "run_in_terminal",
+    "get_terminal_output",
+    "vscode_listCodeUsages",
+    "vscode_renameSymbol",
+    "manage_todo_list",
+    "tool_search",
+    "memory",
+  ]
 ---
 
 # Fix Lint and Type Errors

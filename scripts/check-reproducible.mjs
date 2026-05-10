@@ -143,7 +143,9 @@ if (verifyPath) {
   } else {
     console.error(`[check-reproducible] ❌ ${diffs.length} input hash mismatch(es):`);
     for (const d of diffs) {
-      console.error(`  ${d.file}: expected ${d.expected.slice(0, 12)}… got ${d.actual.slice(0, 12)}…`);
+      console.error(
+        `  ${d.file}: expected ${d.expected.slice(0, 12)}… got ${d.actual.slice(0, 12)}…`,
+      );
     }
     process.exit(1);
   }
@@ -151,9 +153,7 @@ if (verifyPath) {
 
 if (!existsSync(DIST)) {
   if (process.env["CI"]) {
-    console.error(
-      "[check-reproducible] dist/ not found — run build first (npm run build).",
-    );
+    console.error("[check-reproducible] dist/ not found — run build first (npm run build).");
     process.exit(1);
   }
   // Local: create dist/ so the manifest can be written as a template

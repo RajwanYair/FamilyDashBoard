@@ -879,8 +879,14 @@ describe("Motivation — M2 theme-by-day", () => {
 
   it("getThemeForDay returns valid category for all days", () => {
     const validCategories = [
-      "general", "morning", "shabbat", "family", "success",
-      "gratitude", "courage", "calm",
+      "general",
+      "morning",
+      "shabbat",
+      "family",
+      "success",
+      "gratitude",
+      "courage",
+      "calm",
     ];
     // Check all 7 days by walking a known week
     for (let d = 0; d < 7; d++) {
@@ -892,8 +898,14 @@ describe("Motivation — M2 theme-by-day", () => {
 
   it("getThemeForDay() without args uses today and returns a valid category", () => {
     const validCategories = [
-      "general", "morning", "shabbat", "family", "success",
-      "gratitude", "courage", "calm",
+      "general",
+      "morning",
+      "shabbat",
+      "family",
+      "success",
+      "gratitude",
+      "courage",
+      "calm",
     ];
     expect(validCategories).toContain(getThemeForDay());
   });
@@ -909,11 +921,7 @@ describe("Motivation — M2 theme-by-day", () => {
 
 // ── Motivation favorites ────────────────────────────────
 
-import {
-  toggleFavorite,
-  isFavorite,
-  loadFavorites,
-} from "@/cards/motivation/motivation";
+import { toggleFavorite, isFavorite, loadFavorites } from "@/cards/motivation/motivation";
 import { _idbClearFallback } from "@/core/idb-store";
 import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
 
@@ -959,7 +967,11 @@ describe("Motivation — favorites ", () => {
     for (let i = 0; i < 50; i++) {
       await toggleFavorite({ text: `quote-${i}`, author: "", category: "courage" as const });
     }
-    const over = await toggleFavorite({ text: "quote-extra", author: "", category: "courage" as const });
+    const over = await toggleFavorite({
+      text: "quote-extra",
+      author: "",
+      category: "courage" as const,
+    });
     expect(over).toBe(false);
     const favs = await loadFavorites();
     expect(favs.length).toBe(50);

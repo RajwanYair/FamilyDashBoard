@@ -4,7 +4,7 @@
 | ------- | ------------------------------ |
 | Date    | 2026-04-28                     |
 | Status  | Accepted (Plan)                |
-| Sprint  | 134           |
+| Sprint  | 134                            |
 | Related | Roadmap item #19, Roadmap §4.1 |
 
 ## Context
@@ -28,13 +28,13 @@ We need a single document that codifies:
 Adopt a four-step ratchet plan for the LHCI `performance` category assertion in
 `tooling/ci/lighthouse.json` (or its successor):
 
-| Step | Threshold       | Trigger to advance                                                     | Target sprint |
-| ---- | --------------- | ---------------------------------------------------------------------- | ------------- |
-| 0    | `warn 0.70`     | (original baseline)                                                    | ~~active~~ Done |
-| 1    | `warn 0.80`     | 30 consecutive PRs ≥ 0.85 measured                                     | ~~v13.16~~ Done |
-| 2    | `error 0.85`    | HTTP Early Hints  live in production                       | **v13.18 — (triggered)** |
-| 3    | `error 0.92`    | SLSA L3 hermetic build (ADR-035) live; runner instance type pinned    | v14.1         |
-| 4    | `error 0.97`    | 60 consecutive PRs ≥ 0.97 measured; 14-day RUM Web Vitals ≥ 0.95 LCP   | v14.2         |
+| Step | Threshold    | Trigger to advance                                                   | Target sprint            |
+| ---- | ------------ | -------------------------------------------------------------------- | ------------------------ |
+| 0    | `warn 0.70`  | (original baseline)                                                  | ~~active~~ Done          |
+| 1    | `warn 0.80`  | 30 consecutive PRs ≥ 0.85 measured                                   | ~~v13.16~~ Done          |
+| 2    | `error 0.85` | HTTP Early Hints live in production                                  | **v13.18 — (triggered)** |
+| 3    | `error 0.92` | SLSA L3 hermetic build (ADR-035) live; runner instance type pinned   | v14.1                    |
+| 4    | `error 0.97` | 60 consecutive PRs ≥ 0.97 measured; 14-day RUM Web Vitals ≥ 0.95 LCP | v14.2                    |
 
 Each ratchet step is gated on a PR that updates this ADR's "Current step" line
 below and the LHCI config. No two ratchets ship in the same release.

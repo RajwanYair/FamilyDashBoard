@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/card-registry.ts 
+ * fast-check property tests for src/core/card-registry.ts
  *
  * Verifies invariants of registerCard / getCard / listCards over arbitrary
  * id sequences. The registry is a plain Map so these properties exercise:
@@ -99,10 +99,13 @@ describe("Card registry — fast-check properties (CRP1-CRP5 )", () => {
   it("CRP4: listCards length matches the number of unique ids registered with a given fresh prefix", () => {
     fc.assert(
       fc.property(
-        fc.array(fc.string({ minLength: 1, maxLength: 6 }).filter((s) => /^[a-z]+$/i.test(s)), {
-          minLength: 1,
-          maxLength: 8,
-        }),
+        fc.array(
+          fc.string({ minLength: 1, maxLength: 6 }).filter((s) => /^[a-z]+$/i.test(s)),
+          {
+            minLength: 1,
+            maxLength: 8,
+          },
+        ),
         (suffixes) => {
           // Fresh prefix per iteration — fast-check reuses the same describe scope
           // across all runs, and the registry has no clear() API. A unique prefix

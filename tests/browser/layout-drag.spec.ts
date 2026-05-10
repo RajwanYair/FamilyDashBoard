@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard — layout-drag.ts browser spec 
+ * FamilyDashBoard — layout-drag.ts browser spec
  *
  * Tests drag-and-drop layout state using real Chromium DOM APIs.
  * Requires @vitest/browser + @vitest/browser-playwright (installed ).
@@ -179,7 +179,8 @@ describe("initCardDragDrop — drag visual classes", () => {
   it("drag-over class can be toggled on card", () => {
     card1.classList.add("drag-over");
     expect(card1.classList.contains("drag-over")).toBe(true);
-    document.querySelectorAll<HTMLElement>(".drag-over")
+    document
+      .querySelectorAll<HTMLElement>(".drag-over")
       .forEach((el) => el.classList.remove("drag-over"));
     expect(card1.classList.contains("drag-over")).toBe(false);
   });
@@ -193,8 +194,9 @@ describe("initCardDragDrop — drag visual classes", () => {
 
     // Move card2 before card1
     left.insertBefore(card2, card1);
-    const ids = [...left.querySelectorAll<HTMLElement>("[data-card-id]")]
-      .map((c) => c.dataset["cardId"]);
+    const ids = [...left.querySelectorAll<HTMLElement>("[data-card-id]")].map(
+      (c) => c.dataset["cardId"],
+    );
     expect(ids).toEqual(["stocks", "weather"]);
   });
 });

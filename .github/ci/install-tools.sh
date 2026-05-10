@@ -36,6 +36,7 @@ npm install --no-save --no-package-lock --ignore-scripts \
   "zod@^3.24.0" \
   "@cloudflare/workers-types@^4.0.0" \
   "fast-check@^4.7.0" \
+  "valibot@^1.3.1" \
   "@lhci/cli@^0.14.0"
 
 echo "→ Installing worker runtime + type deps (for worker typecheck + worker tests)…"

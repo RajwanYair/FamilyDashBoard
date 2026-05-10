@@ -12,7 +12,7 @@ through ad-hoc per-feature accessors:
 
 - **today-pane** — pulls `weather.current`, `calendar.next`, `alerts.active`.
 - **semantic links** — pulls `news.headlines` to detect entity overlap.
-- **MCP bridge** (X11, design ADR-066) — will pull all six "today.*"
+- **MCP bridge** (X11, design ADR-066) — will pull all six "today.\*"
   signals.
 - **daily synthesis** (X9, shipped) — pulls today-pane signals.
 
@@ -49,11 +49,11 @@ tests/unit/core/
  * Versioned for forward-compat — consumers feature-detect.
  */
 export type CardSignal<T> = {
-  readonly v: 1;            // protocol version
-  readonly cardId: string;  // registry ID (matches data-card-id)
-  readonly key: string;     // dotted name, e.g. "current"
-  readonly value: T;        // deep-frozen
-  readonly ts: number;      // wall-clock ms
+  readonly v: 1; // protocol version
+  readonly cardId: string; // registry ID (matches data-card-id)
+  readonly key: string; // dotted name, e.g. "current"
+  readonly value: T; // deep-frozen
+  readonly ts: number; // wall-clock ms
 };
 
 export function setCardSignal<T>(cardId: string, key: string, value: T): void;
@@ -62,7 +62,7 @@ export function onCardSignal<T>(
   cardId: string,
   key: string,
   cb: (s: CardSignal<T>) => void,
-): () => void;  // returns unsubscribe
+): () => void; // returns unsubscribe
 ```
 
 ### Producer rules
@@ -85,12 +85,12 @@ export function onCardSignal<T>(
 
 ### Migration scope (v14.x)
 
-| Consumer | Signals migrated |
-| -------- | ---------------- |
-| today-pane | `weather.current`, `calendar.next`, `alerts.active` |
-| semantic links | `news.headlines` |
-| MCP bridge | all six `today.*` tools (ADR-066) |
-| daily synthesis | reads through today-pane (no change to synthesis) |
+| Consumer        | Signals migrated                                    |
+| --------------- | --------------------------------------------------- |
+| today-pane      | `weather.current`, `calendar.next`, `alerts.active` |
+| semantic links  | `news.headlines`                                    |
+| MCP bridge      | all six `today.*` tools (ADR-066)                   |
+| daily synthesis | reads through today-pane (no change to synthesis)   |
 
 D12 module-boundary baseline shrinks accordingly: `today-pane.ts`
 and `ticker.ts` no longer need to import from `src/cards/`.

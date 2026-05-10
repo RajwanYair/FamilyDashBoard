@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/alerts/alerts.ts 
+ * fast-check property tests — src/cards/alerts/alerts.ts
  *
  * Properties under test:
  *  AL1. alertThreatIcon: threat=5 → 🟡
@@ -139,12 +139,9 @@ describe("alerts — AL8: isAlertEvent valid", () => {
 describe("alerts — AL9: isAlertEvent rejects", () => {
   it("rejects primitives", () => {
     fc.assert(
-      fc.property(
-        fc.oneof(fc.string(), fc.integer(), fc.boolean(), fc.constant(null)),
-        (v) => {
-          expect(isAlertEvent(v)).toBe(false);
-        },
-      ),
+      fc.property(fc.oneof(fc.string(), fc.integer(), fc.boolean(), fc.constant(null)), (v) => {
+        expect(isAlertEvent(v)).toBe(false);
+      }),
       { numRuns: 15 },
     );
   });

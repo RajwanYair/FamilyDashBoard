@@ -36,7 +36,10 @@ const primitiveArb = fc.oneof(
 const newsItemArb = fc.record({
   title: fc.string({ minLength: 1, maxLength: 80 }),
   link: fc.webUrl(),
-  pubDate: fc.date({ min: new Date("2000-01-01"), max: new Date("2030-12-31") }).filter((d) => !isNaN(d.getTime())).map((d) => d.toISOString()),
+  pubDate: fc
+    .date({ min: new Date("2000-01-01"), max: new Date("2030-12-31") })
+    .filter((d) => !isNaN(d.getTime()))
+    .map((d) => d.toISOString()),
   source: fc.string({ minLength: 1, maxLength: 40 }),
 });
 
@@ -155,7 +158,8 @@ describe("api-validators — AV3: isNewsItem returns false for malformed records
       fc.property(
         newsItemArb,
         fc.integer(),
-        ({ link, pubDate, source }, numTitle) => !isNewsItem({ link, pubDate, source, title: numTitle }),
+        ({ link, pubDate, source }, numTitle) =>
+          !isNewsItem({ link, pubDate, source, title: numTitle }),
       ),
       { numRuns: 80 },
     );
@@ -178,7 +182,8 @@ describe("api-validators — AV4: isCurrencyResponse rejects non-object rates", 
         fc.array(fc.double({ noNaN: true }), { maxLength: 5 }),
         fc.string({ minLength: 3, maxLength: 3 }),
         fc.string({ minLength: 3 }),
-        (ratesArr, base, time) => !isCurrencyResponse({ rates: ratesArr, base_code: base, time_last_update_utc: time }),
+        (ratesArr, base, time) =>
+          !isCurrencyResponse({ rates: ratesArr, base_code: base, time_last_update_utc: time }),
       ),
       { numRuns: 80 },
     );
@@ -190,7 +195,8 @@ describe("api-validators — AV4: isCurrencyResponse rejects non-object rates", 
         fc.string({ maxLength: 20 }),
         fc.string({ minLength: 3, maxLength: 3 }),
         fc.string({ minLength: 3 }),
-        (ratesStr, base, time) => !isCurrencyResponse({ rates: ratesStr, base_code: base, time_last_update_utc: time }),
+        (ratesStr, base, time) =>
+          !isCurrencyResponse({ rates: ratesStr, base_code: base, time_last_update_utc: time }),
       ),
       { numRuns: 80 },
     );
@@ -239,7 +245,9 @@ describe("api-validators — AV6: valid NewsItem stays valid after adding extra 
       fc.property(
         newsItemArb,
         fc.dictionary(
-          fc.string({ minLength: 1, maxLength: 20 }).filter((s) => !["title", "link", "pubDate", "source"].includes(s)),
+          fc
+            .string({ minLength: 1, maxLength: 20 })
+            .filter((s) => !["title", "link", "pubDate", "source"].includes(s)),
           fc.string({ maxLength: 40 }),
         ),
         (item, extra) => isNewsItem({ ...item, ...extra }),

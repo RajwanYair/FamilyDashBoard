@@ -1054,9 +1054,7 @@ describe("Countdown — getNextYomTov ( CD1)", () => {
   });
 
   it("returns null when no holidays within maxDays", () => {
-    const items = [
-      { title: "Passover", date: "2025-04-13", category: "holiday", hebrew: "פסח" },
-    ];
+    const items = [{ title: "Passover", date: "2025-04-13", category: "holiday", hebrew: "פסח" }];
     expect(getNextYomTov(items, now)).toBeNull();
   });
 
@@ -1079,9 +1077,7 @@ describe("Countdown — getNextYomTov ( CD1)", () => {
   });
 
   it("returns null when holiday is beyond maxDays", () => {
-    const items = [
-      { title: "Passover", date: "2026-04-01", category: "holiday", hebrew: "פסח" },
-    ];
+    const items = [{ title: "Passover", date: "2026-04-01", category: "holiday", hebrew: "פסח" }];
     expect(getNextYomTov(items, now, 90)).toBeNull();
   });
 });
@@ -1112,8 +1108,10 @@ describe("Countdown — getNextCalEventForCountdown ( CD2)", () => {
   });
 
   it("returns the nearer of two qualifying events", () => {
-    const d1 = new Date(); d1.setDate(d1.getDate() + 10);
-    const d2 = new Date(); d2.setDate(d2.getDate() + 20);
+    const d1 = new Date();
+    d1.setDate(d1.getDate() + 10);
+    const d2 = new Date();
+    d2.setDate(d2.getDate() + 20);
     const s1 = d1.toISOString().slice(0, 10).replace(/-/g, "");
     const s2 = d2.toISOString().slice(0, 10).replace(/-/g, "");
     const ics = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nSUMMARY:Event B\nDTSTART:${s2}\nEND:VEVENT\nBEGIN:VEVENT\nSUMMARY:Event A\nDTSTART:${s1}\nEND:VEVENT\nEND:VCALENDAR`;
@@ -1190,14 +1188,18 @@ describe("Countdown — setConfetti ( CD4)", () => {
       countdownCardDoneMsg: "🎉",
     } as DashboardConfig);
     tick();
-    expect(document.querySelector(".countdown-body")?.classList.contains("cd-confetti")).toBe(false);
+    expect(document.querySelector(".countdown-body")?.classList.contains("cd-confetti")).toBe(
+      false,
+    );
   });
 
   it("tick() does NOT add cd-confetti when event is in the future", () => {
     buildConfettiDOM();
     vi.mocked(loadConfig).mockReturnValue(FUTURE_CFG);
     tick();
-    expect(document.querySelector(".countdown-body")?.classList.contains("cd-confetti")).toBe(false);
+    expect(document.querySelector(".countdown-body")?.classList.contains("cd-confetti")).toBe(
+      false,
+    );
   });
 });
 
@@ -1344,9 +1346,7 @@ describe("Countdown — coverage: tickSecondary + initCountdownCard", () => {
     const futureDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     const dateStr = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, "0")}-${String(futureDate.getDate()).padStart(2, "0")}`;
     cSet(holKey, {
-      items: [
-        { title: "Rosh Hashana", hebrew: "ראש השנה", date: dateStr, category: "holiday" },
-      ],
+      items: [{ title: "Rosh Hashana", hebrew: "ראש השנה", date: dateStr, category: "holiday" }],
     });
     initCountdownCard();
     const title2 = document.getElementById("cd2-title");
@@ -1456,33 +1456,27 @@ describe("CDP4 · advanceAnnualDate — property: returned date is in future; fo
 
   it("preserves YYYY-MM-DD format", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2000-01-01"), max: new Date("2024-12-31") }),
-        (d) => {
-          fc.pre(isFinite(d.getTime()));
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth() + 1).padStart(2, "0");
-          const dd = String(d.getDate()).padStart(2, "0");
-          const input = `${yyyy}-${mm}-${dd}`;
-          return YYYY_MM_DD.test(advanceAnnualDate(input));
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2000-01-01"), max: new Date("2024-12-31") }), (d) => {
+        fc.pre(isFinite(d.getTime()));
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        const input = `${yyyy}-${mm}-${dd}`;
+        return YYYY_MM_DD.test(advanceAnnualDate(input));
+      }),
     );
   });
 
   it("returned date is always in the future for past inputs", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2000-01-01"), max: new Date("2024-06-01") }),
-        (d) => {
-          fc.pre(isFinite(d.getTime()));
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth() + 1).padStart(2, "0");
-          const dd = String(d.getDate()).padStart(2, "0");
-          const result = advanceAnnualDate(`${yyyy}-${mm}-${dd}`);
-          return new Date(`${result}T00:00:00`).getTime() >= Date.now();
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2000-01-01"), max: new Date("2024-06-01") }), (d) => {
+        fc.pre(isFinite(d.getTime()));
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        const result = advanceAnnualDate(`${yyyy}-${mm}-${dd}`);
+        return new Date(`${result}T00:00:00`).getTime() >= Date.now();
+      }),
     );
   });
 });
@@ -1506,7 +1500,9 @@ describe("Countdown configSchema — CS-CD1 ", () => {
 
   it("DashboardConfig has countdownCardRecurrence (type check via DEFAULT_CONFIG)", async () => {
     const { DEFAULT_CONFIG } = await import("@/types/config");
-    expect(Object.prototype.hasOwnProperty.call(DEFAULT_CONFIG, "countdownCardRecurrence")).toBe(true);
+    expect(Object.prototype.hasOwnProperty.call(DEFAULT_CONFIG, "countdownCardRecurrence")).toBe(
+      true,
+    );
     expect(DEFAULT_CONFIG.countdownCardRecurrence).toBe("");
   });
 });
@@ -1579,10 +1575,8 @@ describe("Countdown — getNextCalEventForCountdown malformed events", () => {
   });
 
   it("skips event blocks missing SUMMARY", () => {
-    const futureDate = new Date(Date.now() + 30 * 86400_000)
-      .toISOString()
-      .replace(/[-:]/g, "")
-      .slice(0, 15) + "Z";
+    const futureDate =
+      new Date(Date.now() + 30 * 86400_000).toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
     const ics = [
       "BEGIN:VCALENDAR",
       "BEGIN:VEVENT",

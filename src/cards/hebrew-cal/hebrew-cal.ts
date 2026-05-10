@@ -1035,11 +1035,11 @@ const YZ_MAX = 20;
 
 /** A persisted yahrzeit entry (Hebrew calendar month + day). */
 export interface YahrzeitEntry {
-  id: string;       // unique stable key
-  name: string;     // person's name
+  id: string; // unique stable key
+  name: string; // person's name
   hebrewMonth: number; // 1–13
-  hebrewDay: number;   // 1–30
-  addedAt: string;  // ISO-8601
+  hebrewDay: number; // 1–30
+  addedAt: string; // ISO-8601
 }
 
 /** Return today's Hebrew {month, day} using Intl API. */
@@ -1098,7 +1098,11 @@ export async function getUpcomingYahrzeits(
   return all.filter((yz) => {
     const monthDiff = yz.hebrewMonth - today.month;
     const dayDiff =
-      monthDiff === 0 ? yz.hebrewDay - today.day : monthDiff === 1 ? 30 - today.day + yz.hebrewDay : -1;
+      monthDiff === 0
+        ? yz.hebrewDay - today.day
+        : monthDiff === 1
+          ? 30 - today.day + yz.hebrewDay
+          : -1;
     return dayDiff >= 0 && dayDiff < days;
   });
 }

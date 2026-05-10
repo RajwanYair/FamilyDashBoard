@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard — maximize.ts browser spec 
+ * FamilyDashBoard — maximize.ts browser spec
  *
  * These tests run in real Chromium via @vitest/browser + playwright.
  * They cover behaviours that require actual layout (getBoundingClientRect)
@@ -98,8 +98,7 @@ describe("toggleCardMaximize — DOM state (browser layout)", () => {
     // Give the card real dimensions so getBoundingClientRect is meaningful
     card = document.createElement("div");
     card.dataset["cardId"] = "test-card";
-    card.style.cssText =
-      "width:300px;height:200px;position:fixed;top:50px;left:50px;";
+    card.style.cssText = "width:300px;height:200px;position:fixed;top:50px;left:50px;";
     document.body.appendChild(card);
   });
 

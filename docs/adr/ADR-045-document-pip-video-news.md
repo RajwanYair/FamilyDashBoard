@@ -1,12 +1,12 @@
 # ADR-045 — Document Picture-in-Picture for video-news (Gated)
 
-| Field      | Value                                                  |
-| ---------- | ------------------------------------------------------ |
-| Date       | 2026-04-29                                             |
-| Status     | Accepted (Plan — gated on 3 user requests)             |
-| Sprint     | 165                                                    |
-| Supersedes | n/a                                                    |
-| Related    | Roadmap item #22, `docs/video-cards.md`, ADR-019       |
+| Field      | Value                                            |
+| ---------- | ------------------------------------------------ |
+| Date       | 2026-04-29                                       |
+| Status     | Accepted (Plan — gated on 3 user requests)       |
+| Sprint     | 165                                              |
+| Supersedes | n/a                                              |
+| Related    | Roadmap item #22, `docs/video-cards.md`, ADR-019 |
 
 ## Context
 
@@ -23,12 +23,12 @@ The [Document Picture-in-Picture API](https://developer.chrome.com/docs/web-plat
 
 ### Browser support (as of 2026-04-29)
 
-| Browser  | Version | Support          |
-| -------- | ------- | ---------------- |
-| Chrome   | 116+    | ✅ Full           |
-| Edge     | 116+    | ✅ Full           |
-| Safari   | 18+     | ✅ (via video PiP only — no Document PiP) |
-| Firefox  | —       | ❌ Not yet       |
+| Browser | Version | Support                                   |
+| ------- | ------- | ----------------------------------------- |
+| Chrome  | 116+    | ✅ Full                                   |
+| Edge    | 116+    | ✅ Full                                   |
+| Safari  | 18+     | ✅ (via video PiP only — no Document PiP) |
+| Firefox | —       | ❌ Not yet                                |
 
 **Progressive enhancement only**: Document PiP is available exclusively on
 Chromium-based browsers. The dashboard targets a dedicated TV/kiosk Chrome
@@ -97,9 +97,9 @@ Once the gate is met, implement as follows:
 
 ## Gate tracking
 
-| Request # | Date       | Source          | Notes                |
-| --------- | ---------- | --------------- | -------------------- |
-| (pending) | —          | —               | 3 requests needed    |
+| Request # | Date | Source | Notes             |
+| --------- | ---- | ------ | ----------------- |
+| (pending) | —    | —      | 3 requests needed |
 
 > When this table reaches 3 rows, open a sprint issue referencing this ADR
 > to move Status from `Plan` → `Active` and begin implementation.

@@ -84,9 +84,7 @@ describe("nws-adapter — NW6: nwsPhraseToWmoCode case-insensitive", () => {
   it("same result regardless of case", () => {
     fc.assert(
       fc.property(fc.string({ minLength: 0, maxLength: 60 }), (phrase) => {
-        expect(nwsPhraseToWmoCode(phrase)).toBe(
-          nwsPhraseToWmoCode(phrase.toUpperCase()),
-        );
+        expect(nwsPhraseToWmoCode(phrase)).toBe(nwsPhraseToWmoCode(phrase.toUpperCase()));
       }),
     );
   });

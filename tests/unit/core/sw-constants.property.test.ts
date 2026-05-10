@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/sw-constants.ts 
+ * fast-check property tests — src/core/sw-constants.ts
  *
  * Properties under test:
  *  SW1. isVersionActivatedMsg returns true only for objects with type === "VERSION_ACTIVATED".
@@ -40,9 +40,9 @@ const nonObjectArb = fc.oneof(
 );
 
 const wrongTypeObjectArb = fc.record({
-  type: fc.string({ minLength: 1, maxLength: 30 }).filter(
-    (s) => s !== SW_MSG_VERSION_ACTIVATED && s !== SW_MSG_SKIP_WAITING,
-  ),
+  type: fc
+    .string({ minLength: 1, maxLength: 30 })
+    .filter((s) => s !== SW_MSG_VERSION_ACTIVATED && s !== SW_MSG_SKIP_WAITING),
 });
 
 // ── SW1: isVersionActivatedMsg positive ──────────────────────────────────────

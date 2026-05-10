@@ -1,5 +1,5 @@
 /**
- * Tests for src/cards/ai-synthesis/ai-synthesis.ts 
+ * Tests for src/cards/ai-synthesis/ai-synthesis.ts
  * expanded coverage — loadAiSynthesisData branches, render helpers,
  *             initAiSynthesisCard, destroyAiSynthesisCard, visibility guard.
  */
@@ -33,10 +33,7 @@ describe("AI Synthesis Card ", () => {
   });
 
   it("fetchSynthesis returns null when fetch throws", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("network error")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
     const result = await fetchSynthesis();
     expect(result).toBeNull();
   });
@@ -361,13 +358,17 @@ describe("AI Synthesis — PC-1 speakSynthesis ", () => {
 
   it("speakSynthesis cancels and sets button aria-pressed=false when already speaking", () => {
     const mockCancel = vi.fn();
-    vi.stubGlobal("SpeechSynthesisUtterance", class {
-      lang = ""; rate = 0;
-      onstart: (() => void) | null = null;
-      onend: (() => void) | null = null;
-      onerror: (() => void) | null = null;
-      constructor(public text: string) {}
-    });
+    vi.stubGlobal(
+      "SpeechSynthesisUtterance",
+      class {
+        lang = "";
+        rate = 0;
+        onstart: (() => void) | null = null;
+        onend: (() => void) | null = null;
+        onerror: (() => void) | null = null;
+        constructor(public text: string) {}
+      },
+    );
     Object.defineProperty(window, "speechSynthesis", {
       value: { speaking: true, cancel: mockCancel, speak: vi.fn() },
       configurable: true,
@@ -380,16 +381,24 @@ describe("AI Synthesis — PC-1 speakSynthesis ", () => {
   });
 
   it("speakSynthesis speaks, onstart sets pressed=true, onend/onerror set pressed=false", () => {
-    let capturedInstance: { onstart: (() => void) | null; onend: (() => void) | null; onerror: (() => void) | null } | null = null;
-    vi.stubGlobal("SpeechSynthesisUtterance", class {
-      lang = ""; rate = 0;
-      onstart: (() => void) | null = null;
-      onend: (() => void) | null = null;
-      onerror: (() => void) | null = null;
-      constructor(public text: string) {
-        capturedInstance = this as unknown as typeof capturedInstance;
-      }
-    });
+    let capturedInstance: {
+      onstart: (() => void) | null;
+      onend: (() => void) | null;
+      onerror: (() => void) | null;
+    } | null = null;
+    vi.stubGlobal(
+      "SpeechSynthesisUtterance",
+      class {
+        lang = "";
+        rate = 0;
+        onstart: (() => void) | null = null;
+        onend: (() => void) | null = null;
+        onerror: (() => void) | null = null;
+        constructor(public text: string) {
+          capturedInstance = this as unknown as typeof capturedInstance;
+        }
+      },
+    );
     Object.defineProperty(window, "speechSynthesis", {
       value: { speaking: false, cancel: vi.fn(), speak: vi.fn() },
       configurable: true,

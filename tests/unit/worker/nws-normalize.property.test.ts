@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — NWS normalizer invariants 
+ * fast-check property tests — NWS normalizer invariants
  *
  * Mathematical and structural properties that must hold for any valid input:
  *

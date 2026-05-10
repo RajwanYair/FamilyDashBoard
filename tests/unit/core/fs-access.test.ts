@@ -102,9 +102,7 @@ describe("fs-access — picker-available path", () => {
   });
 
   it("saveTextFile re-throws non-AbortError from picker", async () => {
-    (window as FsaWindow).showSaveFilePicker = vi
-      .fn()
-      .mockRejectedValue(new Error("write failed"));
+    (window as FsaWindow).showSaveFilePicker = vi.fn().mockRejectedValue(new Error("write failed"));
     (window as FsaWindow).showOpenFilePicker = vi.fn();
     await expect(saveTextFile("x", { extensions: [".json"] })).rejects.toThrow("write failed");
   });
@@ -160,9 +158,7 @@ describe("fs-access — picker-available path", () => {
   });
 
   it("pickTextFile re-throws non-AbortError from picker", async () => {
-    (window as FsaWindow).showOpenFilePicker = vi
-      .fn()
-      .mockRejectedValue(new Error("read failed"));
+    (window as FsaWindow).showOpenFilePicker = vi.fn().mockRejectedValue(new Error("read failed"));
     (window as FsaWindow).showSaveFilePicker = vi.fn();
     await expect(pickTextFile({ extensions: [".json"] })).rejects.toThrow("read failed");
   });

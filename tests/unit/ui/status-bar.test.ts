@@ -670,7 +670,9 @@ describe("Status Bar — SW message handler with stubbed navigator.serviceWorker
     vi.restoreAllMocks();
     try {
       Reflect.deleteProperty(navigator, "serviceWorker");
-    } catch { /* non-configurable */ }
+    } catch {
+      /* non-configurable */
+    }
   });
 
   it("covers VERSION_ACTIVATED handler — sw-version chip present (lines 176-183)", async () => {
@@ -695,7 +697,9 @@ describe("Status Bar — SW message handler with stubbed navigator.serviceWorker
     freshMod.initStatusBar();
 
     expect(capturedHandler).not.toBeNull();
-    capturedHandler!({ data: { type: "VERSION_ACTIVATED", version: "familydashboard-v13.6.0" } } as MessageEvent);
+    capturedHandler!({
+      data: { type: "VERSION_ACTIVATED", version: "familydashboard-v13.6.0" },
+    } as MessageEvent);
 
     const chip = document.getElementById("sw-version");
     expect(chip?.textContent).toBe("SW v13.6.0");
@@ -723,7 +727,7 @@ describe("Status Bar — SW message handler with stubbed navigator.serviceWorker
     freshMod.initStatusBar();
 
     expect(() =>
-      capturedHandler?.({ data: { type: "VERSION_ACTIVATED", version: "v1.0.0" } } as MessageEvent)
+      capturedHandler?.({ data: { type: "VERSION_ACTIVATED", version: "v1.0.0" } } as MessageEvent),
     ).not.toThrow();
   });
 

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/hardware.ts 
+ * fast-check property tests for src/core/hardware.ts
  *
  * Verifies invariants of `getHardwareProfile()` over arbitrary
  * navigator.hardwareConcurrency × navigator.deviceMemory inputs.

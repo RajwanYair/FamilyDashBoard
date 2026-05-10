@@ -141,9 +141,7 @@ describe("semantic-clipboard (X15 / )", () => {
 
     it("returns null when card has no producer", async () => {
       document.body.innerHTML = `<section data-card-id="weather"><b id="t">x</b></section>`;
-      expect(
-        await copyFocusedCardPayload(document.getElementById("t")),
-      ).toBeNull();
+      expect(await copyFocusedCardPayload(document.getElementById("t"))).toBeNull();
     });
 
     it("returns cardId on successful copy", async () => {
@@ -155,9 +153,7 @@ describe("semantic-clipboard (X15 / )", () => {
         value: { writeText },
         configurable: true,
       });
-      expect(
-        await copyFocusedCardPayload(document.getElementById("t")),
-      ).toBe("weather");
+      expect(await copyFocusedCardPayload(document.getElementById("t"))).toBe("weather");
     });
   });
 });

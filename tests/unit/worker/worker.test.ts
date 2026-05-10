@@ -636,7 +636,11 @@ describe("Worker — handleCurrency route", () => {
       "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
     );
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { provider: string; stale: boolean; data: { rates: Record<string, number> } };
+    const body = (await res.json()) as {
+      provider: string;
+      stale: boolean;
+      data: { rates: Record<string, number> };
+    };
     expect(body.provider).toBe("ecb-direct");
     expect(body.stale).toBe(false);
     expect(body.data.rates["ILS"]).toBe(1.0);
@@ -2191,8 +2195,15 @@ describe("Worker — handleErrorsQueue consumer ", () => {
   it("acks well-formed queue message and logs info", async () => {
     const acked: boolean[] = [];
     const msg = {
-      body: { count: 3, dateKey: "2026-05-05", enqueuedAt: "2026-05-05T10:00:00Z", kvPrefix: "errors:2026-05-05:" },
-      ack: () => { acked.push(true); },
+      body: {
+        count: 3,
+        dateKey: "2026-05-05",
+        enqueuedAt: "2026-05-05T10:00:00Z",
+        kvPrefix: "errors:2026-05-05:",
+      },
+      ack: () => {
+        acked.push(true);
+      },
     };
     await handleErrorsQueue({ messages: [msg] });
     expect(acked).toHaveLength(1);
@@ -2203,7 +2214,9 @@ describe("Worker — handleErrorsQueue consumer ", () => {
     const acked: boolean[] = [];
     const msg = {
       body: null,
-      ack: () => { acked.push(true); },
+      ack: () => {
+        acked.push(true);
+      },
     };
     await handleErrorsQueue({ messages: [msg] });
     expect(acked).toHaveLength(1);
@@ -2211,7 +2224,12 @@ describe("Worker — handleErrorsQueue consumer ", () => {
 
   it("acks multiple messages in one batch", async () => {
     const acked: boolean[] = [];
-    const mkMsg = (body: unknown) => ({ body, ack: () => { acked.push(true); } });
+    const mkMsg = (body: unknown) => ({
+      body,
+      ack: () => {
+        acked.push(true);
+      },
+    });
     await handleErrorsQueue({
       messages: [
         mkMsg({ count: 1, dateKey: "2026-05-05", enqueuedAt: "T", kvPrefix: "errors:" }),

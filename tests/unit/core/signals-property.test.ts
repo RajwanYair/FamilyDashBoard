@@ -1,5 +1,5 @@
 /**
- * tests/unit/core/signals-property.test.ts — 
+ * tests/unit/core/signals-property.test.ts —
  *
  * Property-based tests for the zero-dep signals primitive. Verifies the
  * three core invariants of the reactive system across randomly generated

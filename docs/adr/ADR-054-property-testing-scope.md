@@ -1,12 +1,12 @@
 # ADR-054 — Property-Based Testing Scope Map
 
-| Field      | Value                                                                                    |
-| ---------- | ---------------------------------------------------------------------------------------- |
-| Date       | 2026-05-03                                                                               |
-| Status     | Accepted                                                                                 |
-| Sprint     | 313 (ADR formalised) / Sprints 307–310 (implementation — Stream G.2.2)                  |
-| Supersedes | n/a                                                                                      |
-| Related    | ADR-003 (worker-first API), ADR-008 (CSS layer governance), ROADMAP §G.2.2               |
+| Field      | Value                                                                      |
+| ---------- | -------------------------------------------------------------------------- |
+| Date       | 2026-05-03                                                                 |
+| Status     | Accepted                                                                   |
+| Sprint     | 313 (ADR formalised) / Sprints 307–310 (implementation — Stream G.2.2)     |
+| Supersedes | n/a                                                                        |
+| Related    | ADR-003 (worker-first API), ADR-008 (CSS layer governance), ROADMAP §G.2.2 |
 
 ## Context
 
@@ -35,41 +35,41 @@ rather than specific outputs.
 
 Sprints 307–310 introduced four property test files under `tests/unit/core/`:
 
-| File                          | Suite prefix | Target module        | Tests |
-| ----------------------------- | ------------ | -------------------- | ----- |
-| `history-props.test.ts`       | HP1–HP6      | `src/core/history.ts`  | 6     |
-| `sync-props.test.ts`          | SYP1–SYP6   | `src/core/sync.ts`     | 6     |
-| `diag-props.test.ts`          | DP1–DP5     | `src/core/diag.ts`     | 6     |
-| `fetch-props.test.ts`         | FP1–FP5     | `src/core/fetch.ts`    | 5     |
+| File                    | Suite prefix | Target module         | Tests |
+| ----------------------- | ------------ | --------------------- | ----- |
+| `history-props.test.ts` | HP1–HP6      | `src/core/history.ts` | 6     |
+| `sync-props.test.ts`    | SYP1–SYP6    | `src/core/sync.ts`    | 6     |
+| `diag-props.test.ts`    | DP1–DP5      | `src/core/diag.ts`    | 6     |
+| `fetch-props.test.ts`   | FP1–FP5      | `src/core/fetch.ts`   | 5     |
 
 **Total**: 23 new property tests added in Sprints 307–310.
 
 ### Scope: what is property-tested
 
-| Module          | Properties verified                                                                       |
-| --------------- | ----------------------------------------------------------------------------------------- |
-| `history.ts`    | HP1: empty/singleton → ""; HP2: ≥2 points → non-empty; HP3: contains `<polyline`;        |
-|                 | HP4: viewBox matches w/h params; HP5: x-coords monotonically non-decreasing;             |
-|                 | HP6: stroke attribute contains the supplied color string                                  |
-| `sync.ts`       | SYP1: recordFailure monotonically increases delay; SYP2: recordSuccess resets to 1;      |
-|                 | SYP3: delay is always a power of 2; SYP4: delay is bounded [1, 32];                      |
-|                 | SYP5: getFailedPanes includes keys with ≥1 failure; SYP6: N failures → delay = min(2^N, 32) |
-| `diag.ts`       | DP1: messages retrievable within buffer capacity; DP2: getDiagEntries respects limit;    |
-|                 | DP3: buffer never exceeds DIAG_BUFFER_SIZE (80); DP4: formatDiagEntry embeds original msg; |
-|                 | DP5a: classifyProviderError returns a known kind; DP5b: non-Error → "unknown"            |
-| `fetch.ts`      | FP1: first acquireLock returns true; FP2: duplicate lock returns false;                  |
-|                 | FP3: acquire after release returns true; FP4: clearFetchLocks re-enables all keys;       |
-|                 | FP5: N recordFetchFailure → getConsecutiveFailures === N; isNetworkOffline iff N ≥ 3     |
+| Module       | Properties verified                                                                         |
+| ------------ | ------------------------------------------------------------------------------------------- |
+| `history.ts` | HP1: empty/singleton → ""; HP2: ≥2 points → non-empty; HP3: contains `<polyline`;           |
+|              | HP4: viewBox matches w/h params; HP5: x-coords monotonically non-decreasing;                |
+|              | HP6: stroke attribute contains the supplied color string                                    |
+| `sync.ts`    | SYP1: recordFailure monotonically increases delay; SYP2: recordSuccess resets to 1;         |
+|              | SYP3: delay is always a power of 2; SYP4: delay is bounded [1, 32];                         |
+|              | SYP5: getFailedPanes includes keys with ≥1 failure; SYP6: N failures → delay = min(2^N, 32) |
+| `diag.ts`    | DP1: messages retrievable within buffer capacity; DP2: getDiagEntries respects limit;       |
+|              | DP3: buffer never exceeds DIAG_BUFFER_SIZE (80); DP4: formatDiagEntry embeds original msg;  |
+|              | DP5a: classifyProviderError returns a known kind; DP5b: non-Error → "unknown"               |
+| `fetch.ts`   | FP1: first acquireLock returns true; FP2: duplicate lock returns false;                     |
+|              | FP3: acquire after release returns true; FP4: clearFetchLocks re-enables all keys;          |
+|              | FP5: N recordFetchFailure → getConsecutiveFailures === N; isNetworkOffline iff N ≥ 3        |
 
 ### Scope: what is NOT property-tested (and why)
 
-| Module / concern        | Rationale for exclusion                                                            |
-| ----------------------- | ---------------------------------------------------------------------------------- |
-| DOM / card render logic | Requires happy-dom + full page wiring — covered by Playwright VR tests instead    |
+| Module / concern        | Rationale for exclusion                                                             |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| DOM / card render logic | Requires happy-dom + full page wiring — covered by Playwright VR tests instead      |
 | API fetch / proxy chain | Side-effectful; property tests must be deterministic — covered by integration tests |
-| CSS correctness         | Structural, not algorithmic — covered by VR baselines                              |
-| Worker message protocol | Async message-passing with serialisation — covered by `worker.test.ts`             |
-| Cache (`cGet`/`cSet`)   | Already at 100% branch coverage in `cache.test.ts`                                |
+| CSS correctness         | Structural, not algorithmic — covered by VR baselines                               |
+| Worker message protocol | Async message-passing with serialisation — covered by `worker.test.ts`              |
+| Cache (`cGet`/`cSet`)   | Already at 100% branch coverage in `cache.test.ts`                                  |
 
 ### Conventions
 

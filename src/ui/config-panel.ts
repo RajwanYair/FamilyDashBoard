@@ -1260,7 +1260,7 @@ export function initConfigPanel(): void {
     .getElementById("cfg-encrypt-share-btn")
     ?.addEventListener("click", encryptedShareSettings);
 
-  // Encrypted config passphrase dialog buttons 
+  // Encrypted config passphrase dialog buttons
   document.getElementById("ecfg-dialog-confirm")?.addEventListener("click", confirmEcfgDialog);
   document.getElementById("ecfg-dialog-cancel")?.addEventListener("click", cancelEcfgDialog);
   document.getElementById("ecfg-passphrase-input")?.addEventListener("keydown", (e) => {

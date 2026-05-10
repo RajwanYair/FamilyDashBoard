@@ -48,12 +48,15 @@ describe("stocks — ST1: fmtPrice ≥ 1000", () => {
 describe("stocks — ST2: fmtPrice 10–999", () => {
   it("exactly 2 decimal places", () => {
     fc.assert(
-      fc.property(fc.double({ min: 10, max: 999.99, noNaN: true, noDefaultInfinity: true }), (p) => {
-        const result = fmtPrice(p, "MSFT");
-        const parts = result.split(".");
-        expect(parts.length).toBe(2);
-        expect(parts[1]!.length).toBe(2);
-      }),
+      fc.property(
+        fc.double({ min: 10, max: 999.99, noNaN: true, noDefaultInfinity: true }),
+        (p) => {
+          const result = fmtPrice(p, "MSFT");
+          const parts = result.split(".");
+          expect(parts.length).toBe(2);
+          expect(parts[1]!.length).toBe(2);
+        },
+      ),
       { numRuns: 20 },
     );
   });
@@ -64,12 +67,15 @@ describe("stocks — ST2: fmtPrice 10–999", () => {
 describe("stocks — ST3: fmtPrice < 10", () => {
   it("4 decimal places for non-VIX symbols", () => {
     fc.assert(
-      fc.property(fc.double({ min: 0.0001, max: 9.99, noNaN: true, noDefaultInfinity: true }), (p) => {
-        const result = fmtPrice(p, "PENNY");
-        const parts = result.split(".");
-        expect(parts.length).toBe(2);
-        expect(parts[1]!.length).toBe(4);
-      }),
+      fc.property(
+        fc.double({ min: 0.0001, max: 9.99, noNaN: true, noDefaultInfinity: true }),
+        (p) => {
+          const result = fmtPrice(p, "PENNY");
+          const parts = result.split(".");
+          expect(parts.length).toBe(2);
+          expect(parts[1]!.length).toBe(4);
+        },
+      ),
       { numRuns: 20 },
     );
   });
@@ -146,13 +152,10 @@ describe("stocks — ST7: priceInRange52w in [0,1]", () => {
 describe("stocks — ST8: priceInRange52w invalid", () => {
   it("low ≥ high → null", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 10, max: 500, noNaN: true, noDefaultInfinity: true }),
-        (val) => {
-          expect(priceInRange52w(val, val, val)).toBeNull();
-          expect(priceInRange52w(val, val + 1, val)).toBeNull();
-        },
-      ),
+      fc.property(fc.double({ min: 10, max: 500, noNaN: true, noDefaultInfinity: true }), (val) => {
+        expect(priceInRange52w(val, val, val)).toBeNull();
+        expect(priceInRange52w(val, val + 1, val)).toBeNull();
+      }),
       { numRuns: 15 },
     );
   });
@@ -172,7 +175,10 @@ describe("stocks — ST10: portfolioChange flat", () => {
   it("prev === cur → 0%", () => {
     fc.assert(
       fc.property(
-        fc.array(fc.double({ min: 1, max: 10000, noNaN: true, noDefaultInfinity: true }), { minLength: 1, maxLength: 5 }),
+        fc.array(fc.double({ min: 1, max: 10000, noNaN: true, noDefaultInfinity: true }), {
+          minLength: 1,
+          maxLength: 5,
+        }),
         (prices) => {
           const quotes = prices.map((p) => ({ prev: p, cur: p }));
           expect(portfolioChange(quotes)).toBeCloseTo(0);
@@ -210,7 +216,10 @@ describe("stocks — ST12: portfolioChange zero prev", () => {
   it("all prev=0 → null", () => {
     fc.assert(
       fc.property(
-        fc.array(fc.double({ min: 1, max: 1000, noNaN: true, noDefaultInfinity: true }), { minLength: 1, maxLength: 5 }),
+        fc.array(fc.double({ min: 1, max: 1000, noNaN: true, noDefaultInfinity: true }), {
+          minLength: 1,
+          maxLength: 5,
+        }),
         (curs) => {
           const quotes = curs.map((c) => ({ prev: 0, cur: c }));
           expect(portfolioChange(quotes)).toBeNull();

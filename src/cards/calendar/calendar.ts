@@ -173,8 +173,7 @@ export function getHolidaysByDate(items: HebcalItem[], date: Date): string | nul
   const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   const holidays = items.filter(
     (i) =>
-      (i.category === "holiday" || i.category === "roshchodesh") &&
-      i.date.slice(0, 10) === key,
+      (i.category === "holiday" || i.category === "roshchodesh") && i.date.slice(0, 10) === key,
   );
   if (holidays.length === 0) return null;
   const labels = holidays.map((h) => h.hebrew || h.title).filter(Boolean);

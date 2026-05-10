@@ -176,9 +176,8 @@ function forAnyField(
   numRuns = 300,
 ): void {
   fc.assert(
-    fc.property(
-      fc.integer({ min: 0, max: schema.length - 1 }),
-      (idx) => check(schema[idx] as CardConfigField),
+    fc.property(fc.integer({ min: 0, max: schema.length - 1 }), (idx) =>
+      check(schema[idx] as CardConfigField),
     ),
     { numRuns },
   );
@@ -237,10 +236,7 @@ describe('CS-FC6: "select" fields always have ≥ 2 options', () => {
     const selectFields = schema.filter((f) => f.type === "select");
     if (selectFields.length === 0) continue;
     it(`${name}: every select field has ≥ 2 options`, () => {
-      forAnyField(
-        selectFields,
-        (f) => Array.isArray(f.options) && (f.options?.length ?? 0) >= 2,
-      );
+      forAnyField(selectFields, (f) => Array.isArray(f.options) && (f.options?.length ?? 0) >= 2);
     });
   }
 });
@@ -264,10 +260,7 @@ describe('CS-FC8: "boolean" fields always have defaultValue true or false', () =
     const boolFields = schema.filter((f) => f.type === "boolean");
     if (boolFields.length === 0) continue;
     it(`${name}: every boolean field defaultValue is strictly boolean`, () => {
-      forAnyField(
-        boolFields,
-        (f) => f.defaultValue === true || f.defaultValue === false,
-      );
+      forAnyField(boolFields, (f) => f.defaultValue === true || f.defaultValue === false);
     });
   }
 });
@@ -275,9 +268,7 @@ describe('CS-FC8: "boolean" fields always have defaultValue true or false', () =
 // ── CS-FC9: "range" step is positive when defined ─────────────────────────
 describe('CS-FC9: "range" fields with step defined always have step > 0', () => {
   for (const [name, schema] of Object.entries(ALL_SCHEMAS)) {
-    const steppedRangeFields = schema.filter(
-      (f) => f.type === "range" && f.step !== undefined,
-    );
+    const steppedRangeFields = schema.filter((f) => f.type === "range" && f.step !== undefined);
     if (steppedRangeFields.length === 0) continue;
     it(`${name}: step > 0 on every stepped range field`, () => {
       forAnyField(steppedRangeFields, (f) => (f.step ?? 0) > 0);
@@ -307,8 +298,7 @@ describe('CS-FC11: "boolean" fields have options === undefined and no min/max', 
     it(`${name}: boolean fields are free of options, min, max`, () => {
       forAnyField(
         boolFields,
-        (f) =>
-          f.options === undefined && f.min === undefined && f.max === undefined,
+        (f) => f.options === undefined && f.min === undefined && f.max === undefined,
       );
     });
   }
@@ -340,9 +330,7 @@ describe("CS-FC13: field tab (when defined) is always a valid tab name", () => {
 // ── CS-FC14: range/number fields have a numeric defaultValue ─────────────
 describe('CS-FC14: "range"/"number" fields always have a numeric defaultValue', () => {
   for (const [name, schema] of Object.entries(ALL_SCHEMAS)) {
-    const numericFields = schema.filter(
-      (f) => f.type === "range" || f.type === "number",
-    );
+    const numericFields = schema.filter((f) => f.type === "range" || f.type === "number");
     if (numericFields.length === 0) continue;
     it(`${name}: defaultValue is a finite number`, () => {
       forAnyField(
@@ -371,10 +359,7 @@ describe("CS-FC16: fields with groupOpenByDefault always have a group name", () 
     const openByDefaultFields = schema.filter((f) => f.groupOpenByDefault === true);
     if (openByDefaultFields.length === 0) continue;
     it(`${name}: groupOpenByDefault fields always have group defined`, () => {
-      forAnyField(
-        openByDefaultFields,
-        (f) => typeof f.group === "string" && f.group.length > 0,
-      );
+      forAnyField(openByDefaultFields, (f) => typeof f.group === "string" && f.group.length > 0);
     });
   }
 });

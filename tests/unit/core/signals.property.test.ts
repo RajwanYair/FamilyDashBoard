@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/signals.ts 
+ * fast-check property tests — src/core/signals.ts
  *
  * Properties under test:
  *  SIG1. signal(v).value === v — initial value is always preserved exactly.
@@ -151,26 +151,23 @@ describe("signals — SIG4: effect re-runs exactly once per signal.value change"
 describe("signals — SIG5: batch() coalesces multiple writes into one effect run", () => {
   it("N writes inside one batch produce exactly one extra effect run", () => {
     fc.assert(
-      fc.property(
-        fc.array(intArb, { minLength: 2, maxLength: 8 }),
-        (values) => {
-          const src = signal(values[0]!);
-          let count = 0;
-          const dispose = effect(() => {
-            void src.value;
-            count++;
-          });
-          // count == 1 after construction
-          batch(() => {
-            for (const v of values) {
-              src.value = v;
-            }
-          });
-          // exactly one extra run after the batch drains
-          expect(count).toBe(2);
-          dispose();
-        },
-      ),
+      fc.property(fc.array(intArb, { minLength: 2, maxLength: 8 }), (values) => {
+        const src = signal(values[0]!);
+        let count = 0;
+        const dispose = effect(() => {
+          void src.value;
+          count++;
+        });
+        // count == 1 after construction
+        batch(() => {
+          for (const v of values) {
+            src.value = v;
+          }
+        });
+        // exactly one extra run after the batch drains
+        expect(count).toBe(2);
+        dispose();
+      }),
       { numRuns: 60 },
     );
   });
@@ -181,28 +178,32 @@ describe("signals — SIG5: batch() coalesces multiple writes into one effect ru
 describe("signals — SIG6: untrack() reads value without registering a dependency", () => {
   it("signal change after untrack read does NOT trigger the enclosing effect", () => {
     fc.assert(
-      fc.property(intArb, intArb.filter((n) => n !== 0).map((n) => n + 1), (a, delta) => {
-        const b = a + delta;
-        const watched = signal(0);   // the dep the effect actually registers
-        const untracked = signal(a); // read via untrack — should not be a dep
+      fc.property(
+        intArb,
+        intArb.filter((n) => n !== 0).map((n) => n + 1),
+        (a, delta) => {
+          const b = a + delta;
+          const watched = signal(0); // the dep the effect actually registers
+          const untracked = signal(a); // read via untrack — should not be a dep
 
-        let count = 0;
-        const dispose = effect(() => {
-          void watched.value;          // register real dep
-          void untrack(() => untracked.value); // read without dep
-          count++;
-        });
-        // count == 1 after construction
+          let count = 0;
+          const dispose = effect(() => {
+            void watched.value; // register real dep
+            void untrack(() => untracked.value); // read without dep
+            count++;
+          });
+          // count == 1 after construction
 
-        // mutating the untracked signal must NOT fire the effect
-        untracked.value = b;
-        expect(count).toBe(1);
+          // mutating the untracked signal must NOT fire the effect
+          untracked.value = b;
+          expect(count).toBe(1);
 
-        // mutating the watched signal DOES fire it
-        watched.value = 999;
-        expect(count).toBe(2);
-        dispose();
-      }),
+          // mutating the watched signal DOES fire it
+          watched.value = 999;
+          expect(count).toBe(2);
+          dispose();
+        },
+      ),
       { numRuns: 60 },
     );
   });
@@ -273,7 +274,9 @@ describe("signals — SIG9: double dispose is safe", () => {
     fc.assert(
       fc.property(intArb, (v) => {
         const src = signal(v);
-        const dispose = effect(() => { void src.value; });
+        const dispose = effect(() => {
+          void src.value;
+        });
         dispose();
         expect(() => dispose()).not.toThrow();
       }),
@@ -290,7 +293,10 @@ describe("signals — SIG10: same-value write skips effect", () => {
       fc.property(intArb, (v) => {
         const src = signal(v);
         let count = 0;
-        const dispose = effect(() => { void src.value; count++; });
+        const dispose = effect(() => {
+          void src.value;
+          count++;
+        });
         // count == 1 after construction
         src.value = v; // same value
         expect(count).toBe(1);

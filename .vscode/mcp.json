@@ -8,10 +8,7 @@
         "fetch": {
             "type": "stdio",
             "command": "npx",
-            "args": [
-                "-y",
-                "@modelcontextprotocol/server-fetch@latest"
-            ],
+            "args": ["-y", "@modelcontextprotocol/server-fetch@latest"],
             "description": "HTTP client for testing dashboard data sources (Open-Meteo, Hebcal, Yahoo, CoinGecko). GET/POST with headers."
         },
         "filesystem": {
@@ -34,10 +31,7 @@
         "playwright": {
             "type": "stdio",
             "command": "npx",
-            "args": [
-                "-y",
-                "@microsoft/mcp-server-playwright"
-            ],
+            "args": ["-y", "@microsoft/mcp-server-playwright"],
             "description": "Browser automation, visual debugging, screenshot capture, and E2E interaction directly in chat."
         }
     }

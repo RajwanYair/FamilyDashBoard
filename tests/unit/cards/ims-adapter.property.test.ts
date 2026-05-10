@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/weather/ims-adapter.ts 
+ * fast-check property tests — src/cards/weather/ims-adapter.ts
  *
  * Properties under test:
  *  IMS1. haversineKm: same point → 0
@@ -113,13 +113,10 @@ describe("ims-adapter — IMS5: imsToWmoCode heavy rain", () => {
 describe("ims-adapter — IMS6: msToKmh integer", () => {
   it("result is always an integer", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 0, max: 100, noNaN: true, noDefaultInfinity: true }),
-        (ms) => {
-          const result = msToKmh(ms);
-          expect(Number.isInteger(result)).toBe(true);
-        },
-      ),
+      fc.property(fc.double({ min: 0, max: 100, noNaN: true, noDefaultInfinity: true }), (ms) => {
+        const result = msToKmh(ms);
+        expect(Number.isInteger(result)).toBe(true);
+      }),
     );
   });
 });

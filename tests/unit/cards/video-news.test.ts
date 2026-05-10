@@ -160,40 +160,52 @@ describe("video-news — listPinnedChannels ( V1)", () => {
   });
 
   it("returns only pinned channels when config is set", async () => {
-    localStorage.setItem("dash_v2_config", JSON.stringify({
-      configVersion: 12,
-      cards: { "video-news": { settings: { pinnedChannels: "c14,kan11" } } },
-    }));
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({
+        configVersion: 12,
+        cards: { "video-news": { settings: { pinnedChannels: "c14,kan11" } } },
+      }),
+    );
     const { listPinnedChannels } = await import("@/cards/video-news/video-news");
     const result = listPinnedChannels();
     expect(result).toEqual(["c14", "kan11"]);
   });
 
   it("ignores invalid channel IDs in pinned config", async () => {
-    localStorage.setItem("dash_v2_config", JSON.stringify({
-      configVersion: 12,
-      cards: { "video-news": { settings: { pinnedChannels: "c14,invalid,kan11" } } },
-    }));
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({
+        configVersion: 12,
+        cards: { "video-news": { settings: { pinnedChannels: "c14,invalid,kan11" } } },
+      }),
+    );
     const { listPinnedChannels } = await import("@/cards/video-news/video-news");
     const result = listPinnedChannels();
     expect(result).toEqual(["c14", "kan11"]);
   });
 
   it("caps at 4 channels even if more are pinned", async () => {
-    localStorage.setItem("dash_v2_config", JSON.stringify({
-      configVersion: 12,
-      cards: { "video-news": { settings: { pinnedChannels: "c14,kan11,n12,keshet13,arutz7" } } },
-    }));
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({
+        configVersion: 12,
+        cards: { "video-news": { settings: { pinnedChannels: "c14,kan11,n12,keshet13,arutz7" } } },
+      }),
+    );
     const { listPinnedChannels } = await import("@/cards/video-news/video-news");
     const result = listPinnedChannels();
     expect(result.length).toBe(4);
   });
 
   it("falls back to all channels if all pinned IDs are invalid", async () => {
-    localStorage.setItem("dash_v2_config", JSON.stringify({
-      configVersion: 12,
-      cards: { "video-news": { settings: { pinnedChannels: "invalid1,invalid2" } } },
-    }));
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({
+        configVersion: 12,
+        cards: { "video-news": { settings: { pinnedChannels: "invalid1,invalid2" } } },
+      }),
+    );
     const { listPinnedChannels } = await import("@/cards/video-news/video-news");
     const result = listPinnedChannels();
     expect(result.length).toBe(6);
@@ -335,10 +347,13 @@ describe("initVideoNews DOM paths ", () => {
   });
 
   it("respects pinnedChannels config — creates only 2 tabs", () => {
-    localStorage.setItem("dash_v2_config", JSON.stringify({
-      configVersion: 12,
-      cards: { "video-news": { settings: { pinnedChannels: "c14,n12" } } },
-    }));
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({
+        configVersion: 12,
+        cards: { "video-news": { settings: { pinnedChannels: "c14,n12" } } },
+      }),
+    );
     initVideoNews(root);
     const tabs = root.querySelectorAll(".video-news__tab");
     expect(tabs.length).toBe(2);

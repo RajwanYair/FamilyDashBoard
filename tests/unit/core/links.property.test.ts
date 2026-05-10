@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/links.ts 
+ * fast-check property tests — src/core/links.ts
  *
  * Properties under test:
  *  LK1. Registration count: after N distinct direction registrations
@@ -34,13 +34,15 @@ import { loadConfig } from "@/core/config";
 const cardIdArb = fc.stringMatching(/^[a-z][a-z0-9-]{0,14}$/);
 
 /** A pair of distinct card IDs */
-const distinctPairArb = fc
-  .tuple(cardIdArb, cardIdArb)
-  .filter(([a, b]) => a !== b);
+const distinctPairArb = fc.tuple(cardIdArb, cardIdArb).filter(([a, b]) => a !== b);
 
 /** N distinct (from, to) pairs — N ∈ [1, 6] */
 const distinctLinksArb = fc
-  .uniqueArray(distinctPairArb, { minLength: 1, maxLength: 6, comparator: ([a, b], [c, d]) => a === c && b === d })
+  .uniqueArray(distinctPairArb, {
+    minLength: 1,
+    maxLength: 6,
+    comparator: ([a, b], [c, d]) => a === c && b === d,
+  })
   .filter((pairs) => pairs.length >= 1);
 
 // ── Setup ─────────────────────────────────────────────────────────────────────
@@ -55,16 +57,20 @@ beforeEach(() => {
 describe("links — LK1: getLinks count matches registrations for fromCardId", () => {
   it("N distinct A→Bi registrations → getLinks(A) returns N links", () => {
     fc.assert(
-      fc.property(cardIdArb, fc.uniqueArray(cardIdArb, { minLength: 1, maxLength: 6 }), (from, tos) => {
-        clearLinks();
-        const uniqueTos = [...new Set(tos)].filter((t) => t !== from);
-        if (uniqueTos.length === 0) return; // skip degenerate case
-        for (const to of uniqueTos) {
-          registerLink(from, to, () => `${from}→${to}`);
-        }
-        const links = getLinks(from);
-        expect(links.length).toBe(uniqueTos.length);
-      }),
+      fc.property(
+        cardIdArb,
+        fc.uniqueArray(cardIdArb, { minLength: 1, maxLength: 6 }),
+        (from, tos) => {
+          clearLinks();
+          const uniqueTos = [...new Set(tos)].filter((t) => t !== from);
+          if (uniqueTos.length === 0) return; // skip degenerate case
+          for (const to of uniqueTos) {
+            registerLink(from, to, () => `${from}→${to}`);
+          }
+          const links = getLinks(from);
+          expect(links.length).toBe(uniqueTos.length);
+        },
+      ),
       { numRuns: 80 },
     );
   });
@@ -97,7 +103,9 @@ describe("links — LK3: registering A→B does not affect getLinks(C) for C ≠
   it("unrelated card C still returns [] after A→B registration", () => {
     fc.assert(
       fc.property(
-        fc.tuple(cardIdArb, cardIdArb, cardIdArb).filter(([a, b, c]) => a !== b && b !== c && a !== c),
+        fc
+          .tuple(cardIdArb, cardIdArb, cardIdArb)
+          .filter(([a, b, c]) => a !== b && b !== c && a !== c),
         ([from, to, other]) => {
           clearLinks();
           registerLink(from, to, () => "link");
@@ -219,9 +227,9 @@ describe("links — LK9: replacing one direction preserves other directions", ()
   it("re-registering A→B with new resolver leaves A→C intact", () => {
     fc.assert(
       fc.property(
-        fc.tuple(cardIdArb, cardIdArb, cardIdArb).filter(
-          ([a, b, c]) => a !== b && a !== c && b !== c,
-        ),
+        fc
+          .tuple(cardIdArb, cardIdArb, cardIdArb)
+          .filter(([a, b, c]) => a !== b && a !== c && b !== c),
         ([from, to1, to2]) => {
           clearLinks();
           const r1 = () => "r1";

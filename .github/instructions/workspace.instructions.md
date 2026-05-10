@@ -3,7 +3,7 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v14.13.0
+# FamilyDashBoard — v14.13.1
 
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes · 12 cards
 
@@ -64,12 +64,12 @@ news · weather · stocks · currency · calendar · hebrew-cal · alerts · mot
 
 ## Architecture
 
-| System   | Pattern                                                                                                                                |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Cache    | `cGet(key,TTL)` / `cSet(key,data)` / `cGetStale(key)` — in-memory Map + localStorage (`dash_v2_*`, 7-day eviction)                     |
-| Fetch    | Direct → `allorigins` → `codetabs` → `corsproxy.io` · `fetchWithTimeout(url, 8000)` · `diagLog()`                                      |
-| SW       | APP_SHELL pre-cache, API cache (7 origins), offline HTML fallback, `VERSION_ACTIVATED` broadcast                                       |
-| Init     | `safeLoad()` wrappers → `Promise.allSettled` · per-pane `setInterval` · startup self-check                                             |
-| Keyboard | `T` theme · `D` diagnostics · `A` alerts · `S` config · `N` dimmer · `+/-` font · `P` print · `B` bookmarks · `H/?` help · `Esc` close |
+| System   | Pattern                                                                                                                                                                                |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cache    | `cGet(key,TTL)` / `cSet(key,data)` / `cGetStale(key)` — in-memory Map + localStorage (`dash_v2_*`, 7-day eviction)                                                                     |
+| Fetch    | Direct → `allorigins` → `codetabs` → `corsproxy.io` · `fetchWithTimeout(url, 8000)` · `diagLog()`                                                                                      |
+| SW       | APP_SHELL pre-cache, API cache (7 origins), offline HTML fallback, `VERSION_ACTIVATED` broadcast                                                                                       |
+| Init     | `safeLoad()` wrappers → `Promise.allSettled` · per-pane `setInterval` · startup self-check                                                                                             |
+| Keyboard | `T` theme · `D` diagnostics · `A` alerts · `S` config · `N` dimmer · `+/-` font · `P` print · `B` bookmarks · `H/?` help · `Esc` close                                                 |
 | Browsers | Chrome 114+ · Edge 114+ · Firefox 128+ · Firefox ESR · Safari 17.4+ · Opera 100+ · Samsung 23+ · iOS 17.4+ · Android 114+ · ChromeAndroid 114+ · FirefoxAndroid 128+ · OperaMobile 80+ |
-| E2E      | Playwright: Chromium (all tests) · Firefox/WebKit/Edge/Mobile-Chrome/Mobile-Safari/Tablet-Safari/Tablet-Android/Mobile-Samsung (smoke + a11y) |
+| E2E      | Playwright: Chromium (all tests) · Firefox/WebKit/Edge/Mobile-Chrome/Mobile-Safari/Tablet-Safari/Tablet-Android/Mobile-Samsung (smoke + a11y)                                          |

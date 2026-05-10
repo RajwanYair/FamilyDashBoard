@@ -62,4 +62,3 @@ describe("FdbCurrencyCard", () => {
     expect(customElements.get("fdb-currency")).toBeDefined();
   });
 });
-

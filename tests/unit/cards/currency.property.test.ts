@@ -139,7 +139,7 @@ describe("currency — CUR7: get7DayTrend strengthening ILS", () => {
     // rates are foreign-per-ILS; higher rate = ILS stronger = 1/rate drops
     const history = [
       { date: "2025-01-01", rates: { USD: 0.25 } },
-      { date: "2025-01-07", rates: { USD: 0.30 } },
+      { date: "2025-01-07", rates: { USD: 0.3 } },
     ];
     const result = get7DayTrend("USD", history);
     expect(result).not.toBeNull();
@@ -169,7 +169,7 @@ describe("currency — CUR9: getCurrencyTrend missing key", () => {
       fc.property(fc.string({ minLength: 1, maxLength: 5 }), (key) => {
         const history = [
           { date: "2025-01-01", rates: { [key]: 0.28 } },
-          { date: "2025-01-10", rates: { OTHER: 0.30 } },
+          { date: "2025-01-10", rates: { OTHER: 0.3 } },
         ];
         expect(getCurrencyTrend(key, history, 7)).toBeNull();
       }),

@@ -704,7 +704,11 @@ describe("IDB Cache — onupgradeneeded creates store", () => {
       transaction: () => ({
         objectStore: () => ({
           get: () => {
-            const req = { result: undefined, onsuccess: null as ((e: Event) => void) | null, onerror: null as ((e: Event) => void) | null } as unknown as IDBRequest;
+            const req = {
+              result: undefined,
+              onsuccess: null as ((e: Event) => void) | null,
+              onerror: null as ((e: Event) => void) | null,
+            } as unknown as IDBRequest;
             setTimeout(() => req.onsuccess?.({} as Event), 0);
             return req;
           },

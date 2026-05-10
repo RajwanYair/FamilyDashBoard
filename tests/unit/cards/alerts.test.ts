@@ -1779,9 +1779,7 @@ describe("Alerts — alertRingAppend / alertRingGet ( A2)", () => {
   });
 
   it("caps at 100 entries", () => {
-    const batch: AlertEvent[] = Array.from({ length: 110 }, (_, i) =>
-      makeEvent(`ev${i}`, i),
-    );
+    const batch: AlertEvent[] = Array.from({ length: 110 }, (_, i) => makeEvent(`ev${i}`, i));
     alertRingAppend(batch);
     const ring = alertRingGet();
     expect(ring.length).toBeLessThanOrEqual(100);
@@ -1850,8 +1848,12 @@ describe("Alerts — showAlertTakeover / hideAlertTakeover ( A1)", () => {
     // Polyfill showModal/close for happy-dom
     const d = document.getElementById("alerts-takeover") as HTMLDialogElement;
     if (typeof d.showModal !== "function") {
-      d.showModal = () => { d.setAttribute("open", ""); };
-      d.close = () => { d.removeAttribute("open"); };
+      d.showModal = () => {
+        d.setAttribute("open", "");
+      };
+      d.close = () => {
+        d.removeAttribute("open");
+      };
     }
   };
 
@@ -1911,13 +1913,10 @@ describe("Alerts — showAlertTakeover / hideAlertTakeover ( A1)", () => {
 describe("AP1: alertThreatIcon(threat) — always returns a non-empty emoji string", () => {
   it("any integer threat level returns a non-empty string", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 10 }),
-        (threat) => {
-          const result = alertThreatIcon(threat);
-          return typeof result === "string" && result.length > 0;
-        },
-      ),
+      fc.property(fc.integer({ min: 0, max: 10 }), (threat) => {
+        const result = alertThreatIcon(threat);
+        return typeof result === "string" && result.length > 0;
+      }),
       { numRuns: 100 },
     );
   });
@@ -1951,13 +1950,10 @@ describe("AP1: alertThreatIcon(threat) — always returns a non-empty emoji stri
 describe("AP2: alertAgeLabel(ageMin) — always returns a non-empty string", () => {
   it("any non-negative age in minutes yields a non-empty string", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 0, max: 1440, noNaN: true }),
-        (ageMin) => {
-          const result = alertAgeLabel(ageMin);
-          return typeof result === "string" && result.length > 0;
-        },
-      ),
+      fc.property(fc.double({ min: 0, max: 1440, noNaN: true }), (ageMin) => {
+        const result = alertAgeLabel(ageMin);
+        return typeof result === "string" && result.length > 0;
+      }),
       { numRuns: 200 },
     );
   });
@@ -2177,7 +2173,10 @@ describe("Alerts — buildAlertItem missing cities/threat fields", () => {
   });
 
   it("returns null when alerts[0] is undefined (sparse array — L234)", () => {
-    const ev = { id: "sparse", alerts: [, { cities: ["א"], threat: 1, time: NOW_SEC - 60 }] } as unknown as AlertEvent;
+    const ev = {
+      id: "sparse",
+      alerts: [, { cities: ["א"], threat: 1, time: NOW_SEC - 60 }],
+    } as unknown as AlertEvent;
     const el = buildAlertItem(ev, NOW_SEC, false, false);
     expect(el).toBeNull();
   });

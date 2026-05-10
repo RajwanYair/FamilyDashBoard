@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/today-pane.ts buildTodayItems 
+ * fast-check property tests — src/ui/today-pane.ts buildTodayItems
  *
  * Properties under test:
  *  TP1. Empty inputs → empty result
@@ -42,10 +42,12 @@ describe("today-pane — TP2: active alert", () => {
   it("recent alert produces critical item", () => {
     const items = buildTodayItems({
       ...emptyInputs,
-      alerts: [{
-        id: 1,
-        alerts: [{ cities: ["תל אביב"], threat: 3, time: Math.floor(NOW / 1000) - 60 }],
-      }] as never,
+      alerts: [
+        {
+          id: 1,
+          alerts: [{ cities: ["תל אביב"], threat: 3, time: Math.floor(NOW / 1000) - 60 }],
+        },
+      ] as never,
     });
     expect(items.length).toBeGreaterThanOrEqual(1);
     expect(items[0]!.urgency).toBe("critical");
@@ -91,17 +93,14 @@ describe("today-pane — TP4: calendar event >6h", () => {
 describe("today-pane — TP5: countdown ≤24h", () => {
   it("countdown within 24h appears", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 1, max: 24 * 60 * 60 * 1000 - 1 }),
-        (diffMs) => {
-          const items = buildTodayItems({
-            ...emptyInputs,
-            countdownTargetMs: NOW + diffMs,
-            countdownTitle: "יום הולדת",
-          });
-          expect(items.find((i) => i.type === "countdown")).toBeDefined();
-        },
-      ),
+      fc.property(fc.integer({ min: 1, max: 24 * 60 * 60 * 1000 - 1 }), (diffMs) => {
+        const items = buildTodayItems({
+          ...emptyInputs,
+          countdownTargetMs: NOW + diffMs,
+          countdownTitle: "יום הולדת",
+        });
+        expect(items.find((i) => i.type === "countdown")).toBeDefined();
+      }),
       { numRuns: 5 },
     );
   });
@@ -112,16 +111,13 @@ describe("today-pane — TP5: countdown ≤24h", () => {
 describe("today-pane — TP6: big stock mover", () => {
   it("stock with ≥3% change appears", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 3.0, max: 50, noNaN: true }),
-        (pct) => {
-          const items = buildTodayItems({
-            ...emptyInputs,
-            stockMovers: [`AAPL +${pct.toFixed(1)}%`],
-          });
-          expect(items.find((i) => i.type === "stocks")).toBeDefined();
-        },
-      ),
+      fc.property(fc.double({ min: 3.0, max: 50, noNaN: true }), (pct) => {
+        const items = buildTodayItems({
+          ...emptyInputs,
+          stockMovers: [`AAPL +${pct.toFixed(1)}%`],
+        });
+        expect(items.find((i) => i.type === "stocks")).toBeDefined();
+      }),
       { numRuns: 5 },
     );
   });
@@ -132,17 +128,14 @@ describe("today-pane — TP6: big stock mover", () => {
 describe("today-pane — TP7: small stock mover", () => {
   it("stock with <3% change excluded", () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 0, max: 2.9, noNaN: true }),
-        (pct) => {
-          // Use toFixed(2) to avoid rounding 2.95→"3.0"
-          const items = buildTodayItems({
-            ...emptyInputs,
-            stockMovers: [`AAPL +${pct.toFixed(2)}%`],
-          });
-          expect(items.find((i) => i.type === "stocks")).toBeUndefined();
-        },
-      ),
+      fc.property(fc.double({ min: 0, max: 2.9, noNaN: true }), (pct) => {
+        // Use toFixed(2) to avoid rounding 2.95→"3.0"
+        const items = buildTodayItems({
+          ...emptyInputs,
+          stockMovers: [`AAPL +${pct.toFixed(2)}%`],
+        });
+        expect(items.find((i) => i.type === "stocks")).toBeUndefined();
+      }),
       { numRuns: 5 },
     );
   });
@@ -154,10 +147,12 @@ describe("today-pane — TP8: urgency sort", () => {
   it("critical comes before warning, warning before normal", () => {
     const items = buildTodayItems({
       ...emptyInputs,
-      alerts: [{
-        id: 1,
-        alerts: [{ cities: ["A"], threat: 1, time: Math.floor(NOW / 1000) - 30 }],
-      }] as never,
+      alerts: [
+        {
+          id: 1,
+          alerts: [{ cities: ["A"], threat: 1, time: Math.floor(NOW / 1000) - 30 }],
+        },
+      ] as never,
       nextCalEvent: { label: "אירוע", minutesUntil: 15 }, // warning (≤30min)
       stockMovers: ["TSLA +5.2%"], // normal
     });

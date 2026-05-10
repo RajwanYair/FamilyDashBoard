@@ -63,4 +63,3 @@ describe("FdbSystemInfoCard", () => {
     expect(customElements.get("fdb-system-info")).toBeDefined();
   });
 });
-

@@ -34,8 +34,9 @@ let _root: HTMLElement | null = null;
  */
 export function listPinnedChannels(): VideoChannelId[] {
   const cfg = loadConfig();
-  const pinnedRaw = (cfg.cards?.["video-news"] as { settings?: { pinnedChannels?: string } } | undefined)
-    ?.settings?.pinnedChannels ?? "";
+  const pinnedRaw =
+    (cfg.cards?.["video-news"] as { settings?: { pinnedChannels?: string } } | undefined)?.settings
+      ?.pinnedChannels ?? "";
   if (!pinnedRaw.trim()) return listChannels();
   const all = listChannels();
   const valid = pinnedRaw
@@ -323,9 +324,7 @@ export function isPipSupported(): boolean {
  *
  * Must be called from a user-gesture handler (click / keydown).
  */
-export async function requestDocumentPip(
-  element: HTMLElement | null,
-): Promise<Window | null> {
+export async function requestDocumentPip(element: HTMLElement | null): Promise<Window | null> {
   if (!element || !isPipSupported()) return null;
   try {
     const pip = window as unknown as {

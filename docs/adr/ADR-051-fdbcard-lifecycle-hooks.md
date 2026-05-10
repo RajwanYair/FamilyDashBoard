@@ -1,12 +1,12 @@
 # ADR-051 — FdbCard Lifecycle Hook Protocol (onThemeChange + onAlert)
 
-| Field      | Value                                                                          |
-| ---------- | ------------------------------------------------------------------------------ |
-| Date       | 2026-05-28                                                                     |
-| Status     | Accepted                                                                       |
-| Sprint     | 253 (hooks added) / 270 (ADR formalised)                                       |
-| Supersedes | n/a                                                                            |
-| Related    | ADR-001 (Shadow DOM rejected), card-registry (`src/core/card-registry.ts`)     |
+| Field      | Value                                                                      |
+| ---------- | -------------------------------------------------------------------------- |
+| Date       | 2026-05-28                                                                 |
+| Status     | Accepted                                                                   |
+| Sprint     | 253 (hooks added) / 270 (ADR formalised)                                   |
+| Supersedes | n/a                                                                        |
+| Related    | ADR-001 (Shadow DOM rejected), card-registry (`src/core/card-registry.ts`) |
 
 ## Context
 
@@ -55,12 +55,12 @@ The card registry iterates over all registered cards and calls the hooks via
 
 ## Rationale
 
-| Option                                  | Verdict  | Reason                                                      |
-| --------------------------------------- | -------- | ----------------------------------------------------------- |
-| Direct EventBus subscription per card  | Rejected | Undiscoverable, no type safety, hard to test in isolation   |
-| Custom DOM events on `document`         | Rejected | Violates "no DOM pollution" principle; no TypeScript types  |
-| Registry lifecycle hooks (chosen)       | Accepted | Type-safe, tree-shakeable, easy to mock in unit tests       |
-| Framework-style context/provider        | Rejected | Violates ADR-002 (zero client dependencies)                 |
+| Option                                | Verdict  | Reason                                                     |
+| ------------------------------------- | -------- | ---------------------------------------------------------- |
+| Direct EventBus subscription per card | Rejected | Undiscoverable, no type safety, hard to test in isolation  |
+| Custom DOM events on `document`       | Rejected | Violates "no DOM pollution" principle; no TypeScript types |
+| Registry lifecycle hooks (chosen)     | Accepted | Type-safe, tree-shakeable, easy to mock in unit tests      |
+| Framework-style context/provider      | Rejected | Violates ADR-002 (zero client dependencies)                |
 
 ## Consequences
 

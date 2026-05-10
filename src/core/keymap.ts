@@ -45,8 +45,7 @@ export function buildHelpRows(
     const keyEl = document.createElement("span");
     keyEl.className = "help-key";
     // Display uppercase for single-letter keys; keep special keys as-is.
-    keyEl.textContent =
-      action.key.length === 1 ? action.key.toUpperCase() : action.key;
+    keyEl.textContent = action.key.length === 1 ? action.key.toUpperCase() : action.key;
 
     row.appendChild(descEl);
     row.appendChild(keyEl);
@@ -60,9 +59,7 @@ export function buildHelpRows(
  * come first (alphabetically), followed by multi-char / symbol keys.
  * Useful for rendering a predictable help table.
  */
-export function sortKeyEntries(
-  actions: readonly KeyboardAction[],
-): KeyboardAction[] {
+export function sortKeyEntries(actions: readonly KeyboardAction[]): KeyboardAction[] {
   return [...actions].sort((a, b) => {
     const aShort = a.key.length === 1;
     const bShort = b.key.length === 1;

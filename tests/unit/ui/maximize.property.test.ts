@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/maximize.ts 
+ * fast-check property tests — src/ui/maximize.ts
  *
  * Properties under test:
  *  MX1. computeFontScale: result always in [1, 4]
@@ -72,15 +72,12 @@ describe("maximize — MX3: zero-width safe", () => {
 describe("maximize — MX4: cardVtName valid CSS", () => {
   it("result contains only letters, digits, hyphens", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^[a-zA-Z0-9_. ]{1,20}$/),
-        (id) => {
-          const el = document.createElement("section");
-          el.dataset["cardId"] = id;
-          const name = cardVtName(el);
-          expect(name).toMatch(/^[a-zA-Z0-9-]+$/);
-        },
-      ),
+      fc.property(fc.stringMatching(/^[a-zA-Z0-9_. ]{1,20}$/), (id) => {
+        const el = document.createElement("section");
+        el.dataset["cardId"] = id;
+        const name = cardVtName(el);
+        expect(name).toMatch(/^[a-zA-Z0-9-]+$/);
+      }),
       { numRuns: 10 },
     );
   });

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/ecb-adapter.ts 
+ * fast-check property tests — worker/src/utils/ecb-adapter.ts
  *
  * Properties under test:
  *  ECB1. Valid XML with ILS → returns non-null with ILS=1.0.
@@ -23,9 +23,7 @@ function buildEcbXml(entries: Array<{ currency: string; rate: number }>): string
 
 // ── Arbitraries ───────────────────────────────────────────────────────────────
 
-const currencyCodeArb = fc
-  .stringMatching(/^[A-Z]{3}$/)
-  .filter((c) => c !== "ILS" && c !== "EUR");
+const currencyCodeArb = fc.stringMatching(/^[A-Z]{3}$/).filter((c) => c !== "ILS" && c !== "EUR");
 const positiveRate = fc.double({ min: 0.01, max: 999, noNaN: true });
 
 // ── ECB1: Valid XML with ILS → ILS=1.0 in output ────────────────────────────

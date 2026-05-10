@@ -1,5 +1,5 @@
 /**
- * Tests for src/core/snapshot.ts 
+ * Tests for src/core/snapshot.ts
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";

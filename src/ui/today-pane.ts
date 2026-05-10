@@ -10,10 +10,7 @@
  */
 
 import "./today-pane.css";
-import {
-  LS_CHORES,
-  MS_PER_MIN,
-} from "../core/constants";
+import { LS_CHORES, MS_PER_MIN } from "../core/constants";
 import { getCardSignal } from "../core/card-signal-protocol";
 import type { AlertEvent } from "../types/api";
 import type { ChoreItem } from "../cards/tasks/tasks";
@@ -56,8 +53,8 @@ export function buildTodayItems(inputs: TodayPaneInputs): TodayPaneItem[] {
   const items: TodayPaneItem[] = [];
 
   // ── Alerts: active alert zones ──────────────────────────────────────────
-  const activeAlerts = inputs.alerts.filter((ev) =>
-    ev.alerts.some((z) => z.time * 1000 > inputs.nowMs - 60 * 60 * 1000), // within last hour
+  const activeAlerts = inputs.alerts.filter(
+    (ev) => ev.alerts.some((z) => z.time * 1000 > inputs.nowMs - 60 * 60 * 1000), // within last hour
   );
   if (activeAlerts.length > 0) {
     const zoneName = activeAlerts[0]?.alerts[0]?.cities[0] ?? "אזור לא ידוע";
@@ -187,10 +184,25 @@ function readChores(): ChoreItem[] {
 
 // ── Signal type helpers (X12 ADR-067) ────────────────────────────────────────
 
-interface AlertsSignal { count: number; areas: string[]; latestTs: number }
-interface CountdownSignal { targetMs: number; title: string }
-interface TopMoverSignal { sym: string; pct: number; dir: "up" | "down" }
-interface CalEventSignal { title: string; startMs: number; isAllDay: boolean }
+interface AlertsSignal {
+  count: number;
+  areas: string[];
+  latestTs: number;
+}
+interface CountdownSignal {
+  targetMs: number;
+  title: string;
+}
+interface TopMoverSignal {
+  sym: string;
+  pct: number;
+  dir: "up" | "down";
+}
+interface CalEventSignal {
+  title: string;
+  startMs: number;
+  isAllDay: boolean;
+}
 
 /**
  * X12: Collect today-pane inputs from card signals (ADR-067).
@@ -207,11 +219,13 @@ function collectInputs(): TodayPaneInputs {
   const alertVal = alertSig?.value ?? null;
   const alerts: AlertEvent[] = alertVal
     ? Array.from({ length: alertVal.count }, (_, i) => ({
-        alerts: [{
-          cities: [alertVal.areas[i % alertVal.areas.length] ?? "אזור"],
-          threat: 0,
-          time: alertVal.latestTs,
-        }],
+        alerts: [
+          {
+            cities: [alertVal.areas[i % alertVal.areas.length] ?? "אזור"],
+            threat: 0,
+            time: alertVal.latestTs,
+          },
+        ],
       }))
     : [];
 
@@ -223,7 +237,9 @@ function collectInputs(): TodayPaneInputs {
   // Stocks — read from "stocks.top-mover" signal; fall back to DOM pills
   const stockSig = getCardSignal<TopMoverSignal>("stocks", "top-mover");
   const stockMovers: string[] = stockSig?.value
-    ? [`${stockSig.value.sym} ${stockSig.value.dir === "up" ? "+" : ""}${stockSig.value.pct.toFixed(1)}%`]
+    ? [
+        `${stockSig.value.sym} ${stockSig.value.dir === "up" ? "+" : ""}${stockSig.value.pct.toFixed(1)}%`,
+      ]
     : Array.from(document.querySelectorAll<HTMLElement>(".stk-mover-pill"))
         .map((el) => el.textContent?.trim() ?? "")
         .filter(Boolean);
@@ -234,7 +250,7 @@ function collectInputs(): TodayPaneInputs {
     calSig?.value && !calSig.value.isAllDay
       ? {
           label: calSig.value.title.substring(0, 40),
-          minutesUntil: Math.round((calSig.value.startMs - nowMs) / (MS_PER_MIN)),
+          minutesUntil: Math.round((calSig.value.startMs - nowMs) / MS_PER_MIN),
         }
       : null;
 

@@ -96,11 +96,7 @@ export function getCardSignal<T>(cardId: string, key: string): CardSignal<T> | n
  * Does NOT fire immediately for the current value. Consumers needing
  * the current value should call `getCardSignal` first.
  */
-export function onCardSignal<T>(
-  cardId: string,
-  key: string,
-  cb: Listener<T>,
-): () => void {
+export function onCardSignal<T>(cardId: string, key: string, cb: Listener<T>): () => void {
   const ck = compositeKey(cardId, key);
   let set = _listeners.get(ck);
   if (!set) {

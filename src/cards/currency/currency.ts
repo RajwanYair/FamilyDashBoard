@@ -235,7 +235,11 @@ let _calcRates: Record<string, number> = {};
  * Result is how many foreign units the amount in ILS is worth.
  * Returns null when the rate is missing or amount is invalid.
  */
-export function calcCurrency(amountIls: number, rateKey: string, rates: Record<string, number>): number | null {
+export function calcCurrency(
+  amountIls: number,
+  rateKey: string,
+  rates: Record<string, number>,
+): number | null {
   if (!Number.isFinite(amountIls) || amountIls < 0) return null;
   const rate = rates[rateKey];
   if (!rate || !Number.isFinite(rate) || rate <= 0) return null;
@@ -685,7 +689,7 @@ export const currencyConfigSchema: CardConfigField[] = [
     defaultValue: "",
     placeholder: "XAG,BTC",
     group: "תצוגה",
-  },  // base selector + calc/trend/sparkline ───────────────────────────
+  }, // base selector + calc/trend/sparkline ───────────────────────────
   {
     key: "currencyBase",
     labelHe: "מטבע בסיס",
@@ -722,7 +726,8 @@ export const currencyConfigSchema: CardConfigField[] = [
     type: "boolean",
     defaultValue: true,
     group: "תצוגה",
-  },];
+  },
+];
 
 /** Reset module-level state (for tests only). */
 export function _resetCurrencyForTest(): void {

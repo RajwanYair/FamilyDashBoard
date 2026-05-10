@@ -1,10 +1,10 @@
 # ADR-039 — oxlint as Fast CI Pre-Pass
 
-| Field  | Value                 |
-| ------ | --------------------- |
-| Date   | 2026-04-26            |
-| Status | Accepted              |
-| Sprint | 107  |
+| Field  | Value      |
+| ------ | ---------- |
+| Date   | 2026-04-26 |
+| Status | Accepted   |
+| Sprint | 107        |
 
 ## Context
 

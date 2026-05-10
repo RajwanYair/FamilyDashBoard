@@ -131,7 +131,12 @@ import { initHeader } from "@/ui/header";
 import { initCardMaximize, initCardCollapse } from "@/ui/maximize";
 import { initStatusBar, stampRefresh } from "@/ui/status-bar";
 import { initTicker } from "@/ui/ticker";
-import { initConfigPanel, openEcfgImportDialog, openConfigPanel, switchCfgTab } from "@/ui/config-panel";
+import {
+  initConfigPanel,
+  openEcfgImportDialog,
+  openConfigPanel,
+  switchCfgTab,
+} from "@/ui/config-panel";
 import { initDiagOverlay } from "@/ui/diag-overlay";
 import { initBgImages } from "@/ui/bg-images";
 import { initScreenMode, stepFontScale } from "@/ui/screen-mode";
@@ -549,20 +554,36 @@ describe("Main — init() Ctrl+Shift+E diagnostic export (lines 359-369)", () =>
   });
 
   it("Ctrl+Shift+E dispatches export (lines 359-369 TRUE branch)", () => {
-    vi.mocked(getDiagEntries).mockReturnValue([{ ts: 0, tag: "test", msg: "hello" }] as ReturnType<typeof getDiagEntries>);
+    vi.mocked(getDiagEntries).mockReturnValue([{ ts: 0, tag: "test", msg: "hello" }] as ReturnType<
+      typeof getDiagEntries
+    >);
     init();
-    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => { /* noop */ });
-    const evt = new KeyboardEvent("keydown", { ctrlKey: true, shiftKey: true, key: "E", bubbles: true });
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {
+      /* noop */
+    });
+    const evt = new KeyboardEvent("keydown", {
+      ctrlKey: true,
+      shiftKey: true,
+      key: "E",
+      bubbles: true,
+    });
     window.dispatchEvent(evt);
     expect(getDiagEntries).toHaveBeenCalledWith(500);
-    expect((URL as unknown as { createObjectURL: ReturnType<typeof vi.fn> }).createObjectURL).toHaveBeenCalled();
+    expect(
+      (URL as unknown as { createObjectURL: ReturnType<typeof vi.fn> }).createObjectURL,
+    ).toHaveBeenCalled();
     expect(clickSpy).toHaveBeenCalled();
     clickSpy.mockRestore();
   });
 
   it("non-matching keydown does NOT trigger export (line 359 FALSE branch)", () => {
     init();
-    const evt = new KeyboardEvent("keydown", { ctrlKey: false, shiftKey: false, key: "A", bubbles: true });
+    const evt = new KeyboardEvent("keydown", {
+      ctrlKey: false,
+      shiftKey: false,
+      key: "A",
+      bubbles: true,
+    });
     window.dispatchEvent(evt);
     expect(getDiagEntries).not.toHaveBeenCalled();
   });
@@ -1425,7 +1446,11 @@ describe("Main — init() ECFG import dialog (line 439)", () => {
   afterEach(() => {
     document.body.className = "";
     // Reset hash back to empty
-    try { window.location.hash = ""; } catch { /* jsdom may not support */ }
+    try {
+      window.location.hash = "";
+    } catch {
+      /* jsdom may not support */
+    }
   });
 
   it("calls openEcfgImportDialog when URL hash starts with #ecfg= (line 438-439 TRUE)", () => {

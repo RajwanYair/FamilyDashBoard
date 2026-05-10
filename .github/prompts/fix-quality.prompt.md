@@ -1,6 +1,23 @@
 ---
 description: "Fix accessibility, performance, and non-lint quality issues in FamilyDashBoard. For lint/type errors use /fix-lint instead."
-tools: ["read_file", "grep_search", "file_search", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "get_errors", "vscode_listCodeUsages", "vscode_renameSymbol", "manage_todo_list", "tool_search", "view_image", "memory", "runSubagent"]
+tools:
+  [
+    "read_file",
+    "grep_search",
+    "file_search",
+    "replace_string_in_file",
+    "multi_replace_string_in_file",
+    "run_in_terminal",
+    "get_terminal_output",
+    "get_errors",
+    "vscode_listCodeUsages",
+    "vscode_renameSymbol",
+    "manage_todo_list",
+    "tool_search",
+    "view_image",
+    "memory",
+    "runSubagent",
+  ]
 ---
 
 # Fix Quality Issues

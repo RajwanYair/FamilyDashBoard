@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/config-crypto.ts 
+ * fast-check property tests — src/core/config-crypto.ts
  *
  * Properties under test:
  *  CC1. Round-trip identity: decrypt(encrypt(config, pass), pass) ≡ config
@@ -23,9 +23,7 @@ import { encryptConfig, decryptConfig, ECFG_PREFIX } from "@/core/config-crypto"
 // ── Arbitraries ───────────────────────────────────────────────────────────────
 
 /** Non-empty printable ASCII passphrase (avoids empty string). */
-const passphraseArb = fc
-  .string({ minLength: 1, maxLength: 64 })
-  .filter((s) => s.trim().length > 0);
+const passphraseArb = fc.string({ minLength: 1, maxLength: 64 }).filter((s) => s.trim().length > 0);
 
 /** A passphrase guaranteed to differ from a given one. */
 const wrongPassphraseArb = (correct: string) =>
@@ -34,7 +32,9 @@ const wrongPassphraseArb = (correct: string) =>
 /** Simple flat JSON-serialisable config object with string values. */
 const flatConfigArb = fc.record({
   theme: fc.constantFrom("black", "blue", "matrix", "amber", "purple", "rose"),
-  city: fc.string({ minLength: 1, maxLength: 30 }).filter((s) => !/[^\x20-\x7E]/.test(s) || s.length > 0),
+  city: fc
+    .string({ minLength: 1, maxLength: 30 })
+    .filter((s) => !/[^\x20-\x7E]/.test(s) || s.length > 0),
   tempUnit: fc.constantFrom("C", "F"),
   note: fc.string({ minLength: 0, maxLength: 50 }).filter((s) => !s.includes("#ecfg=")),
 });

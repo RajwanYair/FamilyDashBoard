@@ -4,10 +4,7 @@
  * Cards opt-in by importing `SemanticPayload` from here and calling
  * `registerSemanticProducer` from `src/core/semantic-clipboard`.
  *
- * 
+ *
  */
 
-export type {
-  SemanticPayload,
-  SemanticPayloadProducer,
-} from "../core/semantic-clipboard";
+export type { SemanticPayload, SemanticPayloadProducer } from "../core/semantic-clipboard";

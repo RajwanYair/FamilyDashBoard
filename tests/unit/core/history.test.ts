@@ -241,14 +241,22 @@ describe("openHistoryDB — onupgradeneeded branches (line 42 TRUE and FALSE)", 
 
     const byTsIndex = {
       openCursor: vi.fn(() => {
-        const r = { result: null as IDBCursorWithValue | null, onsuccess: null as ((e: unknown) => void) | null, onerror: null as ((e: unknown) => void) | null };
+        const r = {
+          result: null as IDBCursorWithValue | null,
+          onsuccess: null as ((e: unknown) => void) | null,
+          onerror: null as ((e: unknown) => void) | null,
+        };
         setTimeout(() => r.onsuccess?.({ target: r }), 0);
         return r as unknown as IDBRequest<IDBCursorWithValue | null>;
       }),
     };
     const byKeyTsIndex = {
       getAll: vi.fn(() => {
-        const r = { result: [] as unknown[], onsuccess: null as ((e: unknown) => void) | null, onerror: null as ((e: unknown) => void) | null };
+        const r = {
+          result: [] as unknown[],
+          onsuccess: null as ((e: unknown) => void) | null,
+          onerror: null as ((e: unknown) => void) | null,
+        };
         setTimeout(() => r.onsuccess?.({ target: r }), 0);
         return r as unknown as IDBRequest<unknown[]>;
       }),
@@ -256,8 +264,15 @@ describe("openHistoryDB — onupgradeneeded branches (line 42 TRUE and FALSE)", 
     const objectStore = {
       add: vi.fn((value: unknown) => {
         storeMap.set(++autoKey, value);
-        const r = { result: autoKey, onsuccess: null as ((e: unknown) => void) | null, onerror: null as ((e: unknown) => void) | null };
-        setTimeout(() => { r.onsuccess?.({ target: r }); tx.oncomplete?.(); }, 5);
+        const r = {
+          result: autoKey,
+          onsuccess: null as ((e: unknown) => void) | null,
+          onerror: null as ((e: unknown) => void) | null,
+        };
+        setTimeout(() => {
+          r.onsuccess?.({ target: r });
+          tx.oncomplete?.();
+        }, 5);
         return r as unknown as IDBRequest<number>;
       }),
       index: vi.fn((name: string) => {
@@ -266,22 +281,29 @@ describe("openHistoryDB — onupgradeneeded branches (line 42 TRUE and FALSE)", 
         throw new Error(`bad index: ${name}`);
       }),
     };
-    const tx = { objectStore: vi.fn(() => objectStore), oncomplete: null as (() => void) | null, onerror: null as (() => void) | null };
+    const tx = {
+      objectStore: vi.fn(() => objectStore),
+      oncomplete: null as (() => void) | null,
+      onerror: null as (() => void) | null,
+    };
     const db = {
       transaction: vi.fn(() => tx),
       objectStoreNames: { contains: vi.fn().mockReturnValue(opts.storeAlreadyExists) },
       createObjectStore: createObjectStoreSpy,
     };
-    const openReq = { result: db as unknown as IDBDatabase, onsuccess: null as ((e: unknown) => void) | null, onerror: null as ((e: unknown) => void) | null, onupgradeneeded: null as ((e: unknown) => void) | null };
+    const openReq = {
+      result: db as unknown as IDBDatabase,
+      onsuccess: null as ((e: unknown) => void) | null,
+      onerror: null as ((e: unknown) => void) | null,
+      onupgradeneeded: null as ((e: unknown) => void) | null,
+    };
     const mockIdb = {
       open: vi.fn().mockImplementation((_n: string, _v: number) => {
         setTimeout(() => {
-          (openReq.onupgradeneeded as unknown as ((e: unknown) => void))?.(
-            { target: { result: db } }
-          );
-          (openReq.onsuccess as unknown as ((e: unknown) => void))?.(
-            { target: { result: db } }
-          );
+          (openReq.onupgradeneeded as unknown as (e: unknown) => void)?.({
+            target: { result: db },
+          });
+          (openReq.onsuccess as unknown as (e: unknown) => void)?.({ target: { result: db } });
         }, 0);
         return openReq as unknown as IDBOpenDBRequest;
       }),
@@ -293,7 +315,10 @@ describe("openHistoryDB — onupgradeneeded branches (line 42 TRUE and FALSE)", 
     vi.useFakeTimers();
     const { mockIdb, createObjectStoreSpy } = makeFullMockIdb({ storeAlreadyExists: false });
     vi.stubGlobal("indexedDB", mockIdb);
-    vi.stubGlobal("IDBKeyRange", { upperBound: (v: number, e: boolean) => ({ upper: v, upperOpen: e }), bound: (l: unknown, u: unknown) => ({ lower: l, upper: u }) });
+    vi.stubGlobal("IDBKeyRange", {
+      upperBound: (v: number, e: boolean) => ({ upper: v, upperOpen: e }),
+      bound: (l: unknown, u: unknown) => ({ lower: l, upper: u }),
+    });
     _resetHistoryDb();
     const p = historyAppend("upgrade:key", 1);
     await vi.runAllTimersAsync();
@@ -305,7 +330,10 @@ describe("openHistoryDB — onupgradeneeded branches (line 42 TRUE and FALSE)", 
     vi.useFakeTimers();
     const { mockIdb, createObjectStoreSpy } = makeFullMockIdb({ storeAlreadyExists: true });
     vi.stubGlobal("indexedDB", mockIdb);
-    vi.stubGlobal("IDBKeyRange", { upperBound: (v: number, e: boolean) => ({ upper: v, upperOpen: e }), bound: (l: unknown, u: unknown) => ({ lower: l, upper: u }) });
+    vi.stubGlobal("IDBKeyRange", {
+      upperBound: (v: number, e: boolean) => ({ upper: v, upperOpen: e }),
+      bound: (l: unknown, u: unknown) => ({ lower: l, upper: u }),
+    });
     _resetHistoryDb();
     const p = historyAppend("upgrade:key", 1);
     await vi.runAllTimersAsync();
@@ -375,7 +403,11 @@ describe("historyAppend — cursor delete/continue path (lines 88-90)", () => {
     const objectStore = {
       add: vi.fn((value: unknown) => {
         storeMap.set(++autoKey, value);
-        const r = { result: autoKey, onsuccess: null as ((e: unknown) => void) | null, onerror: null as ((e: unknown) => void) | null };
+        const r = {
+          result: autoKey,
+          onsuccess: null as ((e: unknown) => void) | null,
+          onerror: null as ((e: unknown) => void) | null,
+        };
         setTimeout(() => {
           r.onsuccess?.({ target: r });
           tx.oncomplete?.();
@@ -405,7 +437,11 @@ describe("historyAppend — cursor delete/continue path (lines 88-90)", () => {
 
     const mockIdb = {
       open: vi.fn().mockImplementation((_n: string, _v: number) => {
-        setTimeout(() => (openReq.onsuccess as unknown as (e: unknown) => void)?.({ target: { result: db } }), 0);
+        setTimeout(
+          () =>
+            (openReq.onsuccess as unknown as (e: unknown) => void)?.({ target: { result: db } }),
+          0,
+        );
         return openReq as unknown as IDBOpenDBRequest;
       }),
     };

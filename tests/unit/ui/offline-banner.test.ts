@@ -60,8 +60,8 @@ describe("initOfflineBanner", () => {
   it("calls onReconnect after 500 ms on reconnect", () => {
     const cb = vi.fn();
     initOfflineBanner(cb);
-    globalOffline.value = true;   // go offline
-    globalOffline.value = false;  // come back online
+    globalOffline.value = true; // go offline
+    globalOffline.value = false; // come back online
     expect(cb).not.toHaveBeenCalled(); // not yet
     vi.advanceTimersByTime(500);
     expect(cb).toHaveBeenCalledOnce();

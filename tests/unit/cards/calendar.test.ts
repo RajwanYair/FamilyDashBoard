@@ -2416,9 +2416,14 @@ describe("Calendar — parseICS DTEND invalid date branch", () => {
 // REFRESH-INTERVAL, SOURCE, COLOR, IMAGE, NAME, plus malformed-input edges.
 describe("Calendar — parseICS RFC 5545 fuzz: extended property surface", () => {
   const wrap = (lines: string[]) =>
-    ["BEGIN:VCALENDAR", "VERSION:2.0", "BEGIN:VEVENT", ...lines, "END:VEVENT", "END:VCALENDAR"].join(
-      "\r\n",
-    );
+    [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "BEGIN:VEVENT",
+      ...lines,
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
 
   it("ignores RDATE without breaking event parse", () => {
     const ics = wrap([
@@ -2506,11 +2511,7 @@ describe("Calendar — parseICS RFC 5545 fuzz: extended property surface", () =>
   });
 
   it("accepts multi-value CATEGORIES", () => {
-    const ics = wrap([
-      "DTSTART:20290601T100000Z",
-      "SUMMARY:Cat",
-      "CATEGORIES:WORK,MEETING,1-1",
-    ]);
+    const ics = wrap(["DTSTART:20290601T100000Z", "SUMMARY:Cat", "CATEGORIES:WORK,MEETING,1-1"]);
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
 
@@ -2550,11 +2551,7 @@ describe("Calendar — parseICS RFC 5545 fuzz: extended property surface", () =>
   });
 
   it("accepts RESOURCES list", () => {
-    const ics = wrap([
-      "DTSTART:20290601T100000Z",
-      "SUMMARY:Res",
-      "RESOURCES:Projector,Whiteboard",
-    ]);
+    const ics = wrap(["DTSTART:20290601T100000Z", "SUMMARY:Res", "RESOURCES:Projector,Whiteboard"]);
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
 
@@ -2568,11 +2565,7 @@ describe("Calendar — parseICS RFC 5545 fuzz: extended property surface", () =>
   });
 
   it("accepts REQUEST-STATUS", () => {
-    const ics = wrap([
-      "DTSTART:20290601T100000Z",
-      "SUMMARY:Rs",
-      "REQUEST-STATUS:2.0;Success",
-    ]);
+    const ics = wrap(["DTSTART:20290601T100000Z", "SUMMARY:Rs", "REQUEST-STATUS:2.0;Success"]);
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
 
@@ -2593,20 +2586,12 @@ describe("Calendar — parseICS RFC 5545 fuzz: extended property surface", () =>
   });
 
   it("accepts UID with @ and uppercase domain", () => {
-    const ics = wrap([
-      "DTSTART:20290601T100000Z",
-      "SUMMARY:U",
-      "UID:abc-123@EXAMPLE.COM",
-    ]);
+    const ics = wrap(["DTSTART:20290601T100000Z", "SUMMARY:U", "UID:abc-123@EXAMPLE.COM"]);
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
 
   it("accepts RRULE FREQ=DAILY without expanding", () => {
-    const ics = wrap([
-      "DTSTART:20290601T100000Z",
-      "SUMMARY:R",
-      "RRULE:FREQ=DAILY;COUNT=5",
-    ]);
+    const ics = wrap(["DTSTART:20290601T100000Z", "SUMMARY:R", "RRULE:FREQ=DAILY;COUNT=5"]);
     // single base event returned (recurrence expansion is consumer responsibility)
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
@@ -2758,7 +2743,8 @@ describe("Calendar — parseICS RFC 5545 fuzz: extended property surface", () =>
   });
 
   it("handles mixed CRLF + LF line endings", () => {
-    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\nDTSTART:20290601T100000Z\r\nSUMMARY:Mix\nEND:VEVENT\r\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\nDTSTART:20290601T100000Z\r\nSUMMARY:Mix\nEND:VEVENT\r\nEND:VCALENDAR";
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
 
@@ -2821,10 +2807,7 @@ describe("Calendar — parseICS RFC 5545 fuzz: extended property surface", () =>
   });
 
   it("handles DTSTART with TZID parameter (floats to local)", () => {
-    const ics = wrap([
-      "DTSTART;TZID=Asia/Jerusalem:20290601T100000",
-      "SUMMARY:Tz",
-    ]);
+    const ics = wrap(["DTSTART;TZID=Asia/Jerusalem:20290601T100000", "SUMMARY:Tz"]);
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
 
@@ -2836,36 +2819,22 @@ describe("Calendar — parseICS RFC 5545 fuzz: extended property surface", () =>
   });
 
   it("handles DTSTART;VALUE=DATE-TIME explicit annotation", () => {
-    const ics = wrap([
-      "DTSTART;VALUE=DATE-TIME:20290601T100000Z",
-      "SUMMARY:Dt",
-    ]);
+    const ics = wrap(["DTSTART;VALUE=DATE-TIME:20290601T100000Z", "SUMMARY:Dt"]);
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
 
   it("handles DURATION instead of DTEND", () => {
-    const ics = wrap([
-      "DTSTART:20290601T100000Z",
-      "DURATION:PT2H",
-      "SUMMARY:Dur",
-    ]);
+    const ics = wrap(["DTSTART:20290601T100000Z", "DURATION:PT2H", "SUMMARY:Dur"]);
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
 
   it("handles DURATION:P1D format", () => {
-    const ics = wrap([
-      "DTSTART:20290601T100000Z",
-      "DURATION:P1D",
-      "SUMMARY:Dur1d",
-    ]);
+    const ics = wrap(["DTSTART:20290601T100000Z", "DURATION:P1D", "SUMMARY:Dur1d"]);
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
 
   it("handles UNICODE characters in SUMMARY (Hebrew + emoji)", () => {
-    const ics = wrap([
-      "DTSTART:20290601T100000Z",
-      "SUMMARY:יום הולדת 🎂 — celebration",
-    ]);
+    const ics = wrap(["DTSTART:20290601T100000Z", "SUMMARY:יום הולדת 🎂 — celebration"]);
     const out = parseICS(ics, 0);
     expect(out[0]!.summary).toContain("יום הולדת");
     expect(out[0]!.summary).toContain("🎂");
@@ -2878,7 +2847,12 @@ describe("Calendar — getHolidaysByDate ( CAL1)", () => {
   const items = [
     { title: "Rosh Hashana", hebrew: "ראש השנה", date: "2025-09-23", category: "holiday" },
     { title: "Yom Kippur", hebrew: "יום כיפור", date: "2025-10-02", category: "holiday" },
-    { title: "Rosh Chodesh Tishrei", hebrew: "ראש חודש", date: "2025-09-23", category: "roshchodesh" },
+    {
+      title: "Rosh Chodesh Tishrei",
+      hebrew: "ראש חודש",
+      date: "2025-09-23",
+      category: "roshchodesh",
+    },
     { title: "Parashat Nitzavim", hebrew: "נצבים", date: "2025-09-20", category: "parashat" },
   ];
 
@@ -3096,7 +3070,11 @@ describe("Calendar — configurable horizon ( CAL4)", () => {
 
 // ── findConflicts ──────────────────────────────────
 describe("Calendar — findConflicts ", () => {
-  function makeEv(startH: number, endH: number, allDay = false): import("@/types/api").CalendarEvent {
+  function makeEv(
+    startH: number,
+    endH: number,
+    allDay = false,
+  ): import("@/types/api").CalendarEvent {
     const base = new Date("2024-01-08T00:00:00");
     return {
       summary: `${startH}-${endH}`,
@@ -3194,27 +3172,21 @@ describe("CP2 · calDaysUntilLabel — property: output is always a string", () 
 
   it("returns empty string for past or same-day dates", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2025-12-31") }),
-        (d) => {
-          fc.pre(isFinite(d.getTime()));
-          const futureNow = new Date(d.getTime() + 24 * 3_600_000);
-          return calDaysUntilLabel(d, futureNow) === "";
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2025-12-31") }), (d) => {
+        fc.pre(isFinite(d.getTime()));
+        const futureNow = new Date(d.getTime() + 24 * 3_600_000);
+        return calDaysUntilLabel(d, futureNow) === "";
+      }),
     );
   });
 
   it("returns 'מחר' for exactly one day ahead", () => {
     fc.assert(
-      fc.property(
-        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-30") }),
-        (d) => {
-          fc.pre(isFinite(d.getTime()));
-          const now = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
-          return calDaysUntilLabel(d, now) === "מחר";
-        },
-      ),
+      fc.property(fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-30") }), (d) => {
+        fc.pre(isFinite(d.getTime()));
+        const now = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+        return calDaysUntilLabel(d, now) === "מחר";
+      }),
     );
   });
 });
@@ -3376,13 +3348,15 @@ describe("Calendar — buildCalendarPayload (semantic clipboard)", () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(10, 0, 0, 0);
-    renderCalendar([{
-      summary: "פגישה חשובה",
-      start: tomorrow,
-      end: new Date(tomorrow.getTime() + 3_600_000),
-      allDay: false,
-      icsIndex: 0,
-    }]);
+    renderCalendar([
+      {
+        summary: "פגישה חשובה",
+        start: tomorrow,
+        end: new Date(tomorrow.getTime() + 3_600_000),
+        allDay: false,
+        icsIndex: 0,
+      },
+    ]);
     const payload = getSemanticPayload("calendar");
     expect(payload).not.toBeNull();
     expect(payload?.text).toContain("פגישה חשובה");
@@ -3449,15 +3423,19 @@ describe("Calendar — renderCalendar with holidays", () => {
     const m = String(tomorrow.getMonth() + 1).padStart(2, "0");
     const d = String(tomorrow.getDate()).padStart(2, "0");
     const tomorrowStr = `${y}-${m}-${d}`;
-    cSet(holKey, { items: [{ title: "שבת", hebrew: "שבת", date: tomorrowStr, category: "holiday" }] });
+    cSet(holKey, {
+      items: [{ title: "שבת", hebrew: "שבת", date: tomorrowStr, category: "holiday" }],
+    });
 
-    renderCalendar([{
-      summary: "אירוע",
-      start: tomorrow,
-      end: new Date(tomorrow.getTime() + 3_600_000),
-      allDay: false,
-      icsIndex: 0,
-    }]);
+    renderCalendar([
+      {
+        summary: "אירוע",
+        start: tomorrow,
+        end: new Date(tomorrow.getTime() + 3_600_000),
+        allDay: false,
+        icsIndex: 0,
+      },
+    ]);
 
     const grid = document.getElementById("cal-week-grid");
     const holidayLabels = grid?.querySelectorAll(".cal-holiday-label");
@@ -3469,13 +3447,15 @@ describe("Calendar — renderCalendar with holidays", () => {
   it("updateTodayEventCount shows badge when events exist today", () => {
     const now = new Date();
     now.setHours(14, 0, 0, 0);
-    renderCalendar([{
-      summary: "Today Meeting",
-      start: now,
-      end: new Date(now.getTime() + 3_600_000),
-      allDay: false,
-      icsIndex: 0,
-    }]);
+    renderCalendar([
+      {
+        summary: "Today Meeting",
+        start: now,
+        end: new Date(now.getTime() + 3_600_000),
+        allDay: false,
+        icsIndex: 0,
+      },
+    ]);
     const hdr = document.getElementById("header-event-count");
     expect(hdr?.style.display).toBe("");
     expect(hdr?.textContent).toContain("📅");

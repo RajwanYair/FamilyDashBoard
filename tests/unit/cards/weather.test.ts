@@ -2474,7 +2474,10 @@ describe("Weather — fetchNowcast ", () => {
   });
 
   it("returns null when response fails type guard", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ bad: true }) }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ bad: true }) }),
+    );
     const result = await fetchNowcast(31.77, 35.21);
     expect(result).toBeNull();
   });
@@ -2628,13 +2631,10 @@ describe("WP1 · toDisplayTemp — property: output always ends with °C or °F"
 
   it("Celsius output contains the rounded integer value", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: -60, max: 60 }),
-        (c) => {
-          const result = toDisplayTemp(c);
-          return result.includes(String(Math.round(c)));
-        },
-      ),
+      fc.property(fc.integer({ min: -60, max: 60 }), (c) => {
+        const result = toDisplayTemp(c);
+        return result.includes(String(Math.round(c)));
+      }),
     );
   });
 });
@@ -2663,10 +2663,7 @@ describe("WP3 · aqiLabel — property: cls always matches known CSS class prefi
     fc.assert(
       fc.property(fc.integer({ min: 0, max: 500 }), (aqi) => {
         const { label, cls } = aqiLabel(aqi);
-        return (
-          label.length > 0 &&
-          (cls.startsWith("aqi-") || cls === "")
-        );
+        return label.length > 0 && (cls.startsWith("aqi-") || cls === "");
       }),
     );
   });

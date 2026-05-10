@@ -19,7 +19,7 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-14.13.0-a78bfa?style=flat-square)
+![Version](https://img.shields.io/badge/Version-14.13.1-a78bfa?style=flat-square)
 ![Tests](https://img.shields.io/badge/Vitest-7221_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
@@ -341,23 +341,23 @@ This project leverages extensive GitHub features:
 
 ### Completed
 
-| Version   | Summary                                                                                    |
-| --------- | ------------------------------------------------------------------------------------------ |
-| v3.0–v4.4 | Glassmorphism redesign, red alerts, per-pane refresh, 5 themes, diagnostic overlay         |
-| v4.5–v4.8 | Card maximize, halacha ticker, 17 news feeds, Hebrew Calendar card, stock logos            |
-| v4.9      | Parasha, Zmanim, Daf Yomi, config panel, AQI, Gold/Silver, sparklines                      |
-| v4.10     | TA-35, portfolio P&L, earthquake monitor, market countdown                                  |
-| v4.11     | GBP, favicons, sector headers, Shabbat pill, PWA metas                                      |
-| v4.12     | 7-day forecast, ICS config, dim schedule, offline cache age                                 |
-| v4.13     | SW offline, home city, news feed toggle, card drag-reorder                                  |
-| v4.14     | Multi-ICS, news search, settings import/export, visited news                                |
-| v4.15     | API cache, notifications, weather cities, config tabs                                       |
-| v4.16     | Toast system, UV pill, chart toggle, deeplinks                                              |
-| v4.17     | Stock alerts, P&L chip, weather toast, countdown chip                                       |
-| v4.18     | Dew point, bookmarks, weather summary, help overlay                                         |
-| v4.19     | Omer, sparklines, card collapse, halacha overlay                                            |
-| v5.0      | Corp proxy, SW v5, PWA install, offline fallback                                            |
-| v5.1      | Refactoring: CSS tokens, ARIA, JS constants, dead code removal                              |
+| Version   | Summary                                                                            |
+| --------- | ---------------------------------------------------------------------------------- |
+| v3.0–v4.4 | Glassmorphism redesign, red alerts, per-pane refresh, 5 themes, diagnostic overlay |
+| v4.5–v4.8 | Card maximize, halacha ticker, 17 news feeds, Hebrew Calendar card, stock logos    |
+| v4.9      | Parasha, Zmanim, Daf Yomi, config panel, AQI, Gold/Silver, sparklines              |
+| v4.10     | TA-35, portfolio P&L, earthquake monitor, market countdown                         |
+| v4.11     | GBP, favicons, sector headers, Shabbat pill, PWA metas                             |
+| v4.12     | 7-day forecast, ICS config, dim schedule, offline cache age                        |
+| v4.13     | SW offline, home city, news feed toggle, card drag-reorder                         |
+| v4.14     | Multi-ICS, news search, settings import/export, visited news                       |
+| v4.15     | API cache, notifications, weather cities, config tabs                              |
+| v4.16     | Toast system, UV pill, chart toggle, deeplinks                                     |
+| v4.17     | Stock alerts, P&L chip, weather toast, countdown chip                              |
+| v4.18     | Dew point, bookmarks, weather summary, help overlay                                |
+| v4.19     | Omer, sparklines, card collapse, halacha overlay                                   |
+| v5.0      | Corp proxy, SW v5, PWA install, offline fallback                                   |
+| v5.1      | Refactoring: CSS tokens, ARIA, JS constants, dead code removal                     |
 
 ### Upcoming
 
@@ -378,14 +378,14 @@ See [ROADMAP.md](docs/ROADMAP.md) for the full strategic plan and stream priorit
 
 ## � Troubleshooting
 
-| Symptom | Likely cause | Fix |
-| --- | --- | --- |
-| `npm install` fails inside `FamilyDashBoard/` | All deps live in the parent `MyScripts/` | `cd ..` then `npm install` |
-| A card shows the red sync indicator | Direct fetch + 3 proxies failed | Press **D** to open diagnostics; reload to retry |
-| Stale data after refresh | `cGet` hit a stale cache layer | Press **D**, click "Clear cache", or wait for next interval |
-| Build complains about per-card warn-cap (38 KB) | A card grew past the budget | Refactor; warn-cap is informational, hard-cap is 80 KB |
-| `npm run check` fails on `check:test-focus` | `.only` or `.skip` left in a test | Remove the focus/skip — both are forbidden in `main` |
-| Service worker won't update | Old SW is still controlling the page | DevTools → Application → Service Workers → "Update on reload" |
+| Symptom                                         | Likely cause                             | Fix                                                           |
+| ----------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
+| `npm install` fails inside `FamilyDashBoard/`   | All deps live in the parent `MyScripts/` | `cd ..` then `npm install`                                    |
+| A card shows the red sync indicator             | Direct fetch + 3 proxies failed          | Press **D** to open diagnostics; reload to retry              |
+| Stale data after refresh                        | `cGet` hit a stale cache layer           | Press **D**, click "Clear cache", or wait for next interval   |
+| Build complains about per-card warn-cap (38 KB) | A card grew past the budget              | Refactor; warn-cap is informational, hard-cap is 80 KB        |
+| `npm run check` fails on `check:test-focus`     | `.only` or `.skip` left in a test        | Remove the focus/skip — both are forbidden in `main`          |
+| Service worker won't update                     | Old SW is still controlling the page     | DevTools → Application → Service Workers → "Update on reload" |
 
 ---
 

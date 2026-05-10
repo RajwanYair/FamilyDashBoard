@@ -16,10 +16,7 @@ import process from "node:process";
 
 const ROOT = process.cwd();
 const TEST_DIRS = ["tests"];
-const FORBIDDEN = [
-  /\b(?:it|test|describe)\.only\s*\(/,
-  /\b(?:it|test|describe)\.skip\s*\(/,
-];
+const FORBIDDEN = [/\b(?:it|test|describe)\.only\s*\(/, /\b(?:it|test|describe)\.skip\s*\(/];
 const EXTS = new Set([".ts", ".tsx", ".js", ".mjs"]);
 
 /** @param {string} dir @returns {string[]} */

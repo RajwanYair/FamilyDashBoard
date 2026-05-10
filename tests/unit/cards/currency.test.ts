@@ -448,12 +448,12 @@ describe("Currency — renderCurrency change indicators", () => {
     const weekAgo = new Date(Date.now() - 8 * 86400_000).toISOString().slice(0, 10);
     const history = [
       { date: weekAgo, rates: { USD: 0.2667 } }, // 1 USD = 3.75 ILS
-      { date: today, rates: { USD: 0.30 } },      // 1 USD = 3.33 ILS (USD weaker → ↓)
+      { date: today, rates: { USD: 0.3 } }, // 1 USD = 3.33 ILS (USD weaker → ↓)
     ];
     localStorage.setItem("dash_v2_cur_history", JSON.stringify(history));
     _resetCurrencyForTest();
     cacheDom();
-    renderCurrency({ ...MOCK_RATES, USD: 0.30 });
+    renderCurrency({ ...MOCK_RATES, USD: 0.3 });
     const chg = document.getElementById("curUsdChg");
     expect(chg?.textContent).toContain("↓");
     expect(chg?.className).toContain("negative");
@@ -463,8 +463,8 @@ describe("Currency — renderCurrency change indicators", () => {
     const today = new Date().toISOString().slice(0, 10);
     const weekAgo = new Date(Date.now() - 8 * 86400_000).toISOString().slice(0, 10);
     const history = [
-      { date: weekAgo, rates: { USD: 0.30 } },   // 1 USD = 3.33 ILS
-      { date: today, rates: { USD: 0.2667 } },    // 1 USD = 3.75 ILS (USD stronger → ↑)
+      { date: weekAgo, rates: { USD: 0.3 } }, // 1 USD = 3.33 ILS
+      { date: today, rates: { USD: 0.2667 } }, // 1 USD = 3.75 ILS (USD stronger → ↑)
     ];
     localStorage.setItem("dash_v2_cur_history", JSON.stringify(history));
     _resetCurrencyForTest();
@@ -757,10 +757,15 @@ describe("Currency — loadCurrency async coverage", () => {
   });
 
   it("loadCurrency success path (lines 426-430) — awaited directly", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ rates: { USD: 0.27, EUR: 0.24, GBP: 0.21, XAU: 0.000115, XAG: 0.009 } }),
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          rates: { USD: 0.27, EUR: 0.24, GBP: 0.21, XAU: 0.000115, XAG: 0.009 },
+        }),
+      }),
+    );
     await loadCurrency();
     const el = document.getElementById("curUsd");
     expect(el?.textContent).toContain("₪");
@@ -782,7 +787,10 @@ describe("Currency — loadCurrency async coverage", () => {
   });
 
   it("loadCurrency error path sets sync 'ok' when stale data exists", async () => {
-    localStorage.setItem("dash_v2_cur", JSON.stringify({ data: MOCK_RATES, ts: Date.now() - 999999 }));
+    localStorage.setItem(
+      "dash_v2_cur",
+      JSON.stringify({ data: MOCK_RATES, ts: Date.now() - 999999 }),
+    );
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
     await loadCurrency();
     // Verify it didn't throw — stale branch of catch was exercised
@@ -799,10 +807,13 @@ describe("Currency — loadCurrency async coverage", () => {
 
   it("scheduleCurrencyRefresh fires timeout callback", () => {
     vi.useFakeTimers();
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ rates: MOCK_RATES }),
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ rates: MOCK_RATES }),
+      }),
+    );
     initCurrencyCard();
     // Advance past the schedule delay (10 min = 600000ms)
     vi.advanceTimersByTime(600_001);
@@ -815,7 +826,14 @@ describe("Currency — loadCurrency async coverage", () => {
 // ── calcCurrency + initCalcWidget ──────────────────────────
 
 describe("Currency — calcCurrency ( C1)", () => {
-  const rates = { USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009, BTC: 0.0000052 };
+  const rates = {
+    USD: 0.2667,
+    EUR: 0.2451,
+    GBP: 0.2098,
+    XAU: 0.000115,
+    XAG: 0.009,
+    BTC: 0.0000052,
+  };
 
   it("converts ILS to USD correctly", () => {
     const result = calcCurrency(100, "USD", rates);
@@ -892,7 +910,15 @@ describe("Currency — initCalcWidget DOM wiring ( C1)", () => {
 
   it("updates result after rates are loaded via renderCurrency", () => {
     initCalcWidget();
-    renderCurrency({ USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009, XOI: 0.003, BTC: 0.0000052 });
+    renderCurrency({
+      USD: 0.2667,
+      EUR: 0.2451,
+      GBP: 0.2098,
+      XAU: 0.000115,
+      XAG: 0.009,
+      XOI: 0.003,
+      BTC: 0.0000052,
+    });
     const input = document.getElementById("cur-calc-input") as HTMLInputElement;
     const result = document.getElementById("cur-calc-result");
     input.value = "100";
@@ -903,7 +929,15 @@ describe("Currency — initCalcWidget DOM wiring ( C1)", () => {
 
   it("updates result when pair changes", () => {
     initCalcWidget();
-    renderCurrency({ USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009, XOI: 0.003, BTC: 0.0000052 });
+    renderCurrency({
+      USD: 0.2667,
+      EUR: 0.2451,
+      GBP: 0.2098,
+      XAU: 0.000115,
+      XAG: 0.009,
+      XOI: 0.003,
+      BTC: 0.0000052,
+    });
     const input = document.getElementById("cur-calc-input") as HTMLInputElement;
     const pairSel = document.getElementById("cur-calc-pair") as HTMLSelectElement;
     const result = document.getElementById("cur-calc-result");
@@ -917,7 +951,15 @@ describe("Currency — initCalcWidget DOM wiring ( C1)", () => {
 
   it("shows -- when input is cleared", () => {
     initCalcWidget();
-    renderCurrency({ USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009, XOI: 0.003, BTC: 0.0000052 });
+    renderCurrency({
+      USD: 0.2667,
+      EUR: 0.2451,
+      GBP: 0.2098,
+      XAU: 0.000115,
+      XAG: 0.009,
+      XOI: 0.003,
+      BTC: 0.0000052,
+    });
     const input = document.getElementById("cur-calc-input") as HTMLInputElement;
     const result = document.getElementById("cur-calc-result");
     input.value = "100";
@@ -1179,9 +1221,7 @@ describe("CM4: getCurrencyTrend — arrow is '↑', '↓', or '→'", () => {
         fc.double({ min: 0.01, max: 100, noNaN: true }),
         fc.integer({ min: 1, max: 365 }),
         (oldRate, newRate, days) => {
-          const ago = new Date(Date.now() - days * 86_400_000)
-            .toISOString()
-            .slice(0, 10);
+          const ago = new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10);
           const today = new Date().toISOString().slice(0, 10);
           const history = [
             { date: ago, rates: { USD: oldRate } },
@@ -1206,9 +1246,7 @@ describe("CM5: getCurrencyTrend pct sign is consistent with arrow direction", ()
         fc.double({ min: 0.01, max: 10, noNaN: true }),
         (oldRate, newRate) => {
           fc.pre(Math.abs(oldRate - newRate) > 0.001); // skip near-flat
-          const ago = new Date(Date.now() - 7 * 86_400_000)
-            .toISOString()
-            .slice(0, 10);
+          const ago = new Date(Date.now() - 7 * 86_400_000).toISOString().slice(0, 10);
           const today = new Date().toISOString().slice(0, 10);
           const history = [
             { date: ago, rates: { USD: oldRate } },
@@ -1262,7 +1300,9 @@ describe("Currency configSchema — CS-C1 ", () => {
 // ── / coverage ratchet: getLastCurrencyRates ───────────────────
 
 describe("Currency — getLastCurrencyRates", () => {
-  beforeEach(() => { cDelete("cur"); });
+  beforeEach(() => {
+    cDelete("cur");
+  });
 
   it("returns null when no rates have been fetched (cache miss)", () => {
     expect(getLastCurrencyRates()).toBeNull();
@@ -1287,10 +1327,13 @@ describe("Currency — buildCurrencyPayload (via semantic clipboard)", () => {
       <span id="cur-last-fetch"></span>
     `;
     cacheDom();
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ rates: MOCK_RATES }),
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ rates: MOCK_RATES }),
+      }),
+    );
   });
 
   afterEach(() => {

@@ -1,22 +1,22 @@
 # ADR-047 — DO Hibernatable WebSockets for Stocks Live + Alerts SSE
 
-| Field      | Value                                                           |
-| ---------- | --------------------------------------------------------------- |
-| Date       | 2026-04-30                                                      |
-| Status     | Accepted (Plan — gated on A3 and S1 Roadmap items)              |
-| Sprint     | 229                                                             |
-| Supersedes | n/a                                                             |
-| Related    | Roadmap items A3, S1, ADR-003, ADR-006, `docs/ARCHITECTURE.md`  |
+| Field      | Value                                                          |
+| ---------- | -------------------------------------------------------------- |
+| Date       | 2026-04-30                                                     |
+| Status     | Accepted (Plan — gated on A3 and S1 Roadmap items)             |
+| Sprint     | 229                                                            |
+| Supersedes | n/a                                                            |
+| Related    | Roadmap items A3, S1, ADR-003, ADR-006, `docs/ARCHITECTURE.md` |
 
 ## Context
 
 Two FamilyDashBoard features currently poll their data sources on fixed
 intervals rather than streaming live updates:
 
-| Card     | Source               | Current pattern         | Target pattern          |
-| -------- | -------------------- | ----------------------- | ----------------------- |
-| Stocks   | Worker KV cache      | Client polls every 60 s | Worker pushes on change |
-| Alerts   | Worker SSE endpoint  | Client poll / reconnect | True SSE / WS push      |
+| Card   | Source              | Current pattern         | Target pattern          |
+| ------ | ------------------- | ----------------------- | ----------------------- |
+| Stocks | Worker KV cache     | Client polls every 60 s | Worker pushes on change |
+| Alerts | Worker SSE endpoint | Client poll / reconnect | True SSE / WS push      |
 
 The polling approach works but has two problems:
 
@@ -100,13 +100,13 @@ WebSocket path is stable (30+ days, no reconnect storms observed).
 
 ## Alternatives Considered
 
-| Option                     | Why Not Chosen                                     |
-| -------------------------- | -------------------------------------------------- |
-| Server-Sent Events (SSE)   | SSE is one-directional; WS enables future commands |
-|                            | (e.g., mute-alert, refresh-stocks on demand)        |
-| HTTP/2 Push                | Not supported in CF Workers as of 2026             |
-| Continue polling            | Chosen as fallback only — too high latency for live |
-| DO without Hibernation     | Always-on DO costs \$5+/month at idle; unacceptable |
+| Option                   | Why Not Chosen                                      |
+| ------------------------ | --------------------------------------------------- |
+| Server-Sent Events (SSE) | SSE is one-directional; WS enables future commands  |
+|                          | (e.g., mute-alert, refresh-stocks on demand)        |
+| HTTP/2 Push              | Not supported in CF Workers as of 2026              |
+| Continue polling         | Chosen as fallback only — too high latency for live |
+| DO without Hibernation   | Always-on DO costs \$5+/month at idle; unacceptable |
 
 ## Gate Conditions
 

@@ -203,14 +203,11 @@ describe("diag — DG9: parse error keywords", () => {
 describe("diag — DG10: non-Error input", () => {
   it("strings, numbers, null all classify as unknown", () => {
     fc.assert(
-      fc.property(
-        fc.oneof(fc.string(), fc.integer(), fc.constant(null)),
-        (err) => {
-          clearDiag();
-          const kind = classifyProviderError(err, "non-error-test");
-          expect(kind).toBe("unknown");
-        },
-      ),
+      fc.property(fc.oneof(fc.string(), fc.integer(), fc.constant(null)), (err) => {
+        clearDiag();
+        const kind = classifyProviderError(err, "non-error-test");
+        expect(kind).toBe("unknown");
+      }),
       { numRuns: 30 },
     );
   });

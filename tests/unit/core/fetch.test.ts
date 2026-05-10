@@ -1047,10 +1047,13 @@ describe("Worker circuit breaker — cooldown half-open path (lines 213-217)", (
     // Advance time past cooldown (5 min + 1s)
     vi.advanceTimersByTime(5 * 60_000 + 1000);
     // Now mock a successful response
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ data: "recovered" }),
-    } as Response));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ data: "recovered" }),
+      } as Response),
+    );
     const result = await fetchViaWorker<{ data: string }>(API.CURRENCY_PRIMARY);
     // Breaker should be in half-open state, so request passes through
     expect(result).not.toBeNull();
@@ -1077,26 +1080,34 @@ describe("fetchViaWorker — Sefaria and Coingecko routes (lines 70, 74-82)", ()
 
   it("routes SEFARIA_CALENDAR to worker /api/sefaria/calendar (line 70)", async () => {
     vi.stubGlobal("navigator", { ...navigator, onLine: true });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ calendar: "data" }),
-    } as Response));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ calendar: "data" }),
+      } as Response),
+    );
     const result = await fetchViaWorker(API.SEFARIA_CALENDAR);
     expect(result).not.toBeNull();
-    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
     expect(calledUrl).toContain("/api/sefaria/calendar");
   });
 
   it("routes SEFARIA_TEXT with ref to worker /api/sefaria/text (line 76)", async () => {
     vi.stubGlobal("navigator", { ...navigator, onLine: true });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ text: "verse data" }),
-    } as Response));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ text: "verse data" }),
+      } as Response),
+    );
     const textUrl = API.SEFARIA_TEXT + encodeURIComponent("Genesis 1.1");
     const result = await fetchViaWorker(textUrl);
     expect(result).not.toBeNull();
-    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
     expect(calledUrl).toContain("/api/sefaria/text");
   });
 
@@ -1109,13 +1120,17 @@ describe("fetchViaWorker — Sefaria and Coingecko routes (lines 70, 74-82)", ()
 
   it("routes coingecko URL to worker /api/crypto (lines 80-82)", async () => {
     vi.stubGlobal("navigator", { ...navigator, onLine: true });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ bitcoin: { usd: 50000 } }),
-    } as Response));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ bitcoin: { usd: 50000 } }),
+      } as Response),
+    );
     const result = await fetchViaWorker(API.COINGECKO_BTC);
     expect(result).not.toBeNull();
-    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock
+      .calls[0][0] as string;
     expect(calledUrl).toContain("/api/crypto");
   });
 });

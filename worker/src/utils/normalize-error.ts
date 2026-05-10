@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard Worker — Error normalization 
+ * FamilyDashBoard Worker — Error normalization
  *
  * Converts any thrown value into a structured error object that can be
  * safely serialized to JSON and returned to the dashboard client.

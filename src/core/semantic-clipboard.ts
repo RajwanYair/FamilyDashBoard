@@ -33,10 +33,7 @@ const _producers = new Map<string, SemanticPayloadProducer>();
  * Register a producer for a given cardId. Idempotent — re-registration
  * replaces the previous producer.
  */
-export function registerSemanticProducer(
-  cardId: string,
-  fn: SemanticPayloadProducer,
-): void {
+export function registerSemanticProducer(cardId: string, fn: SemanticPayloadProducer): void {
   _producers.set(cardId, fn);
 }
 
@@ -81,9 +78,7 @@ export function findFocusedCardId(el: Element | null): string | null {
  * Returns `true` on success, `false` on any failure (clipboard denied,
  * insecure context, etc.). Never throws.
  */
-export async function writeSemanticPayload(
-  payload: SemanticPayload,
-): Promise<boolean> {
+export async function writeSemanticPayload(payload: SemanticPayload): Promise<boolean> {
   if (!navigator.clipboard) return false;
   const jsonText = JSON.stringify(payload.jsonLd);
   try {

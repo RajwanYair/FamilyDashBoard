@@ -15,9 +15,10 @@ let maximizedCard: HTMLElement | null = null;
 // ── View Transitions L2 helper  ─────────────────────
 
 type VtL2Doc = Document & {
-  startViewTransition(
-    opts: { update: () => void | Promise<void>; types?: string[] },
-  ): ViewTransition;
+  startViewTransition(opts: {
+    update: () => void | Promise<void>;
+    types?: string[];
+  }): ViewTransition;
 };
 
 /**
@@ -31,10 +32,7 @@ type VtL2Doc = Document & {
  * The fallback is only reached when the L2 call itself throws — so the
  * total call count is always 1.
  */
-function startVtWithTypes(
-  update: () => void | Promise<void>,
-  types: string[],
-): ViewTransition {
+function startVtWithTypes(update: () => void | Promise<void>, types: string[]): ViewTransition {
   try {
     return (document as VtL2Doc).startViewTransition({ update, types });
   } catch (err) {
@@ -105,14 +103,13 @@ function expandCard(card: HTMLElement): void {
     // F12/Sprint-123: View Transitions L2 — browser morphs card from grid position to fullscreen.
     card.style.setProperty("view-transition-name", cardVtName(card));
     void startVtWithTypes(() => {
-        const first = card.getBoundingClientRect();
-        card.classList.add("maximized");
-        const last = card.getBoundingClientRect();
-        card.style.setProperty("--max-font-scale", String(computeFontScale(first, last)));
-      }, ["card-maximize"])
-      .finished.then(() => {
-        card.style.removeProperty("view-transition-name");
-      });
+      const first = card.getBoundingClientRect();
+      card.classList.add("maximized");
+      const last = card.getBoundingClientRect();
+      card.style.setProperty("--max-font-scale", String(computeFontScale(first, last)));
+    }, ["card-maximize"]).finished.then(() => {
+      card.style.removeProperty("view-transition-name");
+    });
   } else {
     // FLIP fallback for browsers without View Transitions
     const first = card.getBoundingClientRect();
@@ -166,12 +163,11 @@ function collapseCard(card: HTMLElement): void {
     // F12/Sprint-123: View Transitions L2 — morphs card from fullscreen back to grid position.
     card.style.setProperty("view-transition-name", cardVtName(card));
     void startVtWithTypes(() => {
-        card.classList.remove("maximized");
-      }, ["card-maximize"])
-      .finished.then(() => {
-        card.style.removeProperty("view-transition-name");
-        afterCollapse();
-      });
+      card.classList.remove("maximized");
+    }, ["card-maximize"]).finished.then(() => {
+      card.style.removeProperty("view-transition-name");
+      afterCollapse();
+    });
   } else {
     // FLIP fallback for browsers without View Transitions
     const first = card.getBoundingClientRect();

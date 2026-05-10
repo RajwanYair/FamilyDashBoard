@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/error-tracker.ts 
+ * fast-check property tests for src/core/error-tracker.ts
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import fc from "fast-check";

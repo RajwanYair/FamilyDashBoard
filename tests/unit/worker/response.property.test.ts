@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/response.ts 
+ * fast-check property tests — worker/src/utils/response.ts
  *
  * Properties under test:
  *  WR1. jsonResponse status code matches param
@@ -20,13 +20,10 @@ import { jsonResponse, workerEnvelope, proxyResponse } from "../../../worker/src
 describe("response — WR1: jsonResponse status", () => {
   it("status matches provided value", () => {
     fc.assert(
-      fc.property(
-        fc.constantFrom(200, 400, 404, 500, 503),
-        (status) => {
-          const res = jsonResponse({ msg: "hi" }, status);
-          expect(res.status).toBe(status);
-        },
-      ),
+      fc.property(fc.constantFrom(200, 400, 404, 500, 503), (status) => {
+        const res = jsonResponse({ msg: "hi" }, status);
+        expect(res.status).toBe(status);
+      }),
       { numRuns: 5 },
     );
   });
@@ -92,14 +89,11 @@ describe("response — WR5: workerEnvelope stale + provider", () => {
 describe("response — WR6: workerEnvelope cache-control", () => {
   it("includes max-age from cacheTtl param", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 1, max: 86400 }),
-        (ttl) => {
-          const res = workerEnvelope({}, "p", false, ttl);
-          const cc = res.headers.get("Cache-Control") ?? "";
-          expect(cc).toContain(`max-age=${ttl}`);
-        },
-      ),
+      fc.property(fc.integer({ min: 1, max: 86400 }), (ttl) => {
+        const res = workerEnvelope({}, "p", false, ttl);
+        const cc = res.headers.get("Cache-Control") ?? "";
+        expect(cc).toContain(`max-age=${ttl}`);
+      }),
       { numRuns: 5 },
     );
   });
@@ -110,14 +104,14 @@ describe("response — WR6: workerEnvelope cache-control", () => {
 describe("response — WR7: proxyResponse status", () => {
   it("preserves upstream status code", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.constantFrom(200, 404, 500),
-        async (status) => {
-          const upstream = new Response("body", { status, headers: { "Content-Type": "text/plain" } });
-          const proxied = await proxyResponse(upstream, 120);
-          expect(proxied.status).toBe(status);
-        },
-      ),
+      fc.asyncProperty(fc.constantFrom(200, 404, 500), async (status) => {
+        const upstream = new Response("body", {
+          status,
+          headers: { "Content-Type": "text/plain" },
+        });
+        const proxied = await proxyResponse(upstream, 120);
+        expect(proxied.status).toBe(status);
+      }),
       { numRuns: 3 },
     );
   });

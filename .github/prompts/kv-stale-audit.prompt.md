@@ -1,6 +1,22 @@
 ---
 description: "Audit or debug Cloudflare KV stale-fallback for a worker route (stocks, crypto, alerts, or a new route)."
-tools: ["read_file", "grep_search", "file_search", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "get_errors", "manage_todo_list", "tool_search", "fetch_webpage", "memory", "vscode_listCodeUsages", "runSubagent"]
+tools:
+  [
+    "read_file",
+    "grep_search",
+    "file_search",
+    "replace_string_in_file",
+    "multi_replace_string_in_file",
+    "run_in_terminal",
+    "get_terminal_output",
+    "get_errors",
+    "manage_todo_list",
+    "tool_search",
+    "fetch_webpage",
+    "memory",
+    "vscode_listCodeUsages",
+    "runSubagent",
+  ]
 ---
 
 # KV Stale-Fallback Audit — FamilyDashBoard Worker

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/middleware/canary.ts 
+ * fast-check property tests — worker/src/middleware/canary.ts
  *
  * Properties under test:
  *  CY1. shouldTagCanary: undefined/empty/null → false
@@ -29,12 +29,9 @@ describe("canary — CY1: falsy pct", () => {
 describe("canary — CY2: non-numeric", () => {
   it("returns false for non-numeric strings", () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^[a-zA-Z]{1,10}$/),
-        (s) => {
-          expect(shouldTagCanary(s)).toBe(false);
-        },
-      ),
+      fc.property(fc.stringMatching(/^[a-zA-Z]{1,10}$/), (s) => {
+        expect(shouldTagCanary(s)).toBe(false);
+      }),
       { numRuns: 10 },
     );
   });

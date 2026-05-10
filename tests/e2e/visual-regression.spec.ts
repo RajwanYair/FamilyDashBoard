@@ -7,40 +7,40 @@
  *   - 3 maximized-card baselines: 3 themes × tv mode
  *   - 3 help-dialog-open baselines: 3 themes × tv mode
  *   - 3 diag-overlay-open baselines: 3 themes × tv mode
- *   - 3 collapsed-card baselines: 3 themes × tv mode       
- *   - 3 bookmarks-overlay baselines: 3 themes × tv mode    
- *   - 3 font-enlarged baselines: 3 themes × tv mode        
- *   - 3 dimmer-overlay baselines: 3 themes × tv mode       
- *   - 3 compact-maximized baselines: 3 themes × tablet mode 
- *   - 3 alert-state baselines: 3 themes × tv mode          
- *   - 3 video-news baselines: 3 themes × tv mode           
- *   - 3 today-pane baselines: 3 themes × tv mode           
- *   - 3 print-mode baselines: 3 themes × tv mode           
- *   - 3 font-reduced baselines: 3 themes × tv mode         
- *   - 3 night-dimmer-50 baselines: 3 themes × tv mode      
- *   - 3 config-tablet baselines: 3 themes × tablet mode    
- *   - 3 maximized-phone baselines: 3 themes × phone mode   
- *   - 3 alert-takeover baselines: 3 themes × tv mode       
- *   - 3 help-dialog-ext baselines: 3 more themes × tv mode 
- *   - 3 compact-config baselines: 3 themes × tablet mode   
- *   - 3 compact-help baselines: 3 themes × tablet mode     
- *   - 3 alerts-banner-ext baselines: 3 more themes × tv mode 
- *   - 3 video-news-ext baselines: 3 more themes × tv mode  
- *   - 3 esc-resets-state baselines: 3 themes × tv mode     
- *   - 3 bookmarks-overlay-ext baselines: 3 more themes × tv mode 
- *   - 3 font-enlarged-ext baselines: 3 more themes × tv mode     
- *   - 3 phone-config-panel baselines: 3 themes × phone mode      
- *   - 3 phone-help-dialog baselines: 3 themes × phone mode       
- *   - 3 tablet-maximized-ext baselines: 3 more themes × tablet mode 
- *   - 3 diag-overlay-ext baselines: 3 more themes × tv mode      
- *   - 3 alert-sse-pending baselines: 3 themes × tv mode          
- *   - 3 alert-sse-connected baselines: 3 more themes × tv mode   
- *   - 3 maximize-flip-ext baselines: 3 more themes × tv mode     
- *   - 3 maximize-flip-tablet-ext baselines: 3 more themes × tablet 
- *   - 3 maximize-flip-phone-ext baselines: 3 more themes × phone  
- *   - 3 stocks-ils-display baselines: 3 themes × tv mode          
- *   - 3 currency-boi-source baselines: 3 more themes × tv mode    
- *   - 3 news-starred-drawer baselines: 3 themes × tv mode          
+ *   - 3 collapsed-card baselines: 3 themes × tv mode
+ *   - 3 bookmarks-overlay baselines: 3 themes × tv mode
+ *   - 3 font-enlarged baselines: 3 themes × tv mode
+ *   - 3 dimmer-overlay baselines: 3 themes × tv mode
+ *   - 3 compact-maximized baselines: 3 themes × tablet mode
+ *   - 3 alert-state baselines: 3 themes × tv mode
+ *   - 3 video-news baselines: 3 themes × tv mode
+ *   - 3 today-pane baselines: 3 themes × tv mode
+ *   - 3 print-mode baselines: 3 themes × tv mode
+ *   - 3 font-reduced baselines: 3 themes × tv mode
+ *   - 3 night-dimmer-50 baselines: 3 themes × tv mode
+ *   - 3 config-tablet baselines: 3 themes × tablet mode
+ *   - 3 maximized-phone baselines: 3 themes × phone mode
+ *   - 3 alert-takeover baselines: 3 themes × tv mode
+ *   - 3 help-dialog-ext baselines: 3 more themes × tv mode
+ *   - 3 compact-config baselines: 3 themes × tablet mode
+ *   - 3 compact-help baselines: 3 themes × tablet mode
+ *   - 3 alerts-banner-ext baselines: 3 more themes × tv mode
+ *   - 3 video-news-ext baselines: 3 more themes × tv mode
+ *   - 3 esc-resets-state baselines: 3 themes × tv mode
+ *   - 3 bookmarks-overlay-ext baselines: 3 more themes × tv mode
+ *   - 3 font-enlarged-ext baselines: 3 more themes × tv mode
+ *   - 3 phone-config-panel baselines: 3 themes × phone mode
+ *   - 3 phone-help-dialog baselines: 3 themes × phone mode
+ *   - 3 tablet-maximized-ext baselines: 3 more themes × tablet mode
+ *   - 3 diag-overlay-ext baselines: 3 more themes × tv mode
+ *   - 3 alert-sse-pending baselines: 3 themes × tv mode
+ *   - 3 alert-sse-connected baselines: 3 more themes × tv mode
+ *   - 3 maximize-flip-ext baselines: 3 more themes × tv mode
+ *   - 3 maximize-flip-tablet-ext baselines: 3 more themes × tablet
+ *   - 3 maximize-flip-phone-ext baselines: 3 more themes × phone
+ *   - 3 stocks-ils-display baselines: 3 themes × tv mode
+ *   - 3 currency-boi-source baselines: 3 more themes × tv mode
+ *   - 3 news-starred-drawer baselines: 3 themes × tv mode
  *
  * Screenshots are stored in tests/e2e/__screenshots__/ and compared
  * on subsequent runs via Playwright's built-in snapshot comparison.
@@ -257,8 +257,7 @@ test.describe("FamilyDashBoard — Help Dialog State Baselines", () => {
       // Press 'h' to open the keyboard-shortcuts help dialog
       await page.keyboard.press("h");
       await page.waitForFunction(
-        () =>
-          (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
+        () => (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
         { timeout: 5_000 },
       );
       await page.waitForTimeout(300);
@@ -290,8 +289,7 @@ test.describe("FamilyDashBoard — Diag Overlay State Baselines", () => {
       // Press 'd' to open the diagnostics overlay
       await page.keyboard.press("d");
       await page.waitForFunction(
-        () =>
-          (document.getElementById("diag-overlay") as HTMLDialogElement | null)?.open === true,
+        () => (document.getElementById("diag-overlay") as HTMLDialogElement | null)?.open === true,
         { timeout: 5_000 },
       );
       await page.waitForTimeout(300);
@@ -323,12 +321,13 @@ test.describe("FamilyDashBoard — Collapsed Card State Baselines", () => {
       await page.evaluate(() => document.fonts.ready);
 
       // Click the collapse button on the first card that has one
-      const collapseBtn = page.locator("[data-action='collapse'], .collapse-btn, [aria-label*='collapse']").first();
+      const collapseBtn = page
+        .locator("[data-action='collapse'], .collapse-btn, [aria-label*='collapse']")
+        .first();
       await collapseBtn.click();
-      await page.waitForFunction(
-        () => document.querySelector(".collapsed") !== null,
-        { timeout: 5_000 },
-      );
+      await page.waitForFunction(() => document.querySelector(".collapsed") !== null, {
+        timeout: 5_000,
+      });
       await page.waitForTimeout(300);
 
       await expect(page).toHaveScreenshot(`${theme}-collapsed-card.png`, {
@@ -359,8 +358,10 @@ test.describe("FamilyDashBoard — Bookmarks Overlay State Baselines", () => {
       await page.keyboard.press("b");
       await page.waitForFunction(
         () =>
-          (document.getElementById("bookmarks-overlay") as HTMLDialogElement | null)?.open === true ||
-          document.querySelector("[data-overlay='bookmarks']")?.classList.contains("visible") === true,
+          (document.getElementById("bookmarks-overlay") as HTMLDialogElement | null)?.open ===
+            true ||
+          document.querySelector("[data-overlay='bookmarks']")?.classList.contains("visible") ===
+            true,
         { timeout: 5_000 },
       );
       await page.waitForTimeout(300);
@@ -695,7 +696,10 @@ test.describe("FamilyDashBoard — Alert Takeover Dialog Baselines", () => {
         .catch(() => false);
       if (!isVisible) {
         // Playwright runtime skip (not a skipped-test definition) — testInfo avoids ADR-073 lint rule
-        (test.info() as import("@playwright/test").TestInfo).skip(true, "alert-takeover dialog not visible in this run");
+        (test.info() as import("@playwright/test").TestInfo).skip(
+          true,
+          "alert-takeover dialog not visible in this run",
+        );
         return;
       }
 
@@ -725,8 +729,7 @@ test.describe("FamilyDashBoard — Help Dialog Extended Themes", () => {
 
       await page.keyboard.press("h");
       await page.waitForFunction(
-        () =>
-          (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
+        () => (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
         { timeout: 5_000 },
       );
       await page.waitForTimeout(300);
@@ -797,8 +800,7 @@ test.describe("FamilyDashBoard — Help Dialog Tablet Mode Baselines", () => {
 
       await page.keyboard.press("h");
       await page.waitForFunction(
-        () =>
-          (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
+        () => (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
         { timeout: 5_000 },
       );
       await page.waitForTimeout(300);
@@ -1030,9 +1032,8 @@ test.describe("FamilyDashBoard — Bookmarks Overlay Extended Themes ", () => {
         () =>
           (document.getElementById("bookmarks-overlay") as HTMLDialogElement | null)?.open ===
             true ||
-          document
-            .querySelector("[data-overlay='bookmarks']")
-            ?.classList.contains("visible") === true,
+          document.querySelector("[data-overlay='bookmarks']")?.classList.contains("visible") ===
+            true,
         { timeout: 5_000 },
       );
       await page.waitForTimeout(300);
@@ -1093,8 +1094,7 @@ test.describe("FamilyDashBoard — Config Panel Phone Mode Baselines ", () => {
 
       await page.click("#cfg-gear-btn");
       await page.waitForFunction(
-        () =>
-          document.getElementById("config-overlay")?.classList.contains("visible") === true,
+        () => document.getElementById("config-overlay")?.classList.contains("visible") === true,
         { timeout: 5_000 },
       );
       await page.waitForTimeout(300);
@@ -1126,8 +1126,7 @@ test.describe("FamilyDashBoard — Help Dialog Phone Mode Baselines ", () => {
 
       await page.keyboard.press("h");
       await page.waitForFunction(
-        () =>
-          (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
+        () => (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
         { timeout: 5_000 },
       );
       await page.waitForTimeout(300);
@@ -1191,8 +1190,7 @@ test.describe("FamilyDashBoard — Diag Overlay Extended Themes ", () => {
 
       await page.keyboard.press("d");
       await page.waitForFunction(
-        () =>
-          (document.getElementById("diag-overlay") as HTMLDialogElement | null)?.open === true,
+        () => (document.getElementById("diag-overlay") as HTMLDialogElement | null)?.open === true,
         { timeout: 5_000 },
       );
       await page.waitForTimeout(300);

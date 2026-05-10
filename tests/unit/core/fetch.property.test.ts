@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/fetch.ts 
+ * fast-check property tests — src/core/fetch.ts
  *
  * Properties under test:
  *  FT1. acquireLock: first call returns true, second with same name returns false.
@@ -18,7 +18,16 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import * as fc from "fast-check";
-import { acquireLock, releaseLock, clearFetchLocks, classifyFetchError, recordFetchSuccess, recordFetchFailure, isNetworkOffline, getConsecutiveFailures } from "@/core/fetch";
+import {
+  acquireLock,
+  releaseLock,
+  clearFetchLocks,
+  classifyFetchError,
+  recordFetchSuccess,
+  recordFetchFailure,
+  isNetworkOffline,
+  getConsecutiveFailures,
+} from "@/core/fetch";
 
 beforeEach(() => {
   clearFetchLocks();
