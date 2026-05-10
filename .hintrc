@@ -10,7 +10,9 @@
     "safari >= 17.4",
     "opera >= 100",
     "samsung >= 23",
-    "ios_saf >= 17.4"
+    "ios_saf >= 17.4",
+    "not ie > 0",
+    "not op_mini all"
   ],
   "hints": {
     "compat-api/html": [
@@ -23,6 +25,7 @@
       }
     ],
     "compat-api/css": "default",
+    "compat-api/js": "default",
     "no-inline-styles": "off",
     "no-broken-links": "off"
   }
