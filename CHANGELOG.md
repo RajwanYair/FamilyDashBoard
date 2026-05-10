@@ -9,9 +9,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.13.2] — 2026-05-10
+
+> **7228 tests / 282 suites / 0 failures** · Coverage: 95.7 / 88.8 / 95.1 / 96.7
+
+### Changed
+
+- **Disk footprint**: deleted `docs/legacy/` archive, compressed agent/skill/config prose (-6 700 lines net)
+- **Browser compat**: expanded `.browserslistrc` targets — Samsung 23+, OperaMobile 80+, iOS 17.4+, ChromeAndroid 114+, FirefoxAndroid 128+ (+7 tests)
+- **Modernize**: standardized all tsconfig targets to ES2024 (node, scripts, sw, vitest)
+- **CI**: SHA-pinned `upload-artifact` action; added `.github/hooks/`, `.github/skills/`, `.github/assets/` to `paths-ignore`
+
+### Fixed
+
+- **Docs**: unified stale version headers across 4 instruction files
+- **Docs**: deduplicated CSS / cache / coverage sections — cross-reference to canonical files
+- **Docs**: removed all sprint version markers from ARCHITECTURE.md
+- **Docs**: synced test count 7221→7228 across 8+ files and SVG assets
+- **Release**: fixed empty "No changes" release body on v14.13.1 (re-released as v14.13.2)
+- **SVG assets**: corrected stale test count (7221→7228) in banner, architecture, and roadmap SVGs
+
+---
+
 ## [14.13.1] — 2026-05-10
 
-> **7221 tests / 282 suites / 0 failures** · Coverage: 95.7 / 88.8 / 95.1 / 96.7
+> **7228 tests / 282 suites / 0 failures** · Coverage: 95.7 / 88.8 / 95.1 / 96.7
 
 ### Consolidation Sprint (20-Task Audit)
 
