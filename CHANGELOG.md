@@ -7,6 +7,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [Unreleased]
 
+### Added
+
+- **Tests**: 7 new branch-coverage tests for `diffConfigs`, `auditLocalStorageKeys`, `removeOrphanedLsKeys` (7245 → 7252 tests)
+
+### Fixed
+
+- **OWASP**: 20 audit findings → 0 — added `fetchWithTimeout` to raw `fetch()` calls in alerts/news/weather/preview; annotated Worker DO handlers
+- **Dead exports**: fixed `check-dead-exports.mjs` next-line suppression bug — 12 false positives → 0
+
+### Changed
+
+- **Bundle budgets**: ratcheted per-card warn 16 → 15 KB
+- **Tooling**: presets audit — documented sync status between parent and vendored configs
+- **Bundle trend**: recorded v14.15.0 baseline — JS 109.6 KB gzip, CSS 29.0 KB gzip
+
 ---
 
 ## [14.14.0] — 2026-05-10
