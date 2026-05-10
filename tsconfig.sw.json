@@ -1,7 +1,10 @@
 {
     "extends": "./tooling/tsconfig/base-typescript.json",
     "compilerOptions": {
-        "lib": ["ES2020", "WebWorker"],
+        "lib": [
+            "ES2024",
+            "WebWorker"
+        ],
         "noEmit": true
     },
     "include": ["sw.ts"],

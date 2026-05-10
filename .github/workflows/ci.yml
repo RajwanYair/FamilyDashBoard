@@ -17,6 +17,9 @@ on:
       - ".github/copilot/**"
       - ".github/copilot-instructions.md"
       - ".github/AGENTS.md"
+      - ".github/hooks/**"
+      - ".github/skills/**"
+      - ".github/assets/**"
       - "tooling/mcp/**"
   pull_request:
     branches: [main]
@@ -27,6 +30,9 @@ on:
       - ".github/copilot/**"
       - ".github/copilot-instructions.md"
       - ".github/AGENTS.md"
+      - ".github/hooks/**"
+      - ".github/skills/**"
+      - ".github/assets/**"
       - "tooling/mcp/**"
   workflow_dispatch:
 
@@ -174,7 +180,7 @@ jobs:
         run: node scripts/bundle-trend.mjs --ci | tee bundle-trend-snapshot.json
       - name: Upload bundle trend artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: bundle-trend-snapshot
           path: bundle-trend-snapshot.json
