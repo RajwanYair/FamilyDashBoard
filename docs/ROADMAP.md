@@ -487,7 +487,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 ### 6.1 — Tooling acceleration & supply-chain tightening (v14.0, Q1 2027)
 
 - [x] D12 module-boundary linting in `tooling/eslint/`. _(v14.9.0: added `src/core/*` must-not-import `src/cards/*` rule)_
-- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** ; warn lowered 36 → **32 KB** ; hard-cap **66 KB** ; warn **30 KB** → **18 KB** (v14.9.0); hard-cap **65 KB** (v14.10.0); target warn 16 / hard 60 at v14 GA)_
+- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** ; warn lowered 36 → **32 KB** ; hard-cap **66 KB** ; warn **30 KB** → **18 KB** (v14.9.0); hard-cap **65 KB** (v14.10.0); warn **16 KB** (v14.12.0); warn **15 KB** (v14.15.0); target warn 12 / hard 60 at v14 GA)_
 - [x] D14 Renovate group rules.
 - [x] D11 `popover=` for diag toasts + bookmark menu.
 - [x] D9 CSS `if()` + `@function` migration (tokens). _(partial: `@supports`-gated `if()` + `@function` sketch added in v14.0 ; full migration pending Baseline 2026)_
