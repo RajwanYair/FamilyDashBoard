@@ -7,6 +7,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [Unreleased]
 
+---
+
+## [14.15.0] — 2026-05-10
+
+> **7252 tests / 282 suites / 0 failures** · Coverage: 95.9 / 88.9 / 95.2 / 96.9
+
 ### Added
 
 - **Tests**: 7 new branch-coverage tests for `diffConfigs`, `auditLocalStorageKeys`, `removeOrphanedLsKeys` (7245 → 7252 tests)
