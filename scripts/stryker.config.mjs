@@ -42,6 +42,16 @@
  *   - offline-banner.ts      : mutation score ≥ 75%
  *   - status-bar.ts          : mutation score ≥ 75%
  *   - scroll.ts              : mutation score ≥ 75%
+ *   - config-panel.ts        : mutation score ≥ 75%
+ *   - config-auto-render.ts  : mutation score ≥ 75%
+ *   - video-news.ts          : mutation score ≥ 75%
+ *   - card-auto-scroll.ts    : mutation score ≥ 75%
+ *   - card-settings-dialog.ts: mutation score ≥ 75%
+ *   - diag-overlay.ts        : mutation score ≥ 75%
+ *   - document-pip.ts        : mutation score ≥ 75%
+ *   - layout-drag.ts         : mutation score ≥ 75%
+ *   - resizer.ts             : mutation score ≥ 75%
+ *   - ai-synthesis.ts        : mutation score ≥ 75%
  *
  * (Roadmap #9): hard break threshold raised 75 → 85.
  * error-tracker, config, diag confirmed in scope. Overall gate: ≥ 85% or CI fails.
@@ -66,6 +76,9 @@
  * (v14.8.0): extended scope to alerts-adapter.ts, calendar-adapter.ts, currency-adapter.ts, hebcal-adapter.ts, stocks-adapter.ts.
  * (v14.9.0): extended scope to nws-adapter.ts, provider-toast.ts, news-adapter.ts, open-meteo-adapter.ts, auto-loop-scroll.ts.
  * (v14.10.0): extended scope to first-run-tour.ts, offline-banner.ts, status-bar.ts, scroll.ts.
+ * (v14.16.0): extended scope to config-panel.ts, config-auto-render.ts, video-news.ts,
+ *   card-auto-scroll.ts, card-settings-dialog.ts, diag-overlay.ts, document-pip.ts,
+ *   layout-drag.ts, resizer.ts, ai-synthesis.ts. Total scope: 107 files.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -209,6 +222,17 @@ export default {
     "src/ui/offline-banner.ts",
     "src/ui/status-bar.ts",
     "src/ui/scroll.ts",
+    // (v14.16.0): config panel, UI overlays, video-news, layout/drag, fdb-* web components
+    "src/ui/config-panel.ts",
+    "src/ui/config-auto-render.ts",
+    "src/cards/video-news/video-news.ts",
+    "src/ui/card-auto-scroll.ts",
+    "src/ui/card-settings-dialog.ts",
+    "src/ui/diag-overlay.ts",
+    "src/ui/document-pip.ts",
+    "src/ui/layout-drag.ts",
+    "src/ui/resizer.ts",
+    "src/cards/ai-synthesis/ai-synthesis.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
