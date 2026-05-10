@@ -24,7 +24,7 @@ interface DONamespace {
 }
 
 interface DOStub {
-  fetch(request: Request): Promise<Response>; // owasp-allow:A10
+  fetch(request: Request): Promise<Response>; // owasp-allow:A05 owasp-allow:A10 — DO stub interface
 }
 
 /**

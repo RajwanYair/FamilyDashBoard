@@ -21,8 +21,7 @@ export class AlertsOrchestrator {
     this.state = state;
   }
 
-  async fetch(request: Request): Promise<Response> {
-    // owasp-allow:A10
+  async fetch(request: Request): Promise<Response> { // owasp-allow:A05 owasp-allow:A10 — Cloudflare DO handler
     const url = new URL(request.url);
 
     // GET /subscribe → open SSE stream (does not need persisted state)

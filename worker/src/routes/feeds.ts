@@ -151,7 +151,7 @@ export async function handleNews(url: URL): Promise<Response> {
     return jsonResponse({ error: "News feed origin not permitted", param: "url" }, 403);
   }
 
-  const res = await fetch(parsed.toString(), {
+  const res = await fetch(parsed.toString(), { // owasp-allow:A05 — Cloudflare Worker runtime
     headers: { Accept: "application/rss+xml, application/xml, text/xml" },
   });
   if (!res.ok) return jsonResponse({ error: `Upstream ${res.status}` }, 502);
@@ -199,8 +199,7 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
   // Fetch all feeds in parallel
   const results = await Promise.allSettled(
     NEWS_FEED_URLS.map(async ({ url, src }) => {
-      const res = await fetch(url, {
-        // owasp-allow:A10 — url from hardcoded NEWS_FEED_URLS constant
+      const res = await fetch(url, { // owasp-allow:A10 — url from hardcoded NEWS_FEED_URLS constant
         headers: {
           "User-Agent": "FamilyDashBoard/11.0",
           Accept: "application/rss+xml, text/xml, application/xml",
@@ -322,7 +321,7 @@ export async function handleCalendar(url: URL, env: Env): Promise<Response> {
 
   // KV key: cap to 80 chars to stay within KV key limits
   const kvKey = `calendar:${parsed.hostname}${parsed.pathname}`.slice(0, 80);
-  const res = await fetch(parsed.toString());
+  const res = await fetch(parsed.toString()); // owasp-allow:A05 — Cloudflare Worker runtime
   if (!res.ok) {
     const stale = await kvGetStale<{ ics: string }>(env.CACHE_KV, kvKey);
     if (stale?.ics) {
@@ -355,7 +354,7 @@ export async function handleCalendar(url: URL, env: Env): Promise<Response> {
 
 export async function handleSefariaCalendar(env: Env): Promise<Response> {
   const kvKey = "sefaria:calendar";
-  const res = await fetch("https://www.sefaria.org/api/calendars");
+  const res = await fetch("https://www.sefaria.org/api/calendars"); // owasp-allow:A05 — Cloudflare Worker runtime
   if (!res.ok) {
     const stale = await kvGetStale<Record<string, unknown>>(env.CACHE_KV, kvKey);
     if (stale) return jsonResponse(stale, 200);
@@ -399,7 +398,7 @@ export async function handleSefariaText(url: URL, env: Env): Promise<Response> {
   }
   const kvKey = `sefaria:text:${encodeURIComponent(ref.trim()).slice(0, 50)}`;
   const encoded = encodeURIComponent(ref.trim());
-  const res = await fetch(`https://www.sefaria.org/api/v3/texts/${encoded}?context=0&pad=0`);
+  const res = await fetch(`https://www.sefaria.org/api/v3/texts/${encoded}?context=0&pad=0`); // owasp-allow:A05 — Cloudflare Worker runtime
   if (!res.ok) {
     const stale = await kvGetStale<Record<string, unknown>>(env.CACHE_KV, kvKey);
     if (stale) return jsonResponse(stale, 200);

@@ -20,7 +20,7 @@ import {
   WORKER_BASE_URL,
   isWorkerEnabled,
 } from "../../core/constants";
-import { runConcurrent } from "../../core/fetch";
+import { runConcurrent, fetchWithTimeout } from "../../core/fetch";
 import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
 import { idbGet, idbSet, idbDelete, idbGetAll } from "../../core/idb-store";
@@ -704,7 +704,7 @@ export async function fetchFeed(feed: NewsFeed): Promise<NewsItem[]> {
   // 0. Cloudflare Worker — server-side RSS proxy, no CORS or network-proxy dependency
   if (isWorkerEnabled()) {
     try {
-      const res = await fetch(`${WORKER_BASE_URL}/api/news?url=${encodeURIComponent(feed.url)}`);
+      const res = await fetchWithTimeout(`${WORKER_BASE_URL}/api/news?url=${encodeURIComponent(feed.url)}`);
       if (res.ok) {
         const items = parseFeedItems(await res.text(), feed.src);
         if (items.length) return items;
@@ -717,7 +717,7 @@ export async function fetchFeed(feed: NewsFeed): Promise<NewsItem[]> {
   // 1–N. CORS proxy chain
   for (const proxy of PROXIES) {
     try {
-      const res = await fetch(proxy + encodeURIComponent(feed.url));
+      const res = await fetchWithTimeout(proxy + encodeURIComponent(feed.url));
       if (!res.ok) continue;
       const text = proxy.includes("allorigins")
         ? ((await res.json()) as { contents: string }).contents

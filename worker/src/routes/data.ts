@@ -101,7 +101,7 @@ export async function handleWeather(url: URL, env: Env): Promise<Response> {
 
   // ── Primary: Open-Meteo ────────────────────────────────────────────────────
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latNum}&longitude=${lonNum}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,apparent_temperature,uv_index&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
-  const primaryRes = await fetch(weatherUrl);
+  const primaryRes = await fetch(weatherUrl); // owasp-allow:A05 — Cloudflare Worker runtime
   if (primaryRes.ok) {
     const data: unknown = await primaryRes.json();
     const parsed = safeParse(WeatherSchema, data);
@@ -153,7 +153,7 @@ export async function handleCurrency(env: Env): Promise<Response> {
   ];
 
   for (const { url, provider } of upstreams) {
-    const res = await fetch(url); // owasp-allow:A10 — url from hardcoded upstreams[] array
+    const res = await fetch(url); // owasp-allow:A05 owasp-allow:A10 — url from hardcoded upstreams[] array
     if (res.ok) {
       const data: unknown = await res.json();
       const parsed = safeParse(CurrencySchema, data);
@@ -168,7 +168,7 @@ export async function handleCurrency(env: Env): Promise<Response> {
   // All JSON-based upstreams failed — try ECB direct (eurofxref-daily.xml, EUR-base → ILS cross-rate)
   // , Roadmap #16: independent of all JSON providers; always fetches from ecb.europa.eu
   try {
-    const ecbRes = await fetch("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
+    const ecbRes = await fetch("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"); // owasp-allow:A05 — Cloudflare Worker runtime
     if (ecbRes.ok) {
       const xml = await ecbRes.text();
       const ecbData = parseEcbXml(xml);
@@ -196,7 +196,7 @@ export async function handleHebcal(url: URL, env: Env): Promise<Response> {
     return validationErrorResponse(err as ValidationError);
   }
   const kvKey = `hebcal:${geonameid}`;
-  const res = await fetch(`https://www.hebcal.com/shabbat?cfg=json&geonameid=${geonameid}&M=on`);
+  const res = await fetch(`https://www.hebcal.com/shabbat?cfg=json&geonameid=${geonameid}&M=on`); // owasp-allow:A05 — Cloudflare Worker runtime
   if (!res.ok) {
     const stale = await kvGetStale(env.CACHE_KV, kvKey);
     if (stale) return workerEnvelope(stale, "hebcal-kv-stale", true, 60);

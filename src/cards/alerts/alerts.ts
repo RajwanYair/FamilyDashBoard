@@ -21,6 +21,7 @@ import { cGetStale } from "../../core/cache";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { isPageVisible } from "../../core/idle";
 import { diagLog } from "../../core/diag";
+import { fetchWithTimeout } from "../../core/fetch";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import { trustedHTML } from "../../core/trusted-types";
 import type { AlertEvent, AlertsResponse } from "../../types/api";
@@ -162,7 +163,7 @@ async function fetchAlerts(): Promise<AlertEvent[]> {
   // Worker-first: avoids CORS + uses edge cache
   if (isWorkerEnabled()) {
     try {
-      const res = await fetch(`${WORKER_BASE_URL}/api/alerts`);
+      const res = await fetchWithTimeout(`${WORKER_BASE_URL}/api/alerts`);
       if (res.ok) {
         const data = (await res.json()) as AlertEvent[];
         if (Array.isArray(data) && data.length) {
@@ -186,7 +187,7 @@ async function fetchAlerts(): Promise<AlertEvent[]> {
 
   for (const src of sources) {
     try {
-      const res = await fetch(src.url);
+      const res = await fetchWithTimeout(src.url);
       if (!res.ok) continue;
       const data = src.isAllOrigins
         ? (JSON.parse(((await res.json()) as { contents: string }).contents) as AlertEvent[])

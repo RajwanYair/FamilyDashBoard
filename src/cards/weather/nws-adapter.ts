@@ -13,6 +13,7 @@
 
 import type { WeatherResponse } from "../../types/api";
 import { diagLog } from "../../core/diag";
+import { fetchWithTimeout } from "../../core/fetch";
 import { cGet, cSet } from "../../core/cache";
 
 const NWS_API = "https://api.weather.gov";
@@ -75,16 +76,16 @@ export async function fetchNWS(lat: number, lon: number): Promise<WeatherRespons
   }
 
   diagLog(`[NWS] fetching point metadata lat=${lat} lon=${lon}`);
-  const pointResp = await fetch(`${NWS_API}/points/${lat.toFixed(4)},${lon.toFixed(4)}`, {
-    headers: { "User-Agent": "FamilyDashBoard/13.6 (github.com/RajwanYair/FamilyDashBoard)" },
+  const pointResp = await fetchWithTimeout(`${NWS_API}/points/${lat.toFixed(4)},${lon.toFixed(4)}`, 8_000, {
+    headers: { "User-Agent": "FamilyDashBoard/14.14 (github.com/RajwanYair/FamilyDashBoard)" },
   });
   if (!pointResp.ok) throw new Error(`NWS /points error ${pointResp.status}`);
   const pointMeta: NWSPointMeta = (await pointResp.json()) as NWSPointMeta;
 
   const hourlyUrl = pointMeta.properties.forecastHourly;
   diagLog(`[NWS] fetching hourly forecast ${hourlyUrl}`);
-  const hourlyResp = await fetch(hourlyUrl, {
-    headers: { "User-Agent": "FamilyDashBoard/13.6 (github.com/RajwanYair/FamilyDashBoard)" },
+  const hourlyResp = await fetchWithTimeout(hourlyUrl, 8_000, {
+    headers: { "User-Agent": "FamilyDashBoard/14.14 (github.com/RajwanYair/FamilyDashBoard)" },
   });
   if (!hourlyResp.ok) throw new Error(`NWS hourly error ${hourlyResp.status}`);
   const hourlyData: NWSHourlyForecast = (await hourlyResp.json()) as NWSHourlyForecast;

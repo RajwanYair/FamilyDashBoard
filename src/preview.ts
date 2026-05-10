@@ -72,7 +72,7 @@ function setCardParam(id: string): void {
 
 async function fetchIndexHTML(): Promise<Document> {
   if (_indexDoc) return _indexDoc;
-  const resp = await fetch(`${import.meta.env.BASE_URL}index.html`);
+  const resp = await fetch(`${import.meta.env.BASE_URL}index.html`, { signal: AbortSignal.timeout(8_000) });
   const text = await resp.text();
   _indexDoc = new DOMParser().parseFromString(text, "text/html"); // safe: result not inserted into live DOM
   return _indexDoc;
