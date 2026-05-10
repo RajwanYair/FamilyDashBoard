@@ -327,3 +327,49 @@ describe("BgImages — rotateBgImage img.onload crossfade branch", () => {
     expect(() => rotateBgImage()).not.toThrow();
   });
 });
+
+// ── rotateBgImage — validImages empty after init ──────────────────────────────
+
+describe("BgImages — rotateBgImage with config change after init", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = "";
+    _resetForTest();
+  });
+
+  afterEach(() => {
+    _resetForTest();
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("returns early when config changes to empty after layers were initialized", () => {
+    // Init with valid images → creates layers
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }),
+    );
+    initBgImages();
+    expect(document.getElementById("bg-layer-a")).not.toBeNull();
+
+    // Config now has no valid images → rotateBgImage hits !validImages.length
+    localStorage.setItem("dash_v2_config", JSON.stringify({ bgImages: [] }));
+    expect(() => rotateBgImage()).not.toThrow();
+  });
+
+  it("returns early when config changes to only invalid URLs after init", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }),
+    );
+    initBgImages();
+
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ bgImages: ["http://insecure.com/bad.jpg"] }),
+    );
+    expect(() => rotateBgImage()).not.toThrow();
+  });
+});

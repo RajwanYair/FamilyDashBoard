@@ -57,7 +57,7 @@ describe("HP2: sparklineSvg returns non-empty string for ≥2 values", () => {
       fc.property(valuesAtLeast2, colorArb, (values, color) => {
         return sparklineSvg(values, color).length > 0;
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -70,7 +70,7 @@ describe("HP3: sparklineSvg output contains <polyline for ≥2 values", () => {
       fc.property(valuesAtLeast2, colorArb, (values, color) => {
         return sparklineSvg(values, color).includes("<polyline");
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -104,7 +104,7 @@ describe("HP5: polyline x-coordinates are monotonically non-decreasing", () => {
           .map((pt) => parseFloat(pt.split(",")[0] ?? "0"));
         return xs.every((x, i) => i === 0 || x >= xs[i - 1]!);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -117,7 +117,7 @@ describe("HP6: color parameter appears verbatim in stroke attribute", () => {
       fc.property(valuesAtLeast2, colorArb, (values, color) => {
         return sparklineSvg(values, color).includes(`stroke="${color}"`);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });

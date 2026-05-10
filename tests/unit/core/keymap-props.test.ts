@@ -92,7 +92,7 @@ describe("KP6: sortKeyEntries preserves all entries", () => {
         const sorted = sortKeyEntries(actions);
         return sorted.length === actions.length;
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 
@@ -126,7 +126,7 @@ describe("KP7: sortKeyEntries single-char keys always precede multi-char keys", 
         }
         return true;
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });

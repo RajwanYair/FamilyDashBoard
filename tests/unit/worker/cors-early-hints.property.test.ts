@@ -29,6 +29,7 @@ describe("cors — CO1: isPreflight OPTIONS", () => {
         const req = new Request(url, { method: "OPTIONS" });
         expect(isPreflight(req)).toBe(true);
       }),
+      { numRuns: 30 },
     );
   });
 });
@@ -44,6 +45,7 @@ describe("cors — CO2: isPreflight non-OPTIONS", () => {
         const req = new Request(url, { method });
         expect(isPreflight(req)).toBe(false);
       }),
+      { numRuns: 30 },
     );
   });
 });

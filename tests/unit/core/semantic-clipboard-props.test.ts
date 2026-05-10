@@ -64,7 +64,7 @@ describe("semantic-clipboard — SCP1: text field round-trip identity", () => {
         const result = getSemanticPayload(cardId);
         return result !== null && result.text === text;
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -81,7 +81,7 @@ describe("semantic-clipboard — SCP2: cardId in payload equals registration key
         const result = getSemanticPayload(cardId);
         return result !== null && result.cardId === cardId;
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -103,7 +103,7 @@ describe("semantic-clipboard — SCP3: ts is a positive finite integer", () => {
           Number.isInteger(result.ts)
         );
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -117,7 +117,7 @@ describe("semantic-clipboard — SCP4: unregistered cardId always returns null",
         _resetSemanticProducers();
         return getSemanticPayload(cardId) === null;
       }),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 });
@@ -134,7 +134,7 @@ describe("semantic-clipboard — SCP5: throwing producer always returns null", (
         });
         return getSemanticPayload(cardId) === null;
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });

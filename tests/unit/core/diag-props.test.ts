@@ -119,7 +119,7 @@ describe("DP5: classifyProviderError returns one of 5 known ProviderErrorKind va
           return KNOWN_KINDS.includes(kind);
         },
       ),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 

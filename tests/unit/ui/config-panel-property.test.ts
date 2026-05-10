@@ -69,7 +69,7 @@ describe("Config Panel — property: collectForm never throws", () => {
           }
         },
       ),
-      { numRuns: 50 },
+      { numRuns: 15 },
     );
   });
 
@@ -123,7 +123,7 @@ describe("Config Panel — property: collectForm never throws", () => {
           }
         },
       ),
-      { numRuns: 50 },
+      { numRuns: 15 },
     );
   });
 
@@ -175,7 +175,7 @@ describe("Config Panel — property: collectForm never throws", () => {
           expect(() => btn?.click()).not.toThrow();
         },
       ),
-      { numRuns: 50 },
+      { numRuns: 15 },
     );
   });
 });

@@ -167,6 +167,31 @@ describe("readConfigValues ", () => {
   });
 });
 
+// ── readConfigValues — textarea branch ──────────────────────
+
+describe("readConfigValues — textarea", () => {
+  it("reads textarea value", () => {
+    const fields: CardConfigField[] = [
+      { key: "notes", labelHe: "הערות", labelEn: "Notes", type: "textarea", defaultValue: "" },
+    ];
+    const container = document.createElement("div");
+    renderConfigFields(fields, { notes: "hello world" }, container);
+
+    const vals = readConfigValues(container);
+    expect(vals["notes"]).toBe("hello world");
+  });
+
+  it("skips elements with missing data-config-key", () => {
+    const container = document.createElement("div");
+    const orphan = document.createElement("input");
+    orphan.setAttribute("data-config-key", "");
+    container.appendChild(orphan);
+
+    const vals = readConfigValues(container);
+    expect(Object.keys(vals)).toHaveLength(0);
+  });
+});
+
 // ── filterConfigFields ──────────────────────────────────────
 
 describe("filterConfigFields ", () => {

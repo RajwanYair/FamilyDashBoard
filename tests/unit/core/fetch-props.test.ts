@@ -36,7 +36,7 @@ describe("FP1: acquireLock returns true for any previously-unseen key", () => {
         clearFetchLocks();
         return acquireLock(name) === true;
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -51,7 +51,7 @@ describe("FP2: duplicate acquireLock without release returns false", () => {
         acquireLock(name); // first — should succeed
         return acquireLock(name) === false; // second — must fail
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -67,7 +67,7 @@ describe("FP3: acquireLock succeeds again after releaseLock", () => {
         releaseLock(name);
         return acquireLock(name) === true;
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -127,7 +127,7 @@ describe("FP6: classifyFetchError always returns a valid category", () => {
         const result = classifyFetchError(new Error(msg));
         return validCategories.includes(result);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });

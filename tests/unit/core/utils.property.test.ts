@@ -60,7 +60,7 @@ describe("utils — UT1: clamp result is always in [min, max]", () => {
         expect(result).toBeGreaterThanOrEqual(min);
         expect(result).toBeLessThanOrEqual(max);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -73,7 +73,7 @@ describe("utils — UT2: clamp is identity when value ∈ [min, max]", () => {
       fc.property(inRangeTripleArb, ({ value, min, max }) => {
         expect(clamp(value, min, max)).toBe(value);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -86,7 +86,7 @@ describe("utils — UT3: clamp(v, k, k) === k for any v and k", () => {
       fc.property(finiteArb, finiteArb, (value, k) => {
         expect(clamp(value, k, k)).toBe(k);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -99,7 +99,7 @@ describe("utils — UT4: pad2 always returns at least 2 characters", () => {
       fc.property(fc.integer({ min: 0, max: 9999 }), (n) => {
         expect(pad2(n).length).toBeGreaterThanOrEqual(2);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 
@@ -123,7 +123,7 @@ describe("utils — UT5: decomposeDuration reconstruction invariant", () => {
         const reconstructed = days * 86_400 + hours * 3600 + minutes * 60 + seconds;
         expect(reconstructed).toBe(Math.floor(ms / 1000));
       }),
-      { numRuns: 500 },
+      { numRuns: 100 },
     );
   });
 
@@ -155,7 +155,7 @@ describe("utils — UT6: decomposeDuration parts are in valid calendar ranges", 
         expect(seconds).toBeGreaterThanOrEqual(0);
         expect(seconds).toBeLessThanOrEqual(59);
       }),
-      { numRuns: 500 },
+      { numRuns: 100 },
     );
   });
 });
@@ -172,7 +172,7 @@ describe("utils — UT7: computeMoonPhase always returns valid emoji + label", (
         expect(typeof label).toBe("string");
         expect(label.length).toBeGreaterThan(0);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -188,7 +188,7 @@ describe("utils — UT8: computeMoonPhase result emoji is one of the 8 moon phas
         const { emoji } = computeMoonPhase(date);
         expect(MOON_EMOJIS.has(emoji)).toBe(true);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });

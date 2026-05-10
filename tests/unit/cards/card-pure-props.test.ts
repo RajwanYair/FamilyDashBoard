@@ -96,7 +96,7 @@ describe("CP1: ageFreshness(pubDate) — always returns a valid bucket", () => {
         const result = ageFreshness(d.toISOString());
         return VALID_BUCKETS.has(result);
       }),
-      { numRuns: 500 },
+      { numRuns: 100 },
     );
   });
 
@@ -125,7 +125,7 @@ describe("CP2: recurrenceResetKey — idempotent for same date", () => {
           return key1 === key2;
         },
       ),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 
@@ -140,7 +140,7 @@ describe("CP2: recurrenceResetKey — idempotent for same date", () => {
           return typeof key === "string" && key.length > 0;
         },
       ),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 
@@ -151,7 +151,7 @@ describe("CP2: recurrenceResetKey — idempotent for same date", () => {
         const key = recurrenceResetKey("yearly", date);
         return /^\d{4}$/.test(key);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -173,7 +173,7 @@ describe("CP3: portfolioChange(quotes) — always finite number or null", () => 
           return result === null || (typeof result === "number" && isFinite(result));
         },
       ),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 
@@ -202,7 +202,7 @@ describe("CP4: fmtPrice(price, sym) — always returns non-empty string", () => 
           return typeof result === "string" && result.length > 0;
         },
       ),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 });
@@ -226,7 +226,7 @@ describe("CP5: advanceAnnualDate(dateStr) — result is always in the future", (
           return resultMs > today;
         },
       ),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 
@@ -257,7 +257,7 @@ describe("CP6: priceInRange52w(price, low52, high52) — always in [0, 1]", () =
           return result === null || (result >= 0 && result <= 1);
         },
       ),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 });

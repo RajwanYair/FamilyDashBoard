@@ -31,6 +31,9 @@ import {
 } from "@/cards/countdown/countdown";
 import { loadConfig } from "@/core/config";
 import { cSet, cClear } from "@/core/cache";
+import {
+  getSemanticPayload,
+} from "@/core/semantic-clipboard";
 import type { DashboardConfig } from "@/types/config";
 
 vi.mock("@/core/config", () => ({
@@ -1603,5 +1606,52 @@ describe("Countdown — getNextCalEventForCountdown malformed events", () => {
     ].join("\r\n");
     const result = getNextCalEventForCountdown(ics, 1);
     expect(result).toBeNull();
+  });
+});
+
+// ── buildCountdownPayload (semantic clipboard producer) ─────────────────────
+
+describe("buildCountdownPayload — semantic clipboard", () => {
+  beforeEach(() => {
+    delete (globalThis as Record<string, unknown>).__cdLast;
+  });
+
+  afterEach(() => {
+    delete (globalThis as Record<string, unknown>).__cdLast;
+  });
+
+  it("returns null when __cdLast is not set", () => {
+    const payload = getSemanticPayload("countdown");
+    expect(payload).toBeNull();
+  });
+
+  it("returns payload with future countdown (days > 0)", () => {
+    const targetMs = new Date("2099-06-15T18:00:00Z").getTime();
+    (globalThis as Record<string, unknown>).__cdLast = {
+      targetMs,
+      title: "חתונה",
+      days: 42,
+    };
+    const payload = getSemanticPayload("countdown");
+    expect(payload).not.toBeNull();
+    expect(payload!.cardId).toBe("countdown");
+    expect(payload!.text).toContain("חתונה");
+    expect(payload!.text).toContain("42");
+    expect(payload!.text).toContain("ימים");
+    expect(payload!.jsonLd).toHaveProperty("@type", "Event");
+    expect(payload!.jsonLd).toHaveProperty("name", "חתונה");
+  });
+
+  it("returns payload with today text when days === 0", () => {
+    const targetMs = Date.now();
+    (globalThis as Record<string, unknown>).__cdLast = {
+      targetMs,
+      title: "יום הולדת",
+      days: 0,
+    };
+    const payload = getSemanticPayload("countdown");
+    expect(payload).not.toBeNull();
+    expect(payload!.text).toContain("היום");
+    expect(payload!.text).not.toContain("ימים");
   });
 });

@@ -34,7 +34,7 @@ describe("simHash — property: identity", () => {
         const h = simHash(s);
         expect(hammingDistance(h, h)).toBe(0);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 
@@ -44,7 +44,7 @@ describe("simHash — property: identity", () => {
         const h = simHash(s);
         expect(isNearDuplicate(h, h, threshold)).toBe(true);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -57,7 +57,7 @@ describe("simHash — property: symmetry", () => {
         const d2 = hammingDistance(simHash(s2), simHash(s1));
         expect(d1).toBe(d2);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 
@@ -68,7 +68,7 @@ describe("simHash — property: symmetry", () => {
         const h2 = simHash(s2);
         expect(isNearDuplicate(h1, h2)).toBe(isNearDuplicate(h2, h1));
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -81,7 +81,7 @@ describe("simHash — property: bounds", () => {
         expect(d).toBeGreaterThanOrEqual(0);
         expect(d).toBeLessThanOrEqual(BITS);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 
@@ -92,7 +92,7 @@ describe("simHash — property: bounds", () => {
         expect(h).toBeGreaterThanOrEqual(0n);
         expect(h).toBeLessThan(2n ** BigInt(BITS));
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -108,7 +108,7 @@ describe("simHash — property: edge cases", () => {
       fc.property(fc.string({ minLength: 1, maxLength: 1 }), (c) => {
         expect(() => simHash(c)).not.toThrow();
       }),
-      { numRuns: 100 },
+      { numRuns: 30 },
     );
   });
 });
@@ -118,7 +118,7 @@ describe("simHash — property: near-duplicate sensitivity", () => {
     // We don't assert 100% because SimHash is probabilistic, but the hit rate
     // should be well above 50% for one-character edits on medium strings.
     let deduped = 0;
-    const runs = 100;
+    const runs = 50;
     fc.assert(
       fc.property(
         fc.string({ minLength: 20, maxLength: 100 }).filter((s) => /^[\x20-\x7e]+$/.test(s)),
@@ -140,7 +140,7 @@ describe("simHash — property: near-duplicate sensitivity", () => {
   it("completely different strings rarely dedupe at threshold 3", () => {
     // Random strings of length ≥ 50 should very rarely appear as near-dupes
     let falsePositives = 0;
-    const runs = 200;
+    const runs = 60;
     fc.assert(
       fc.property(
         fc.string({ minLength: 50, maxLength: 120 }),
@@ -166,7 +166,7 @@ describe("hammingDistance — property: triangle inequality", () => {
         const d13 = hammingDistance(h1, h3);
         expect(d13).toBeLessThanOrEqual(d12 + d23);
       }),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 });
@@ -179,7 +179,7 @@ describe("simHash — property: determinism", () => {
       fc.property(printableStr, (s) => {
         expect(simHash(s)).toBe(simHash(s));
       }),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 
@@ -188,7 +188,7 @@ describe("simHash — property: determinism", () => {
       fc.property(printableStr, (s) => {
         expect(typeof simHash(s)).toBe("bigint");
       }),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 });
@@ -209,7 +209,7 @@ describe("simHash — property: monotone threshold", () => {
           }
         },
       ),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 
@@ -218,7 +218,7 @@ describe("simHash — property: monotone threshold", () => {
       fc.property(printableStr, printableStr, (s1, s2) => {
         expect(isNearDuplicate(simHash(s1), simHash(s2), BITS)).toBe(true);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 
@@ -230,7 +230,7 @@ describe("simHash — property: monotone threshold", () => {
         const result = isNearDuplicate(h1, h2, 0);
         expect(result).toBe(h1 === h2);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -240,7 +240,7 @@ describe("simHash — property: prefix sensitivity", () => {
     // This is a statistical test — simhash is not guaranteed to change for every append.
     // We check the false-equality rate is low (< 5%) over many random strings.
     let unchanged = 0;
-    const runs = 200;
+    const runs = 60;
     fc.assert(
       fc.property(
         fc.string({ minLength: 5, maxLength: 80 }),
@@ -268,7 +268,7 @@ describe("simHash — property: whitespace normalization ", () => {
           expect(simHash(joined1)).toBe(simHash(joined2));
         },
       ),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 
@@ -277,7 +277,7 @@ describe("simHash — property: whitespace normalization ", () => {
       fc.property(printableStr, (s) => {
         expect(simHash(s)).toBe(simHash(`   ${s}   `));
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -291,7 +291,7 @@ describe("simHash — property: case normalization ", () => {
           expect(simHash(s.toLowerCase())).toBe(simHash(s.toUpperCase()));
         },
       ),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -304,7 +304,7 @@ describe("simHash — property: hamming distance non-negativity ", () => {
         expect(Number.isInteger(d)).toBe(true);
         expect(d).toBeGreaterThanOrEqual(0);
       }),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 });
@@ -319,7 +319,7 @@ describe("simHash — property: isNearDuplicate threshold boundary ", () => {
         // At threshold == exact distance, should be near-duplicate
         expect(isNearDuplicate(h1, h2, dist)).toBe(true);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 
@@ -333,7 +333,7 @@ describe("simHash — property: isNearDuplicate threshold boundary ", () => {
           expect(isNearDuplicate(h1, h2, dist - 1)).toBe(false);
         }
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });

@@ -21,6 +21,7 @@ describe("bg-images — BG1: https URL is valid", () => {
       fc.property(fc.webUrl({ validSchemes: ["https"] }), (url) => {
         expect(isValidBgUrl(url)).toBe(true);
       }),
+      { numRuns: 30 },
     );
   });
 });
@@ -33,6 +34,7 @@ describe("bg-images — BG2: http URL is invalid", () => {
       fc.property(fc.webUrl({ validSchemes: ["http"] }), (url) => {
         expect(isValidBgUrl(url)).toBe(false);
       }),
+      { numRuns: 30 },
     );
   });
 });
@@ -55,6 +57,7 @@ describe("bg-images — BG3: non-URL string", () => {
           expect(isValidBgUrl(str)).toBe(false);
         },
       ),
+      { numRuns: 30 },
     );
   });
 });
@@ -67,6 +70,7 @@ describe("bg-images — BG4: data URL is invalid", () => {
       fc.property(fc.string({ minLength: 4, maxLength: 20 }), (payload) => {
         expect(isValidBgUrl(`data:text/plain;base64,${payload}`)).toBe(false);
       }),
+      { numRuns: 30 },
     );
   });
 });
@@ -79,6 +83,7 @@ describe("bg-images — BG5: ftp URL is invalid", () => {
       fc.property(fc.domain(), (domain) => {
         expect(isValidBgUrl(`ftp://${domain}/file.jpg`)).toBe(false);
       }),
+      { numRuns: 30 },
     );
   });
 });

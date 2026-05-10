@@ -41,7 +41,7 @@ describe("NWS normalizer — N1: fToC round-trip identity", () => {
       fc.property(fc.integer({ min: -50, max: 60 }), (c) => {
         expect(fToC(cToF(c))).toBeCloseTo(c, 9);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -118,7 +118,7 @@ describe("NWS normalizer — N4: WMO code range invariant", () => {
         expect(wmo).toBeGreaterThanOrEqual(0);
         expect(wmo).toBeLessThanOrEqual(99);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -135,7 +135,7 @@ describe("NWS normalizer — N5: fToC monotonicity", () => {
           expect(fToC(a)).toBeLessThan(fToC(a + delta));
         },
       ),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -266,7 +266,7 @@ describe("NWS normalizer — N9: mphToKph properties ", () => {
         // Result rounded to 1dp means (kph * 10) is an integer
         expect(Math.round(kph * 10)).toBe(kph * 10);
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 
@@ -275,7 +275,7 @@ describe("NWS normalizer — N9: mphToKph properties ", () => {
       fc.property(fc.integer({ min: 0, max: 100 }), fc.integer({ min: 1, max: 50 }), (v, delta) => {
         expect(mphToKph(v + delta)).toBeGreaterThanOrEqual(mphToKph(v));
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });

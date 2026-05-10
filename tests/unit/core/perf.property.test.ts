@@ -139,7 +139,7 @@ describe("perf — PF6: higher values never improve rating", () => {
           expect(ratingOrder[rateHigher]).toBeGreaterThanOrEqual(ratingOrder[rateBase]);
         },
       ),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });

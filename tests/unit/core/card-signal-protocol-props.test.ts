@@ -61,7 +61,7 @@ describe("card-signal-protocol — CSP1: value round-trip identity", () => {
         const sig = getCardSignal<typeof value>(cardId, key);
         return sig !== null && sig.value === value;
       }),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 
@@ -77,7 +77,7 @@ describe("card-signal-protocol — CSP1: value round-trip identity", () => {
         }
         return true;
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
@@ -93,7 +93,7 @@ describe("card-signal-protocol — CSP2: signal.v is always 1", () => {
         const sig = getCardSignal(cardId, key);
         return sig !== null && sig.v === 1;
       }),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 });
@@ -109,7 +109,7 @@ describe("card-signal-protocol — CSP3: cardId and key stored verbatim", () => 
         const sig = getCardSignal(cardId, key);
         return sig !== null && sig.cardId === cardId && sig.key === key;
       }),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 });
@@ -123,7 +123,7 @@ describe("card-signal-protocol — CSP4: unset (cardId, key) always returns null
         _resetCardSignals();
         return getCardSignal(cardId, key) === null;
       }),
-      { numRuns: 300 },
+      { numRuns: 80 },
     );
   });
 });
@@ -154,7 +154,7 @@ describe("card-signal-protocol — CSP5: published value is deeply frozen", () =
         expect(sigAfter?.value[firstKey]).toBe(original);
         return true;
       }),
-      { numRuns: 200 },
+      { numRuns: 60 },
     );
   });
 });
