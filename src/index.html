@@ -168,6 +168,45 @@
         <div class="news-starred-list" role="list"></div>
       </div>
     </dialog>
+    <!-- Yahrzeit manager dialog -->
+    <dialog id="hc-yz-dialog" aria-labelledby="hc-yz-dialog-title" aria-modal="true">
+      <div class="hc-yz-inner">
+        <div class="hc-yz-header">
+          <h2 id="hc-yz-dialog-title">🕯️ ניהול יארצייט</h2>
+          <button type="button" id="hc-yz-close" class="hc-yz-close-btn" aria-label="סגור חלון יארצייט">✕</button>
+        </div>
+        <form id="hc-yz-form" class="hc-yz-form" autocomplete="off">
+          <label class="hc-yz-label" for="hc-yz-name">שם הנפטר/ת</label>
+          <input type="text" id="hc-yz-name" class="hc-yz-input" required maxlength="60" placeholder="לדוגמה: אברהם בן שרה">
+          <div class="hc-yz-date-row">
+            <div class="hc-yz-field">
+              <label class="hc-yz-label" for="hc-yz-month">חודש עברי</label>
+              <select id="hc-yz-month" class="hc-yz-select" required>
+                <option value="1">תשרי</option>
+                <option value="2">חשוון</option>
+                <option value="3">כסלו</option>
+                <option value="4">טבת</option>
+                <option value="5">שבט</option>
+                <option value="6">אדר</option>
+                <option value="7">ניסן</option>
+                <option value="8">אייר</option>
+                <option value="9">סיוון</option>
+                <option value="10">תמוז</option>
+                <option value="11">אב</option>
+                <option value="12">אלול</option>
+                <option value="13">אדר ב׳</option>
+              </select>
+            </div>
+            <div class="hc-yz-field">
+              <label class="hc-yz-label" for="hc-yz-day">יום</label>
+              <input type="number" id="hc-yz-day" class="hc-yz-input hc-yz-day-input" required min="1" max="30" placeholder="1–30">
+            </div>
+          </div>
+          <button type="submit" class="hc-yz-add-btn">➕ הוסף יארצייט</button>
+        </form>
+        <div class="hc-yz-list" id="hc-yz-list" role="list"></div>
+      </div>
+    </dialog>
     <!-- Feature 33: Config overlay -->
     <div id="config-overlay" role="dialog" aria-modal="true" aria-labelledby="cfg-panel-title">
       <div id="config-panel">
@@ -773,7 +812,7 @@
           <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
           <div class="grid-col grid-col-mid">
             <section class="card" role="region" data-card-id="hebrew-cal" aria-labelledby="card-title-hebrew-cal">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-hebcal" role="status" aria-label="מצב סנכרון לוח עברי" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge yellow">🕍</span> <span id="card-title-hebrew-cal">לוח עברי</span><span class="card-mini-info" id="mini-hebrew-cal"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית לוח עברי" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-hebcal" role="status" aria-label="מצב סנכרון לוח עברי" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge yellow">🕍</span> <span id="card-title-hebrew-cal">לוח עברי</span><span class="card-mini-info" id="mini-hebrew-cal"></span></div><div class="card__hd-end"><button type="button" id="hc-yz-btn" class="card-quick-reload-btn" aria-label="ניהול יארצייט" title="ניהול יארצייט — Yahrzeit Manager">🕯️</button><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית לוח עברי" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="hebcal-body" id="hebcal-body" aria-live="polite" aria-label="לוח עברי ושבת">
                 <!-- Main content column (right side in RTL) -->
                 <div class="hc-main-col">

@@ -34,6 +34,9 @@ import {
   todayHebrewMD,
   hebrewCalConfigSchema,
   destroyHebrewCalCard,
+  initYzDialog,
+  openYzDialog,
+  closeYzDialog,
 } from "@/cards/hebrew-cal/hebrew-cal";
 import { _idbClearFallback } from "@/core/idb-store";
 import { cGet, cGetStale, cSet, cGetAsync, cGetStaleAsync, cSetAsync } from "@/core/cache";
@@ -2751,5 +2754,118 @@ describe("HebrewCal — getUpcomingYahrzeits filter branches", () => {
       const upcoming = await getUpcomingYahrzeits(7, now);
       expect(upcoming.some((e) => e.name === "Passed")).toBe(false);
     }
+  });
+});
+
+// ── Yahrzeit Manager UI ──────────────────────────────
+describe("HebrewCal — Yahrzeit Manager UI", () => {
+  beforeEach(() => {
+    _idbClearFallback();
+    document.body.innerHTML = `
+      <button id="hc-yz-btn"></button>
+      <dialog id="hc-yz-dialog">
+        <div class="hc-yz-inner">
+          <div class="hc-yz-header">
+            <h2 id="hc-yz-dialog-title">🕯️ ניהול יארצייט</h2>
+            <button id="hc-yz-close">✕</button>
+          </div>
+          <form id="hc-yz-form" autocomplete="off">
+            <input id="hc-yz-name" type="text" required>
+            <select id="hc-yz-month"><option value="7">ניסן</option></select>
+            <input id="hc-yz-day" type="number" required min="1" max="30">
+            <button type="submit">➕ הוסף</button>
+          </form>
+          <div id="hc-yz-list" role="list"></div>
+        </div>
+      </dialog>`;
+    initYzDialog();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    _idbClearFallback();
+  });
+
+  it("initYzDialog wires open button to dialog", async () => {
+    const btn = document.getElementById("hc-yz-btn")!;
+    const dialog = document.getElementById("hc-yz-dialog") as HTMLDialogElement;
+    expect(dialog.open).toBe(false);
+    btn.click();
+    await vi.waitFor(() => expect(dialog.open).toBe(true));
+  });
+
+  it("closeYzDialog closes the dialog", async () => {
+    const dialog = document.getElementById("hc-yz-dialog") as HTMLDialogElement;
+    await openYzDialog();
+    expect(dialog.open).toBe(true);
+    closeYzDialog();
+    expect(dialog.open).toBe(false);
+  });
+
+  it("openYzDialog shows empty state when no entries", async () => {
+    await openYzDialog();
+    const list = document.getElementById("hc-yz-list")!;
+    expect(list.querySelector(".hc-yz-empty")).not.toBeNull();
+    expect(list.querySelector(".hc-yz-tile")).toBeNull();
+  });
+
+  it("openYzDialog renders existing entries", async () => {
+    await addYahrzeit("אברהם בן שרה", 7, 15);
+    await openYzDialog();
+    const list = document.getElementById("hc-yz-list")!;
+    const tiles = list.querySelectorAll(".hc-yz-tile");
+    expect(tiles.length).toBe(1);
+    expect(tiles[0]!.querySelector(".hc-yz-name")!.textContent).toBe("אברהם בן שרה");
+    expect(tiles[0]!.querySelector(".hc-yz-date")!.textContent).toContain("15");
+  });
+
+  it("form submit adds a new yahrzeit and refreshes list", async () => {
+    await openYzDialog();
+    const nameInput = document.getElementById("hc-yz-name") as HTMLInputElement;
+    const monthSelect = document.getElementById("hc-yz-month") as HTMLSelectElement;
+    const dayInput = document.getElementById("hc-yz-day") as HTMLInputElement;
+    const form = document.getElementById("hc-yz-form") as HTMLFormElement;
+
+    nameInput.value = "משה רבנו";
+    monthSelect.value = "7";
+    dayInput.value = "6";
+    form.dispatchEvent(new Event("submit", { cancelable: true }));
+
+    // Wait for async add
+    await vi.waitFor(async () => {
+      const entries = await getYahrzeits();
+      expect(entries.length).toBe(1);
+      expect(entries[0]!.name).toBe("משה רבנו");
+    });
+  });
+
+  it("remove button deletes entry from list", async () => {
+    await addYahrzeit("למחיקה", 3, 10);
+    await openYzDialog();
+    const removeBtn = document.querySelector(".hc-yz-remove") as HTMLButtonElement;
+    expect(removeBtn).not.toBeNull();
+    removeBtn.click();
+
+    await vi.waitFor(async () => {
+      const entries = await getYahrzeits();
+      expect(entries.length).toBe(0);
+    });
+  });
+
+  it("close button wired to closeYzDialog", async () => {
+    await openYzDialog();
+    const dialog = document.getElementById("hc-yz-dialog") as HTMLDialogElement;
+    expect(dialog.open).toBe(true);
+    const closeBtn = document.getElementById("hc-yz-close")!;
+    closeBtn.click();
+    expect(dialog.open).toBe(false);
+  });
+
+  it("backdrop click closes dialog", async () => {
+    await openYzDialog();
+    const dialog = document.getElementById("hc-yz-dialog") as HTMLDialogElement;
+    expect(dialog.open).toBe(true);
+    dialog.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(dialog.open).toBe(false);
   });
 });

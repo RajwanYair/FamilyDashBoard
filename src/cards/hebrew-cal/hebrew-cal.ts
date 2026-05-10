@@ -990,6 +990,7 @@ export function initHebrewCalCard(): void {
   renderNextCalEvent();
   renderPsalmOfDay();
   renderTasksStrip();
+  initYzDialog();
   void loadHebCal();
   _hebCalScheduleId = scheduleCard(loadHebCal, INTERVALS.HEBREW_CAL);
   diagLog("FDB-038: [hebrew-cal] Initialized");
@@ -1105,6 +1106,110 @@ export async function getUpcomingYahrzeits(
           : -1;
     return dayDiff >= 0 && dayDiff < days;
   });
+}
+
+// ── Yahrzeit Manager UI ──────────────────────────────
+
+const HEB_MONTH_NAMES: readonly string[] = [
+  "", "תשרי", "חשוון", "כסלו", "טבת", "שבט", "אדר",
+  "ניסן", "אייר", "סיוון", "תמוז", "אב", "אלול", "אדר ב׳",
+];
+
+let _yzDialog: HTMLDialogElement | null = null;
+let _yzForm: HTMLFormElement | null = null;
+let _yzList: HTMLElement | null = null;
+let _yzNameInput: HTMLInputElement | null = null;
+let _yzMonthSelect: HTMLSelectElement | null = null;
+let _yzDayInput: HTMLInputElement | null = null;
+
+function renderYzList(entries: YahrzeitEntry[]): void {
+  if (!_yzList) return;
+  _yzList.replaceChildren();
+  if (entries.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "hc-yz-empty";
+    empty.textContent = "אין יארצייטים שמורים — הוסף יארצייט חדש באמצעות הטופס למעלה.";
+    _yzList.appendChild(empty);
+    return;
+  }
+  for (const yz of entries) {
+    const tile = document.createElement("div");
+    tile.className = "hc-yz-tile";
+    tile.setAttribute("role", "listitem");
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "hc-yz-remove";
+    removeBtn.textContent = "✕";
+    removeBtn.setAttribute("aria-label", `הסר יארצייט "${yz.name}"`);
+    removeBtn.addEventListener("click", () => {
+      void removeYahrzeit(yz.id).then(async () => {
+        const updated = await getYahrzeits();
+        renderYzList(updated);
+      });
+    });
+
+    const nameEl = document.createElement("span");
+    nameEl.className = "hc-yz-name";
+    nameEl.textContent = yz.name;
+
+    const dateEl = document.createElement("span");
+    dateEl.className = "hc-yz-date";
+    const monthName = HEB_MONTH_NAMES[yz.hebrewMonth] ?? `חודש ${yz.hebrewMonth}`;
+    dateEl.textContent = `${yz.hebrewDay} ${monthName}`;
+
+    tile.appendChild(removeBtn);
+    tile.appendChild(nameEl);
+    tile.appendChild(dateEl);
+    _yzList.appendChild(tile);
+  }
+}
+
+export function closeYzDialog(): void {
+  _yzDialog?.close();
+}
+
+export async function openYzDialog(): Promise<void> {
+  if (!_yzDialog) return;
+  const entries = await getYahrzeits();
+  renderYzList(entries);
+  _yzDialog.showModal();
+}
+
+export function initYzDialog(): void {
+  _yzDialog = document.getElementById("hc-yz-dialog") as HTMLDialogElement | null;
+  _yzForm = document.getElementById("hc-yz-form") as HTMLFormElement | null;
+  _yzList = document.getElementById("hc-yz-list");
+  _yzNameInput = document.getElementById("hc-yz-name") as HTMLInputElement | null;
+  _yzMonthSelect = document.getElementById("hc-yz-month") as HTMLSelectElement | null;
+  _yzDayInput = document.getElementById("hc-yz-day") as HTMLInputElement | null;
+
+  const openBtn = document.getElementById("hc-yz-btn");
+  if (openBtn) openBtn.addEventListener("click", () => void openYzDialog());
+
+  const closeBtn = document.getElementById("hc-yz-close");
+  if (closeBtn) closeBtn.addEventListener("click", closeYzDialog);
+
+  if (_yzDialog) {
+    _yzDialog.addEventListener("click", (e) => {
+      if (e.target === _yzDialog) closeYzDialog();
+    });
+  }
+
+  if (_yzForm) {
+    _yzForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = _yzNameInput?.value.trim() ?? "";
+      const month = parseInt(_yzMonthSelect?.value ?? "1", 10);
+      const day = parseInt(_yzDayInput?.value ?? "1", 10);
+      if (!name || month < 1 || month > 13 || day < 1 || day > 30) return;
+      void addYahrzeit(name, month, day).then(async () => {
+        if (_yzForm) _yzForm.reset();
+        const updated = await getYahrzeits();
+        renderYzList(updated);
+      });
+    });
+  }
 }
 
 // configSchema ────────────────────────────────────────────────
