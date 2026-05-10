@@ -35,6 +35,8 @@
  * (v14.10.0) — added A01 Object.fromEntries(searchParams) injection, A08 createElement script/link without SRI, A09 sendBeacon PII audit.
  * (v14.5.0) — added A03 insertBefore DOM injection, A05 credentials include, A07 authorization header leak,
  *             A08 importScripts dynamic URL, A09 stack trace in response, A01 location redirect from input.
+ * (v14.17.0) — added A03 createContextualFragment, A05 no-cors mode, A02 AES-ECB mode,
+ *              A07 hardcoded API key, A04 JSON.parse prototype pollution, A10 EventSource SSRF.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -1207,6 +1209,61 @@ const RULES = [
     severity: "warn",
     pattern: /navigator\.sendBeacon\s*\(/,
     safeMarkers: ["test", "spec", "// owasp-allow:A09", "anonymize", "redact", "sanitize"],
+  },
+
+  // (v14.17.0) — 6 new rules ────────────────────────────────────────────────
+
+  // A03 — Injection: Range.createContextualFragment with dynamic content
+  {
+    category: "A03",
+    label: "Range.createContextualFragment — potential HTML injection if content is unsanitized",
+    severity: "warn",
+    pattern: /\.createContextualFragment\s*\(/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A03", "sanitize", "textContent", "trusted"],
+  },
+
+  // A05 — Security Misconfiguration: fetch with mode 'no-cors' (opaque responses)
+  {
+    category: "A05",
+    label: "fetch with mode:'no-cors' — opaque response prevents error detection",
+    severity: "warn",
+    pattern: /mode\s*:\s*['"]no-cors['"]/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A05", "ping", "preflight", "beacon"],
+  },
+
+  // A02 — Cryptographic Failures: SubtleCrypto with ECB mode (insecure block cipher mode)
+  {
+    category: "A02",
+    label: "AES-ECB mode — insecure block cipher mode; use AES-GCM or AES-CBC with HMAC",
+    severity: "error",
+    pattern: /['"]AES-ECB['"]/i,
+  },
+
+  // A07 — Auth Failures: API key exposed in client-side code
+  {
+    category: "A07",
+    label: "Hardcoded API key in source — move to environment variable or Worker secret",
+    severity: "warn",
+    pattern: /(?:api[_-]?key|apikey)\s*[:=]\s*['"][A-Za-z0-9_\-]{16,}['"]/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A07", "env.", "process.env", "import.meta.env"],
+  },
+
+  // A04 — Insecure Design: Prototype pollution via JSON.parse of untrusted input without validation
+  {
+    category: "A04",
+    label: "JSON.parse of URL/search params — validate result before use to prevent prototype pollution",
+    severity: "warn",
+    pattern: /JSON\.parse\s*\(\s*(?:searchParams|location\.(?:search|hash)|window\.name)/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A04", "safeParse", "validate", "schema"],
+  },
+
+  // A10 — SSRF: EventSource with user-controlled URL
+  {
+    category: "A10",
+    label: "EventSource with dynamic URL — validate origin to prevent SSRF",
+    severity: "warn",
+    pattern: /new\s+EventSource\s*\(\s*(?!['"]https?:\/\/)/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A10", "allowlist", "ALLOWED_"],
   },
 ];
 

@@ -465,7 +465,7 @@ export function initAlertsSSE(): void {
   _sse?.close();
 
   const url = `${WORKER_BASE_URL}/api/alerts/subscribe`;
-  const es = new EventSource(url);
+  const es = new EventSource(url); // owasp-allow:A10 — URL from hardcoded WORKER_BASE_URL constant
 
   es.addEventListener("ping", () => {
     setAlertsRealtime(true);
