@@ -3,16 +3,14 @@ applyTo: "**/*.html"
 description: "Use when: editing the dashboard HTML file. Coding standards for HTML/CSS/JS, API patterns, layout, and DOM caching."
 ---
 
-# Dashboard HTML Instructions — FamilyDashBoard v14.5.0
+# Dashboard HTML Instructions
 
 > Coding rules are in `copilot-instructions.md`. This file covers layout, patterns, and constants specific to the TypeScript modular dashboard (`src/`).
 
-## CSS Specifics
+## CSS
 
-- Variables: `--bg-primary`, `--bg-card`, `--accent`, `--text-primary`, `--text-secondary`, `--positive`, `--negative`, `--warning`, `--purple`, `--pink`, `--orange`, `--cyan`, `--border-radius`, `--card-border`, `--card-shadow`
-- 6 themes: `black` · `blue` · `matrix` · `amber` · `purple` · `rose` (set via `data-theme` attribute)
-- Glassmorphism: `backdrop-filter: blur(16px)` on cards
-- CSS layers: `@layer tokens, themes, base, layout, components, animations`
+See `css.instructions.md` for layer order, custom properties, themes, RTL, and TV rules. Key HTML-specific notes:
+
 - CSS containment: `contain: layout style` on `.card`, `contain: content` on pane bodies
 - `prefers-reduced-motion`: disables all animations
 

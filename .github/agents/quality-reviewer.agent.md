@@ -83,7 +83,7 @@ Use this agent when:
 | Type errors   | `npx tsc --noEmit`                                      | 0 errors                                       |
 | Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                          |
 | Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                       |
-| Test failures | `npx vitest run`                                        | 0 failures (7221 / 282 suites at v14.13.0)     |
+| Test failures | `npx vitest run`                                        | 0 failures (7228 / 282 suites)                 |
 | Coverage      | `npx vitest run --coverage`                             | stmts 95.7 / branches 88.8 / fn 95.1 / ln 96.7 |
 | OWASP check   | `node scripts/check-owasp.mjs`                          | 0 findings                                     |
 | Build         | `npm run build`                                         | 0 errors                                       |

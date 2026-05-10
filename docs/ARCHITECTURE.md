@@ -3,7 +3,7 @@
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
 
-Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.md), and [docs/adr/README.md](adr/README.md). The archived `BestDashBoard.html` artifact is not part of the current runtime architecture.
+Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.md), and [docs/adr/README.md](adr/README.md).
 
 ![Architecture diagram](../.github/assets/architecture.svg)
 
@@ -13,7 +13,7 @@ Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.m
 | ---------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking      |
 | Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks            |
-| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 7221 tests / 282 suites     |
+| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 7228 tests / 282 suites     |
 | Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
 | API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
 | Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                               |
@@ -43,16 +43,16 @@ src/
 │   ├── state.ts                # EventTarget-based reactive pub/sub store — state.get/set/on/off/seedConfig/snapshot
 │   ├── error-reporter.ts       # Debounced client error batching → POST /api/errors (best-effort telemetry)
 │   ├── error-tracker.ts        # Window error/unhandledrejection listeners, error bucketing
-│   ├── signals.ts              # Zero-dep reactive primitives: signal/computed/effect/batch/untrack/isSignal (TC39 Signals API mirror, ADR-038, v13.9)
-│   ├── fs-access.ts            # Native File System Access: saveTextFile/pickTextFile with showSaveFilePicker fallback → blob-anchor (v13.10)
-│   ├── card-registry.ts        # Map-based card registry, lazy dynamic import() (v7)
-│   ├── fdb-card.ts             # FdbCard base class implementing CardRuntime interface (v7.13)
+│   ├── signals.ts              # Zero-dep reactive primitives: signal/computed/effect/batch/untrack/isSignal (TC39 Signals API mirror, ADR-038)
+│   ├── fs-access.ts            # Native File System Access: saveTextFile/pickTextFile with showSaveFilePicker fallback → blob-anchor
+│   ├── card-registry.ts        # Map-based card registry, lazy dynamic import()
+│   ├── fdb-card.ts             # FdbCard base class implementing CardRuntime interface
 │   ├── diag.ts                 # diagLog() + diagnostic overlay
-│   ├── config.ts               # Settings load/save/export/import — migrateConfig() · sanitize() (v7.4)
+│   ├── config.ts               # Settings load/save/export/import — migrateConfig() · sanitize()
 │   ├── sync.ts                 # setSync(id, state) — sync dots + health
-│   ├── idle.ts                 # scheduleIdle(), requestIdleCallback wrapper; pageVisibleSignal: ReadonlySignal<boolean> (v13.10)
-│   ├── perf.ts                 # Performance timing helpers + mark/measure wrappers + card init timing (v7.19)
-│   ├── provider.ts             # Per-provider health tracking: success/failure counts + latency histogram (v7.19)
+│   ├── idle.ts                 # scheduleIdle(), requestIdleCallback wrapper; pageVisibleSignal: ReadonlySignal<boolean>
+│   ├── perf.ts                 # Performance timing helpers + mark/measure wrappers + card init timing
+│   ├── provider.ts             # Per-provider health tracking: success/failure counts + latency histogram
 │   ├── utils.ts                # Shared utility functions (formatters, helpers)
 │   ├── hardware.ts             # getHardwareProfile() — CPU/RAM/GPU tier detection, applyHardwareTier()
 │   ├── sw-constants.ts         # SW version/cache name constants shared between sw.ts and src/
@@ -72,7 +72,7 @@ src/
 │   ├── night-dimmer.ts         # Night dim overlay with schedule (dash_v2_dim_start/end)
 │   ├── bg-images.ts            # Background image rotation (HTTPS-only, 30-min crossfade)
 │   ├── config-panel.ts         # Settings panel (save, export, import, shareSettings)
-│   ├── diag-overlay.ts         # Diagnostics <dialog> (migrated from <div>, v7)
+│   ├── diag-overlay.ts         # Diagnostics <dialog> overlay
 │   ├── screen-mode.ts          # Screen mode manager (normal/compact/theater)
 │   ├── layout-drag.ts          # Drag-and-drop card reordering with localStorage persistence
 │   ├── toast.ts                # Toast notification system
@@ -90,7 +90,7 @@ src/
 │   ├── alerts/alerts.ts        # Tzeva Adom (Red Alert), realtime mode
 │   ├── motivation/motivation.ts # Rotating quotes with share
 │   ├── tasks/tasks.ts          # Family chore board (v7, localStorage, daily reset)
-│   ├── countdown/countdown.ts  # Countdown timers to user-defined events (v7.1)
+│   ├── countdown/countdown.ts  # Countdown timers to user-defined events
 │   ├── system-info/system-info.ts # Battery, network, timing, browser info (v7)
 │   └── video-news/             # Live streaming news channels (C14, i24, etc.)
 ├── styles/
@@ -123,7 +123,7 @@ worker/src/
 │   │   ├── response.ts         # jsonResponse() · proxyResponse() · CORS_HEADERS
 │   │   ├── allowlists.ts       # ALLOWED_NEWS_ORIGINS · ALLOWED_CALENDAR_ORIGINS
 │   │   └── kv.ts               # kvGetStale<T>() · kvPut() — shared KV helpers (ADR-013)
-│   └── middleware/             # rate-limit · cors · cache-control (v7.5)
+│   └── middleware/             # rate-limit · cors · cache-control
 ├── wrangler.toml
 └── package.json
 tests/unit/
@@ -142,20 +142,20 @@ Browser
  │               └── setInterval per card (TTL-based refresh)
  ├─ sw.ts → dist/sw.js ── APP_SHELL pre-cache ─► offline HTML fallback
  │               └── API cache (7 origins, 7-day TTL stale-while-revalidate)
- └─ card-registry.ts (v7)
+ └─ card-registry.ts
      └── dynamic import() per card ──► lazy load + init
 
 Fetch chain (per request):
   cGet(key, TTL) → hit: return cached
-                 → miss: fetchViaWorker (Cloudflare, v7.5) ← Worker-first path
-                       → fallback: fetchWithRetry(url)   ← exponential backoff (v7.4)
+                 → miss: fetchViaWorker (Cloudflare) ← Worker-first path
+                       → fallback: fetchWithRetry(url)   ← exponential backoff
                            → inner chain: fetchWithTimeout(direct)
-                           → __USE_PROXIES__ gate (v7.10: false in production)
+                           → __USE_PROXIES__ gate (false in production)
                            → fallback: allorigins proxy
                            → fallback: codetabs proxy
                            → fallback: corsproxy.io
                  → cSet(key, data)
-                 → recordFetchSuccess / recordFetchFailure (network state, v7.4)
+                 → recordFetchSuccess / recordFetchFailure (network state)
 
 Cache layers:
   L1: in-memory Map (process lifetime)
@@ -276,7 +276,7 @@ flowchart LR
     CardReg --> Cards
 ```
 
-## CSS Architecture (v7.7)
+## CSS Architecture
 
 ```css
 @layer tokens, themes, base, layout, components, animations;
@@ -297,7 +297,7 @@ flowchart LR
 }
 ```
 
-### CSS Co-location Rule (v7.5+)
+### CSS Co-location Rule
 
 Each UI component owns its CSS file — co-located next to the TypeScript file:
 
@@ -330,22 +330,22 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 8. **0 ESLint errors/warnings** enforced on every commit (CI gate)
 9. **0 TypeScript errors** enforced (`tsc --noEmit` in CI)
 10. **No `eslint-disable` / `@ts-ignore` suppressions** — violations must be fixed
-11. **Config validated on load** — `migrateConfig()` + `sanitize()` via type guards (v7.4); v4 schema namespaces per-card settings under `cards: Record<string, CardConfig>` (v7.10)
+11. **Config validated on load** — `migrateConfig()` + `sanitize()` via type guards; schema namespaces per-card settings under `cards: Record<string, CardConfig>`
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
-13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
-14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5); `__USE_PROXIES__=false` disables proxy chain in production builds (v7.10)
-15. **7085 tests / 280 suites / 0 failures** — coverage thresholds: 94.4% statements, 85.6% branches, 94.7% functions, 95.8% lines (v14.9.0)
-16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV (v7.10)
-17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
-18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module (v7.13)
-19. **CardRuntime interface** — `src/types/card.ts` defines `CardRuntime` contract (render/connect/disconnect/refresh/onConfigChange); `FdbCard` base class implements foundation (v7.13)
-20. **Provider health model** — `src/core/provider.ts` tracks per-provider success/failure counts + latency histogram; `getProviderHealth(id)` exposed in diagnostic overlay (v7.14, extended v7.19)
-21. **Config import validation** — `validateImportedConfig(raw)` in `src/core/config.ts` guards against malformed or mismatched schema versions on import (v7.13)
-22. **Per-card configSchema** — Each card exports a `CardConfigField[]` schema; `buildConfigAccordion()` auto-renders the config panel UI; per-card reset buttons (v7.19, ADR-004)
-23. **Config dirty tracking** — `closeConfigPanel()` warns on unsaved changes; second close discards (v7.19)
-24. **Observability suite** — Card init timing (`recordCardInitTime`), startup waterfall in diag overlay, perf JSON export, error rate trending sparkline, network quality history (v7.19)
-25. **Cross-card signal protocol (X12)** — `src/core/card-signal-protocol.ts` exposes `setCardSignal` / `getCardSignal` / `onCardSignal`. Values are deep-frozen, subscribers fire via microtask. Cards publish under `(cardId, key)`; consumers subscribe without coupling. See ADR-067 + ADR-071. (v14.0.0 all 11 applicable producers wired)
-26. **Semantic clipboard (X15)** — `src/core/semantic-clipboard.ts` + `Y` (yank) keystroke. Cards opt in by calling `registerSemanticProducer(cardId, fn)` returning `SemanticPayload` (text + JSON-LD). `ClipboardItem` write with text-only fallback. See ADR-070 + ADR-071. (v13.44.0 core, v13.44.0 first 2 producers)
+13. **Card CSS co-located** — each card and UI component imports its own `.css` file; global styles in `src/styles/`
+14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only; `__USE_PROXIES__=false` disables proxy chain in production builds
+15. **7228 tests / 282 suites / 0 failures** — coverage thresholds: 95.7% statements, 88.8% branches, 95.1% functions, 96.7% lines
+16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV
+17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort)
+18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module
+19. **CardRuntime interface** — `src/types/card.ts` defines `CardRuntime` contract (render/connect/disconnect/refresh/onConfigChange); `FdbCard` base class implements foundation
+20. **Provider health model** — `src/core/provider.ts` tracks per-provider success/failure counts + latency histogram; `getProviderHealth(id)` exposed in diagnostic overlay
+21. **Config import validation** — `validateImportedConfig(raw)` in `src/core/config.ts` guards against malformed or mismatched schema versions on import
+22. **Per-card configSchema** — Each card exports a `CardConfigField[]` schema; `buildConfigAccordion()` auto-renders the config panel UI; per-card reset buttons (ADR-004)
+23. **Config dirty tracking** — `closeConfigPanel()` warns on unsaved changes; second close discards
+24. **Observability suite** — Card init timing (`recordCardInitTime`), startup waterfall in diag overlay, perf JSON export, error rate trending sparkline, network quality history
+25. **Cross-card signal protocol (X12)** — `src/core/card-signal-protocol.ts` exposes `setCardSignal` / `getCardSignal` / `onCardSignal`. Values are deep-frozen, subscribers fire via microtask. Cards publish under `(cardId, key)`; consumers subscribe without coupling. See ADR-067 + ADR-071.
+26. **Semantic clipboard (X15)** — `src/core/semantic-clipboard.ts` + `Y` (yank) keystroke. Cards opt in by calling `registerSemanticProducer(cardId, fn)` returning `SemanticPayload` (text + JSON-LD). `ClipboardItem` write with text-only fallback. See ADR-070 + ADR-071.
 
 ## Accessibility Compliance
 

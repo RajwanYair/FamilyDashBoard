@@ -3,7 +3,7 @@ applyTo: "src/**/*.ts"
 description: "Use when: writing or reviewing TypeScript source files in src/. Rules for types, async, modules, and FamilyDashBoard conventions."
 ---
 
-# TypeScript Instructions — FamilyDashBoard v14.13.0
+# TypeScript Instructions
 
 > Apply these rules to every `.ts` file under `src/`. Rules in `copilot-instructions.md` take precedence for cross-cutting concerns.
 

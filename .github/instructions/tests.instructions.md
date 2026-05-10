@@ -3,10 +3,10 @@ applyTo: "tests/**"
 description: "Use when: writing or reviewing test files under tests/. Vitest patterns, mock conventions, and FamilyDashBoard test rules."
 ---
 
-# Test Instructions — FamilyDashBoard v14.13.0
+# Test Instructions
 
 > Apply these rules to every file under `tests/`. See `copilot-instructions.md` for cross-cutting project rules.
-> Baseline: 7221 / 282 suites / 0 failures · Coverage thresholds: 95.7 / 88.8 / 95.1 / 96.7 (statements / branches / functions / lines).
+> Coverage thresholds are in `vitest.config.ts` (canonical source). Current baseline: see `workspace.instructions.md`.
 
 ## Test Framework
 
@@ -101,16 +101,7 @@ it("refreshes after 5 minutes", async () => {
 
 ## Coverage Targets
 
-| Metric     | Threshold |
-| ---------- | --------- |
-| Statements | 95.7%     |
-| Branches   | 88.8%     |
-| Functions  | 95.1%     |
-| Lines      | 96.7%     |
-
-Run `npx vitest run --coverage` to check. CI enforces these thresholds; PRs that lower them will fail.
-
-> **Canonical source**: `vitest.config.ts` — thresholds ratchet upward each sprint. Never hardcode these values elsewhere.
+CI enforces per-metric coverage thresholds defined in `vitest.config.ts` (canonical source). Run `npx vitest run --coverage` to check. PRs that lower any threshold will fail. Thresholds ratchet upward — never hardcode them outside `vitest.config.ts`.
 
 ## Property-Based Testing (fast-check)
 
