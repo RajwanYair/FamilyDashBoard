@@ -12,7 +12,8 @@ import { defineConfig, devices } from "@playwright/test";
  *   - Firefox, WebKit, Edge: smoke + a11y only (tagged @cross-browser)
  *   - Mobile Chrome (Pixel 5), Mobile Safari (iPhone 13): smoke + a11y only
  *   - Samsung Internet (Galaxy S9+): smoke + a11y only
- *   - Tablet: iPad Pro 11 (Safari) + Galaxy Tab S4 (Android): smoke + a11y only
+ *   - Tablet: iPad Pro 11 (Safari) + Galaxy Tab S4 (Android) + iPad Mini (Safari): smoke + a11y only
+ *   - Pixel 7 (latest Android): smoke + a11y only
  *
  * Visual regression baselines are Chromium-only by design — per-engine rendering
  * differences are intentional, not bugs. Cross-browser tests validate layout
@@ -104,6 +105,20 @@ export default defineConfig({
     {
       name: "mobile-samsung",
       use: { ...devices["Galaxy S9+"], locale: "he-IL" },
+      testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
+    },
+
+    // ── Mobile: smoke + a11y on Pixel 7 (latest Android) ─────────────────
+    {
+      name: "mobile-pixel7",
+      use: { ...devices["Pixel 7"], locale: "he-IL" },
+      testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
+    },
+
+    // ── Tablet: smoke + a11y on iPad Mini (smaller tablet) ───────────────
+    {
+      name: "tablet-ipad-mini",
+      use: { ...devices["iPad Mini"], locale: "he-IL" },
       testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
     },
   ],

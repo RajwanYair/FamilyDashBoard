@@ -13,12 +13,6 @@ This directory is the canonical entry point for product documentation in FamilyD
 | [../CHANGELOG.md](../CHANGELOG.md)                                       | Versioned release history                                        |
 | [../.github/copilot-instructions.md](../.github/copilot-instructions.md) | Canonical coding rules and project constraints                   |
 
-## Legacy And Archive Boundary
-
-| File                                                   | Status                                                                                                                              |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| [legacy/BestDashBoard.html](legacy/BestDashBoard.html) | Archived legacy dashboard artifact. Preserve for historical reference only; do not treat as the current runtime or source of truth. |
-
 ## Release And Operations Docs
 
 | File                                                                                                       | Purpose                                            |
@@ -45,13 +39,6 @@ This directory is the canonical entry point for product documentation in FamilyD
 | [security.md](security.md)           | Security architecture and threat model                          |
 | [sync.md](sync.md)                   | Configuration sync and export/import                            |
 | [video-cards.md](video-cards.md)     | Video news card architecture and CSP considerations             |
-
-## Archived / Historical
-
-| File                                                                   | Description                                               |
-| ---------------------------------------------------------------------- | --------------------------------------------------------- |
-| [legacy/card-architecture-audit.md](legacy/card-architecture-audit.md) | Card migration audit: FdbCard adoption status (completed) |
-| [legacy/BestDashBoard.html](legacy/BestDashBoard.html)                 | Archived single-file dashboard (v13.10.0 snapshot)        |
 
 ## Documentation Rules
 

@@ -82,24 +82,17 @@ Use this agent when the task is primarily about one of the following:
 
 ## Architecture Rules
 
-- Use `tool_search` before calling any deferred tool (e.g. `mcp_github_*`, `run_task`, `mcp_fetch_*`)
-- Use `memory { command: "view", path: "/memories/repo/project-knowledge.md" }` to recall repo-specific conventions before making assumptions
-- Use `fetch_webpage` or the MCP `fetch` server to test upstream API responses live when debugging data flow issues
-- Use `mcp_github_*` tools for issue/PR operations when the task involves tracking or linking work items
+- Use `tool_search` before calling any deferred tool
+- Use `memory { command: "view", path: "/memories/repo/project-knowledge.md" }` to recall repo conventions
+- Use `fetch_webpage` to test upstream API responses live when debugging
 
-## Proxy rule: `cGet()` returns `null` (not `undefined`) on cache miss — check `!== null` (rule 22)
+## Proxy & Cache Rules (see `copilot-instructions.md` rules #7–#8, #22)
 
-- Browser-side `fetch()` only — no server
-- Prefer worker-backed fetch helpers when the source is supported by the Worker
-- CORS proxy fallback: direct -> `allorigins` -> `codetabs` -> `corsproxy.io`
+- Browser-side `fetch()` only — no server. `cGet()` returns `null` on miss (not `undefined`)
+- CORS proxy fallback: direct → `allorigins` → `codetabs` → `corsproxy.io`
 - Dual-layer cache: in-memory Map + localStorage (`dash_v2_*`, 7-day eviction)
-- Functions: `cGet(key,TTL)` / `cSet(key,data)` / `cGetStale(key)`
-- Fetch: `fetchWithTimeout(url, 8000)` via AbortController
-- Proxy race: `raceProxies(url)` only where the source module already uses it
 - Sync: `setSync(id, 'syncing'|'success'|'error'|'stale')`
-- Locks: `acquireLock(name)` / `releaseLock(name)`
-- Logging: `diagLog(msg)` on every fetch success/error
-- Visibility: `if (!_pageVisible) return;` guard in all loaders or `isPageVisible()` where the module uses the helper
+- Visibility: `if (!_pageVisible) return;` guard in all loaders
 
 ## Worker KV Stale Pattern (ADR-013, ADR-015)
 
@@ -132,20 +125,7 @@ Reference ADRs: [ADR-013](../docs/adr/ADR-013-kv-stale-cache.md) · [ADR-015](..
 
 ## Sources Already In Use
 
-| Source      | API                       | Refresh        | Notes                                                     |
-| ----------- | ------------------------- | -------------- | --------------------------------------------------------- |
-| Weather     | Open-Meteo                | 30 min         | Current + hourly + 7-day forecast                         |
-| Hebrew Date | Hebcal converter          | 3 hours        |                                                           |
-| Shabbat     | Hebcal shabbat            | 6 hours        |                                                           |
-| Holidays    | Hebcal hebcal             | 12 hours       |                                                           |
-| Stocks      | Yahoo Finance v8/chart    | 5 min / 30 min | ~15 symbols via `raceProxies` + `runConcurrent(tasks, 4)` |
-| BTC         | CoinGecko fallback        | 5 min          | Yahoo crypto fails through CORS                           |
-| News        | 17 Hebrew RSS feeds       | 15 min         | Via CORS proxy                                            |
-| Currency    | ER-API + exchangerate-api | 1 hour         | USD/EUR/GBP -> ILS + Gold/Silver via Yahoo                |
-| Calendar    | Google Calendar ICS       | 15 min         | Native parser + iframe fallback                           |
-| Alerts      | tzevaadom.co.il           | 60s / 5min     | Active / idle interval                                    |
-| Halacha     | Sefaria                   | 12 hours       | Daily halacha ticker                                      |
-| Motivation  | Static quotes             | 2 min          | No network                                                |
+See `.github/instructions/dashboard.instructions.md` §Per-Pane Refresh Intervals for the full table. Key sources: Open-Meteo (weather, 30min) · Yahoo v8/chart (stocks, 5/30min) · Hebcal (hebrew, 3–12h) · 17 RSS feeds (news, 15min) · ER-API (currency, 1h) · tzevaadom (alerts, 60s/5min) · Sefaria (halacha, 12h).
 
 ## Expected Output
 

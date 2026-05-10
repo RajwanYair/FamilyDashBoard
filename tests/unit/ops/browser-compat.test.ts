@@ -69,6 +69,8 @@ describe("Playwright config — cross-browser coverage", () => {
     "tablet-safari",
     "tablet-android",
     "mobile-samsung",
+    "mobile-pixel7",
+    "tablet-ipad-mini",
   ] as const;
 
   for (const project of REQUIRED_PROJECTS) {
@@ -79,13 +81,13 @@ describe("Playwright config — cross-browser coverage", () => {
 
   it("smoke tests run on all cross-browser projects", () => {
     const smokeMatches = PLAYWRIGHT_CONFIG.match(/smoke\\?\.spec\\?\.ts/g);
-    // At least 8 projects reference smoke (all cross-browser + primary)
-    expect(smokeMatches?.length ?? 0).toBeGreaterThanOrEqual(8);
+    // At least 10 projects reference smoke (all cross-browser + primary)
+    expect(smokeMatches?.length ?? 0).toBeGreaterThanOrEqual(10);
   });
 
   it("accessibility tests run on all cross-browser projects", () => {
     const a11yMatches = PLAYWRIGHT_CONFIG.match(/accessibility\\?\.spec\\?\.ts/g);
-    expect(a11yMatches?.length ?? 0).toBeGreaterThanOrEqual(8);
+    expect(a11yMatches?.length ?? 0).toBeGreaterThanOrEqual(10);
   });
 });
 
@@ -114,5 +116,31 @@ describe(".browserslistrc — version sanity", () => {
     const samsung = targets.find((t) => /^Samsung\s*>=?\s*\d+$/i.test(t));
     const version = samsung?.match(/\d+/)?.[0];
     expect(Number(version)).toBeGreaterThanOrEqual(23);
+  });
+});
+
+describe(".browserslistrc — implicit Chromium/WebKit coverage", () => {
+  it("documents Chromium-based browsers (Brave, Vivaldi, Arc, Yandex)", () => {
+    expect(BROWSERSLIST).toContain("Chromium-based");
+  });
+
+  it("documents WebKit-based browsers (UC Browser, QQ Browser)", () => {
+    expect(BROWSERSLIST).toContain("WebKit-based");
+  });
+});
+
+describe(".hintrc — browserslist sync", () => {
+  const HINTRC = readFileSync(resolve(ROOT, ".hintrc"), "utf-8");
+
+  it("includes android chrome (and_chr) target", () => {
+    expect(HINTRC).toContain("and_chr >= 114");
+  });
+
+  it("includes android firefox (and_ff) target", () => {
+    expect(HINTRC).toContain("and_ff >= 128");
+  });
+
+  it("includes android webview target", () => {
+    expect(HINTRC).toContain("android >= 114");
   });
 });

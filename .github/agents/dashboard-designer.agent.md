@@ -74,108 +74,36 @@ Use this agent when the task is primarily about one of the following:
 
 ## Context
 
-- TypeScript modular dashboard (`src/`) built with Vite 8
-- Token-driven design system with glassmorphism accents and six themes
-- RTL Hebrew layout (`dir="rtl"`, `lang="he"`)
-- Target: 55"+ TV screen viewed from ~3 meters
-- 3 screen modes: normal (default), compact, theater
+TypeScript modular dashboard (`src/`) · Vite 8 · Token-driven glassmorphism · 6 themes · RTL Hebrew (`dir="rtl"`) · Target: 55"+ TV at ~3m · 3 screen modes (normal/compact/theater)
 
-## Theme System
+## Layout
 
-- 6 themes: `black` (OLED), `blue`, `matrix`, `amber`, `purple`, `rose`
-- Each overrides `--bg-*`, `--accent*`, `--text-*`, `--card-*`, `--bg-gradient-*` in `src/styles/themes.css`
-- Stored in `localStorage` as `dash_theme`, cycled with `T` key
-- Auto-theme hook (AM/PM switch) in `src/ui/theme.ts`
-
-## Layout (current)
-
-- **Grid**: 3-column `38fr 33fr 29fr` via `src/styles/layout.css`
-- **Header**: Clock, Hebrew + English dates, greeting, temperature, market badge — `src/ui/header.ts + .css`
-- **Ticker bar**: Daily halacha — `src/ui/ticker.ts + .css`
+- **Grid**: 3-column `38fr 33fr 29fr` · **Header**: Clock, dates, greeting, temp, market badge
 - **Cards (12)**: news · weather · stocks · currency · calendar · hebrew-cal · alerts · motivation · tasks · system-info · countdown · video-news
-- **Status bar**: Version, sync dots — `src/ui/status-bar.ts + .css`
-- **Hardware tier**: `data-hw-tier` on `<html>` gates GPU compositing hints (high/mid/low)
+- Each card owns co-located CSS: `src/cards/<name>/<name>.css`; global styles in `src/styles/`
 
-## Card CSS Co-location Rule
-
-Each card owns its CSS file co-located next to its TypeScript:
-
-```text
-src/cards/weather/weather.ts   ← imports
-src/cards/weather/weather.css  ← weather-only styles
-src/ui/config-panel.ts         ← imports
-src/ui/config-panel.css        ← component-scoped styles
-```
-
-Global styles (tokens, layout, animation) remain in `src/styles/`.
-
-## CSS Layer Order
+## CSS Layer Order & Rules (see `css.instructions.md`)
 
 ```css
 @layer tokens, themes, base, layout, components, animations;
 ```
 
-Always add new rules to the correct layer. No duplicate selectors.
-
-## Hard Constraints
-
 - Always use CSS custom properties — never hardcode colors
-- Use `border-right` for RTL accent borders
-- Keep `backdrop-filter: blur(16px)` on all cards
-- Respect `prefers-reduced-motion` (in `a11y.css`)
-- Stock columns: `width` + `flex-shrink: 0` (NOT `min-width`)
+- `backdrop-filter: blur(16px)` on all cards · Respect `prefers-reduced-motion`
 - Card content: tile/grid blocks — never plain vertical lists (except news/stock rows)
-- `data-card-id` must match registry ID exactly (`"hebrew-cal"`, `"calendar"`, etc.)
+- `data-card-id` must match registry ID exactly
 
 ## Shared Card State Classes
 
-Use these classes to communicate card state — do not invent per-card equivalents:
+| Class            | Purpose                                              |
+| ---------------- | ---------------------------------------------------- |
+| `.card-empty`    | No data (flex center, italic, 50% opacity)           |
+| `.card-error`    | Fetch/parse failure (`--negative` color)             |
+| `.card-loading`  | Spinner overlay                                      |
+| `.card-skeleton` | Shimmer placeholder rows                             |
+| `.card--empty/--error/--stale` | BEM modifiers on `.card` element       |
 
-| Class            | Purpose                                                              |
-| ---------------- | -------------------------------------------------------------------- |
-| `.card-empty`    | No data available (flex center, italic, 50% opacity)                 |
-| `.card-error`    | Fetch or parse failure (`::before` warning icon, `--negative` color) |
-| `.card-stale`    | Stale data banner container                                          |
-| `.card-loading`  | Spinner overlay while fetching                                       |
-| `.card-skeleton` | Shimmer placeholder rows                                             |
-| `.card--empty`   | BEM modifier on `.card` element itself — sets `min-height`           |
-| `.card--error`   | BEM modifier — adds negative border tint                             |
-| `.card--stale`   | BEM modifier — adds warning border tint                              |
-
-## Tile-Grid Utilities
-
-Card data content must use rectangular tiles, not plain lists:
-
-```css
-/* Option 1: BEM utility (inside .card__body) */
-.card__grid {
-  /* auto-fit minmax(120px, 1fr) */
-}
-.card__tile {
-  /* bordered tile */
-}
-.card__tile-label {
-  /* uppercase label */
-}
-.card__tile-value {
-  /* bold value */
-}
-
-/* Option 2: standalone for ad-hoc grids */
-.tile-grid {
-  /* configurable via --tile-min-width, --tile-gap */
-}
-```
-
-## Design Token Reference (tokens.css)
-
-Key tokens relevant to TV readability:
-
-- `--card-min-height: 160px` — minimum height for 3 m viewing distance
-- `--text-base` through `--text-4xl` — fluid typography via `clamp()`
-- `--radius-sm/md/lg/xl` — consistent corner radii
-- `--shadow-sm/md/lg` — depth hierarchy
-- `--duration-fast/normal/slow` — animation timing
+For tile-grid utilities (`.card__grid`, `.tile-grid`) and design tokens (`--card-min-height`, `--text-*`, `--radius-*`), see `src/styles/tokens.css` and `src/styles/components.css`.
 
 ## Output Expectations
 

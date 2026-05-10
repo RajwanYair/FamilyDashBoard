@@ -6,34 +6,15 @@ argument-hint: "Describe what changed: new card name, changed CSS property, upda
 
 # Update Tests — FamilyDashBoard
 
-## Infrastructure
+> **Before acting**, read `.github/instructions/tests.instructions.md` for full conventions (helpers, mocking, cache rules, timer patterns, DOM tests, coverage thresholds). This skill covers only the **step-by-step workflow** and **templates** not in the instructions file.
 
-- **Runner**: Vitest 4 + happy-dom (zero real browser)
-- **Location**: `tests/unit/` — one file per source file
-- **Current baseline**: read `.github/instructions/workspace.instructions.md` or the latest CI report before hardcoding counts in docs
-- **Baseline command**: `npx vitest run` (must exit 0, 0 failures)
-- **Coverage**: `npx vitest run --coverage` → repo thresholds 94.2 / 85.4 / 94.5 / 95.6 (statements / branches / functions / lines), canonical source `vitest.config.ts`. Target ≥95% per file when adding new modules.
-
-## How to Run
+## Quick Commands
 
 ```powershell
 npx vitest run                                    # all tests
 npx vitest run tests/unit/cards/weather.test.ts  # single file
 npx vitest run --coverage                         # with coverage report
-npx vitest run --reporter=verbose                 # see each test name
 ```
-
-## Floor Rules (NEVER violate)
-
-1. All tests use `vi.mock()` for external deps — no real network, no real timers by default
-2. `vi.resetModules()` per test only when module-level state bleeds between tests
-3. After every `vi.useFakeTimers()` → `vi.useRealTimers()` in afterEach
-4. `vi.setSystemTime()` required when testing time-sensitive functions (greetings, birthday, today-strip)
-5. Module state bleed: **never** assert `toBeNull()` on shared module-level variables if prior tests may set them
-6. `cGet()`/`cGetStale()` return `null` (not `undefined`) — check `!== null`
-7. `for (let i = 0; i < 50; i++) await Promise.resolve()` flushes async ticker/loader operations
-8. Append new suites at end of file; do not reorder existing suites
-9. Prefer extracting repeated DOM builders and fixtures before adding more inline `document.body.innerHTML` blocks in large files
 
 ## File Map
 
@@ -128,57 +109,9 @@ describe("<Name> — init()", () => {
 
 Then add `"tests/unit/cards/<name>.test.ts"` reference to `vitest.config.ts` include glob if needed (usually auto-detected).
 
-## Adding Coverage Tests for Uncovered Lines
+## Coverage & Patterns
 
-1. Run `npx vitest run --coverage` to identify uncovered lines
-2. Read the source lines to understand the branch
-3. Append a new `describe` block at the end of the existing test file
-4. Key patterns:
-
-### Stale-while-revalidate cache path
-
-```typescript
-// Write expired data to localStorage; cGetStale reads it even past TTL
-cClear();
-localStorage.setItem("dash_v2_<key>", JSON.stringify({ data: FIXTURE, ts: 0 }));
-vi.mocked(cGet).mockReturnValue(null); // force cache miss
-```
-
-### Proxy !r.ok branch
-
-```typescript
-vi.mocked(fetchWithTimeout).mockResolvedValue({ ok: false, json: vi.fn() } as unknown as Response);
-// Verify no throw and function returns gracefully
-```
-
-### allorigins proxy unwrapping
-
-```typescript
-vi.mocked(fetchWithTimeout).mockResolvedValue({
-  ok: true,
-  json: () => Promise.resolve({ contents: JSON.stringify(FIXTURE) }),
-} as unknown as Response);
-```
-
-### Time-sensitive functions (greeting, birthday, today-strip)
-
-```typescript
-vi.useFakeTimers();
-vi.setSystemTime(new Date("2024-06-15T08:00:00")); // morning = greet with name
-// ... test ...
-vi.useRealTimers();
-```
-
-## Performance Guidance
-
-When updating an existing large test file, look for these smells before adding more assertions:
-
-- repeated `document.body.innerHTML` scaffolds
-- repeated `vi.resetModules()` that can be limited to stateful suites only
-- repeated `vi.useFakeTimers()` that can be grouped in a single `describe`
-- duplicated fixtures that belong in `tests/unit/helpers/`
-
-Prefer reducing churn in the big suites rather than adding another one-off fixture block.
+For cache-path, proxy, timer, and DOM testing patterns, see `.github/instructions/tests.instructions.md` §Cache Test Rules / §Timer Tests / §DOM Tests.
 
 ## Fixing Broken Tests
 

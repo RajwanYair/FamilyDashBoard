@@ -38,157 +38,113 @@
     "extensions": {
         "eslint": {
             "id": "dbaeumer.vscode-eslint",
-            "copilot_role": "get_errors provides inline diagnostics; fix-lint prompt auto-fixes; run_task triggers workspace lint",
-            "token_hint": "Prefer get_errors over running eslint in terminal when checking a single file"
+            "token_hint": "Prefer get_errors over terminal lint for single-file checks"
         },
         "prettier": {
             "id": "esbenp.prettier-vscode",
-            "copilot_role": "Format-on-save ensures code output matches project style without extra tool calls"
+            "token_hint": "Format-on-save — no formatting fixups needed"
         },
         "vitest": {
             "id": "vitest.explorer",
-            "copilot_role": "run_task '🔬 Vitest: Run All Tests' or '🔬 Vitest: Current File' preferred over raw npx vitest",
-            "token_hint": "Use run_task for test execution; testFailure deferred tool for inline failure context"
+            "token_hint": "Use runTests or run_task over raw npx vitest"
         },
         "playwright": {
             "id": "ms-playwright.playwright",
-            "copilot_role": "E2E test runner via run_task '🎭 Playwright: E2E Tests'; MCP playwright server for in-chat browser automation",
-            "token_hint": "Use view_image on test-results/ screenshots to diagnose VR failures"
+            "token_hint": "Use view_image on test-results/ for VR failure diagnosis"
         },
         "gitlens": {
             "id": "eamodio.gitlens",
-            "copilot_role": "Git blame/history via GitKraken MCP; supplements vscode_listCodeUsages with change attribution"
+            "token_hint": "Git history via GitKraken MCP"
         },
         "github-actions": {
-            "id": "GitHub.vscode-github-actions",
-            "copilot_role": "Workflow YAML validation, auto-complete for action inputs, inline run status"
+            "id": "GitHub.vscode-github-actions"
         },
         "webhint": {
             "id": "webhint.vscode-webhint",
-            "copilot_role": "Browser compat warnings in get_errors; validates .browserslistrc compliance inline"
+            "token_hint": "Browser compat via get_errors"
         },
         "spell-checker": {
             "id": "streetsidesoftware.code-spell-checker",
-            "copilot_role": "Hebrew + English spell-check diagnostics surfaced via get_errors on markdown files"
+            "token_hint": "Spell-check via get_errors (HE+EN)"
         },
         "todo-tree": {
-            "id": "Gruntfuggly.todo-tree",
-            "copilot_role": "Tracks TODO/FIXME/HACK comments; useful for dead-code sweeps and pre-release audits"
+            "id": "Gruntfuggly.todo-tree"
         },
         "stylelint": {
             "id": "stylelint.vscode-stylelint",
-            "copilot_role": "CSS diagnostics in get_errors; enforces layer order, custom-property usage, no hardcoded colors"
+            "token_hint": "CSS diagnostics via get_errors"
         },
         "markdownlint": {
             "id": "DavidAnson.vscode-markdownlint",
-            "copilot_role": "Markdown diagnostics via get_errors; run_task '📝 Markdownlint: Docs' for full sweep"
+            "token_hint": "Markdown diagnostics via get_errors"
         },
         "edge-devtools": {
-            "id": "ms-edgetools.vscode-edge-devtools",
-            "copilot_role": "Lighthouse/axe integration; supplements LHCI CI checks for local preview"
+            "id": "ms-edgetools.vscode-edge-devtools"
         },
         "powershell": {
             "id": "ms-vscode.powershell",
-            "copilot_role": "Terminal profile + script debugging; all run_in_terminal commands execute in PowerShell",
-            "token_hint": "Never emit Unix commands — settings.json pins 'PowerShell Fast' as default profile"
+            "token_hint": "All terminal commands must be PowerShell"
         },
         "git-graph": {
-            "id": "mhutchie.git-graph",
-            "copilot_role": "Visual branch/commit explorer; supplements gitkraken MCP blame/log for branch topology questions"
+            "id": "mhutchie.git-graph"
         },
         "editorconfig": {
             "id": "EditorConfig.EditorConfig",
-            "copilot_role": "Auto-applies .editorconfig on save — no formatting corrections needed from Copilot",
-            "token_hint": "File formatting is handled automatically; never add whitespace/eol fixups to edits"
+            "token_hint": "Format handled on save — skip whitespace fixups"
         },
         "html-css": {
-            "id": "ecmel.vscode-html-css",
-            "copilot_role": "CSS class/ID completion in HTML; reduces need for semantic_search on style references",
-            "token_hint": "User gets inline suggestions — Copilot can assume class names are valid if in src/styles/"
+            "id": "ecmel.vscode-html-css"
         },
         "coverage-gutters": {
             "id": "ryanluker.vscode-coverage-gutters",
-            "copilot_role": "Displays coverage inline from lcov.info after vitest --coverage. Toggle Watch in status bar.",
-            "token_hint": "Direct user to 'Watch' mode after running coverage — no need to re-read lcov.info manually"
+            "token_hint": "User sees coverage inline — no need to parse lcov.info"
         },
         "error-lens": {
             "id": "usernamehw.errorlens",
-            "copilot_role": "Shows all diagnostics inline in the editor — ESLint, TypeScript, Stylelint, webhint, spell-check. User sees errors immediately.",
-            "token_hint": "User already sees inline errors — get_errors confirms what user sees without terminal round-trip"
+            "token_hint": "User already sees inline errors — get_errors confirms"
         },
         "console-ninja": {
             "id": "wallabyjs.console-ninja",
-            "copilot_role": "Inline console/diagLog output in editor during debugging. User sees values without switching to terminal.",
-            "token_hint": "For debugging data flow issues, user can read inline values — Copilot doesn't need to add temporary console.log"
+            "token_hint": "User sees diagLog inline — no temp logging needed"
         },
         "baseline-lens": {
-            "id": "kwesinavilot.baseline-lens",
-            "copilot_role": "Inline CSS/JS Baseline availability annotations. Shows browser compat status next to CSS properties.",
-            "token_hint": "Supplements webhint — Copilot can assume user is informed about compat status before asking"
+            "id": "kwesinavilot.baseline-lens"
         },
         "version-lens": {
             "id": "pflannery.vscode-versionlens",
-            "copilot_role": "Shows latest vs installed package versions inline in package.json. User sees outdated deps at a glance.",
-            "token_hint": "No need to run npm outdated in terminal — user already sees version badges inline"
+            "token_hint": "User sees outdated deps inline — skip npm outdated"
         },
         "bookmarks": {
-            "id": "alefragnani.bookmarks",
-            "copilot_role": "Mark and navigate key code locations. Useful for debugging complex card/adapter chains across files."
+            "id": "alefragnani.bookmarks"
         },
         "mermaid-chart": {
-            "id": "mermaidchart.vscode-mermaid-chart",
-            "copilot_role": "Mermaid diagram preview in markdown files. Validates architecture diagrams in docs/."
+            "id": "mermaidchart.vscode-mermaid-chart"
         },
         "drawio": {
-            "id": "hediet.vscode-drawio",
-            "copilot_role": "Draw.io diagram editing. SVGs in .github/assets/ can be edited visually."
+            "id": "hediet.vscode-drawio"
         },
         "caniuse": {
-            "id": "akamud.vscode-caniuse",
-            "copilot_role": "Quick Can I Use lookup for CSS/JS features. Supplements webhint for specific feature queries.",
-            "token_hint": "Use fetch_webpage on caniuse.com only when extension lookup is insufficient"
+            "id": "akamud.vscode-caniuse"
         },
         "svg-preview": {
-            "id": "jock.svg",
-            "copilot_role": "SVG preview and editing. Use view_image on SVG files in .github/assets/ for visual inspection."
+            "id": "jock.svg"
         },
         "browserslist": {
-            "id": "webben.browserslist",
-            "copilot_role": "Syntax highlighting and validation for .browserslistrc. Ensures browser targets are valid."
+            "id": "webben.browserslist"
         }
     },
     "tokenOptimization": {
         "strategy": "context-economy",
         "rules": [
-            "Instructions use applyTo globs — only loaded when relevant files are edited",
-            "Skills auto-discovered by description — invoke read_file only when skill matches",
-            "Agents delegate via handoffs — avoid re-explaining domain rules in prompts",
-            "run_task preferred over run_in_terminal for workspace-defined commands (20 tasks defined)",
-            "runTests preferred over terminal vitest for test validation after edits",
-            "get_errors preferred over running lint/tsc in terminal for single-file checks",
-            "get_errors surfaces ESLint + Stylelint + webhint + markdownlint + spell-check diagnostics in one call",
-            "tool_search once per MCP tool family — broad queries reduce round-trips",
-            "multi_replace_string_in_file for batch edits — single tool call vs N sequential",
-            "search_subagent for multi-file exploration — faster than sequential file_search/grep_search",
-            "runSubagent for multi-step tasks — keeps main context clean and focused",
-            "memory repo scope for frequently-referenced facts — avoids repeated lookups",
-            "Deferred tools stay unloaded until needed — never eagerly load all MCP tools",
-            "EditorConfig + Prettier format-on-save eliminate formatting fixups from edits",
-            "PowerShell profile pins 'PowerShell Fast' (-NoLogo) — never suggest bash alternatives",
-            "Error Lens shows errors inline — user already sees diagnostics, so confirm rather than re-explain",
-            "Coverage Gutters shows uncovered lines — point user to Watch mode instead of parsing lcov.info",
-            "Console Ninja shows diagLog() inline — no need to add temp logging for debugging",
-            "Version Lens shows outdated deps inline — skip npm outdated terminal calls",
-            "Baseline Lens shows CSS compat inline — supplements webhint without extra tool calls",
-            "Color Highlight reveals hardcoded colors inline — skip grepping for hex values",
-            "TODO Tree tracks TODO/FIXME locations — skip grepping for TODO comments",
-            "Hooks: PreToolUse guards duplicate files, bad context, terminal misuse, rename without usages, parallel semantic_search",
-            "Hooks: PostToolUse auto-reminds RTL/CSS/cache/dialog conventions + checks exit codes after terminal",
-            "read_file large ranges (50+ lines) over many small reads — fewer round-trips",
-            "Parallel independent reads — read multiple files in same turn when possible",
-            "grep_search with alternation (word1|word2) — single search for multiple patterns",
-            "vscode_listCodeUsages before removing exports — prevents breaking references",
-            "view_image for VR screenshots — visual inspection over guessing at layout issues"
+            "Instructions use applyTo globs — only loaded when relevant",
+            "get_errors aggregates ESLint + Stylelint + webhint + markdownlint + spell-check",
+            "run_task / runTests over terminal for predefined workspace commands",
+            "multi_replace_string_in_file for batch edits",
+            "search_subagent / runSubagent for multi-file exploration",
+            "tool_search once per MCP tool family — broad queries",
+            "Deferred tools stay unloaded until needed",
+            "Error Lens / Coverage Gutters / Console Ninja / Version Lens show data inline — confirm, don't re-explain",
+            "Hooks: PreToolUse guards duplicates + context; PostToolUse auto-reminds conventions"
         ]
     }
 }

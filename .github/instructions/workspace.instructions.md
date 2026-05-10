@@ -72,4 +72,4 @@ news · weather · stocks · currency · calendar · hebrew-cal · alerts · mot
 | Init     | `safeLoad()` wrappers → `Promise.allSettled` · per-pane `setInterval` · startup self-check                                                                                             |
 | Keyboard | `T` theme · `D` diagnostics · `A` alerts · `S` config · `N` dimmer · `+/-` font · `P` print · `B` bookmarks · `H/?` help · `Esc` close                                                 |
 | Browsers | Chrome 114+ · Edge 114+ · Firefox 128+ · Firefox ESR · Safari 17.4+ · Opera 100+ · Samsung 23+ · iOS 17.4+ · Android 114+ · ChromeAndroid 114+ · FirefoxAndroid 128+ · OperaMobile 80+ |
-| E2E      | Playwright: Chromium (all tests) · Firefox/WebKit/Edge/Mobile-Chrome/Mobile-Safari/Tablet-Safari/Tablet-Android/Mobile-Samsung (smoke + a11y)                                          |
+| E2E      | Playwright: Chromium (all tests) · Firefox/WebKit/Edge/Mobile-Chrome/Mobile-Safari/Tablet-Safari/Tablet-Android/Mobile-Samsung/Mobile-Pixel7/Tablet-iPad-Mini (smoke + a11y)             |
