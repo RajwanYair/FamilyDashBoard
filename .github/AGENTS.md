@@ -53,7 +53,42 @@
 - **Model lock**: prompt frontmatter `model: "Name (copilot)"` for deterministic output
 - **PowerShell only**: all terminal commands must be valid PowerShell (Windows)
 - **Prompts**: 17 available — use `/sprint` for roadmap work, `/release-check` for gates
-- **Hooks**: `PreToolUse` guards (no duplicate files, context in edits, prefer run_task); `PostToolUse` reminds conventions
+- **Hooks**: `PreToolUse` guards (no duplicate files, context in edits, prefer run_task, listUsages before rename, no parallel semantic_search); `PostToolUse` reminds conventions + checks exit codes
+
+## Slash Prompts (17)
+
+| Prompt | Purpose |
+|--------|---------|
+| `/sprint` | Implement next N roadmap sprints in priority order |
+| `/release-check` | Full pre-release checklist — all gates must be green |
+| `/version-bump` | Bump version across all 16 documented files |
+| `/fix-lint` | Fix all ESLint and TypeScript errors to zero warnings |
+| `/fix-quality` | Fix quality issues found by reviewer |
+| `/test-coverage` | Increase test coverage for a specific module |
+| `/code-review` | Review code for quality, security, and conventions |
+| `/security-audit` | OWASP Top 10 audit of the codebase |
+| `/browser-compat` | Check browser compatibility of new features |
+| `/debug-card` | Debug a broken or stale dashboard card |
+| `/worker-debug` | Debug a failing worker route or upstream API |
+| `/worker-route` | Add or modify a Cloudflare Worker route |
+| `/add-card` | Add a new dashboard card from scratch |
+| `/add-section` | Add a new section or overlay to the dashboard |
+| `/card-contract-audit` | Audit card HTML/TS/CSS contract compliance |
+| `/kv-stale-audit` | Audit KV stale cache fallback patterns |
+| `/modernize-tooling` | Upgrade or modernize build/test tooling |
+
+## MCP Servers (5 committed + 1 parent)
+
+| Server | Type | Token-Saving Role |
+|--------|------|-------------------|
+| `github` | http | PRs, issues, code search — no manual `gh` CLI needed |
+| `fetch` | stdio | Test upstream APIs in chat — no manual curl/Invoke-WebRequest |
+| `filesystem` | stdio | Read coverage/test output — no manual file parsing |
+| `gitkraken` | http | Git blame, log, diff — no manual `git log` parsing |
+| `playwright` | stdio | Browser automation in chat — no manual E2E debugging |
+| `cloudflare` (parent) | streamableHttp | Workers/KV/D1 management — no manual wrangler CLI |
+
+> All MCP tools are deferred — call `tool_search` before first use. See `.github/copilot/MCP_SERVERS.md` for full docs.
 
 ## Extension-Aware Token Optimization
 

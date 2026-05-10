@@ -1371,7 +1371,7 @@ describe("Config Panel — dirty indicator ", () => {
     input.value = "שינוי";
     input.dispatchEvent(new Event("input", { bubbles: true }));
     expect(gearBtn.textContent).toContain("*");
-    mod.closeConfigPanel(); // first close: shows toast warning 
+    mod.closeConfigPanel(); // first close: shows toast warning
     mod.closeConfigPanel(); // second close: actually closes and clears dirty
     expect(gearBtn.textContent).not.toContain("*");
   });

@@ -25,7 +25,7 @@ tooling/
     base-typescript.json ← Strict TypeScript base (browser / bundler)
     base-node.json       ← Node.js / Cloudflare Worker TypeScript base
   vitest/
-    README.md           ← Preset API docs and usage guide 
+    README.md           ← Preset API docs and usage guide
     base.mjs            ← Shared Vitest defaults (forks pool, mocks, timeouts)
     happy-dom.mjs       ← DOM test preset (extends base, environment: happy-dom)
     node.mjs            ← Node.js test preset (extends base, environment: node)

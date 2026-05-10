@@ -6,7 +6,7 @@
                 "toolNames": [
                     "create_file"
                 ],
-                "message": "Before creating: check if a similar file already exists via file_search. Never duplicate files."
+                "message": "Before creating: check if a similar file already exists via file_search. Never duplicate files. Check applyTo-matched instructions for conventions."
             },
             {
                 "type": "message",
@@ -14,14 +14,35 @@
                     "replace_string_in_file",
                     "multi_replace_string_in_file"
                 ],
-                "message": "Before editing: include 3+ lines of context. Use multi_replace for 2+ independent edits. Never use oldString from summarized docs."
+                "message": "Before editing: read the file first. Include 3+ lines of context. Use multi_replace for 2+ independent edits. Never use oldString from summarized/compacted docs."
             },
             {
                 "type": "message",
                 "toolNames": [
                     "run_in_terminal"
                 ],
-                "message": "Prefer run_task for workspace tasks (Vitest, Playwright, lint, build). Prefer get_errors for single-file diagnostics. PowerShell only — never bash."
+                "message": "Prefer run_task for workspace tasks (Vitest, Playwright, lint, build, coverage). Prefer get_errors for single-file diagnostics (ESLint+Stylelint+webhint+markdownlint+spell). PowerShell only — never bash/Unix. Use ; not && to chain."
+            },
+            {
+                "type": "message",
+                "toolNames": [
+                    "vscode_renameSymbol"
+                ],
+                "message": "Before renaming: call vscode_listCodeUsages first to verify all references. Check that the new name follows project naming conventions (_camelCase for private, cGet/cSet for cache, setSync for sync)."
+            },
+            {
+                "type": "message",
+                "toolNames": [
+                    "semantic_search"
+                ],
+                "message": "Never call semantic_search in parallel with other semantic_search calls. Use grep_search with alternation (word1|word2) for exact matches instead. Use search_subagent for multi-file exploration."
+            },
+            {
+                "type": "message",
+                "toolNames": [
+                    "runSubagent"
+                ],
+                "message": "Subagents are stateless — pass ALL context in one prompt. Specify exact return shape. For read-only exploration use 'Explore' agent. For data flow use 'api-integrator'. For UI use 'dashboard-designer'. For quality gates use 'quality-reviewer'."
             }
         ],
         "PostToolUse": [
@@ -32,7 +53,14 @@
                     "multi_replace_string_in_file",
                     "create_file"
                 ],
-                "message": "Post-edit: verify RTL · CSS vars · cGet→null · textContent · dialog+showModal · layer order · card-id=registry-id. Run get_errors on changed files."
+                "message": "Post-edit checklist: RTL logical props · CSS custom properties only · cGet→null not undefined · textContent not innerHTML · dialog+showModal for overlays · correct @layer · card data-card-id=registry-id. Run get_errors on changed files to catch ESLint+Stylelint+webhint+spell issues."
+            },
+            {
+                "type": "message",
+                "toolNames": [
+                    "run_in_terminal"
+                ],
+                "message": "Post-terminal: if command was a test/lint/build, check exit code. If errors found, fix before proceeding. Coverage Gutters and Error Lens show results inline — point user to them."
             }
         ]
     }

@@ -22,6 +22,8 @@ tools:
   - view_image
   - fetch_webpage
   - runSubagent
+  - search_subagent
+  - runTests
 user-invocable: true
 handoffs:
   - label: Fix failing tests
@@ -81,8 +83,8 @@ Use this agent when:
 | Type errors   | `npx tsc --noEmit`                                      | 0 errors                                    |
 | Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                       |
 | Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                    |
-| Test failures | `npx vitest run`                                        | 0 failures (7037 / 275 suites at v14.5.0)   |
-| Coverage      | `npx vitest run --coverage`                             | stmts 94.2 / branches 85.4 / fn 94.5 / ln 95.6 |
+| Test failures | `npx vitest run`                                        | 0 failures (7221 / 282 suites at v14.13.0)  |
+| Coverage      | `npx vitest run --coverage`                             | stmts 95.7 / branches 88.8 / fn 95.1 / ln 96.7 |
 | OWASP check   | `node scripts/check-owasp.mjs`                          | 0 findings                                  |
 | Build         | `npm run build`                                         | 0 errors                                    |
 | Bundle size   | `npm run check:bundle`                                  | JS gzip ≤ 100 KB · CSS ≤ 26 KB · card ≤ 66 KB |
@@ -91,10 +93,10 @@ Use this agent when:
 
 | Metric     | Threshold |
 | ---------- | --------- |
-| Statements | 94.2%     |
-| Branches   | 85.4%     |
-| Functions  | 94.5%     |
-| Lines      | 95.6%     |
+| Statements | 95.7%     |
+| Branches   | 88.8%     |
+| Functions  | 95.1%     |
+| Lines      | 96.7%     |
 
 Canonical source: `vitest.config.ts`. The thresholds ratchet upward each sprint as targeted tests are added — see Roadmap #8.
 

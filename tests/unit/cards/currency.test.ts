@@ -414,7 +414,7 @@ describe("Currency — renderCurrency change indicators", () => {
   });
 
   it("shows negative change for silver (precision=1, threshold=0.05)", () => {
-    // Silver: precision=1 in CUR_TILES.  
+    // Silver: precision=1 in CUR_TILES.
     // First render: XAG 0.009 → val=1/0.009 ≈ 111.1
     renderCurrency(MOCK_RATES);
     // Second render: XAG 0.0085 → val=1/0.0085 ≈ 117.6 (increase → positive)

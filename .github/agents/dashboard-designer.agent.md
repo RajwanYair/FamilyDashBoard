@@ -22,6 +22,8 @@ tools:
   - tool_search
   - fetch_webpage
   - runSubagent
+  - search_subagent
+  - runTests
 user-invocable: true
 handoffs:
   - label: Implement Data Wiring

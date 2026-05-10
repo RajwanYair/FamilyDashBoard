@@ -1,7 +1,7 @@
 {
-    "version": "1.4.0",
+    "version": "1.5.0",
     "project": "FamilyDashBoard",
-    "appVersion": "14.5.0",
+    "appVersion": "14.13.0",
     "copilot": {
         "enabled": true,
         "features": {
@@ -163,12 +163,14 @@
             "Instructions use applyTo globs — only loaded when relevant files are edited",
             "Skills auto-discovered by description — invoke read_file only when skill matches",
             "Agents delegate via handoffs — avoid re-explaining domain rules in prompts",
-            "run_task preferred over run_in_terminal for workspace-defined commands",
+            "run_task preferred over run_in_terminal for workspace-defined commands (20 tasks defined)",
+            "runTests preferred over terminal vitest for test validation after edits",
             "get_errors preferred over running lint/tsc in terminal for single-file checks",
             "get_errors surfaces ESLint + Stylelint + webhint + markdownlint + spell-check diagnostics in one call",
             "tool_search once per MCP tool family — broad queries reduce round-trips",
             "multi_replace_string_in_file for batch edits — single tool call vs N sequential",
-            "runSubagent for multi-step exploration — keeps main context clean",
+            "search_subagent for multi-file exploration — faster than sequential file_search/grep_search",
+            "runSubagent for multi-step tasks — keeps main context clean and focused",
             "memory repo scope for frequently-referenced facts — avoids repeated lookups",
             "Deferred tools stay unloaded until needed — never eagerly load all MCP tools",
             "EditorConfig + Prettier format-on-save eliminate formatting fixups from edits",
@@ -178,11 +180,15 @@
             "Console Ninja shows diagLog() inline — no need to add temp logging for debugging",
             "Version Lens shows outdated deps inline — skip npm outdated terminal calls",
             "Baseline Lens shows CSS compat inline — supplements webhint without extra tool calls",
-            "Hooks: PreToolUse guards against duplicate files, bad context, and terminal misuse",
-            "Hooks: PostToolUse auto-reminds about RTL/CSS/cache/dialog conventions after edits",
+            "Color Highlight reveals hardcoded colors inline — skip grepping for hex values",
+            "TODO Tree tracks TODO/FIXME locations — skip grepping for TODO comments",
+            "Hooks: PreToolUse guards duplicate files, bad context, terminal misuse, rename without usages, parallel semantic_search",
+            "Hooks: PostToolUse auto-reminds RTL/CSS/cache/dialog conventions + checks exit codes after terminal",
             "read_file large ranges (50+ lines) over many small reads — fewer round-trips",
             "Parallel independent reads — read multiple files in same turn when possible",
-            "grep_search with alternation (word1|word2) — single search for multiple patterns"
+            "grep_search with alternation (word1|word2) — single search for multiple patterns",
+            "vscode_listCodeUsages before removing exports — prevents breaking references",
+            "view_image for VR screenshots — visual inspection over guessing at layout issues"
         ]
     }
 }
