@@ -1991,3 +1991,156 @@ describe("ConfigPanel — dirty indicator", () => {
     expect(ov?.classList.contains("visible")).toBe(false);
   });
 });
+
+// ── confirmEcfgDialog empty passphrase (L1007–1012) ──────────────────────────
+
+describe("ConfigPanel — confirmEcfgDialog empty passphrase error branch", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("shows error message when passphrase input is empty", () => {
+    document.body.innerHTML = `
+      <input id="ecfg-passphrase-input" value="" />
+      <span id="ecfg-dialog-error" hidden></span>
+    `;
+    confirmEcfgDialog();
+    const errEl = document.getElementById("ecfg-dialog-error");
+    expect(errEl?.textContent).toBe("יש להזין סיסמה");
+    expect(errEl?.hidden).toBe(false);
+  });
+
+  it("shows error when passphrase is whitespace-only", () => {
+    document.body.innerHTML = `
+      <input id="ecfg-passphrase-input" value="   " />
+      <span id="ecfg-dialog-error" hidden></span>
+    `;
+    confirmEcfgDialog();
+    const errEl = document.getElementById("ecfg-dialog-error");
+    expect(errEl?.textContent).toBe("יש להזין סיסמה");
+    expect(errEl?.hidden).toBe(false);
+  });
+
+  it("does not throw when error element is absent", () => {
+    document.body.innerHTML = `<input id="ecfg-passphrase-input" value="" />`;
+    expect(() => confirmEcfgDialog()).not.toThrow();
+  });
+});
+
+// ── openEcfgImportDialog with dialog present (L1057–1078) ────────────────────
+
+describe("ConfigPanel — openEcfgImportDialog with dialog element", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("opens the dialog and resolves null on cancel", async () => {
+    document.body.innerHTML = `
+      <dialog id="ecfg-dialog">
+        <span id="ecfg-dialog-desc"></span>
+        <input id="ecfg-passphrase-input" value="" />
+        <span id="ecfg-dialog-error" hidden></span>
+      </dialog>
+    `;
+    const dlg = document.getElementById("ecfg-dialog") as HTMLDialogElement;
+    vi.spyOn(dlg, "showModal").mockImplementation(() => {});
+    openEcfgImportDialog("#ecfg=test");
+    await Promise.resolve();
+    expect(dlg.showModal).toHaveBeenCalled();
+    // Cancel to clean up the pending promise
+    cancelEcfgDialog();
+    await Promise.resolve();
+  });
+
+  it("sets description text for import mode", async () => {
+    document.body.innerHTML = `
+      <dialog id="ecfg-dialog">
+        <span id="ecfg-dialog-desc"></span>
+        <input id="ecfg-passphrase-input" value="old" />
+        <span id="ecfg-dialog-error">old error</span>
+      </dialog>
+    `;
+    const dlg = document.getElementById("ecfg-dialog") as HTMLDialogElement;
+    vi.spyOn(dlg, "showModal").mockImplementation(() => {});
+    openEcfgImportDialog("#ecfg=data");
+    await Promise.resolve();
+    // Input should be cleared
+    const input = document.getElementById("ecfg-passphrase-input") as HTMLInputElement;
+    expect(input.value).toBe("");
+    cancelEcfgDialog();
+    await Promise.resolve();
+  });
+});
+
+// ── Config search box branches (L1340–1367) ──────────────────────────────────
+
+describe("ConfigPanel — config search box filtering", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `
+      <div id="config-overlay">
+        <div id="config-panel">
+          <input id="cfg-search-box" type="text" />
+          <div class="cfg-tabs">
+            <button class="cfg-tab active" data-tab="display">Display</button>
+          </div>
+          <div class="cfg-section active" data-tab="display">
+            <div class="cfg-row">Temperature unit</div>
+            <div class="cfg-row">Font size</div>
+            <span class="cfg-group-label">Group</span>
+          </div>
+          <button id="cfg-save-btn">Save</button>
+          <button id="cfg-close-btn">Close</button>
+        </div>
+      </div>
+      <button id="cfg-gear-btn">⚙️</button>
+    `;
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("filters rows by search text and restores on clear", async () => {
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    const searchBox = document.getElementById("cfg-search-box") as HTMLInputElement;
+    searchBox.value = "temperature";
+    searchBox.dispatchEvent(new Event("input", { bubbles: true }));
+    const rows = document.querySelectorAll<HTMLElement>(".cfg-row");
+    // "Temperature unit" matches, "Font size" does not
+    expect(rows[0]?.hasAttribute("hidden")).toBe(false);
+    expect(rows[1]?.hasAttribute("hidden")).toBe(true);
+    // Clear search restores all
+    searchBox.value = "";
+    searchBox.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(rows[0]?.hasAttribute("hidden")).toBe(false);
+    expect(rows[1]?.hasAttribute("hidden")).toBe(false);
+  });
+});
+
+// ── Ctrl+S within config panel (L1327) ──────────────────────────────────────
+
+describe("ConfigPanel — Ctrl+S save shortcut", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    setupConfigPanelTestDOM();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("Ctrl+S triggers save button click", async () => {
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    const ov = document.getElementById("config-overlay");
+    const saveBtn = document.getElementById("cfg-save-btn")!;
+    const clickSpy = vi.spyOn(saveBtn, "click");
+    ov?.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "s", ctrlKey: true, bubbles: true }),
+    );
+    expect(clickSpy).toHaveBeenCalled();
+  });
+});
