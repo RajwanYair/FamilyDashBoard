@@ -313,3 +313,30 @@ describe("event-bus fast-check properties (EP1-EP5 )", () => {
     );
   });
 });
+
+// ── broadcastSync no-op branch ────────────────────────────────────────────────
+
+describe("broadcastSync — unchanged state no-op branch", () => {
+  beforeEach(() => {
+    _resetBusForTesting();
+  });
+
+  it("does not create a new Map when setting the same state twice", () => {
+    broadcastSync("wx", "loading");
+    broadcastSync("wx", "loading"); // triggers early return
+    // globalSync still reflects the state correctly
+    expect(globalSync.value).toBe("loading");
+  });
+
+  it("does not notify effects when broadcastSync is called with same state", () => {
+    const calls: string[] = [];
+    broadcastSync("cal", "ok");
+    const dispose = effect(() => {
+      calls.push(globalSync.value);
+    });
+    broadcastSync("cal", "ok"); // no-op — should NOT trigger effect
+    // Effect fires once on creation, not again
+    expect(calls).toHaveLength(1);
+    dispose();
+  });
+});

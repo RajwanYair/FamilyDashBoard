@@ -1041,6 +1041,176 @@ describe("Worker — handleWeather route", () => {
     const body = (await res.json()) as { provider: string };
     expect(body.provider).toBe("met.no");
   });
+
+  // ── NWS inner branches (lines 55-86 coverage) ──────────────────────────────
+
+  const validNwsPointsData = {
+    properties: {
+      forecast: "https://api.weather.gov/gridpoints/OKX/33,37/forecast",
+      forecastHourly: "https://api.weather.gov/gridpoints/OKX/33,37/forecast/hourly",
+      timeZone: "America/New_York",
+    },
+  };
+
+  const validNwsForecastData = {
+    properties: {
+      periods: [
+        {
+          number: 1,
+          startTime: "2024-01-01T06:00:00-05:00",
+          endTime: "2024-01-01T18:00:00-05:00",
+          isDaytime: true,
+          temperature: 45,
+          temperatureUnit: "F",
+          windSpeed: "10 mph",
+          windDirection: "NW",
+          shortForecast: "Partly Cloudy",
+          probabilityOfPrecipitation: { value: 20, unitCode: "wmoUnit:percent" },
+          dewpoint: { value: 2, unitCode: "wmoUnit:degC" },
+          relativeHumidity: { value: 55, unitCode: "wmoUnit:percent" },
+        },
+      ],
+    },
+  };
+
+  it("NWS happy path — returns normalized NWS data when all API calls succeed", async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      // 1st call: NWS points
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(validNwsPointsData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      )
+      // 2nd call: NWS hourly forecast
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(validNwsForecastData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      )
+      // 3rd call: NWS daily forecast
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(validNwsForecastData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    const url = new URL("https://worker.dev/api/weather?lat=40.71&lon=-74.01&provider=nws");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string; stale: boolean };
+    expect(body.provider).toBe("nws");
+    expect(body.stale).toBe(false);
+    expect(fetchSpy).toHaveBeenCalledTimes(3);
+  });
+
+  it("NWS branch — points ok but schema parse fails → falls through to Open-Meteo", async () => {
+    vi.spyOn(globalThis, "fetch")
+      // NWS points: ok but invalid schema (missing properties.forecast)
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ wrong: "shape" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      )
+      // Open-Meteo succeeds
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(validOpenMeteoData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    const url = new URL("https://worker.dev/api/weather?lat=40.71&lon=-74.01&provider=nws");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string };
+    // NWS parse fail → KV stale miss → falls through to Open-Meteo
+    expect(body.provider).toBe("open-meteo");
+  });
+
+  it("NWS branch — hourly/daily fetch not ok → falls through", async () => {
+    vi.spyOn(globalThis, "fetch")
+      // NWS points: ok
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(validNwsPointsData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      )
+      // NWS hourly: 503
+      .mockResolvedValueOnce(new Response("error", { status: 503 }))
+      // NWS daily: 503
+      .mockResolvedValueOnce(new Response("error", { status: 503 }))
+      // Open-Meteo succeeds
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(validOpenMeteoData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    const url = new URL("https://worker.dev/api/weather?lat=40.71&lon=-74.01&provider=nws");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string };
+    expect(body.provider).toBe("open-meteo");
+  });
+
+  it("NWS branch — hourly/daily ok but forecast schema parse fails → falls through", async () => {
+    vi.spyOn(globalThis, "fetch")
+      // NWS points: ok
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(validNwsPointsData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      )
+      // NWS hourly: ok but invalid schema
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ properties: { periods: [] } }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      )
+      // NWS daily: ok but invalid schema
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ properties: { periods: [] } }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      )
+      // Open-Meteo succeeds
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(validOpenMeteoData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    const url = new URL("https://worker.dev/api/weather?lat=40.71&lon=-74.01&provider=nws");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string };
+    expect(body.provider).toBe("open-meteo");
+  });
+
+  it("NWS branch — fetch throws → catch fires → falls through", async () => {
+    vi.spyOn(globalThis, "fetch")
+      // NWS points: throws
+      .mockRejectedValueOnce(new Error("network error"))
+      // Open-Meteo succeeds
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(validOpenMeteoData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    const url = new URL("https://worker.dev/api/weather?lat=40.71&lon=-74.01&provider=nws");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string };
+    expect(body.provider).toBe("open-meteo");
+  });
 });
 
 // ── Worker — handleAlerts route ──────────────────────────────────
