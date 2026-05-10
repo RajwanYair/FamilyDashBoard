@@ -78,14 +78,21 @@ function extractExports(src) {
   /** @type {string[]} */
   const names = [];
   // collect suppressed symbols (lines with // dead-export-ok)
+  // Annotation can be on the export line itself OR on the line immediately after
+  // (common for multi-line declarations like `export const X = v.looseObject({`
+  //  where the annotation sits inside the object on the next line).
   /** @type {Set<string>} */
   const suppressed = new Set();
   // Non-global versions of regexes for single-line exec
   const EXPORT_RE_NG =
     /^export\s+(?:(?:async\s+)?function\s*\*?\s*|(?:const|let|var)\s+|class\s+|(?:abstract\s+)?enum\s+)(\w+)/;
   const EXPORT_DEFAULT_RE_NG = /^export\s+default\s+(?:function\s+|class\s+)?(\w+)/;
-  for (const line of src.split("\n")) {
-    if (!line.includes("dead-export-ok")) continue;
+  const lines = src.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const nextLine = lines[i + 1] ?? "";
+    // Check if annotation is on this line or the next line
+    if (!line.includes("dead-export-ok") && !nextLine.includes("dead-export-ok")) continue;
     const m = EXPORT_RE_NG.exec(line) ?? EXPORT_DEFAULT_RE_NG.exec(line);
     if (m?.[1]) suppressed.add(m[1]);
     // also handle named exports on suppressed lines
