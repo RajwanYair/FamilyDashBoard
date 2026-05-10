@@ -121,7 +121,7 @@ vi.mock("@/core/mcp-bridge", () => ({ initMcpBridge: vi.fn() }));
 import { applySeasonClass, applyHiddenCards, applyCardLayout, applyCardSizes, init } from "@/main";
 import { diagLog, getDiagEntries } from "@/core/diag";
 import { flushVitalsReport } from "@/core/vitals-reporter";
-import { cEvict } from "@/core/cache";
+import { cEvict, hydrateFromIdb, migrateLocalStorageToIdb } from "@/core/cache";
 import { initVisibility } from "@/core/idle";
 import { registerSW } from "@/core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "@/core/config";
@@ -140,7 +140,7 @@ import {
 import { initDiagOverlay } from "@/ui/diag-overlay";
 import { initBgImages } from "@/ui/bg-images";
 import { initScreenMode, stepFontScale } from "@/ui/screen-mode";
-import { initNightDimmer, toggleNightDim, setIdleAutoDimMinutes } from "@/ui/night-dimmer";
+import { initNightDimmer, toggleNightDim, setIdleAutoDimMinutes, setWarmTint } from "@/ui/night-dimmer";
 import { initWeatherCard } from "@/cards/weather/weather";
 import { initNewsCard, toggleBookmarkMode } from "@/cards/news/news";
 import { initStocksCard } from "@/cards/stocks/stocks";
@@ -1681,5 +1681,95 @@ describe("Main — init() MCP bridge lazy-load (?mcp=1)", () => {
     });
     init();
     expect(diagLog).toHaveBeenCalledWith(expect.stringContaining("[init] FDB-010"));
+  });
+});
+
+// ── Sprint 7: hydrateFromIdb / migrateLocalStorageToIdb n>0 branches ────────
+
+describe("Main — init() cache hydration branches", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+      hiddenCards: [],
+      cardSizes: {},
+    } as ReturnType<typeof loadConfig>);
+    document.body.innerHTML = "";
+    Object.defineProperty(window, "location", {
+      value: { hash: "", pathname: "/", search: "" },
+      configurable: true,
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+  });
+
+  it("logs hydration count when hydrateFromIdb resolves > 0", async () => {
+    vi.mocked(hydrateFromIdb).mockResolvedValueOnce(5);
+    init();
+    await vi.waitFor(() => {
+      expect(diagLog).toHaveBeenCalledWith(expect.stringContaining("hydrated 5 entries from IDB"));
+    });
+  });
+
+  it("logs migration count when migrateLocalStorageToIdb resolves > 0", async () => {
+    vi.mocked(migrateLocalStorageToIdb).mockResolvedValueOnce(3);
+    init();
+    await vi.waitFor(() => {
+      expect(diagLog).toHaveBeenCalledWith(expect.stringContaining("migrated 3 entries LS→IDB"));
+    });
+  });
+});
+
+// ── Sprint 7: dimWarmTint config branch ──────────────────────────────────────
+
+describe("Main — init() dimWarmTint config", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = "";
+    Object.defineProperty(window, "location", {
+      value: { hash: "", pathname: "/", search: "" },
+      configurable: true,
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+  });
+
+  it("calls setWarmTint(true) when cfg.dimWarmTint is truthy", () => {
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+      hiddenCards: [],
+      cardSizes: {},
+      dimWarmTint: true,
+    } as ReturnType<typeof loadConfig>);
+    init();
+    expect(setWarmTint).toHaveBeenCalledWith(true);
+  });
+
+  it("does NOT call setWarmTint when cfg.dimWarmTint is falsy", () => {
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+      hiddenCards: [],
+      cardSizes: {},
+    } as ReturnType<typeof loadConfig>);
+    init();
+    expect(setWarmTint).not.toHaveBeenCalled();
   });
 });

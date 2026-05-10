@@ -563,4 +563,78 @@ describe("initPerfObserver — PerformanceObserver callbacks", () => {
       expect(true).toBe(true);
     }
   });
+
+  it("LCP observer: entry with only startTime (no renderTime/loadTime)", () => {
+    const cbMap = new Map<string, (list: { getEntries: () => unknown[] }) => void>();
+    vi.stubGlobal("PerformanceObserver", makeObserverStub(cbMap));
+    vi.stubGlobal("performance", {
+      mark: vi.fn(),
+      now: vi.fn().mockReturnValue(100),
+      getEntriesByType: vi.fn().mockReturnValue([]),
+      getEntriesByName: vi.fn().mockReturnValue([]),
+    });
+
+    _resetPerfObserver();
+    initPerfObserver();
+
+    const lcpCb = cbMap.get("largest-contentful-paint")!;
+    // No renderTime, no loadTime → falls back to startTime
+    lcpCb({ getEntries: () => [{ startTime: 250, renderTime: 0, loadTime: 0 }] });
+    expect(getPerfVitals().lcp).toBe(250);
+  });
+
+  it("LCP observer: loadTime fallback when renderTime is undefined", () => {
+    const cbMap = new Map<string, (list: { getEntries: () => unknown[] }) => void>();
+    vi.stubGlobal("PerformanceObserver", makeObserverStub(cbMap));
+    vi.stubGlobal("performance", {
+      mark: vi.fn(),
+      now: vi.fn().mockReturnValue(100),
+      getEntriesByType: vi.fn().mockReturnValue([]),
+      getEntriesByName: vi.fn().mockReturnValue([]),
+    });
+
+    _resetPerfObserver();
+    initPerfObserver();
+
+    const lcpCb = cbMap.get("largest-contentful-paint")!;
+    lcpCb({ getEntries: () => [{ startTime: 999, loadTime: 400 }] });
+    expect(getPerfVitals().lcp).toBe(400);
+  });
+
+  it("FCP observer: entry not named 'first-contentful-paint' is ignored", () => {
+    const cbMap = new Map<string, (list: { getEntries: () => unknown[] }) => void>();
+    vi.stubGlobal("PerformanceObserver", makeObserverStub(cbMap));
+    vi.stubGlobal("performance", {
+      mark: vi.fn(),
+      now: vi.fn().mockReturnValue(100),
+      getEntriesByType: vi.fn().mockReturnValue([]),
+      getEntriesByName: vi.fn().mockReturnValue([]),
+    });
+
+    _resetPerfObserver();
+    initPerfObserver();
+
+    const paintCb = cbMap.get("paint")!;
+    paintCb({ getEntries: () => [{ name: "first-paint", startTime: 100 }] });
+    expect(getPerfVitals().fcp).toBeNull(); // not "first-contentful-paint"
+  });
+
+  it("markStartupComplete is idempotent — second call does not overwrite", () => {
+    vi.stubGlobal("performance", {
+      mark: vi.fn(),
+      now: vi.fn().mockReturnValue(500),
+      getEntriesByType: vi.fn().mockReturnValue([]),
+      getEntriesByName: vi.fn().mockReturnValue([{ startTime: 100 }]),
+    });
+
+    _resetPerfObserver();
+    markStartupComplete();
+    const first = getPerfVitals().startup;
+    expect(first).not.toBeNull();
+
+    // Change performance.now — but startup should not change
+    vi.mocked(performance.now).mockReturnValue(9999);
+    markStartupComplete();
+    expect(getPerfVitals().startup).toBe(first);
+  });
 });
