@@ -9,6 +9,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.16.0] — 2026-05-18
+
+> **7307 tests / 287 suites / 0 failures** · Coverage: 96.0 / 89.2 / 95.2 / 97.0 (commit `15ce535`)
+
+- **Coverage branch ratchet**: +29 tests for `classifyFetchError`, `buildWorkerRoute` branches, cache edge cases (branches 88.9→89.2)
+- **Stryker scope expansion**: 10 new files in mutate scope (97→107 total), covering config-panel, video-news, ai-synthesis, diag-overlay, document-pip, layout-drag, resizer, card-auto-scroll, card-settings-dialog, config-auto-render
+- **fast-check property tests**: 5 new property test files for diag-overlay, document-pip, card-auto-scroll, layout-drag, ai-synthesis
+- **Card source optimization**: weather forecast template compressed via loop generation (64.6→63.8 KB)
+- **D13 per-card budget ratchet**: hard-cap 65→64 KB, warn 15→14 KB
+- **NWS coverage tests**: 5 new tests covering NWS happy-path, inner branch failures, and catch block
+- **Coverage threshold ratchet**: statements 95.9→96.0, branches 89.1→89.2, lines 96.9→97.0
+
+---
+
 ## [14.15.0] — 2026-05-10
 
 > **7252 tests / 282 suites / 0 failures** · Coverage: 95.9 / 88.9 / 95.2 / 96.9

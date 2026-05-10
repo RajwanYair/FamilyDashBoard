@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v14.15.0)
+# FamilyDashBoard — Architecture (v14.16.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -13,7 +13,7 @@ Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.m
 | ---------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking      |
 | Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks            |
-| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 7252 tests / 282 suites     |
+| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 7307 tests / 287 suites     |
 | Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
 | API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
 | Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                               |
@@ -334,7 +334,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; global styles in `src/styles/`
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only; `__USE_PROXIES__=false` disables proxy chain in production builds
-15. **7252 tests / 282 suites / 0 failures** — coverage thresholds: 95.9% statements, 88.9% branches, 95.2% functions, 96.9% lines
+15. **7307 tests / 287 suites / 0 failures** — coverage thresholds: 96.0% statements, 89.2% branches, 95.2% functions, 97.0% lines
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module
