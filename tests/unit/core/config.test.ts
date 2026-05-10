@@ -18,6 +18,9 @@ import {
   readFeatureFlag,
   validateExportPayload,
   resetCardConfig,
+  diffConfigs,
+  auditLocalStorageKeys,
+  removeOrphanedLsKeys,
 } from "@/core/config";
 import {
   DEFAULT_CONFIG,
@@ -1032,5 +1035,71 @@ describe("Config — validateExportPayload edge cases ", () => {
     const result = validateExportPayload({ config: {} });
     expect(result.ok).toBe(false);
     expect(result.errors.some((e) => e.includes("appVersion"))).toBe(true);
+  });
+});
+
+// ── diffConfigs ─────────────────────────────────────────────────────────────
+
+describe("Config — diffConfigs", () => {
+  it("returns empty array for identical configs", () => {
+    const a = loadConfig();
+    const diffs = diffConfigs(a, { ...a });
+    expect(diffs).toEqual([]);
+  });
+
+  it("detects a changed top-level key", () => {
+    const a = loadConfig();
+    const b = { ...a, theme: "blue" as const };
+    const diffs = diffConfigs(a, b);
+    expect(diffs.length).toBe(1);
+    expect(diffs[0]!.key).toBe("theme");
+    expect(diffs[0]!.oldValue).toBe("black");
+    expect(diffs[0]!.newValue).toBe("blue");
+  });
+
+  it("detects multiple changed keys", () => {
+    const a = loadConfig();
+    const b = { ...a, theme: "matrix" as const, tempUnit: "F" as const };
+    const diffs = diffConfigs(a, b);
+    expect(diffs.length).toBe(2);
+    const keys = diffs.map((d) => d.key);
+    expect(keys).toContain("theme");
+    expect(keys).toContain("tempUnit");
+  });
+});
+
+// ── auditLocalStorageKeys / removeOrphanedLsKeys ────────────────────────────
+
+describe("Config — auditLocalStorageKeys", () => {
+  beforeEach(() => localStorage.clear());
+
+  it("returns empty audit when localStorage is empty", () => {
+    const result = auditLocalStorageKeys();
+    expect(result.known).toEqual([]);
+    expect(result.orphaned).toEqual([]);
+    expect(result.total).toBe(0);
+  });
+
+  it("classifies known-prefix keys correctly", () => {
+    localStorage.setItem("dash_v2_config", "{}");
+    const result = auditLocalStorageKeys();
+    expect(result.known).toContain("dash_v2_config");
+    expect(result.orphaned).toEqual([]);
+  });
+
+  it("classifies unknown-prefix keys as orphaned", () => {
+    localStorage.setItem("random_key_abc", "1");
+    const result = auditLocalStorageKeys();
+    expect(result.orphaned).toContain("random_key_abc");
+    expect(result.known).toEqual([]);
+  });
+
+  it("removeOrphanedLsKeys removes only orphaned keys", () => {
+    localStorage.setItem("dash_v2_config", "{}");
+    localStorage.setItem("orphan_xyz", "1");
+    const removed = removeOrphanedLsKeys();
+    expect(removed).toBe(1);
+    expect(localStorage.getItem("dash_v2_config")).toBe("{}");
+    expect(localStorage.getItem("orphan_xyz")).toBeNull();
   });
 });
