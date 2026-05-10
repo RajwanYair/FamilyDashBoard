@@ -62,10 +62,10 @@ export default defineConfig({
       include: ["src/**/*.ts"],
       exclude: ["src/vite-env.d.ts", "src/**/*.d.ts", "src/preview.ts"],
       thresholds: {
-        // Actuals: 96.52 / 89.63 / 95.84 / 97.49 — ratcheted with ~0.1% safety margin.
-        // (v14.17.0): +7 tests (main.ts + perf.ts branch coverage).
-        statements: 96.4,
-        branches: 89.5,
+        // Actuals: 96.55 / 89.74 / 95.84 / 97.51 — ratcheted with ~0.05% safety margin.
+        // (v14.18.0): +6 branch tests (countdown auto-populate, card-auto-scroll).
+        statements: 96.5,
+        branches: 89.7,
         functions: 95.7,
         lines: 97.4,
       },
