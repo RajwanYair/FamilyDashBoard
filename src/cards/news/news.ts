@@ -364,6 +364,13 @@ export function isBookmarkMode(): boolean {
   return _bkmMode;
 }
 
+export function clearAllBookmarks(): void {
+  _bookmarks.clear();
+  saveBookmarks();
+  if (_bkmMode) toggleBookmarkMode();
+  else renderNews(_lastItems);
+}
+
 // Star / read-later IDB ───────────────────────────────
 
 const IDB_NEWS_DB = "fdb-news";
@@ -513,6 +520,11 @@ export function cacheDom(): void {
   elSearchCount = document.getElementById("news-search-count");
   elNewsCount = document.getElementById("news-count");
   if (elBkmPill) elBkmPill.hidden = true;
+  // D11: Popover API bookmark menu
+  const bkmExitBtn = document.getElementById("news-bkm-exit");
+  const bkmClearBtn = document.getElementById("news-bkm-clear");
+  if (bkmExitBtn) bkmExitBtn.addEventListener("click", () => toggleBookmarkMode());
+  if (bkmClearBtn) bkmClearBtn.addEventListener("click", () => clearAllBookmarks());
   // N-Star-UI: read-later drawer
   elStarBtn = document.getElementById("news-star-btn");
   elStarDialog = document.getElementById("news-starred-dialog") as HTMLDialogElement | null;

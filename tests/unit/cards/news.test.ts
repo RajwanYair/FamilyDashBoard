@@ -33,6 +33,7 @@ import {
   getBookmarkKey,
   getBookmarks,
   isBookmarkMode,
+  clearAllBookmarks,
   _resetNewsForTest,
   getStarId,
   starArticle,
@@ -366,6 +367,81 @@ describe("News — toggleBookmarkMode", () => {
     document.body.innerHTML = `<div id="rss-scroll"></div>`;
     cacheDom();
     expect(() => toggleBookmarkMode()).not.toThrow();
+  });
+});
+
+// ── D11: Bookmark popover menu ──
+
+describe("News — clearAllBookmarks", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `<div id="rss-scroll"></div><button id="news-bkm-pill"></button>`;
+    _resetNewsForTest();
+    cacheDom();
+  });
+
+  afterEach(() => {
+    _resetNewsForTest();
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("clears all bookmarks from the set", () => {
+    toggleBookmark("a");
+    toggleBookmark("b");
+    expect(getBookmarks().size).toBe(2);
+    clearAllBookmarks();
+    expect(getBookmarks().size).toBe(0);
+  });
+
+  it("exits bookmark mode when active", () => {
+    toggleBookmark("a");
+    toggleBookmarkMode(); // enable
+    expect(isBookmarkMode()).toBe(true);
+    clearAllBookmarks();
+    expect(isBookmarkMode()).toBe(false);
+  });
+
+  it("persists cleared state to localStorage", () => {
+    toggleBookmark("a");
+    clearAllBookmarks();
+    const stored = JSON.parse(localStorage.getItem("fdb_news_bookmarks") ?? "[]") as string[];
+    expect(stored).toEqual([]);
+  });
+});
+
+describe("News — bookmark popover wiring", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `
+      <div id="rss-scroll"></div>
+      <button id="news-bkm-pill"></button>
+      <button id="news-bkm-exit"></button>
+      <button id="news-bkm-clear"></button>
+    `;
+    _resetNewsForTest();
+    cacheDom();
+  });
+
+  afterEach(() => {
+    _resetNewsForTest();
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("exit button calls toggleBookmarkMode", () => {
+    toggleBookmarkMode(); // enable
+    expect(isBookmarkMode()).toBe(true);
+    document.getElementById("news-bkm-exit")!.click();
+    expect(isBookmarkMode()).toBe(false);
+  });
+
+  it("clear button clears all bookmarks", () => {
+    toggleBookmark("x");
+    toggleBookmark("y");
+    expect(getBookmarks().size).toBe(2);
+    document.getElementById("news-bkm-clear")!.click();
+    expect(getBookmarks().size).toBe(0);
   });
 });
 
