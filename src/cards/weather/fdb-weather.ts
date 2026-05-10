@@ -53,13 +53,7 @@ export class FdbWeatherCard extends FdbCard {
         <div id="wx-alert-banner"></div>
         <div id="wx-week-summary"></div>
         <div class="wx-forecast" id="wx-forecast" aria-live="polite" aria-label="תחזית שבועית">
-          <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
-          <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
-          <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
-          <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
-          <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
-          <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
-          <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
+          ${Array.from({ length: 7 }, () => '<div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>').join("\n          ")}
         </div>
       `);
     }
