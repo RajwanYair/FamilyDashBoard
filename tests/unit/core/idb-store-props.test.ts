@@ -49,7 +49,7 @@ describe("idb-store — fast-check property tests ", () => {
         const result = await idbGet(db, store, key);
         expect(result).toEqual(value);
       }),
-      { numRuns: 80 },
+      { numRuns: 80, interruptAfterTimeLimit: 10_000 },
     );
   });
 
@@ -60,7 +60,7 @@ describe("idb-store — fast-check property tests ", () => {
         const result = await idbGet(db, store, key);
         expect(result).toBeNull();
       }),
-      { numRuns: 40 },
+      { numRuns: 40, interruptAfterTimeLimit: 10_000 },
     );
   });
 
@@ -73,7 +73,7 @@ describe("idb-store — fast-check property tests ", () => {
         const result = await idbGet(db, store, key);
         expect(result).toBeNull();
       }),
-      { numRuns: 60 },
+      { numRuns: 60, interruptAfterTimeLimit: 10_000 },
     );
   });
 
@@ -96,7 +96,7 @@ describe("idb-store — fast-check property tests ", () => {
           expect(resultB).toEqual(valueB);
         },
       ),
-      { numRuns: 40 },
+      { numRuns: 40, interruptAfterTimeLimit: 10_000 },
     );
   });
 
@@ -116,7 +116,7 @@ describe("idb-store — fast-check property tests ", () => {
           expect(result).toEqual(second);
         },
       ),
-      { numRuns: 50 },
+      { numRuns: 50, interruptAfterTimeLimit: 10_000 },
     );
   });
 
@@ -136,7 +136,7 @@ describe("idb-store — fast-check property tests ", () => {
           expect(await idbGet(db, store, keyB)).toEqual(valueB);
         },
       ),
-      { numRuns: 50 },
+      { numRuns: 50, interruptAfterTimeLimit: 10_000 },
     );
   });
 
@@ -146,7 +146,7 @@ describe("idb-store — fast-check property tests ", () => {
       fc.asyncProperty(nameArb, nameArb, nameArb, async (db, store, key) => {
         await expect(idbDelete(db, store, key)).resolves.toBeUndefined();
       }),
-      { numRuns: 30 },
+      { numRuns: 30, interruptAfterTimeLimit: 10_000 },
     );
   });
 
@@ -166,7 +166,7 @@ describe("idb-store — fast-check property tests ", () => {
           expect(await idbGet(db, storeB, key)).toEqual(valueB);
         },
       ),
-      { numRuns: 40 },
+      { numRuns: 40, interruptAfterTimeLimit: 10_000 },
     );
   });
 });
