@@ -37,6 +37,9 @@
  *             A08 importScripts dynamic URL, A09 stack trace in response, A01 location redirect from input.
  * (v14.17.0) — added A03 createContextualFragment, A05 no-cors mode, A02 AES-ECB mode,
  *              A07 hardcoded API key, A04 JSON.parse prototype pollution, A10 EventSource SSRF.
+ * (v14.18.0) — added A03 Range.createContextualFragment, A05 Access-Control-Expose-Headers *,
+ *              A02 predictable UUID v1, A07 token in cookie without Secure, A04 constructor.prototype,
+ *              A09 navigator.sendBeacon credentials.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -1264,6 +1267,62 @@ const RULES = [
     severity: "warn",
     pattern: /new\s+EventSource\s*\(\s*(?!['"]https?:\/\/)/,
     safeMarkers: ["test", "spec", "// owasp-allow:A10", "allowlist", "ALLOWED_"],
+  },
+
+  // --- v14.18.0 rules ---
+
+  // A03 — Injection: Range.createContextualFragment with dynamic content
+  {
+    category: "A03",
+    label: "Range.createContextualFragment — use textContent or Trusted Types",
+    severity: "error",
+    pattern: /\.createContextualFragment\s*\(/,
+    safeMarkers: ["trustedHTML", "sanitize", "// owasp-allow:A03", "test", "spec"],
+  },
+
+  // A05 — Security Misconfiguration: Access-Control-Expose-Headers wildcard
+  {
+    category: "A05",
+    label: "Access-Control-Expose-Headers wildcard — enumerate specific headers",
+    severity: "warn",
+    pattern: /['"]Access-Control-Expose-Headers['"].*['"]\*['"]/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A05"],
+  },
+
+  // A02 — Cryptographic Failures: predictable UUID v1 used as token
+  {
+    category: "A02",
+    label: "UUID v1 is time-based and predictable — use v4 or crypto.randomUUID()",
+    severity: "warn",
+    pattern: /\buuidv?1\s*\(|uuid\.v1\s*\(/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A02"],
+  },
+
+  // A07 — Authentication Failures: token in cookie without Secure flag
+  {
+    category: "A07",
+    label: "Cookie set without Secure flag — tokens leak over HTTP",
+    severity: "warn",
+    pattern: /document\.cookie\s*=(?!.*[Ss]ecure)/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A07", "Secure"],
+  },
+
+  // A04 — Insecure Design: constructor.prototype manipulation
+  {
+    category: "A04",
+    label: "constructor.prototype manipulation — prototype pollution vector",
+    severity: "error",
+    pattern: /\.constructor\.prototype\b/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A04", "Object.freeze"],
+  },
+
+  // A09 — Logging Failures: navigator.sendBeacon with credential-like payload
+  {
+    category: "A09",
+    label: "sendBeacon with credential-like payload — audit for PII leakage",
+    severity: "warn",
+    pattern: /navigator\.sendBeacon\s*\([^)]*(?:token|secret|password|credential|apiKey|auth)/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A09"],
   },
 ];
 
