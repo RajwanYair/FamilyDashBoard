@@ -52,6 +52,12 @@
  *   - layout-drag.ts         : mutation score ≥ 75%
  *   - resizer.ts             : mutation score ≥ 75%
  *   - ai-synthesis.ts        : mutation score ≥ 75%
+ *   - validation.ts          : mutation score ≥ 75%
+ *   - normalize-error.ts     : mutation score ≥ 75%
+ *   - nws-normalize.ts       : mutation score ≥ 75%
+ *   - kv.ts                  : mutation score ≥ 75%
+ *   - log.ts                 : mutation score ≥ 75%
+ *   - schemas.ts             : mutation score ≥ 75%
  *
  * (Roadmap #9): hard break threshold raised 75 → 85.
  * error-tracker, config, diag confirmed in scope. Overall gate: ≥ 85% or CI fails.
@@ -81,6 +87,8 @@
  *   layout-drag.ts, resizer.ts, ai-synthesis.ts. Total scope: 107 files.
  * (v14.17.0): extended scope to 12 fdb-* web component files (per-card custom elements).
  *   Total scope: 119 files.
+ * (v14.18.0): extended scope to worker validation, normalize-error, nws-normalize, kv, log, schemas.
+ *   Total scope: 125 files.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -248,6 +256,13 @@ export default {
     "src/cards/stocks/fdb-stocks.ts",
     "src/cards/motivation/fdb-motivation.ts",
     "src/cards/news/fdb-news.ts",
+    // (v14.18.0): worker route/middleware/util modules (validation, normalize, NWS, KV, log, schemas)
+    "worker/src/utils/validation.ts",
+    "worker/src/utils/normalize-error.ts",
+    "worker/src/utils/nws-normalize.ts",
+    "worker/src/utils/kv.ts",
+    "worker/src/middleware/log.ts",
+    "worker/src/utils/schemas.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
