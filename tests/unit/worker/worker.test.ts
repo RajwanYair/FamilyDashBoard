@@ -2559,3 +2559,229 @@ describe("Worker — handleSefariaText invalid schema branches", () => {
     expect(res.status).toBe(200);
   });
 });
+
+// ── Worker — feeds.ts uncovered branches ──────────────────────────
+
+describe("Worker — handleNewsAggregate embedding dedup", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("runs AI embedding dedup when env.AI is bound", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(VALID_RSS_2, {
+        status: 200,
+        headers: { "Content-Type": "application/rss+xml" },
+      }),
+    );
+    const mockAI = {
+      run: vi.fn().mockResolvedValue({
+        shape: [1, 384],
+        data: [[...Array.from({ length: 384 }, (_, i) => i * 0.001)]],
+      }),
+    };
+    const envWithAI: Env = { ...mockEnv, AI: mockAI as unknown as Env["AI"] };
+    const res = await handleNewsAggregate(envWithAI);
+    expect(res.status).toBe(200);
+    expect(mockAI.run).toHaveBeenCalled();
+  });
+
+  it("keeps items when AI embedding returns null (fail-open)", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(VALID_RSS_2, {
+        status: 200,
+        headers: { "Content-Type": "application/rss+xml" },
+      }),
+    );
+    const mockAI = {
+      run: vi.fn().mockRejectedValue(new Error("AI unavailable")),
+    };
+    const envWithAI: Env = { ...mockEnv, AI: mockAI as unknown as Env["AI"] };
+    const res = await handleNewsAggregate(envWithAI);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { data: unknown[] };
+    expect(body.data.length).toBeGreaterThan(0);
+  });
+
+  it("deduplicates near-duplicate items by embedding similarity", async () => {
+    const rssWithDups = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Test</title>
+    <link>https://example.com</link>
+    <item>
+      <title>Breaking: Major Event Happens Today</title>
+      <link>https://example.com/1</link>
+      <pubDate>Wed, 01 Jan 2025 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Exclusive: Major Event Occurs Now</title>
+      <link>https://example.com/2</link>
+      <pubDate>Wed, 01 Jan 2025 11:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>`;
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(rssWithDups, {
+        status: 200,
+        headers: { "Content-Type": "application/rss+xml" },
+      }),
+    );
+    const sameVec = Array.from({ length: 384 }, (_, i) => i * 0.001);
+    const mockAI = {
+      run: vi.fn().mockResolvedValue({ shape: [1, 384], data: [sameVec] }),
+    };
+    const envWithAI: Env = { ...mockEnv, AI: mockAI as unknown as Env["AI"] };
+    const res = await handleNewsAggregate(envWithAI);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { data: Array<{ title: string }> };
+    expect(body.data.length).toBeLessThanOrEqual(1);
+  });
+});
+
+describe("Worker — handleAlerts validation fallback", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns raw upstream data when AlertsSchema validation fails", async () => {
+    const rawData = [{ unexpected: "format", id: "x1" }];
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify(rawData), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const res = await handleAlerts(mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string; data: unknown };
+    expect(body.provider).toBe("tzevaadom");
+    expect(body.data).toEqual(rawData);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("[alerts]"));
+  });
+
+  it("returns validated data when AlertsSchema passes", async () => {
+    const validData = [
+      { time: "2024-01-01T12:00:00Z", threat: "missile", cities: ["Tel Aviv", "Haifa"] },
+    ];
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify(validData), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const res = await handleAlerts(mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string; data: unknown };
+    expect(body.provider).toBe("tzevaadom");
+    expect(body.data).toEqual(validData);
+  });
+});
+
+describe("Worker — handleCalendar stale KV fallback (no ics)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 502 when upstream fails and KV stale has no ics property", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("error", { status: 503 }));
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify({ noIcs: true }));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const urlParam = encodeURIComponent("https://calendar.google.com/cal.ics");
+    const url = new URL(`https://worker.dev/api/calendar?url=${urlParam}`);
+    const res = await handleCalendar(url, envWithKv);
+    expect(res.status).toBe(502);
+  });
+});
+
+describe("Worker — handleStocks Finnhub catch fallthrough", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("falls through to Yahoo when Finnhub throws a network error", async () => {
+    let yahooHit = false;
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+      const urlStr =
+        typeof input === "string"
+          ? input
+          : input instanceof URL
+            ? input.toString()
+            : (input as Request).url;
+      if (urlStr.includes("finnhub.io")) {
+        throw new Error("Finnhub network error");
+      }
+      yahooHit = true;
+      return new Response(
+        JSON.stringify({
+          chart: {
+            result: [
+              {
+                meta: {
+                  symbol: "AAPL",
+                  currency: "USD",
+                  regularMarketPrice: 150,
+                  previousClose: 148,
+                  regularMarketChangePercent: 1.35,
+                },
+                indicators: { quote: [{ close: [148, 150] }] },
+              },
+            ],
+            error: null,
+          },
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      );
+    });
+    const envWithFinnhub: Env = { ...mockEnv, FINNHUB_API_KEY: "test-key" };
+    const url = new URL("https://worker.dev/api/stocks?sym=AAPL");
+    const res = await handleStocks(url, envWithFinnhub);
+    expect(res.status).toBe(200);
+    expect(yahooHit).toBe(true);
+  });
+});
+
+describe("Worker — handleCrypto schema validation with KV stale", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns stale KV when upstream CoinGecko data fails schema validation", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ invalid: "data" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const staleData = { bitcoin: { usd: 50000, usd_24h_change: 2.5 } };
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const url = new URL("https://worker.dev/api/crypto?ids=bitcoin&vs_currencies=usd");
+    const res = await handleCrypto(url, envWithKv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string; stale: boolean };
+    expect(body.provider).toBe("coingecko-kv-stale");
+    expect(body.stale).toBe(true);
+  });
+
+  it("returns 502 when schema validation fails and no KV stale", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ invalid: "data" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const url = new URL("https://worker.dev/api/crypto?ids=bitcoin&vs_currencies=usd");
+    const res = await handleCrypto(url, mockEnv);
+    expect(res.status).toBe(502);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toContain("schema invalid");
+  });
+});
