@@ -9,6 +9,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.18.0] — 2026-05-11
+
+> **7338 tests / 287 suites / 0 failures** · Coverage: 96.55 / 89.74 / 95.84 / 97.51 (commit `72d13b9`)
+
+- **OWASP +6 rules**: A03 `Range.createContextualFragment`, A05 `Access-Control-Expose-Headers` wildcard, A02 predictable UUID v1, A07 cookie without `Secure`, A04 `constructor.prototype` manipulation, A09 `sendBeacon` credentials (127→133 total)
+- **D13 per-card budget ratchet**: warn 13→12 KB (hard-cap held at 64 KB)
+- **Branch coverage tests**: +6 tests — countdown auto-populate negative paths + card-auto-scroll overflow/dt guards (89.7→89.74%)
+- **Coverage threshold ratchet**: statements 96.4→96.5, branches 89.5→89.7
+- **Stryker scope expansion**: +6 worker modules — `validation.ts`, `normalize-error.ts`, `nws-normalize.ts`, `kv.ts`, `log.ts`, `schemas.ts` (119→125 files)
+- **Fast-check property tests**: 2 new property test files — `kv.property.test.ts` (KV1–KV5) and `log.property.test.ts` (LG1–LG4)
+- **Module boundary D12-W1**: new rule enforcing `worker/src/*` must not import from `src/*`; boundary check now scans 141 files (up from 112)
+- **Dead exports**: check confirmed clean (141 files, 0 dead exports)
+- **Test perf**: property test `numRuns` reduced — full suite 183s→144s (−21%) [from bbb9c0a]
+
+---
+
 ## [14.17.0] — 2026-05-10
 
 > **7331 tests / 287 suites / 0 failures** · Coverage: 96.4 / 89.5 / 95.7 / 97.4
