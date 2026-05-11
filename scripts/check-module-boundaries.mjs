@@ -7,13 +7,18 @@
  *   - `src/ui/*`    MUST NOT import from `src/cards/*`
  *   - `src/core/*`  MUST NOT import from `src/cards/*` (core is card-agnostic)
  *   - `src/cards/X/*` MUST NOT import from `src/cards/Y/*` (cross-card coupling)
+ *   - `worker/src/*` MUST NOT import from `src/*` (worker is a separate runtime) [D12-W1]
  *
  * Cards talk to UI through the registry (`src/core/card-registry.ts`),
  * the lifecycle (`src/core/fdb-card.ts`), and shared helpers under
  * `src/core/`. Bypassing those creates hidden coupling and breaks
  * per-card bundle splitting.
  *
- * BASELINE MODE: 6 pre-existing violations are grandfathered (see
+ * Worker code is a Cloudflare Worker runtime — it must be fully independent
+ * of the browser client source tree. Shared types must live in
+ * `worker/src/types.ts`, never in `src/`.
+ *
+ * BASELINE MODE: 9 pre-existing violations are grandfathered (see
  * BASELINE constant below). The script fails only on NEW violations.
  * Refactoring the baseline files is tracked as backlog item D12-baseline.
  *
@@ -25,6 +30,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const SRC = join(ROOT, "src");
+const WORKER_SRC = join(ROOT, "worker", "src");
 
 const FORBIDDEN = [
   {
@@ -41,6 +47,13 @@ const FORBIDDEN = [
     from: /[\\/]src[\\/]core[\\/]/,
     importing: /from\s+["'][^"']*[\\/]cards[\\/]/,
     why: "src/core/* must not import from src/cards/* (core is card-agnostic)",
+  },
+  // D12-W1: worker code must be fully independent of client source tree.
+  // Shared types must live in worker/src/types.ts — never in src/.
+  {
+    from: /[\\/]worker[\\/]src[\\/]/,
+    importing: /from\s+["'](?:\.\.\/)*src[\\/]/,
+    why: "worker/src/* must not import from src/* (worker is a separate runtime)",
   },
 ];
 
@@ -110,7 +123,7 @@ function walk(dir) {
   return out;
 }
 
-const files = walk(SRC);
+const files = [...walk(SRC), ...walk(WORKER_SRC)];
 let violations = 0;
 let baselined = 0;
 
