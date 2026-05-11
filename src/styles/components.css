@@ -564,6 +564,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   flex-direction: column;
   gap: 2px;
   will-change: transform;
+  overflow-x: hidden;
 }
 .stocks-scroll:hover {
   animation-play-state: paused;
@@ -2085,6 +2086,8 @@ body.slideshow-fade::after {
   font-size: 0.75em;
   padding: 0 2px;
   margin-inline-end: 4px;
+  min-width: 24px;
+  min-height: 24px;
   transition:
     transform 0.25s ease,
     color 0.2s;

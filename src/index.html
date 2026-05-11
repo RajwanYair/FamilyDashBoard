@@ -792,7 +792,7 @@
                 <!-- Next-6-hours strip -->
                 <div id="wx-hourly-strip" class="wx-hourly-strip" role="list" aria-label="תחזית שעתית"></div>
                 <!-- 60-min nowcast bar -->
-                <div id="wx-nowcast" class="wx-nowcast" aria-label="תחזית גשם לשעה הקרובה" hidden></div>
+                <div id="wx-nowcast" class="wx-nowcast" role="status" aria-label="תחזית גשם לשעה הקרובה" hidden></div>
                 <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
                 <!-- Feature 32: Extreme weather alert banner -->
                 <div id="wx-alert-banner"></div>
@@ -867,7 +867,7 @@
             <section class="card cfg-relative" role="region" data-card-id="calendar" aria-labelledby="card-title-calendar">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-cal" role="status" aria-label="מצב סנכרון לוח שנה" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge green">📅</span> <span id="card-title-calendar">לוח שנה משפחתי</span> <span id="cal-countdown"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית לוח שנה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="cal-wrapper">
-                <div class="cal-week-grid" id="cal-week-grid" role="list" aria-live="polite" aria-label="תצוגת שבוע קרוב">
+                <div class="cal-week-grid" id="cal-week-grid" aria-live="polite" aria-label="תצוגת שבוע קרוב">
                   <div class="cal-empty" role="listitem">טוען לוח שנה...</div>
                 </div>
               </div>
@@ -1106,7 +1106,7 @@
       <h2 class="alerts-takeover-title" id="alerts-takeover-title">צבע אדום</h2>
       <div class="alerts-takeover-cities" id="alerts-takeover-cities"></div>
       <div class="alerts-takeover-threat" id="alerts-takeover-threat"></div>
-      <div class="alerts-takeover-countdown" id="alerts-takeover-countdown" aria-label="סוגר אוטומטית בעוד"></div>
+      <div class="alerts-takeover-countdown" id="alerts-takeover-countdown" role="timer" aria-label="סוגר אוטומטית בעוד"></div>
       <button type="button" class="alerts-takeover-close" id="alerts-takeover-close" aria-label="סגור התרעה">✕ סגור</button>
     </dialog>
 </html>

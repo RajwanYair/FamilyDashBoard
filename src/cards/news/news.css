@@ -36,7 +36,11 @@
   border-color: var(--accent);
   font-weight: 700;
 }
-/* F9 (v7.2): Per-source favicon chip */
+/* F9 (v7.2): Per-source favicon chip — wrapper keeps chip & mute as siblings (no nested buttons) */
+.news-src-chip-wrap {
+  display: inline-flex;
+  align-items: center;
+}
 .news-src-chip {
   font-size: 0.56em;
   padding: 1px 6px;

@@ -655,10 +655,12 @@ export function renderSourceFilterChips(): void {
       }
       renderNews(_lastItems);
     });
-    chip.appendChild(muteBtn);
-
     if (isMuted(feed.src)) chip.classList.add("news-src-muted");
-    frag.appendChild(chip);
+    const wrap = document.createElement("span");
+    wrap.className = "news-src-chip-wrap";
+    wrap.appendChild(chip);
+    wrap.appendChild(muteBtn);
+    frag.appendChild(wrap);
   }
   bar.appendChild(frag);
 }
