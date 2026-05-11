@@ -22,6 +22,17 @@
             "type": "http",
             "url": "https://mcp.gitkraken.com/mcp",
             "description": "Git blame, log, diff, branch ops, PR workflow, Launchpad issue tracking."
+        },
+        "playwright": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@microsoft/mcp-server-playwright"],
+            "description": "Browser automation, screenshot capture, visual debugging, and E2E interaction."
+        },
+        "cloudflare": {
+            "type": "streamableHttp",
+            "url": "https://mcp.cloudflare.com/sse",
+            "description": "Cloudflare Workers, Pages, KV, D1, R2 — deploy, manage, debug edge services."
         }
     }
 }

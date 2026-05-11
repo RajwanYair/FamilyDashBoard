@@ -33,6 +33,11 @@
             "command": "npx",
             "args": ["-y", "@microsoft/mcp-server-playwright"],
             "description": "Browser automation, visual debugging, screenshot capture, and E2E interaction directly in chat."
+        },
+        "cloudflare": {
+            "type": "streamableHttp",
+            "url": "https://mcp.cloudflare.com/sse",
+            "description": "Cloudflare Workers, Pages, KV, D1, R2 — deploy, manage, debug worker routes and edge config."
         }
     }
 }

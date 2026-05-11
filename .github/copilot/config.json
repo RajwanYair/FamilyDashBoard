@@ -1,7 +1,7 @@
 {
     "version": "2.0.0",
     "project": "FamilyDashBoard",
-    "appVersion": "14.13.1",
+    "appVersion": "14.18.0",
     "copilot": {
         "enabled": true,
         "features": {
@@ -139,12 +139,16 @@
             "Instructions use applyTo globs — only loaded when relevant",
             "get_errors aggregates ESLint + Stylelint + webhint + markdownlint + spell-check",
             "run_task / runTests over terminal for predefined workspace commands",
-            "multi_replace_string_in_file for batch edits",
-            "search_subagent / runSubagent for multi-file exploration",
-            "tool_search once per MCP tool family — broad queries",
-            "Deferred tools stay unloaded until needed",
+            "multi_replace_string_in_file for batch edits (2+ independent changes)",
+            "search_subagent / runSubagent for multi-file exploration — avoids main-thread clutter",
+            "tool_search once per MCP tool family — broad queries discover deferred tools",
+            "Deferred tools stay unloaded until needed (MCP + VS Code deferred)",
             "Error Lens / Coverage Gutters / Console Ninja / Version Lens show data inline — confirm, don't re-explain",
-            "Hooks: PreToolUse guards duplicates + context; PostToolUse auto-reminds conventions"
+            "Hooks: PreToolUse guards duplicates + context; PostToolUse auto-reminds conventions",
+            "vscode_listCodeUsages before refactoring — avoids missed references",
+            "vscode_renameSymbol for semantics-aware renames across workspace",
+            "Cloudflare MCP for worker management — avoid manual wrangler CLI",
+            "Read instruction files only when applyTo matches — skip for unrelated edits"
         ]
     }
 }

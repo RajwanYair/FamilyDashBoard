@@ -72,17 +72,47 @@ These servers are project-agnostic and benefit every workspace:
 **Capabilities**: Tools (git operations, PR workflows)
 **Use cases**: Cross-repo work, blame investigation, branch management
 
+### 5. Playwright (Browser Automation)
+
+```jsonc
+{
+  "playwright": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "@microsoft/mcp-server-playwright"],
+    "description": "Browser automation, screenshot capture, visual debugging, and E2E interaction.",
+  },
+}
+```
+
+**Capabilities**: Tools (navigate, screenshot, click, fill, evaluate)
+**Use cases**: Visual regression debugging, E2E interaction, screenshot capture
+
+### 6. Cloudflare (Edge Services)
+
+```jsonc
+{
+  "cloudflare": {
+    "type": "streamableHttp",
+    "url": "https://mcp.cloudflare.com/sse",
+    "description": "Cloudflare Workers, Pages, KV, D1, R2 — deploy, manage, debug edge services.",
+  },
+}
+```
+
+**Capabilities**: Tools (Workers deploy, KV read/write, D1 query, R2 manage, Pages deploy)
+**Use cases**: Worker deployment, KV cache inspection, D1 telemetry queries, edge debugging
+
 ---
 
 ## Project-Specific Servers (Do NOT Elevate)
 
 These are project-specific and should stay in the individual `.vscode/mcp.json`:
 
-| Server              | Project          | Reason                                      |
-| ------------------- | ---------------- | ------------------------------------------- |
-| `familydashboard`   | FamilyDashBoard  | Dashboard's own MCP bridge (localhost:7411) |
-| Cloudflare/Wrangler | Worker projects  | Only relevant for CF Worker deployments     |
-| Database servers    | Backend projects | Schema-specific, not portable               |
+| Server            | Project          | Reason                                      |
+| ----------------- | ---------------- | ------------------------------------------- |
+| `familydashboard` | FamilyDashBoard  | Dashboard's own MCP bridge (localhost:7411) |
+| Database servers  | Backend projects | Schema-specific, not portable               |
 
 ---
 
