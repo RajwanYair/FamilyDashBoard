@@ -37,6 +37,9 @@ export const sharedVitestTestConfig = {
   globals: true,
   testTimeout: 10000,
   hookTimeout: 10000,
-  teardownTimeout: 3000,
+  teardownTimeout: 5000,
+  // Force-exit after tests complete — prevents happy-dom iframe/fetch handles
+  // from keeping the Vite server alive indefinitely (YouTube/i24news URLs).
+  forceExit: true,
   restoreMocks: true,
 };
