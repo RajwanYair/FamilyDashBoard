@@ -9,6 +9,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.19.0] — 2026-05-11
+
+> **7338 tests / 287 suites / 0 failures** · Coverage: 96.55 / 89.74 / 95.84 / 97.51 (commit `0726059`)
+
+- **Cloudflare MCP server**: added to workspace `.vscode/mcp.json` (`streamableHttp` via `mcp.cloudflare.com/sse`) — Workers, Pages, KV, D1, R2 management in chat
+- **Copilot config appVersion**: synced from 14.13.1 → 14.18.0; added 4 token optimization rules (code usages, rename, Cloudflare MCP, instruction matching)
+- **`add-api.prompt.md`**: new prompt file for API data source integration (skill existed, prompt was missing)
+- **MCP docs sync**: `MCP_SERVERS.md` updated — Cloudflare promoted from parent-only to committed; `tooling/mcp/base-mcp.json` + README expanded with Playwright and Cloudflare servers
+
+---
+
 ## [14.18.0] — 2026-05-11
 
 > **7338 tests / 287 suites / 0 failures** · Coverage: 96.55 / 89.74 / 95.84 / 97.51 (commit `72d13b9`)
