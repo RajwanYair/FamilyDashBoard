@@ -1,6 +1,6 @@
 # AI Customizations — FamilyDashBoard
 
-> Version: v14.17.0 · Tests: 7331 / 287 suites · Coverage: 96.4 / 89.5 / 95.7 / 97.4
+> Version: v14.18.0 · Tests: 7338 / 287 suites · Coverage: 96.55 / 89.74 / 95.84 / 97.51
 
 ## Customization Model
 
