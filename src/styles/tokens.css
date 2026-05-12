@@ -249,32 +249,34 @@
 }
 
 /*
-   * D9 — CSS @function sketch (ADR-062, v14.0 )
+   * D9 — CSS @function sketch (ADR-062, v14.19.0)
    *
    * When CSS Functions L1 reaches Baseline 2026, these @function declarations
-   * will replace the six body.theme-* blocks in themes.css.
+   * will replace the seven body.theme-* blocks in themes.css.
    * The @function syntax is commented out (no browser supports it yet) to
    * serve as an implementation guide; the existing theme blocks remain
    * authoritative. Tracked: https://www.w3.org/TR/css-mixins-1/
    *
    * @function --theme-accent() {
    *   result: if(
-   *     style(--theme: matrix), #00ff88;
-   *     style(--theme: blue),   #60a5fa;
-   *     style(--theme: amber),  #fbbf24;
-   *     style(--theme: purple), #a78bfa;
-   *     style(--theme: rose),   #fb7185;
-   *     #c8a87a  (default warm)
+   *     style(--theme: matrix),         #86c490;
+   *     style(--theme: blue),           #82b8d8;
+   *     style(--theme: amber),          #c8a07c;
+   *     style(--theme: purple),         #b8aad4;
+   *     style(--theme: rose),           #c08898;
+   *     style(--theme: high-contrast),  #ffdd00;
+   *     #c8a87a  (default = theme-black)
    *   );
    * }
    * @function --theme-bg-primary() {
    *   result: if(
-   *     style(--theme: matrix), #020c04;
-   *     style(--theme: blue),   #080d18;
-   *     style(--theme: amber),  #140f00;
-   *     style(--theme: purple), #0c0a1a;
-   *     style(--theme: rose),   #180a0f;
-   *     #1a1410  (default warm = theme-black)
+   *     style(--theme: matrix),         #0e1a10;
+   *     style(--theme: blue),           #0c1824;
+   *     style(--theme: amber),          #18120a;
+   *     style(--theme: purple),         #140e1e;
+   *     style(--theme: rose),           #180a0e;
+   *     style(--theme: high-contrast),  #000000;
+   *     #000000  (default = theme-black)
    *   );
    * }
    */
@@ -283,8 +285,12 @@
    *
    * The @supports guard ensures browsers that do not understand CSS if()
    * continue to use the color-mix() fallback values declared above.
-   * Chrome 137+ / Firefox 136+ (both behind intent-to-ship as of v14.0) will
-   * pick up these definitions and override the color-mix() values.
+   * Chrome 137+ / Firefox 136+ (both behind intent-to-ship as of v14.19.0)
+   * will pick up these definitions and override the color-mix() values.
+   *
+   * themes.css now has the @supports-gated --theme identifier block
+   * (added v14.19.0). When CSS if() reaches Baseline 2026, the seven
+   * body.theme-* blocks will collapse into @function declarations.
    *
    * ADR-062 §Migration Sketch step 1/2 (partial — step 2 = fallback removal
    * is deferred until CSS if() reaches Baseline 2026).

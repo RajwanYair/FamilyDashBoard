@@ -1,6 +1,6 @@
 # ADR-062: D9 — CSS `if()` and `@function` for Theme-Token Compression (Track)
 
-- **Status**: Partial (v14.0 @supports-gated if() proof-of-concept; @function sketch added as comment; full migration deferred until Baseline 2026)
+- **Status**: Partial (v14.19.0 @supports-gated --theme identifier + if() proof-of-concept; @function sketch updated for 7 themes; full migration deferred until Baseline 2026)
 - **Date**: 2026-05-03 (v13.36.0 patch series)
 - **Sprints**: 345
 - **Related**: ADR-014 (theme system), ROADMAP §1.11 D9, §5.1 themes
