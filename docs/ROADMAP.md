@@ -356,7 +356,7 @@ X1–X10, X11 (MCP), X12 core, X15 (semantic clipboard) shipped.
 
 ### 4.1 X12 — Card Signal Protocol (consumer migration)
 
-- **X12-migrate** · P1 · S · Mid · v15 — Migrate remaining consumers to formal `CardSignalProtocol`.
+All consumers migrated to formal `CardSignalProtocol` — shipped v14.20.0.
 
 ### 4.2 X13 — Time-machine debug
 
@@ -395,19 +395,13 @@ X1–X10, X11 (MCP), X12 core, X15 (semantic clipboard) shipped.
 | 11 | Track | Biome replacement for Prettier + ESLint | P2 | M | Mid | v16 | V16-OPEN |
 | 12 | Track | Rolldown auto-adopt when Vite default | P2 | S | Mid | v15 | |
 | 13 | Track | TypeScript 7 primary typecheck | P3 | M | Mid | v16 | V16-OPEN |
-| 14 | Adopt | CSS `if()` + `@function` (D9) | P2 | S | Lo | v15 | |
-| 15 | Track | Cloudflare Snippets / TEE (D6) | P2 | M | Mid | v15 | |
-| 16 | Track | WebNN on-device inference (D2) | P2 | M | Mid | v16 | |
-| 17 | Gate | Web Push VAPID for alerts → phone (D7) | P3 | M | Mid | v15 | |
-| 18 | Enhance | **High-contrast theme (WCAG AAA)** — peer-harvested | P1 | M | Mid | v15 | DEPTH |
-| 19 | Enhance | **Config presets** (TV / Tablet / Monitor) — peer-harvested | P2 | S | Mid | v15 | DEPTH |
-| 20 | Docs | **Theme preview gallery** (`docs/themes.md`) — peer-harvested | P2 | S | Lo | v15 | |
-| 21 | Enhance | **Compact/theater CSS polish** for tablet — peer-harvested | P2 | M | Mid | v15 | DEPTH |
-| 22 | Track | E-ink screen mode — peer-inspired | P3 | M | Lo | v16 | V16-OPEN |
-| 23 | Track | i18n infrastructure (`Intl.MessageFormat`) | P3 | M | Lo | v16 | V16-OPEN |
-| 24 | Enhance | Per-card budget hard-cap ratchet (target 60 KB) | P1 | M | Mid | v15 | |
-| 25 | Enhance | Stryker mutation expansion to remaining modules | P1 | M | Mid | v15 | |
-| 26 | Enhance | LHCI ratchet `0.98` → `0.99` cached | P2 | S | Mid | v15 | |
+| 14 | Track | Cloudflare Snippets / TEE (D6) | P2 | M | Mid | v15 | |
+| 15 | Track | WebNN on-device inference (D2) | P2 | M | Mid | v16 | |
+| 16 | Gate | Web Push VAPID for alerts → phone (D7) | P3 | M | Mid | v15 | |
+| 17 | Track | E-ink screen mode — peer-inspired | P3 | M | Lo | v16 | V16-OPEN |
+| 18 | Track | i18n infrastructure (`Intl.MessageFormat`) | P3 | M | Lo | v16 | V16-OPEN |
+| 19 | Enhance | Per-card budget hard-cap ratchet (target 60 KB) | P1 | M | Mid | v15 | |
+| 20 | Enhance | Stryker mutation expansion to remaining modules | P1 | M | Mid | v15 | |
 
 ### 5.2 Per-card (from §3, open only)
 
@@ -415,7 +409,7 @@ N-V · N-WebNN · N-TTS · S-DO · CAL-T · H-T · H-Audio · A-Push · A-Map ·
 
 ### 5.3 Cross-card (from §4, open only)
 
-X12-migrate · X13 (time-machine) · X14 (phone-as-remote).
+X13 (time-machine) · X14 (phone-as-remote).
 
 ### 5.4 Anti-backlog (deliberately excluded)
 
@@ -449,10 +443,10 @@ Each stream has a hard exit gate. No stream lingers.
 
 - [ ] S-DO Stocks live stream.
 - [ ] CAL-T + H-T Temporal migration.
-- [ ] **High-contrast theme** (WCAG AAA) — peer-harvested.
-- [ ] **Config presets** (Family TV / Kitchen Tablet / Office Monitor) — peer-harvested.
-- [ ] **Compact/theater mode CSS** refinement for tablets — peer-harvested.
-- [ ] **Theme preview gallery** (`docs/themes.md`) — peer-harvested.
+- [x] High-contrast theme (WCAG AAA) — shipped v14.20.
+- [x] Config presets (Family TV / Kitchen Tablet / Office Monitor) — shipped v14.20.
+- [x] Compact/theater mode CSS — shipped v14.20.
+- [x] Theme preview gallery (`docs/themes.md`) — shipped v14.20.
 
 **Exit**: each item shipped or explicitly deferred to v16 with ADR.
 
@@ -472,7 +466,7 @@ Each stream has a hard exit gate. No stream lingers.
 - [x] OWASP Top 10 automated rotation.
 - [x] Third-party rebuilder verification (annual cron).
 - [ ] OpenTelemetry from Worker (opt-in).
-- [ ] LHCI ratchet `0.98` → `0.99`.
+- [x] LHCI ratchet `0.98` → `0.99` — shipped v14.20.
 
 **Exit**: SLSA L3; OTel shipping zero data by default; LHCI ≥ 0.99 cached.
 
