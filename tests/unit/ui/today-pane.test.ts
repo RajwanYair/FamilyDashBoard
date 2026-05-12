@@ -14,7 +14,6 @@ import {
 } from "@/ui/today-pane";
 import type { TodayPaneInputs, TodayPaneItem } from "@/ui/today-pane";
 import type { AlertEvent } from "@/types/api";
-import type { ChoreItem } from "@/cards/tasks/tasks";
 
 // X12 : today-pane no longer imports from alerts/countdown card
 // modules directly — it uses getCardSignal(). Mock the protocol so
@@ -37,7 +36,8 @@ const EMPTY_INPUTS: TodayPaneInputs = {
   alerts: [],
   countdownTargetMs: null,
   countdownTitle: "",
-  chores: [],
+  overdueTaskCount: 0,
+  firstOverdueText: null,
   stockMovers: [],
   nextCalEvent: null,
 };
@@ -153,23 +153,17 @@ describe("TodayPane — buildTodayItems: countdown", () => {
 
 describe("TodayPane — buildTodayItems: tasks", () => {
   it("adds overdue task item", () => {
-    const chore: ChoreItem = { person: "אני", chore: "ניקיון @2020-01-01" };
-    const items = buildTodayItems({ ...EMPTY_INPUTS, chores: [chore] });
+    const items = buildTodayItems({ ...EMPTY_INPUTS, overdueTaskCount: 1, firstOverdueText: "ניקיון" });
     expect(items.some((i) => i.type === "tasks" && i.urgency === "warning")).toBe(true);
   });
 
   it("does not add item when no overdue tasks", () => {
-    const chore: ChoreItem = { person: "אני", chore: "ניקיון" }; // no due date
-    const items = buildTodayItems({ ...EMPTY_INPUTS, chores: [chore] });
+    const items = buildTodayItems({ ...EMPTY_INPUTS, overdueTaskCount: 0, firstOverdueText: null });
     expect(items.some((i) => i.type === "tasks")).toBe(false);
   });
 
   it("shows count when multiple overdue tasks", () => {
-    const chores: ChoreItem[] = [
-      { person: "א", chore: "א @2020-01-01" },
-      { person: "ב", chore: "ב @2020-01-02" },
-    ];
-    const items = buildTodayItems({ ...EMPTY_INPUTS, chores });
+    const items = buildTodayItems({ ...EMPTY_INPUTS, overdueTaskCount: 2, firstOverdueText: "א" });
     const item = items.find((i) => i.type === "tasks");
     expect(item?.label).toContain("2");
   });
@@ -205,7 +199,7 @@ describe("TodayPane — buildTodayItems: sort order", () => {
       ...EMPTY_INPUTS,
       alerts: [alert],
       nextCalEvent: { label: "פגישה", minutesUntil: 120 }, // normal urgency
-      chores: [{ person: "א", chore: "משימה @2020-01-01" }], // warning urgency
+      overdueTaskCount: 1, firstOverdueText: "משימה", // warning urgency
     });
     const urgencies = items.map((i) => i.urgency);
     const critIdx = urgencies.indexOf("critical");
@@ -304,7 +298,8 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP1-TDP5)", () =
             nil: null,
           }),
           countdownTitle: fc.string({ maxLength: 30 }),
-          chores: fc.constant([]),
+          overdueTaskCount: fc.constant(0),
+          firstOverdueText: fc.constant(null),
           stockMovers: fc.array(fc.string({ maxLength: 20 }), { maxLength: 6 }),
           nextCalEvent: fc.constant(null),
         }),
@@ -330,7 +325,8 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP1-TDP5)", () =
             nil: null,
           }),
           countdownTitle: fc.string({ maxLength: 20 }),
-          chores: fc.constant([]),
+          overdueTaskCount: fc.constant(0),
+          firstOverdueText: fc.constant(null),
           stockMovers: fc.array(
             fc.oneof(
               fc.constant("TSLA +5.2%"),
@@ -375,7 +371,8 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP1-TDP5)", () =
             alerts: [],
             countdownTargetMs: null,
             countdownTitle: "",
-            chores: [],
+            overdueTaskCount: 0,
+            firstOverdueText: null,
             stockMovers: [],
             nextCalEvent: null,
           });
@@ -401,7 +398,8 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP1-TDP5)", () =
             { nil: null },
           ),
           countdownTitle: fc.string({ maxLength: 20 }),
-          chores: fc.constant([]),
+          overdueTaskCount: fc.constant(0),
+          firstOverdueText: fc.constant(null),
           stockMovers: fc.array(fc.oneof(fc.constant("AAPL +5%"), fc.constant("MSFT -2%")), {
             maxLength: 2,
           }),

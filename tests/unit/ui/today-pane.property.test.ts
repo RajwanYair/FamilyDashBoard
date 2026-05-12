@@ -23,7 +23,8 @@ const emptyInputs: TodayPaneInputs = {
   alerts: [],
   countdownTargetMs: null,
   countdownTitle: "",
-  chores: [],
+  overdueTaskCount: 0,
+  firstOverdueText: null,
   stockMovers: [],
   nextCalEvent: null,
 };

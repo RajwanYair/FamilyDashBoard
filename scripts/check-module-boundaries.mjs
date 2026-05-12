@@ -105,7 +105,6 @@ const BASELINE = new Set([
   "src/cards/stocks/stocks.ts",
   "src/cards/video-news/fdb-video-news.ts",
   "src/ui/ticker.ts",
-  "src/ui/today-pane.ts",
   // D12-cross: pre-existing cross-card imports (refactor tracked in ROADMAP §3)
   "src/cards/hebrew-cal/hebrew-cal.ts", // imports from tasks
   "src/cards/stocks/tase-adapter.ts", // imports from currency

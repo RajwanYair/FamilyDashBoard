@@ -559,9 +559,9 @@ export function renderTasksCard(): void {
   if (doneMsg) {
     doneMsg.style.display = total > 0 && pending === 0 ? "" : "none";
   }
-  // Overdue badge
+  // Overdue badge + X12 signal data
+  const overdueCount = total > 0 ? countOverdueTasks(chores) : 0;
   if (overdueBadge) {
-    const overdueCount = countOverdueTasks(chores);
     if (overdueCount > 0) {
       overdueBadge.textContent = `⚠️ ${overdueCount} באיחור`;
       overdueBadge.style.display = "";
@@ -570,11 +570,20 @@ export function renderTasksCard(): void {
     }
   }
 
-  // X12: publish pending task count for today-pane / MCP consumers
+  // X12: publish pending task count + overdue info for today-pane / MCP consumers
+  const firstOverdue = overdueCount > 0
+    ? chores.find((c) => {
+        const { dueDate } = parseTaskDueDate(c.chore);
+        return dueDate !== null && isOverdue(dueDate);
+      })
+    : undefined;
+  const firstOverdueText = firstOverdue ? parseTaskDueDate(firstOverdue.chore).cleanText : null;
   setCardSignal(
     "tasks",
     "pending",
-    total > 0 ? { count: pending, overdue: countOverdueTasks(chores), total } : null,
+    total > 0
+      ? { count: pending, overdue: overdueCount, total, firstOverdueText }
+      : null,
   );
 
   // Start loop scroll if task list overflows its visible area

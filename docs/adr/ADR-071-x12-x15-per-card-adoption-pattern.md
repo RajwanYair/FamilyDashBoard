@@ -79,17 +79,18 @@ between cases and the gate would prevent re-registration).
 
 | cardId        | X12 keys                              | X15 producer                  |
 | ------------- | ------------------------------------- | ----------------------------- |
-| `countdown`   | `next` (primary)                      | ✅ (v13.39.0 S377)            |
-| `hebrew-cal`  | `next-holiday`, `next-zman` (planned) | ✅ (v13.39.0 S379)            |
-| `weather`     | `current`, `nowcast` (planned)        | planned v14.x                 |
-| `calendar`    | `next-event` (planned)                | planned v14.x                 |
-| `alerts`      | `active` (planned)                    | planned v14.x                 |
-| `stocks`      | `top-mover` (planned)                 | planned v14.x                 |
-| `currency`    | `usd-ils`, `eur-ils` (planned)        | planned v14.x                 |
-| `news`        | `top` (planned)                       | planned v14.x                 |
-| `motivation`  | — (no shareable state)                | planned v14.x (current quote) |
-| `tasks`       | `pending-count` (planned)             | planned v14.x (today's tasks) |
-| `system-info` | `health` (planned)                    | not planned (debug-only)      |
+| `countdown`   | `next`                                | ✅ (v13.39.0 S377)            |
+| `hebrew-cal`  | `next-holiday`                        | ✅ (v13.39.0 S379)            |
+| `weather`     | `current`                             | ✅ (v14.19.0)                 |
+| `calendar`    | `next-event`                          | ✅ (v14.19.0)                 |
+| `alerts`      | `active`                              | ✅ (v14.19.0)                 |
+| `stocks`      | `top-mover`                           | ✅ (v14.19.0)                 |
+| `currency`    | `usd-ils`, `eur-ils`                  | ✅ (v14.19.0)                 |
+| `news`        | `top`                                 | ✅ (v14.19.0)                 |
+| `motivation`  | `quote`                               | ✅ (v14.19.0)                 |
+| `tasks`       | `pending`                             | ✅ (v14.19.0)                 |
+| `ai-synthesis`| `synthesis`                           | ✅ (v14.19.0)                 |
+| `system-info` | —                                     | not planned (debug-only)      |
 | `video-news`  | —                                     | not planned (audio/video)     |
 
 ## Test pattern

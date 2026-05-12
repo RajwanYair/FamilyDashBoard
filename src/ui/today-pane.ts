@@ -10,11 +10,9 @@
  */
 
 import "./today-pane.css";
-import { LS_CHORES, MS_PER_MIN } from "../core/constants";
+import { MS_PER_MIN } from "../core/constants";
 import { getCardSignal } from "../core/card-signal-protocol";
 import type { AlertEvent } from "../types/api";
-import type { ChoreItem } from "../cards/tasks/tasks";
-import { isOverdue, parseTaskDueDate } from "../cards/tasks/tasks";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -33,7 +31,10 @@ export interface TodayPaneInputs {
   alerts: AlertEvent[];
   countdownTargetMs: number | null;
   countdownTitle: string;
-  chores: ChoreItem[];
+  /** Overdue task count from tasks signal (X12). */
+  overdueTaskCount: number;
+  /** Clean text of the first overdue task, or null if none. */
+  firstOverdueText: string | null;
   /** Top stock mover pill texts already rendered in DOM (e.g. ["TSLA +5.2%", "AAPL -3.1%"]). */
   stockMovers: string[];
   /** Next calendar event within 6h: label + minutesUntil. null if none. */
@@ -100,18 +101,14 @@ export function buildTodayItems(inputs: TodayPaneInputs): TodayPaneItem[] {
     }
   }
 
-  // ── Tasks: most-overdue ─────────────────────────────────────────────────
-  const overdueTasks = inputs.chores.filter((c) => {
-    const { dueDate } = parseTaskDueDate(c.chore);
-    return dueDate !== null && isOverdue(dueDate);
-  });
-  if (overdueTasks.length > 0) {
-    const first = overdueTasks[0]!;
-    const { cleanText } = parseTaskDueDate(first.chore);
+  // ── Tasks: most-overdue (X12: consumed from tasks signal) ──────────────
+  if (inputs.overdueTaskCount > 0) {
     items.push({
       type: "tasks",
       icon: "⚠️",
-      label: `${overdueTasks.length === 1 ? `משימה באיחור: ${cleanText}` : `${overdueTasks.length} משימות באיחור`}`,
+      label: inputs.overdueTaskCount === 1 && inputs.firstOverdueText
+        ? `משימה באיחור: ${inputs.firstOverdueText}`
+        : `${inputs.overdueTaskCount} משימות באיחור`,
       urgency: "warning",
     });
   }
@@ -171,17 +168,6 @@ export function renderTodayPane(items: TodayPaneItem[], container: HTMLElement):
   container.appendChild(frag);
 }
 
-/** Read chores from localStorage without importing the private loadChores fn. */
-function readChores(): ChoreItem[] {
-  try {
-    const raw = localStorage.getItem(LS_CHORES);
-    if (!raw) return [];
-    return JSON.parse(raw) as ChoreItem[];
-  } catch {
-    return [];
-  }
-}
-
 // ── Signal type helpers (X12 ADR-067) ────────────────────────────────────────
 
 interface AlertsSignal {
@@ -203,12 +189,16 @@ interface CalEventSignal {
   startMs: number;
   isAllDay: boolean;
 }
+interface TasksPendingSignal {
+  count: number;
+  overdue: number;
+  total: number;
+  firstOverdueText: string | null;
+}
 
 /**
  * X12: Collect today-pane inputs from card signals (ADR-067).
- * Uses getCardSignal() instead of direct cross-card imports.
- *
- * Tasks still read from localStorage (no signal producer yet — X15).
+ * Uses getCardSignal() for all data — no direct cross-card imports.
  * Stock movers fall back to DOM pills when signal is absent for backward compat.
  */
 function collectInputs(): TodayPaneInputs {
@@ -254,12 +244,18 @@ function collectInputs(): TodayPaneInputs {
         }
       : null;
 
+  // Tasks — read from "tasks.pending" signal (X12: replaces readChores + isOverdue)
+  const tasksSig = getCardSignal<TasksPendingSignal>("tasks", "pending");
+  const overdueTaskCount = tasksSig?.value?.overdue ?? 0;
+  const firstOverdueText = tasksSig?.value?.firstOverdueText ?? null;
+
   return {
     nowMs,
     alerts,
     countdownTargetMs,
     countdownTitle,
-    chores: readChores(),
+    overdueTaskCount,
+    firstOverdueText,
     stockMovers,
     nextCalEvent,
   };
