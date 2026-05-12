@@ -56,7 +56,7 @@ describe("Theme System", () => {
   });
 
   it("wraps around to first theme after last", () => {
-    applyTheme("rose");
+    applyTheme("high-contrast");
     cycleTheme();
     expect(currentTheme()).toBe("black");
   });
@@ -72,8 +72,8 @@ describe("Theme System", () => {
     expect(currentTheme()).toBe("amber");
   });
 
-  it("has exactly 6 themes", () => {
-    expect(THEMES.length).toBe(6);
+  it("has exactly 7 themes", () => {
+    expect(THEMES.length).toBe(7);
   });
 
   it("THEMES includes 'black'", () => {
@@ -96,13 +96,22 @@ describe("Theme System", () => {
     expect(THEMES).toContain("purple");
   });
 
+  it("THEMES includes 'high-contrast'", () => {
+    expect(THEMES).toContain("high-contrast");
+  });
+
+  it("applies high-contrast theme class to body", () => {
+    applyTheme("high-contrast");
+    expect(document.body.classList.contains("theme-high-contrast")).toBe(true);
+  });
+
   it("applyTheme does not leave stale theme classes after switching all themes", () => {
     for (const t of THEMES) {
       applyTheme(t);
     }
     const themeClasses = [...document.body.classList].filter((c) => c.startsWith("theme-"));
     expect(themeClasses).toHaveLength(1);
-    expect(themeClasses[0]).toBe("theme-rose");
+    expect(themeClasses[0]).toBe("theme-high-contrast");
   });
 
   it("currentTheme returns string type", () => {

@@ -21,10 +21,10 @@ New rules must go into the appropriate layer. Never add rules outside a layer.
 - **Text**: `--text-primary`, `--text-secondary`, `--text-muted`
 - **Theme variants** use `body[data-theme="black"]` / `blue` / `matrix` / `amber` / `purple` / `rose` selectors scoped inside the `themes` layer.
 
-## Themes (6 total — never add a 7th without an ADR)
+## Themes (7 total — see ADR-074 for high-contrast addition)
 
 ```text
-black · blue · matrix · amber · purple · rose
+black · blue · matrix · amber · purple · rose · high-contrast
 ```
 
 All theme tokens must be defined in `src/styles/tokens.css` inside the `themes` layer.

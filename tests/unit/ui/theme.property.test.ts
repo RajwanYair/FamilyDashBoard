@@ -31,7 +31,7 @@ describe("theme — TH1: invalid theme fallback", () => {
 // ── TH2: valid theme applies correct class ───────────────────────────────────
 
 describe("theme — TH2: valid theme class", () => {
-  it("each of the 6 themes applies its class", () => {
+  it("each of the 7 themes applies its class", () => {
     for (const t of THEMES) {
       applyTheme(t);
       expect(document.body.classList.contains(`theme-${t}`)).toBe(true);

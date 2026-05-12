@@ -1,9 +1,10 @@
 /**
- * FamilyDashBoard v13 — Theme System
+ * FamilyDashBoard v15 — Theme System
  *
- * 6 themes: black, blue, matrix, amber, purple, rose.
+ * 7 themes: black, blue, matrix, amber, purple, rose, high-contrast.
  * Cycle with T key, persist in localStorage.
  * v7: respects prefers-color-scheme when no saved theme.
+ * v15: added high-contrast (WCAG AAA) theme (ADR-074).
  */
 
 import { diagLog } from "../core/diag";

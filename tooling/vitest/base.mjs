@@ -17,16 +17,20 @@ const cpuCount = Math.min(availableParallelism(), 8);
 
 /** Spread into top-level defineConfig (NOT into test:). */
 export const sharedVitestPoolConfig = {
+  // forks pool: each OS process is killed by the OS when vitest terminates,
+  // so even if a worker has lingering handles (real timers, observers) the
+  // process is reaped cleanly. isolate:true (the default) gives each test
+  // file a fresh module registry, so singleton timers/observers created by
+  // one file cannot leak into the next file in the same fork.
   pool: "forks",
   poolOptions: {
     forks: {
       maxForks: cpuCount,
       minForks: Math.max(2, Math.floor(cpuCount / 2)),
-      // Re-use the module registry across files in the same fork.
-      // Each suite still runs in its own JS context (isolate: false only
-      // removes the per-file module re-import overhead, not the test isolation).
-      // Tests that mutate global state must use beforeEach/afterEach reset.
-      isolate: false,
+      // isolate: true is the Vitest default — each test file gets its own
+      // module registry within the fork. This prevents module-level singletons
+      // (setInterval handles, PerformanceObserver instances) from leaking
+      // across test files and keeping the fork process alive past teardown.
     },
   },
 };
@@ -42,4 +46,22 @@ export const sharedVitestTestConfig = {
   // from keeping the Vite server alive indefinitely (YouTube/i24news URLs).
   forceExit: true,
   restoreMocks: true,
+  // Disable happy-dom network features that cause hangs in the VS Code test
+  // runner. The video-news card sets iframe.src to YouTube/i24news URLs which
+  // happy-dom would otherwise fetch in the background — those sockets remain
+  // open at teardown and prevent the Vite server from exiting.
+  // (Iframe src loading is neutralised in tests/setup.ts via a getter override.)
+  environmentOptions: {
+    happyDOM: {
+      settings: {
+        disableJavaScriptFileLoading: true,
+        disableCSSFileLoading: true,
+        disableComputedStyleRendering: true,
+        handleDisabledFileLoadingAsSuccess: true,
+        fetch: {
+          disableSameOriginPolicy: true,
+        },
+      },
+    },
+  },
 };

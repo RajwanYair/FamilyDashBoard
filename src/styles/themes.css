@@ -1,4 +1,4 @@
-/* Theme Definitions — FamilyDashBoard v7 (6 themes) */
+/* Theme Definitions — FamilyDashBoard v15 (7 themes) */
 @layer themes {
   /* ── Theme: True Black (OLED) ── */
   body.theme-black {
@@ -145,6 +145,31 @@
     --bg-gradient-1: rgba(192, 136, 152, 0.05);
     --bg-gradient-2: rgba(180, 80, 120, 0.04);
     --bg-gradient-3: rgba(220, 100, 140, 0.03);
+  }
+
+  /* ── Theme: High Contrast (WCAG AAA · ADR-074) ── */
+  body.theme-high-contrast {
+    color-scheme: dark;
+    --bg-primary: #000000;
+    --bg-card: rgba(0, 0, 0, 0.95);
+    --bg-card-header: rgba(20, 20, 20, 0.98);
+    --bg-card-inner: rgba(10, 10, 10, 0.85);
+    --bg-card-hover: rgba(40, 40, 40, 0.9);
+    --accent: #ffdd00;
+    --accent-bright: #ffee55;
+    --accent-glow: rgba(255, 221, 0, 0.2);
+    --accent-border: rgba(255, 221, 0, 0.5);
+    --text-muted: #d0d0d0;
+    --cyan: #00e5ff;
+    --purple: #e0b0ff;
+    --card-border: 2px solid rgba(255, 255, 255, 0.5);
+    --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.9);
+    --bg-gradient-1: rgba(255, 221, 0, 0.04);
+    --bg-gradient-2: rgba(0, 229, 255, 0.03);
+    --bg-gradient-3: rgba(224, 176, 255, 0.03);
+    --positive: #00ff41;
+    --negative: #ff3333;
+    --warning: #ffaa00;
   }
 }
 

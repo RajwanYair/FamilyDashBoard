@@ -1,5 +1,5 @@
 /**
- * Theme audit: verify all 6 themes define required CSS properties
+ * Theme audit: verify all 7 themes define required CSS properties
  */
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
