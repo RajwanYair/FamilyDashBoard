@@ -6,9 +6,9 @@
  *   JS gzipped:  ≤ 110 KB  (raised from 105 KB in v14.1.0 — added
  *                           mcp-bridge chunk + card-infra split, pushing actual
  *                           to 108.7 KB after full rebuild; budget = actual + ~1.3 KB headroom)
- *   CSS gzipped: ≤ 29 KB   (raised from 26 KB in v13.30.0 — card configSchema
- *                           form styles and config-panel CSS pushed actual to
- *                           28.5 KB; new budget = actual + ~0.5 KB headroom)
+ *   CSS gzipped: ≤ 30 KB   (raised from 29 KB in v14.19.0 — high-contrast theme
+ *                           + config-preset styles pushed actual to
+ *                           29.1 KB; new budget = actual + ~0.9 KB headroom)
  *
  * Also checks for 10% growth regression against the last baseline recorded
  * in scripts/bundle-trend.json.  Exit 1 on budget exceeded OR on > 10% growth.
@@ -27,7 +27,7 @@ const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
 const JS_BUDGET_KB = 110;
-const CSS_BUDGET_KB = 29;
+const CSS_BUDGET_KB = 30;
 /** Alert if a bundle type grows more than this fraction vs last baseline. */
 const GROWTH_THRESHOLD = 0.1;
 
@@ -369,8 +369,9 @@ if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
 // (v14.16.0): hard 65 → 64 KB (weather compressed 64.6→63.8 KB via template loop); warn 15 → 14 KB.
 // (v14.17.0): warn 14 → 13 KB; hard held at 64 (weather 63.8 KB blocks further drop without major refactor).
 // (v14.18.0): warn 13 → 12 KB; hard held at 64.
+// (v14.19.0): warn 12 → 11 KB; hard held at 64 (weather 63.8 KB blocks hard drop without major refactor).
 const PER_CARD_HARD_CAP_KB = 64;
-const PER_CARD_WARN_KB = 12;
+const PER_CARD_WARN_KB = 11;
 let perCardCapOk = true;
 console.log(
   `📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`,
