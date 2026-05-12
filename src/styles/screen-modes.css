@@ -70,6 +70,25 @@ body.mode-tablet .ticker-bar {
 body.mode-tablet .ticker-item {
   font-size: 0.72em;
 }
+/* Tablet: compact metric tiles (less padding, tighter grid) */
+body.mode-tablet .metric-tile {
+  padding: 6px 8px;
+}
+body.mode-tablet .metric-tile__label {
+  font-size: 0.72em;
+}
+body.mode-tablet .metric-tile__value {
+  font-size: 1.05em;
+}
+/* Tablet: card body spacing */
+body.mode-tablet .card__body {
+  font-size: 0.85em;
+  padding: 6px;
+}
+body.mode-tablet .card__footer {
+  font-size: 0.72em;
+  padding: 3px 8px;
+}
 body.mode-tablet .time-section {
   padding: 4px 10px;
 }

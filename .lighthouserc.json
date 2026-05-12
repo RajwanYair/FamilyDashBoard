@@ -15,15 +15,14 @@
                 " (v13.24.0): ADR-042 step 3 — ratcheted error 0.85 -> error 0.92.",
                 " (v13.25.0): ADR-042 step 4 — ratcheted error 0.92 -> error 0.95.",
                 " (v13.26.0): ADR-042 step 5 — ratcheted error 0.95 -> error 0.97.",
-                " (v13.43.0): ADR-042 step 6 — ratcheted error 0.97 -> error 0.98 cached (final target).",
-                "accessibility: error >= 0.90 (a11y regressions block CI).",
+                " (v13.43.0): ADR-042 step 6 — ratcheted error 0.97 -> error 0.98 cached (final target).",                "(v14.19.0): ADR-042 step 7 — ratcheted error 0.98 -> error 0.99 (roadmap item #26).",                "accessibility: error >= 0.90 (a11y regressions block CI).",
                 "best-practices: error >= 0.90 (security/best-practice regressions block CI).",
                 "(v14.5.0): added SEO >= 0.90 (meta tags, structured data, crawlability).",
                 "(v14.5.0): added PWA installability >= 0.50 warn (manifest, SW, icons baseline)."
             ],
             "assertions": {
                 "categories:accessibility": ["error", { "minScore": 0.9 }],
-                "categories:performance": ["error", { "minScore": 0.98 }],
+                "categories:performance": ["error", { "minScore": 0.99 }],
                 "categories:best-practices": ["error", { "minScore": 0.9 }],
                 "categories:seo": ["error", { "minScore": 0.9 }],
                 "categories:pwa": ["warn", { "minScore": 0.5 }],

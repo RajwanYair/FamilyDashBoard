@@ -2,7 +2,7 @@
 
 > **Refresh date**: 2026-05-12 · **Shipped baseline**: v14.19.0 · **Active stream**: V15-OPEN.
 >
-> **Inventory**: 7338 tests / 287 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Inventory**: 7338 tests / 287 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
 > **Coverage**: 96.55 / 89.74 / 95.84 / 97.51 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
@@ -154,7 +154,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Stryker (mutation) | 8.x | Threshold ≥ 87%; 125 files in scope. |
 | `fast-check` | 3.x | 81 property suites across 23 modules. |
 | `axe-core` | latest | Keep CI gate. |
-| Lighthouse CI | latest | At `error 0.98` cached. |
+| Lighthouse CI | latest | At `error 0.99` cached. |
 | `pnpm` workspace | npm + parent | **Reject** — current pattern sufficient and simpler. |
 | Husky / Lefthook | none (CI is the gate) | **Reject** — pre-commit hooks slow single-maintainer. |
 
@@ -169,7 +169,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Visual regression | Playwright (421+ baselines) | Extend to DO-SSE alert states + maximise-FLIP. |
 | End-to-end | Playwright | Keep. |
 | Accessibility | axe-core (CI gate) | Keep + manual screen-reader pass per major. |
-| Performance | Lighthouse CI (`error 0.98`) | Consider 0.99 for v15. |
+| Performance | Lighthouse CI (`error 0.99`) | Ratcheted from 0.98 in v14.19.0. |
 | Coverage | 96.55 / 89.74 / 95.84 / 97.51 | Ratchet path → 97/90/96/98 by v15. +0.5% per minor. |
 
 ### 1.8 Observability, security, supply chain
