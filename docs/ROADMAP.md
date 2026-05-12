@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v3)
 
-> **Refresh date**: 2026-05-12 · **Shipped baseline**: v14.19.0 · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-12 · **Shipped baseline**: v14.20.0 · **Active stream**: V15-OPEN.
 >
-> **Inventory**: 7338 tests / 287 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Inventory**: 7338 tests / 290 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 76 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
 > **Coverage**: 96.55 / 89.74 / 95.84 / 97.51 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
@@ -15,7 +15,7 @@
 
 ## 0. Executive Summary
 
-After 400+ sprints across v10 → v14.19 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog are **shipped**. The quality gate is industry-leading for a static-PWA: 7338 tests / 287 suites, 81 fast-check property test files across 4 domains (core / cards / ui / worker), container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
+After 400+ sprints across v10 → v14.20 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog are **shipped**. The quality gate is industry-leading for a static-PWA: 7338 tests / 290 suites, 81 fast-check property test files across 4 domains (core / cards / ui / worker), container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 This v3 rethink re-opens **every** major decision made since v10 — language, architecture, tooling, dependencies, documentation, infrastructure, APIs, testing, deployment, security — and benchmarks each against the best-in-class peer in its category. The result is a consolidated plan where nothing is grandfathered.
 
@@ -151,7 +151,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Prettier | 3.x | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML parity. |
 | Stylelint | 16.x | Keep; consider Lightning-CSS-only validation v16. |
 | Playwright | 1.5x | Quarterly baseline regen. |
-| Stryker (mutation) | 8.x | Threshold ≥ 87%; 125 files in scope. |
+| Stryker (mutation) | 8.x | Threshold ≥ 87%; 135 files in scope. |
 | `fast-check` | 3.x | 81 property suites across 23 modules. |
 | `axe-core` | latest | Keep CI gate. |
 | Lighthouse CI | latest | At `error 0.99` cached. |
@@ -165,7 +165,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Unit | Vitest 4.1 + happy-dom 20 | Keep. Suite split per file. |
 | Component | `@vitest/browser` (Playwright) | Shipped v13.16. |
 | Property-based | fast-check (81 suites, ADR-054/055) | Continue expanding to remaining core modules. |
-| Mutation | Stryker (125 files) | Threshold ≥ 87%; extend to remaining core modules. |
+| Mutation | Stryker (135 files) | Threshold ≥ 87%; extend to remaining core modules. |
 | Visual regression | Playwright (421+ baselines) | Extend to DO-SSE alert states + maximise-FLIP. |
 | End-to-end | Playwright | Keep. |
 | Accessibility | axe-core (CI gate) | Keep + manual screen-reader pass per major. |
@@ -223,7 +223,7 @@ Client framework rewrite · Shadow DOM · user DB · OIDC/passkey/Google/Faceboo
 
 Categories: **Family/TV Dashboards** · **Homelab Dashboards** · **News/Feed Readers** · **Smart-Home / IoT** · **E-Ink / Ambient Displays** · **AI-Native / Agent Dashboards (2025–2026 cohort)**.
 
-| Dimension | **FamilyDashBoard v14.19** | Homepage | Dashy | Homarr v2 | Glance | MagicMirror² | NetNewsWire | Feedly | HASS Lovelace | Grafana | TRMNL | Daylight DC-1 | Perplexity Comet | Granola | Tidbyt | Flame | Heimdall | Organizr | Hajimari | Fenrus |
+| Dimension | **FamilyDashBoard v14.20** | Homepage | Dashy | Homarr v2 | Glance | MagicMirror² | NetNewsWire | Feedly | HASS Lovelace | Grafana | TRMNL | Daylight DC-1 | Perplexity Comet | Granola | Tidbyt | Flame | Heimdall | Organizr | Hajimari | Fenrus |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | **Audience** | Always-on family TV | Homelab | Homelab | Homelab | News-focus | Smart-mirror | News reader | News reader | Smart-home | SRE/observability | E-ink | E-ink tablet | AI browser | Meeting AI | Pixel art | Homelab | Homelab | Homelab | Homelab k8s | Homelab |
 | **GitHub Stars** | ~50 | 30K | 19K | 7.2K | 34K | 23.5K | 8.5K | — | 5.5K | 70K | 3K | — | — | — | 2.5K | 5K | 7.5K | 5K | 2K | 1K |
@@ -258,7 +258,7 @@ Categories: **Family/TV Dashboards** · **Homelab Dashboards** · **News/Feed Re
 | **Smart-mirror form factor** | MagicMirror² (23.5K stars, 100+ modules) | Electron-based mirror; huge module ecosystem | Browser-only, no Electron | **No change.** Electron adds 80 MB+ for zero benefit. |
 | **i18n** | Homepage (45+ languages via Crowdin) | Community-driven translation with CI | Hebrew + English only | **Track v16.** `Intl.MessageFormat` when TC39 ships + contributor offer. |
 | **Docker-first deployment** | Homarr (Docker Compose, one-click) | Turnkey self-hosted deployment | GitHub Pages + `dist.zip` + `file://` | **No change.** Docker adds OS surface for zero benefit on static SPA. |
-| **Visual design** | Glance (cohesive themes, modern) | Consistent color system, clean defaults | 6 themes with `@layer` tokens | **Harvest v15**: 7th "high contrast" theme (WCAG AAA); theme gallery docs. |
+| **Visual design** | Glance (cohesive themes, modern) | Consistent color system, clean defaults | 7 themes with `@layer` tokens | **Shipped v14.20**: high-contrast theme (WCAG AAA); theme gallery docs. |
 | **Plugin architecture** | MagicMirror² / HASS Lovelace | Third-party module installation | 12 statically-authored cards | **No change.** Plugin = supply-chain risk + version conflicts. |
 | **Testing depth** | **FamilyDashBoard (us)** | 7338 tests, 421 VR, mutation, property, axe, LHCI | **Best in class.** | **Maintain lead**: continue ratcheting. |
 | **Supply-chain security** | **FamilyDashBoard (us)** | SLSA L2, SBOM, Sigstore, rebuilder | **Best in class.** | **Extend**: SLSA L3 + OTel by v15. |
@@ -625,7 +625,7 @@ This section documents the full re-opening and verdict for the 7 most consequent
 | R3 | Browser breaking change to CSP L3 / Trusted Types | Mid | Low | OWASP rotation + reporting-API sampling. |
 | R4 | Un-pinned transitive dep supply-chain vector | High | Low | Renovate SHA-pinned + dependabot + SBOM-diff + `--ignore-scripts`. |
 | R5 | TV hardware refresh leaves 4 GB Chromecast behind | Low | Mid | Per-card budget hard-cap; Compute Pressure tile. |
-| R6 | Hebrew RTL regresses on CSS engine breaking change | Mid | Low | 421 VR baselines × 6 themes; quarterly TV walk-through. |
+| R6 | Hebrew RTL regresses on CSS engine breaking change | Mid | Low | 421 VR baselines × 7 themes; quarterly TV walk-through. |
 | R7 | Free-tier API providers change quota | Mid | Mid | 3+ providers per card; auto-failover; KV stale. |
 | R8 | Pikud Ha-Oref API change disrupts `alerts` | High | Mid | Tzeva-Adom corroboration; DO SSE + history ring; Web Push backup. |
 | R9 | MCP server accidentally exposed beyond loopback | High | Low | CSP report-only surveillance; localhost-only integration test. |

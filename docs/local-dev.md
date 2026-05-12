@@ -91,7 +91,7 @@ After starting any workflow, verify the following:
 | ----------------------- | --------------------------- | ---------------------------------------------------------------------- |
 | **Dashboard loads**     | Open URL                    | Dark background, card grid visible                                     |
 | **Hebrew RTL**          | Check date/time card        | Hebrew date right-aligned                                              |
-| **Theme switching**     | Click theme icon (top bar)  | Cycles through 6 themes: black → blue → matrix → amber → purple → rose |
+| **Theme switching**     | Click theme icon (top bar)  | Cycles through 7 themes: black → blue → matrix → amber → purple → rose → high-contrast |
 | **Weather card**        | Wait 10 s                   | Shows temperature (°C or °F)                                           |
 | **Stocks card**         | Wait 5 s                    | Shows INTC / NVDA / PLTR prices                                        |
 | **News ticker**         | Wait 3 s                    | Scrolling Hebrew/English news                                          |

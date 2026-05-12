@@ -19,7 +19,7 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-14.19.0-a78bfa?style=flat-square)
+![Version](https://img.shields.io/badge/Version-14.20.0-a78bfa?style=flat-square)
 ![Tests](https://img.shields.io/badge/Vitest-7338_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
@@ -29,7 +29,7 @@
 [![Repo Size](https://img.shields.io/github/repo-size/RajwanYair/FamilyDashBoard?style=flat-square&color=34d399)](https://github.com/RajwanYair/FamilyDashBoard)
 
 **A zero-dependency TypeScript family dashboard for always-on TV display.**<br/>
-Pastel glassmorphism · 6 themes · Hebrew RTL · 12 cards · Per-pane smart refresh · Drag-and-drop layout · SW auto-reload · Diagnostic overlay
+Pastel glassmorphism · 7 themes · Hebrew RTL · 12 cards · Per-pane smart refresh · Drag-and-drop layout · SW auto-reload · Diagnostic overlay
 
 [Getting Started](#-getting-started) · [Features](#-features) · [Data Sources](#-data-sources) · [Architecture](#%EF%B8%8F-architecture) · [Docs](docs/README.md) · [Changelog](#-changelog) · [Contributing](.github/CONTRIBUTING.md)
 
@@ -94,7 +94,7 @@ Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** wit
 - **Per-pane independent refresh** — no full-page reloads
 - **Dual-layer cache** (in-memory Map + localStorage) — survives browser restart, 7-day eviction
 - **Stale-while-revalidate** — shows cached data instantly, fetches in background
-- **6 themes** (pastel black, blue, matrix, amber, purple, rose) — press `T` to cycle; all colors use CSS custom properties with pasteled palettes
+- **7 themes** (pastel black, blue, matrix, amber, purple, rose, high-contrast) — press `T` to cycle; all colors use CSS custom properties with pasteled palettes
 - **3 screen modes** (TV, tablet, phone) — phone mode enables full-page scroll
 - **6 card entrance animations** — random direction per card, attention loop every 5min
 - **Card maximize** — click any card header to expand it full-screen (FLIP animation), click again or press `Escape` to restore

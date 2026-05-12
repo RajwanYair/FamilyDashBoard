@@ -46,7 +46,7 @@ Reference these files before making assumptions:
 - `.github/instructions/workspace.instructions.md`
 - `.github/instructions/dashboard.instructions.md`
 - `src/styles/tokens.css` — all CSS custom property definitions
-- `src/styles/themes.css` — per-theme token overrides (6 themes)
+- `src/styles/themes.css` — per-theme token overrides (7 themes)
 - `src/styles/components.css` — shared card/chip/badge primitives
 - `src/styles/layout.css` — grid, column, and breakpoint rules
 - `src/styles/animations.css` — keyframe and transition definitions
@@ -74,7 +74,7 @@ Use this agent when the task is primarily about one of the following:
 
 ## Context
 
-TypeScript modular dashboard (`src/`) · Vite 8 · Token-driven glassmorphism · 6 themes · RTL Hebrew (`dir="rtl"`) · Target: 55"+ TV at ~3m · 3 screen modes (normal/compact/theater)
+TypeScript modular dashboard (`src/`) · Vite 8 · Token-driven glassmorphism · 7 themes · RTL Hebrew (`dir="rtl"`) · Target: 55"+ TV at ~3m · 3 screen modes (normal/compact/theater)
 
 ## Layout
 

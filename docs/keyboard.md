@@ -12,7 +12,7 @@ is inside an `<input>`, `<textarea>`, or `<select>`.
 
 | Key       | Action                       | Notes                                                         |
 | --------- | ---------------------------- | ------------------------------------------------------------- |
-| `T`       | Cycle theme                  | Cycles through 6 themes: black→blue→matrix→amber→purple→rose  |
+| `T`       | Cycle theme                  | Cycles through 7 themes: black→blue→matrix→amber→purple→rose→high-contrast  |
 | `D`       | Toggle diagnostics overlay   | Shows provider health, error log, version                     |
 | `A`       | Toggle alerts pane           | Flashes the Tzeva Adom alert card                             |
 | `S`       | Open Settings / Config panel | `<dialog>` opened via `showModal()`                           |
@@ -122,7 +122,7 @@ the `screen-tablet` and `screen-phone` CSS layers.
 
 ## Color Contrast
 
-All 6 themes satisfy WCAG 2.1 AA (contrast ratio ≥ 4.5:1 for normal text,
+All 7 themes satisfy WCAG 2.1 AA (contrast ratio ≥ 4.5:1 for normal text,
 ≥ 3:1 for large text) against the respective dark background:
 
 | Theme  | Background | Foreground | Ratio  |

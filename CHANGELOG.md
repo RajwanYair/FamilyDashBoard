@@ -9,6 +9,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.20.0] — 2026-05-12
+
+> **7338 tests / 290 suites / 0 failures** · Coverage: 96.55 / 89.74 / 95.84 / 97.51 (commit `1c464d3`)
+
+- **High-contrast theme**: 7th theme targeting WCAG AAA contrast ratios; added to theme registry, settings UI, and all theme-related docs
+- **Config presets**: three built-in presets — Family TV (1920×1080), Kitchen Tablet (1024×768), Office Monitor (2560×1440) — applied via settings overlay
+- **Per-card bundle budget ratchet**: warn threshold lowered 13 → 12 → 11 KB; hard-cap held at 64 KB
+- **Coverage ratchet**: functions threshold 95.7 → 95.8 in `vitest.config.ts`
+- **Compact/theater CSS polish**: improved tablet-mode card layout with container queries and responsive gap
+- **LHCI performance ratchet**: `error` threshold raised 0.98 → 0.99 in `.lighthouserc.cjs`
+- **Theme gallery documentation**: `docs/themes.md` with VR baseline screenshots for all 7 themes
+- **Stryker mutation scope expansion**: 125 → 135 files in scope (`stryker.config.mjs`)
+- **CSS `if()`/`@function` forward-compat**: `@supports` guards in `themes.css` for D9/ADR-062 progressive enhancement
+- **X12 signal migration finalize**: today-pane decoupled from tasks card — reads from `getCardSignal<TasksPendingSignal>()` instead of direct localStorage access; `check-module-boundaries` baseline reduced
+
+---
+
 ## [14.19.0] — 2026-05-11
 
 > **7338 tests / 287 suites / 0 failures** · Coverage: 96.55 / 89.74 / 95.84 / 97.51 (commit `0726059`)
