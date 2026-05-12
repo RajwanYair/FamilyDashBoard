@@ -89,6 +89,9 @@
  *   Total scope: 119 files.
  * (v14.18.0): extended scope to worker validation, normalize-error, nws-normalize, kv, log, schemas.
  *   Total scope: 125 files.
+ * (v14.19.0): extended scope to config-presets, worker routes (ai, cron, data, errors, feeds, reports),
+ *   durable objects (alerts-orchestrator, rate-limiter-do), worker entry (index.ts).
+ *   Total scope: 135 files.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -263,6 +266,17 @@ export default {
     "worker/src/utils/kv.ts",
     "worker/src/middleware/log.ts",
     "worker/src/utils/schemas.ts",
+    // (v14.19.0): config-presets, worker routes, durable objects, worker entry
+    "src/core/config-presets.ts",
+    "worker/src/index.ts",
+    "worker/src/routes/ai.ts",
+    "worker/src/routes/cron.ts",
+    "worker/src/routes/data.ts",
+    "worker/src/routes/errors.ts",
+    "worker/src/routes/feeds.ts",
+    "worker/src/routes/reports.ts",
+    "worker/src/durable-objects/alerts-orchestrator.ts",
+    "worker/src/durable-objects/rate-limiter-do.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
