@@ -8,6 +8,7 @@
 
 import "./config-panel.css";
 import { loadConfig, saveConfig, shareConfigHash, validateImportedConfig } from "../core/config";
+import { getPreset } from "../core/config-presets";
 import { encryptConfig, decryptConfig } from "../core/config-crypto";
 import { saveTextFile, pickTextFile } from "../core/fs-access";
 import type { DashboardConfig } from "../types/config";
@@ -1199,6 +1200,25 @@ export function initConfigPanel(): void {
 
   // Close button
   document.getElementById("cfg-close-btn")?.addEventListener("click", closeConfigPanel);
+
+  // Preset selector — applies overrides and repopulates form
+  const presetEl = gSel("cfg-preset");
+  if (presetEl) {
+    presetEl.addEventListener("change", () => {
+      const preset = getPreset(presetEl.value);
+      if (!preset) return;
+      const c = loadConfig();
+      Object.assign(c, preset.overrides);
+      saveConfig(c);
+      applyTheme(c.theme);
+      applyFontScale(c.fontScale);
+      populateForm();
+      markDirty();
+      presetEl.value = ""; // reset selector to placeholder
+      diagLog(`[config-panel] applied preset: ${preset.id}`);
+      showToast(`${preset.icon} ${preset.label}`);
+    });
+  }
 
   // Tab buttons — replace inline onclick with event listeners
   document.querySelectorAll<HTMLButtonElement>(".cfg-tab[data-tab]").forEach((btn) => {
