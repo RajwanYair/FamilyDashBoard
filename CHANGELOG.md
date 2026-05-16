@@ -15,10 +15,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 - **ROADMAP Deep-Rethink v3.1**: 20-peer comparison matrix re-verified; audit stamp added confirming zero dead exports / zero suppressions / no suspended gates / no abandoned features
 - **webhint browserslist alignment**: 1128 IE compat false-positives silenced by ignoring `<main>`, `<dialog>`, `<details>`, `<summary>`, `dir`, `autocomplete`, `popover` (all Baseline 2022+ and within `.browserslistrc` targets)
-- **Coverage ratchet (ROADMAP #10)**: thresholds +0.1 toward 97/90/96/98 — statements 96.5→96.6, branches 89.7→89.8, functions 95.8→95.9, lines 97.4→97.5
-- **CSS bundle ratchet (ROADMAP #19)**: budget tightened 30 → 29.5 KB gzip (actual 29.1 KB); JS held at 110 KB (exactly at budget — no ratchet headroom)
+- **Coverage ratchet (ROADMAP #10)** — **deferred to v15**: actuals (~96.6 / 89.8 / 95.9 / 97.5) sit exactly at the +0.1 ratchet target; thresholds held at 96.5 / 89.7 / 95.8 / 97.4 to preserve safety margin until under-tested modules are brought up first
+- **CSS bundle ratchet (ROADMAP #19)**: budget tightened 30 → 29.5 KB gzip (actual 29.2 KB); JS held at 110 KB (currently 109.7 KB)
 - **ADR-075**: production-readiness audit cadence formalized as annual practice with 10-item checklist; triggers on first commit after April 1 or every 5 minor releases
 - **Lint hygiene**: removed 2 unused type imports and 6 unnecessary type assertions in `src/core/config-presets.ts` surfaced by stricter `@typescript-eslint/no-unnecessary-type-assertion`
+- **Prettier sweep**: 33 drifted files reformatted (tsconfig variants, several docs, several source/test files)
+- **CSS smart-contrast justifications**: 3 legitimate `color: #fff` declarations on accent-hover buttons in `news.css` and `hebrew-cal.css` now carry inline `/* allow-hardcoded-color */` comments
 - **`.env.ps1`** added to `.gitignore` (secrets hygiene)
 
 ---
