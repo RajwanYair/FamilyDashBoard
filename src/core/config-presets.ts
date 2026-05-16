@@ -10,7 +10,6 @@
  */
 
 import type { DashboardConfig } from "../types/config";
-import type { ThemeName, ScreenModeName } from "./constants";
 
 export interface ConfigPreset {
   /** Machine-readable ID. */
@@ -51,8 +50,8 @@ const PRESET_TV: ConfigPreset = {
   labelEn: "Family TV",
   icon: "📺",
   overrides: {
-    screenMode: "tv" as ScreenModeName,
-    theme: "black" as ThemeName,
+    screenMode: "tv",
+    theme: "black",
     fontScale: 1.0,
     nightDimScheduleEnabled: true,
     nightDimStartHour: 22,
@@ -76,8 +75,8 @@ const PRESET_TABLET: ConfigPreset = {
   labelEn: "Kitchen Tablet",
   icon: "📱",
   overrides: {
-    screenMode: "tablet" as ScreenModeName,
-    theme: "blue" as ThemeName,
+    screenMode: "tablet",
+    theme: "blue",
     fontScale: 0.9,
     nightDimScheduleEnabled: false,
     nightDimLevel: 40,
@@ -99,8 +98,8 @@ const PRESET_MONITOR: ConfigPreset = {
   labelEn: "Office Monitor",
   icon: "🖥️",
   overrides: {
-    screenMode: "tv" as ScreenModeName,
-    theme: "blue" as ThemeName,
+    screenMode: "tv",
+    theme: "blue",
     fontScale: 0.85,
     nightDimScheduleEnabled: false,
     nightDimLevel: 30,

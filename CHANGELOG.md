@@ -9,6 +9,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.21.0] — 2026-05-16
+
+> Production-readiness audit & ratchet cycle · 7338 tests / 290 suites / 0 failures · 75 ADRs
+
+- **ROADMAP Deep-Rethink v3.1**: 20-peer comparison matrix re-verified; audit stamp added confirming zero dead exports / zero suppressions / no suspended gates / no abandoned features
+- **webhint browserslist alignment**: 1128 IE compat false-positives silenced by ignoring `<main>`, `<dialog>`, `<details>`, `<summary>`, `dir`, `autocomplete`, `popover` (all Baseline 2022+ and within `.browserslistrc` targets)
+- **Coverage ratchet (ROADMAP #10)**: thresholds +0.1 toward 97/90/96/98 — statements 96.5→96.6, branches 89.7→89.8, functions 95.8→95.9, lines 97.4→97.5
+- **CSS bundle ratchet (ROADMAP #19)**: budget tightened 30 → 29.5 KB gzip (actual 29.1 KB); JS held at 110 KB (exactly at budget — no ratchet headroom)
+- **ADR-075**: production-readiness audit cadence formalized as annual practice with 10-item checklist; triggers on first commit after April 1 or every 5 minor releases
+- **Lint hygiene**: removed 2 unused type imports and 6 unnecessary type assertions in `src/core/config-presets.ts` surfaced by stricter `@typescript-eslint/no-unnecessary-type-assertion`
+- **`.env.ps1`** added to `.gitignore` (secrets hygiene)
+
+---
+
 ## [14.20.0] — 2026-05-12
 
 > **7338 tests / 290 suites / 0 failures** · Coverage: 96.55 / 89.74 / 95.84 / 97.51 (commit `1c464d3`)
