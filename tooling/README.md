@@ -10,23 +10,23 @@ Each project extends these shared configs and adds only project-specific overrid
 
 | Config              | FDB vendored | Parent `MyScripts/tooling/` | Status              |
 | ------------------- | ------------ | --------------------------- | ------------------- |
-| eslint/web-ts-app   | ✅ rich       | stub                        | **FDB → parent**    |
-| eslint/node-ts-app  | ✅ rich       | stub                        | **FDB → parent**    |
-| eslint/base.mjs     | ✗ (renamed)  | ✅ exists                    | merged into factory |
-| tsconfig/base-ts    | ✅ rich       | stub                        | **FDB → parent**    |
-| tsconfig/base-node  | ✅ match      | ✅ match                     | in sync ✓           |
-| vitest/base         | ✅ rich       | stub (176 B)                | **FDB → parent**    |
-| vitest/happy-dom    | ✅ rich       | stub                        | **FDB → parent**    |
-| vitest/node         | ✅ rich       | stub                        | **FDB → parent**    |
-| ci/check.yml        | ✅ FDB only   | ✗                           | promote to parent   |
-| mcp/                | ✅ FDB only   | ✗                           | promote to parent   |
-| stylelint/          | ✗            | ✅ exists                    | vendor into FDB     |
-| htmlhint/           | ✗            | ✅ exists                    | vendor into FDB     |
-| markdownlint        | ✗            | ✅ exists                    | vendor into FDB     |
-| playwright.base.ts  | ✗            | ✅ exists                    | vendor into FDB     |
-| prettier.base.json  | ✗            | ✅ exists                    | vendor into FDB     |
-| commitlint.base.cjs | ✗            | ✅ exists                    | vendor into FDB     |
-| vite.base.ts        | ✗            | ✅ exists                    | vendor into FDB     |
+| eslint/web-ts-app   | ✅ rich      | stub                        | **FDB → parent**    |
+| eslint/node-ts-app  | ✅ rich      | stub                        | **FDB → parent**    |
+| eslint/base.mjs     | ✗ (renamed)  | ✅ exists                   | merged into factory |
+| tsconfig/base-ts    | ✅ rich      | stub                        | **FDB → parent**    |
+| tsconfig/base-node  | ✅ match     | ✅ match                    | in sync ✓           |
+| vitest/base         | ✅ rich      | stub (176 B)                | **FDB → parent**    |
+| vitest/happy-dom    | ✅ rich      | stub                        | **FDB → parent**    |
+| vitest/node         | ✅ rich      | stub                        | **FDB → parent**    |
+| ci/check.yml        | ✅ FDB only  | ✗                           | promote to parent   |
+| mcp/                | ✅ FDB only  | ✗                           | promote to parent   |
+| stylelint/          | ✗            | ✅ exists                   | vendor into FDB     |
+| htmlhint/           | ✗            | ✅ exists                   | vendor into FDB     |
+| markdownlint        | ✗            | ✅ exists                   | vendor into FDB     |
+| playwright.base.ts  | ✗            | ✅ exists                   | vendor into FDB     |
+| prettier.base.json  | ✗            | ✅ exists                   | vendor into FDB     |
+| commitlint.base.cjs | ✗            | ✅ exists                   | vendor into FDB     |
+| vite.base.ts        | ✗            | ✅ exists                   | vendor into FDB     |
 
 **Next action**: Copy FDB-enriched configs → parent, then vendor remaining parent configs into FDB. Target: v14.17.0.
 

@@ -334,7 +334,15 @@ export function getNetworkMode(): NetworkMode {
 }
 
 // ── Themes (single source of truth for theme names) ──
-export const THEMES = ["black", "blue", "matrix", "amber", "purple", "rose", "high-contrast"] as const;
+export const THEMES = [
+  "black",
+  "blue",
+  "matrix",
+  "amber",
+  "purple",
+  "rose",
+  "high-contrast",
+] as const;
 export type ThemeName = (typeof THEMES)[number];
 
 // ── Screen Modes ──

@@ -76,9 +76,13 @@ export async function fetchNWS(lat: number, lon: number): Promise<WeatherRespons
   }
 
   diagLog(`[NWS] fetching point metadata lat=${lat} lon=${lon}`);
-  const pointResp = await fetchWithTimeout(`${NWS_API}/points/${lat.toFixed(4)},${lon.toFixed(4)}`, 8_000, {
-    headers: { "User-Agent": "FamilyDashBoard/14.14 (github.com/RajwanYair/FamilyDashBoard)" },
-  });
+  const pointResp = await fetchWithTimeout(
+    `${NWS_API}/points/${lat.toFixed(4)},${lon.toFixed(4)}`,
+    8_000,
+    {
+      headers: { "User-Agent": "FamilyDashBoard/14.14 (github.com/RajwanYair/FamilyDashBoard)" },
+    },
+  );
   if (!pointResp.ok) throw new Error(`NWS /points error ${pointResp.status}`);
   const pointMeta: NWSPointMeta = (await pointResp.json()) as NWSPointMeta;
 

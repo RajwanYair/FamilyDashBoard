@@ -87,20 +87,20 @@ Start-Process "dist\index.html"
 
 After starting any workflow, verify the following:
 
-| Feature                 | How to check                | Expected                                                               |
-| ----------------------- | --------------------------- | ---------------------------------------------------------------------- |
-| **Dashboard loads**     | Open URL                    | Dark background, card grid visible                                     |
-| **Hebrew RTL**          | Check date/time card        | Hebrew date right-aligned                                              |
+| Feature                 | How to check                | Expected                                                                               |
+| ----------------------- | --------------------------- | -------------------------------------------------------------------------------------- |
+| **Dashboard loads**     | Open URL                    | Dark background, card grid visible                                                     |
+| **Hebrew RTL**          | Check date/time card        | Hebrew date right-aligned                                                              |
 | **Theme switching**     | Click theme icon (top bar)  | Cycles through 7 themes: black → blue → matrix → amber → purple → rose → high-contrast |
-| **Weather card**        | Wait 10 s                   | Shows temperature (°C or °F)                                           |
-| **Stocks card**         | Wait 5 s                    | Shows INTC / NVDA / PLTR prices                                        |
-| **News ticker**         | Wait 3 s                    | Scrolling Hebrew/English news                                          |
-| **Config panel**        | Press `C` or click ⚙        | Slide-in panel, all card toggles visible                               |
-| **Diagnostics overlay** | Press `D`                   | Shows proxy health + cache stats                                       |
-| **Keyboard shortcuts**  | Press `?`                   | Shortcut list overlay appears                                          |
-| **PWA install**         | Address bar                 | Browser shows installable PWA indicator                                |
-| **Service Worker**      | DevTools → Application → SW | `familydashboard-vX.Y.Z` registered                                    |
-| **Night dimmer**        | Set system time to 23:00+   | Screen dims automatically                                              |
+| **Weather card**        | Wait 10 s                   | Shows temperature (°C or °F)                                                           |
+| **Stocks card**         | Wait 5 s                    | Shows INTC / NVDA / PLTR prices                                                        |
+| **News ticker**         | Wait 3 s                    | Scrolling Hebrew/English news                                                          |
+| **Config panel**        | Press `C` or click ⚙        | Slide-in panel, all card toggles visible                                               |
+| **Diagnostics overlay** | Press `D`                   | Shows proxy health + cache stats                                                       |
+| **Keyboard shortcuts**  | Press `?`                   | Shortcut list overlay appears                                                          |
+| **PWA install**         | Address bar                 | Browser shows installable PWA indicator                                                |
+| **Service Worker**      | DevTools → Application → SW | `familydashboard-vX.Y.Z` registered                                                    |
+| **Night dimmer**        | Set system time to 23:00+   | Screen dims automatically                                                              |
 
 ---
 

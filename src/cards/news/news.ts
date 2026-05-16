@@ -706,7 +706,9 @@ export async function fetchFeed(feed: NewsFeed): Promise<NewsItem[]> {
   // 0. Cloudflare Worker — server-side RSS proxy, no CORS or network-proxy dependency
   if (isWorkerEnabled()) {
     try {
-      const res = await fetchWithTimeout(`${WORKER_BASE_URL}/api/news?url=${encodeURIComponent(feed.url)}`);
+      const res = await fetchWithTimeout(
+        `${WORKER_BASE_URL}/api/news?url=${encodeURIComponent(feed.url)}`,
+      );
       if (res.ok) {
         const items = parseFeedItems(await res.text(), feed.src);
         if (items.length) return items;

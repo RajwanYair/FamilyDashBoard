@@ -347,10 +347,7 @@ describe("BgImages — rotateBgImage with config change after init", () => {
 
   it("returns early when config changes to empty after layers were initialized", () => {
     // Init with valid images → creates layers
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }));
     initBgImages();
     expect(document.getElementById("bg-layer-a")).not.toBeNull();
 
@@ -360,10 +357,7 @@ describe("BgImages — rotateBgImage with config change after init", () => {
   });
 
   it("returns early when config changes to only invalid URLs after init", () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }));
     initBgImages();
 
     localStorage.setItem(

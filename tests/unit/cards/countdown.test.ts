@@ -31,9 +31,7 @@ import {
 } from "@/cards/countdown/countdown";
 import { loadConfig } from "@/core/config";
 import { cSet, cClear } from "@/core/cache";
-import {
-  getSemanticPayload,
-} from "@/core/semantic-clipboard";
+import { getSemanticPayload } from "@/core/semantic-clipboard";
 import type { DashboardConfig } from "@/types/config";
 
 vi.mock("@/core/config", () => ({
@@ -1412,9 +1410,7 @@ describe("Countdown — coverage: tickSecondary + initCountdownCard", () => {
     const now = new Date();
     const holKey = `holidays-${now.getFullYear()}-${now.getMonth()}`;
     cSet(holKey, {
-      items: [
-        { title: "Pesach", hebrew: "פסח", date: "2020-04-08", category: "holiday" },
-      ],
+      items: [{ title: "Pesach", hebrew: "פסח", date: "2020-04-08", category: "holiday" }],
     });
     initCountdownCard();
     const title2 = document.getElementById("cd2-title");

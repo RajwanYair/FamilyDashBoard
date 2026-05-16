@@ -151,7 +151,8 @@ export async function handleNews(url: URL): Promise<Response> {
     return jsonResponse({ error: "News feed origin not permitted", param: "url" }, 403);
   }
 
-  const res = await fetch(parsed.toString(), { // owasp-allow:A05 — Cloudflare Worker runtime
+  const res = await fetch(parsed.toString(), {
+    // owasp-allow:A05 — Cloudflare Worker runtime
     headers: { Accept: "application/rss+xml, application/xml, text/xml" },
   });
   if (!res.ok) return jsonResponse({ error: `Upstream ${res.status}` }, 502);
@@ -199,7 +200,8 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
   // Fetch all feeds in parallel
   const results = await Promise.allSettled(
     NEWS_FEED_URLS.map(async ({ url, src }) => {
-      const res = await fetch(url, { // owasp-allow:A10 — url from hardcoded NEWS_FEED_URLS constant
+      const res = await fetch(url, {
+        // owasp-allow:A10 — url from hardcoded NEWS_FEED_URLS constant
         headers: {
           "User-Agent": "FamilyDashBoard/11.0",
           Accept: "application/rss+xml, text/xml, application/xml",

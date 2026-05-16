@@ -5,15 +5,15 @@
 
 ## Themes
 
-| # | Name | CSS Class | Accent | Background | Best For |
-|---|------|-----------|--------|------------|----------|
-| 1 | **True Black (OLED)** | `theme-black` | Warm gold `#c8a87a` | Pure black `#000` | OLED TVs — deep blacks, zero backlight bleed |
-| 2 | **Ocean Blue** | `theme-blue` | Sky blue `#82b8d8` | Deep navy `#0c1824` | Default — calm, easy on the eyes |
-| 3 | **Forest Green** | `theme-matrix` | Soft green `#86c490` | Dark forest `#0e1a10` | Nature vibe, hacker aesthetic |
-| 4 | **Amber Glow** | `theme-amber` | Warm amber `#c8a07c` | Dark brown `#18120a` | Night mode, warm tint, retro feel |
-| 5 | **Purple Dusk** | `theme-purple` | Lavender `#b8aad4` | Deep purple `#140e1e` | Evening vibes, creative setup |
-| 6 | **Rose Night** | `theme-rose` | Soft rose `#c08898` | Dark crimson `#180a0e` | Romantic aesthetic, warm accent |
-| 7 | **High Contrast** | `theme-high-contrast` | Yellow `#ffdd00` | Pure black `#000` | Accessibility (WCAG AAA), vision impairments |
+| #   | Name                  | CSS Class             | Accent               | Background             | Best For                                     |
+| --- | --------------------- | --------------------- | -------------------- | ---------------------- | -------------------------------------------- |
+| 1   | **True Black (OLED)** | `theme-black`         | Warm gold `#c8a87a`  | Pure black `#000`      | OLED TVs — deep blacks, zero backlight bleed |
+| 2   | **Ocean Blue**        | `theme-blue`          | Sky blue `#82b8d8`   | Deep navy `#0c1824`    | Default — calm, easy on the eyes             |
+| 3   | **Forest Green**      | `theme-matrix`        | Soft green `#86c490` | Dark forest `#0e1a10`  | Nature vibe, hacker aesthetic                |
+| 4   | **Amber Glow**        | `theme-amber`         | Warm amber `#c8a07c` | Dark brown `#18120a`   | Night mode, warm tint, retro feel            |
+| 5   | **Purple Dusk**       | `theme-purple`        | Lavender `#b8aad4`   | Deep purple `#140e1e`  | Evening vibes, creative setup                |
+| 6   | **Rose Night**        | `theme-rose`          | Soft rose `#c08898`  | Dark crimson `#180a0e` | Romantic aesthetic, warm accent              |
+| 7   | **High Contrast**     | `theme-high-contrast` | Yellow `#ffdd00`     | Pure black `#000`      | Accessibility (WCAG AAA), vision impairments |
 
 ## Design Principles
 
@@ -31,7 +31,7 @@
 Themes live in `@layer themes` inside `src/styles/themes.css`. Each theme sets
 these custom properties on `body.theme-{name}`:
 
-```
+```text
 --bg-primary        Main background
 --bg-card           Card body background
 --bg-card-header    Card header background

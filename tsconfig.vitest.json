@@ -1,11 +1,7 @@
 {
     "extends": "./tooling/tsconfig/base-typescript.json",
     "compilerOptions": {
-        "lib": [
-            "ES2024",
-            "DOM",
-            "DOM.Iterable"
-        ],
+        "lib": ["ES2024", "DOM", "DOM.Iterable"],
         "exactOptionalPropertyTypes": false,
         "paths": {
             "@/*": ["./src/*"],

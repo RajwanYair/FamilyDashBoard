@@ -106,9 +106,10 @@ export function buildTodayItems(inputs: TodayPaneInputs): TodayPaneItem[] {
     items.push({
       type: "tasks",
       icon: "⚠️",
-      label: inputs.overdueTaskCount === 1 && inputs.firstOverdueText
-        ? `משימה באיחור: ${inputs.firstOverdueText}`
-        : `${inputs.overdueTaskCount} משימות באיחור`,
+      label:
+        inputs.overdueTaskCount === 1 && inputs.firstOverdueText
+          ? `משימה באיחור: ${inputs.firstOverdueText}`
+          : `${inputs.overdueTaskCount} משימות באיחור`,
       urgency: "warning",
     });
   }

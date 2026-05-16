@@ -571,19 +571,18 @@ export function renderTasksCard(): void {
   }
 
   // X12: publish pending task count + overdue info for today-pane / MCP consumers
-  const firstOverdue = overdueCount > 0
-    ? chores.find((c) => {
-        const { dueDate } = parseTaskDueDate(c.chore);
-        return dueDate !== null && isOverdue(dueDate);
-      })
-    : undefined;
+  const firstOverdue =
+    overdueCount > 0
+      ? chores.find((c) => {
+          const { dueDate } = parseTaskDueDate(c.chore);
+          return dueDate !== null && isOverdue(dueDate);
+        })
+      : undefined;
   const firstOverdueText = firstOverdue ? parseTaskDueDate(firstOverdue.chore).cleanText : null;
   setCardSignal(
     "tasks",
     "pending",
-    total > 0
-      ? { count: pending, overdue: overdueCount, total, firstOverdueText }
-      : null,
+    total > 0 ? { count: pending, overdue: overdueCount, total, firstOverdueText } : null,
   );
 
   // Start loop scroll if task list overflows its visible area

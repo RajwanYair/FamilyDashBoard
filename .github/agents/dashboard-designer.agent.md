@@ -95,13 +95,13 @@ TypeScript modular dashboard (`src/`) · Vite 8 · Token-driven glassmorphism ·
 
 ## Shared Card State Classes
 
-| Class            | Purpose                                              |
-| ---------------- | ---------------------------------------------------- |
-| `.card-empty`    | No data (flex center, italic, 50% opacity)           |
-| `.card-error`    | Fetch/parse failure (`--negative` color)             |
-| `.card-loading`  | Spinner overlay                                      |
-| `.card-skeleton` | Shimmer placeholder rows                             |
-| `.card--empty/--error/--stale` | BEM modifiers on `.card` element       |
+| Class                          | Purpose                                    |
+| ------------------------------ | ------------------------------------------ |
+| `.card-empty`                  | No data (flex center, italic, 50% opacity) |
+| `.card-error`                  | Fetch/parse failure (`--negative` color)   |
+| `.card-loading`                | Spinner overlay                            |
+| `.card-skeleton`               | Shimmer placeholder rows                   |
+| `.card--empty/--error/--stale` | BEM modifiers on `.card` element           |
 
 For tile-grid utilities (`.card__grid`, `.tile-grid`) and design tokens (`--card-min-height`, `--text-*`, `--radius-*`), see `src/styles/tokens.css` and `src/styles/components.css`.
 

@@ -1111,8 +1111,20 @@ export async function getUpcomingYahrzeits(
 // ── Yahrzeit Manager UI ──────────────────────────────
 
 const HEB_MONTH_NAMES: readonly string[] = [
-  "", "תשרי", "חשוון", "כסלו", "טבת", "שבט", "אדר",
-  "ניסן", "אייר", "סיוון", "תמוז", "אב", "אלול", "אדר ב׳",
+  "",
+  "תשרי",
+  "חשוון",
+  "כסלו",
+  "טבת",
+  "שבט",
+  "אדר",
+  "ניסן",
+  "אייר",
+  "סיוון",
+  "תמוז",
+  "אב",
+  "אלול",
+  "אדר ב׳",
 ];
 
 let _yzDialog: HTMLDialogElement | null = null;

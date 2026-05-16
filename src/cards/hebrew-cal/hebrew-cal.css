@@ -257,6 +257,7 @@
 .hc-yz-close-btn:hover,
 .hc-yz-close-btn:focus-visible {
   background: var(--accent);
+  /* allow-hardcoded-color: pure white pixel on hover accent fill — universal across themes */
   color: #fff;
   outline: none;
 }
@@ -310,6 +311,7 @@
 }
 .hc-yz-add-btn:hover {
   background: var(--accent);
+  /* allow-hardcoded-color: pure white pixel on hover accent fill — universal across themes */
   color: #fff;
 }
 

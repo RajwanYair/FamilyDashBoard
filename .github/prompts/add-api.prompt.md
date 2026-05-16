@@ -24,7 +24,7 @@ tools:
 
 Load the full skill before proceeding:
 
-```
+```text
 read_file(".github/skills/add-api/SKILL.md")
 ```
 

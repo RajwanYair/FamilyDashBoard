@@ -2138,9 +2138,7 @@ describe("ConfigPanel — Ctrl+S save shortcut", () => {
     const ov = document.getElementById("config-overlay");
     const saveBtn = document.getElementById("cfg-save-btn")!;
     const clickSpy = vi.spyOn(saveBtn, "click");
-    ov?.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "s", ctrlKey: true, bubbles: true }),
-    );
+    ov?.dispatchEvent(new KeyboardEvent("keydown", { key: "s", ctrlKey: true, bubbles: true }));
     expect(clickSpy).toHaveBeenCalled();
   });
 });

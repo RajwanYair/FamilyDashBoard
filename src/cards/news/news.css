@@ -514,6 +514,7 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
 .news-starred-close-btn:hover,
 .news-starred-close-btn:focus-visible {
   background: var(--accent);
+  /* allow-hardcoded-color: pure white pixel on hover accent fill — universal across themes */
   color: #fff;
   outline: none;
 }

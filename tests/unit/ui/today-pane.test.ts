@@ -153,7 +153,11 @@ describe("TodayPane — buildTodayItems: countdown", () => {
 
 describe("TodayPane — buildTodayItems: tasks", () => {
   it("adds overdue task item", () => {
-    const items = buildTodayItems({ ...EMPTY_INPUTS, overdueTaskCount: 1, firstOverdueText: "ניקיון" });
+    const items = buildTodayItems({
+      ...EMPTY_INPUTS,
+      overdueTaskCount: 1,
+      firstOverdueText: "ניקיון",
+    });
     expect(items.some((i) => i.type === "tasks" && i.urgency === "warning")).toBe(true);
   });
 
@@ -199,7 +203,8 @@ describe("TodayPane — buildTodayItems: sort order", () => {
       ...EMPTY_INPUTS,
       alerts: [alert],
       nextCalEvent: { label: "פגישה", minutesUntil: 120 }, // normal urgency
-      overdueTaskCount: 1, firstOverdueText: "משימה", // warning urgency
+      overdueTaskCount: 1,
+      firstOverdueText: "משימה", // warning urgency
     });
     const urgencies = items.map((i) => i.urgency);
     const critIdx = urgencies.indexOf("critical");

@@ -1254,7 +1254,8 @@ const RULES = [
   // A04 — Insecure Design: Prototype pollution via JSON.parse of untrusted input without validation
   {
     category: "A04",
-    label: "JSON.parse of URL/search params — validate result before use to prevent prototype pollution",
+    label:
+      "JSON.parse of URL/search params — validate result before use to prevent prototype pollution",
     severity: "warn",
     pattern: /JSON\.parse\s*\(\s*(?:searchParams|location\.(?:search|hash)|window\.name)/,
     safeMarkers: ["test", "spec", "// owasp-allow:A04", "safeParse", "validate", "schema"],

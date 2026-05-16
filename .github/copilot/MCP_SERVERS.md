@@ -6,14 +6,14 @@ This repository ships a committed `.vscode/mcp.json` for shared team servers and
 
 ## Committed Servers (`.vscode/mcp.json`)
 
-| Server       | Type    | Package / URL                                 | Purpose                                                                 |
-| ------------ | ------- | --------------------------------------------- | ----------------------------------------------------------------------- |
-| `github`     | `http`            | `api.githubcopilot.com/mcp` (Copilot-managed) | PRs, issues, code search, workflows, labels, releases via Copilot       |
-| `fetch`      | `stdio`           | `@modelcontextprotocol/server-fetch`          | Test API endpoints (Open-Meteo, Hebcal, Yahoo, CoinGecko) in chat       |
-| `filesystem` | `stdio`           | `@modelcontextprotocol/server-filesystem`     | Scoped read/write to workspace — coverage reports, configs, test output |
-| `gitkraken`  | `http`            | `mcp.gitkraken.com/mcp`                       | Git blame, log, diff, branch ops, PR workflow, cross-repo work          |
-| `playwright` | `stdio`           | `@microsoft/mcp-server-playwright`            | Browser automation, screenshot capture, visual regression in chat       |
-| `cloudflare` | `streamableHttp`  | `mcp.cloudflare.com/sse`                      | Workers, Pages, D1, KV, R2 — deploy, manage, debug worker routes       |
+| Server       | Type             | Package / URL                                 | Purpose                                                                 |
+| ------------ | ---------------- | --------------------------------------------- | ----------------------------------------------------------------------- |
+| `github`     | `http`           | `api.githubcopilot.com/mcp` (Copilot-managed) | PRs, issues, code search, workflows, labels, releases via Copilot       |
+| `fetch`      | `stdio`          | `@modelcontextprotocol/server-fetch`          | Test API endpoints (Open-Meteo, Hebcal, Yahoo, CoinGecko) in chat       |
+| `filesystem` | `stdio`          | `@modelcontextprotocol/server-filesystem`     | Scoped read/write to workspace — coverage reports, configs, test output |
+| `gitkraken`  | `http`           | `mcp.gitkraken.com/mcp`                       | Git blame, log, diff, branch ops, PR workflow, cross-repo work          |
+| `playwright` | `stdio`          | `@microsoft/mcp-server-playwright`            | Browser automation, screenshot capture, visual regression in chat       |
+| `cloudflare` | `streamableHttp` | `mcp.cloudflare.com/sse`                      | Workers, Pages, D1, KV, R2 — deploy, manage, debug worker routes        |
 
 ### Parent-Level Servers (`MyScripts/.vscode/mcp.json`)
 
@@ -38,7 +38,7 @@ This matches the broader tooling policy for `MyScripts/`: common tools belong at
 | Filesystem                     | ✅ Committed   | Workspace-aware browsing; coverage/test output; config reads                                   |
 | GitKraken / GitLens            | ✅ Committed   | Cross-project worktree, branch, PR review, Launchpad. Useful for `MyScripts/` multi-repo       |
 | Playwright                     | ✅ Committed   | Browser automation, screenshot capture, VR validation. Complements ms-playwright extension     |
-| Cloudflare (Wrangler)          | ✅ Committed  | Workers, Pages, D1, KV, R2 management. `streamableHttp` transport via `mcp.cloudflare.com/sse` |
+| Cloudflare (Wrangler)          | ✅ Committed   | Workers, Pages, D1, KV, R2 management. `streamableHttp` transport via `mcp.cloudflare.com/sse` |
 | Repo-specific internal servers | ⏳ Conditional | Commit only if the whole team needs the same config                                            |
 
 ## MCP Capability Model (VS Code May 2026)

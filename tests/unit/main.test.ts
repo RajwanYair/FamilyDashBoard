@@ -140,7 +140,12 @@ import {
 import { initDiagOverlay } from "@/ui/diag-overlay";
 import { initBgImages } from "@/ui/bg-images";
 import { initScreenMode, stepFontScale } from "@/ui/screen-mode";
-import { initNightDimmer, toggleNightDim, setIdleAutoDimMinutes, setWarmTint } from "@/ui/night-dimmer";
+import {
+  initNightDimmer,
+  toggleNightDim,
+  setIdleAutoDimMinutes,
+  setWarmTint,
+} from "@/ui/night-dimmer";
 import { initWeatherCard } from "@/cards/weather/weather";
 import { initNewsCard, toggleBookmarkMode } from "@/cards/news/news";
 import { initStocksCard } from "@/cards/stocks/stocks";

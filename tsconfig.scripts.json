@@ -1,9 +1,7 @@
 {
     "extends": "./tooling/tsconfig/base-typescript.json",
     "compilerOptions": {
-        "lib": [
-            "ES2024"
-        ],
+        "lib": ["ES2024"],
         "allowJs": true,
         "checkJs": false,
         "noEmit": true,
