@@ -6,9 +6,9 @@
  *   JS gzipped:  ≤ 110 KB  (raised from 105 KB in v14.1.0 — added
  *                           mcp-bridge chunk + card-infra split, pushing actual
  *                           to 108.7 KB after full rebuild; budget = actual + ~1.3 KB headroom)
- *   CSS gzipped: ≤ 30 KB   (raised from 29 KB in v14.19.0 — high-contrast theme
- *                           + config-preset styles pushed actual to
- *                           29.1 KB; new budget = actual + ~0.9 KB headroom)
+ *   CSS gzipped: ≤ 29.5 KB (tightened from 30 KB in v14.21.0 — ROADMAP #19
+ *                           per-card budget ratchet toward 60 KB worker ceiling;
+ *                           actual measured ~29.1 KB leaves ~0.4 KB headroom)
  *
  * Also checks for 10% growth regression against the last baseline recorded
  * in scripts/bundle-trend.json.  Exit 1 on budget exceeded OR on > 10% growth.
@@ -27,7 +27,7 @@ const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
 const JS_BUDGET_KB = 110;
-const CSS_BUDGET_KB = 30;
+const CSS_BUDGET_KB = 29.5;
 /** Alert if a bundle type grows more than this fraction vs last baseline. */
 const GROWTH_THRESHOLD = 0.1;
 
