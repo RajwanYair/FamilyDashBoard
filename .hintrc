@@ -24,8 +24,16 @@
       {
         "ignore": [
           "meta[name=theme-color]",
-          "script[type=speculationrules]"
-        ]
+          "script[type=speculationrules]",
+          "main",
+          "dialog",
+          "details",
+          "summary",
+          "dir",
+          "autocomplete",
+          "popover"
+        ],
+        "enable": []
       }
     ],
     "compat-api/css": "default",
