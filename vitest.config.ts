@@ -72,10 +72,12 @@ export default defineConfig({
         // (v14.24.0): lines lowered 97.45→97.40 (actual 97.41–97.42 — slight dip after
         //             S1-S3 property suites; OTel telemetry.ts adds uncovered lines);
         //             branches held at 89.7 (actual exactly 89.70, no ratchet room).
-        statements: 96.4,
-        branches: 89.7,
-        functions: 95.8,
-        lines: 97.4,
+        // (v14.26.0): ratchet all four after motivation/base-card/currency/calendar branch
+        //             tests (Sprints 2-3) — actuals: 96.56 / 89.83 / 95.93 / 97.55.
+        statements: 96.5,
+        branches: 89.8,
+        functions: 95.9,
+        lines: 97.5,
       },
     },
   },
