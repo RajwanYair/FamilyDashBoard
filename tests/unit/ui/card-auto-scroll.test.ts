@@ -495,3 +495,64 @@ describe("CardAutoScroll — initCardAutoScroll", () => {
     expect(roInstance?.observe).toHaveBeenCalledTimes(2);
   });
 });
+
+// ── rAF tick: atBottom reset (lines 91-95) ─────────────────────────────────
+
+describe("CardAutoScroll — rAF tick atBottom resets scrollTop after pause", () => {
+  let mod: Mod;
+
+  beforeEach(async () => {
+    // Do NOT use vi.useFakeTimers() here — it would override the rAF vi.fn()
+    // global mock and cause ticks to run automatically in the timer queue.
+    _rafCbs = [];
+    global.ResizeObserver = vi.fn(function MockRO() {
+      return { observe: vi.fn(), disconnect: vi.fn() };
+    });
+    mod = await freshMod();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("resets scrollTop to 0 inside the setTimeout callback when scrollTop reaches max", () => {
+    const { body } = makeCard("weather", 200);
+    // overflow=200 → scrollHeight=400, clientHeight=200, max=200
+
+    // Use a getter/setter so the tick can read and write scrollTop correctly
+    let _scrollTop = 0;
+    Object.defineProperty(body, "scrollTop", {
+      get: () => _scrollTop,
+      set: (v: number) => { _scrollTop = v; },
+      configurable: true,
+    });
+
+    // Capture the setTimeout callback registered by the atBottom branch
+    let capturedReset: (() => void) | null = null;
+    vi.spyOn(globalThis, "setTimeout").mockImplementation(
+      (fn: TimerHandler, _delay?: number): ReturnType<typeof setTimeout> => {
+        if (typeof fn === "function") capturedReset = fn as () => void;
+        return 0 as unknown as ReturnType<typeof setTimeout>;
+      },
+    );
+
+    mod.evaluateAll();
+
+    // Position at max-1 so the next frame triggers atBottom
+    _scrollTop = 199;
+
+    // Frame 0: sets lastTs, dt=0 → returns early
+    _rafCbs[0]?.(1000);
+
+    // Frame 1: dt=0.05 → scrollTop=min(199+1.75,200)=200 → 200≥199 → atBottom=true
+    _rafCbs[1]?.(1050);
+
+    // The setTimeout reset callback must have been captured
+    expect(capturedReset).not.toBeNull();
+
+    // Execute the callback directly: scrollTop must be reset to 0
+    capturedReset!();
+    expect(_scrollTop).toBe(0);
+  });
+});

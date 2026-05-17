@@ -3046,3 +3046,45 @@ describe("Stocks — buildStocksPayload (semantic clipboard)", () => {
     expect(payload).toBeNull();
   });
 });
+
+// ── loadAllStocks — stale-cache render path (lines 820-822) ─────────────────
+
+describe("Stocks — loadAllStocks stale cache render path", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `<div data-symbol="AAPL" class="stk"></div>`;
+    cClear();
+    vi.mocked(acquireLock).mockReturnValue(true);
+    vi.mocked(isPageVisible).mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    cClear();
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("renders stale data and sets data-stale=true when fresh cache is missing but stale exists", async () => {
+    // Write a stale entry directly into localStorage (ts=1 → very old, past any TTL)
+    const stockData = {
+      chart: {
+        result: [
+          {
+            meta: { regularMarketPrice: 200, previousClose: 195, currency: "USD" },
+            indicators: { quote: [{ close: [195, 198, 200] }] },
+          },
+        ],
+        error: null,
+      },
+    };
+    localStorage.setItem("dash_v2_stk-AAPL", JSON.stringify({ data: stockData, ts: 1 }));
+
+    // Ensure Phase 2 fetch fails so it doesn't delete the stale flag
+    vi.mocked(fetchJSONWithWorker).mockRejectedValue(new Error("no-network"));
+    await loadAllStocks();
+
+    const blk = document.querySelector('[data-symbol="AAPL"]') as HTMLElement;
+    // renderStock was called with stale data → dataset.stale must be "true"
+    expect(blk.dataset["stale"]).toBe("true");
+  });
+});

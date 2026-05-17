@@ -162,3 +162,46 @@ describe("telemetry — OTEL3: flush() always resolves on no-op path", () => {
     );
   });
 });
+
+// ── OTEL4: span callback can call setAttribute + setStatus ───────────────────
+
+describe("telemetry — OTEL4: span callback can invoke setAttribute and setStatus", () => {
+  it("setAttribute and setStatus on no-op span never throw", () => {
+    const env = makeEnv();
+    const handle = initOtel(env);
+    fc.assert(
+      fc.property(
+        fc.string(),
+        fc.oneof(fc.string(), fc.integer(), fc.boolean()),
+        fc.constantFrom("ok" as const, "error" as const),
+        fc.option(fc.string(), { nil: undefined }),
+        (key, attrVal, code, msg) => {
+          expect(() =>
+            handle.span("test:otel4", (span) => {
+              span.setAttribute(key, attrVal as string | number | boolean);
+              span.setStatus(code, msg ?? undefined);
+            }),
+          ).not.toThrow();
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── OTEL5: initOtel with OTEL_ENABLED="true" still returns a valid handle ────
+
+describe("telemetry — OTEL5: initOtel with OTEL_ENABLED='true' returns handle", () => {
+  it("returns a handle with enabled=false (v15 TODO path)", () => {
+    // Even with OTEL_ENABLED="true" the v14 no-op returns the noop handle.
+    // This test covers the second return branch in initOtel (line after TODO).
+    const env = makeEnv({ OTEL_ENABLED: "true" });
+    const handle = initOtel(env);
+    // The no-op implementation returns the same noop handle regardless
+    expect(typeof handle.span).toBe("function");
+    expect(typeof handle.flush).toBe("function");
+    // span should still work
+    const result = handle.span("test:enabled", () => 42);
+    expect(result).toBe(42);
+  });
+});
