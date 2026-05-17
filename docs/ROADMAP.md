@@ -1,10 +1,10 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v3.1)
 
-> **Refresh date**: 2026-05-16 · **Shipped baseline**: v14.21.0 · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-17 · **Shipped baseline**: v14.22.0 · **Active stream**: V15-OPEN.
 >
 > **v3.1 audit stamp (2026-05-16)**: Full re-litigation pass confirms zero divergence from v3 strategy. Inventory verified: 0 dead exports (142 files scanned via `check-dead-exports`), 0 `eslint-disable` / `@ts-ignore` / `@ts-expect-error` / `@ts-nocheck` in `src/`, 0 `continue-on-error` in workflows, 0 suspended/disabled CI gates (v13.x hardening sweep remains intact). All current `disabled` symbols in source are legitimate user-config semantics (`disabledFeeds`, HTML `[disabled]`, `0 = disabled` interval encodings, `ai_disabled` Workers AI opt-in flag, `video-news` opt-in default). Webhint IE compat false-positives in `.hintrc` resolved (IE EOL 2022, excluded by `.browserslistrc` since v9). Root layout left intact — Vite/Vitest/ESLint/TS/Playwright config files at root is the ecosystem convention; relocation gains nothing and forces CLI flags into every npm script, CI workflow, and operator doc. v15.0.0 reserved for the V15-OPEN feature stream (§6.1–6.6) — not consumed by structural reset. Next published version when V15-OPEN ships an exit-gate item; cleanup-only releases use patch tags.
 >
-> **Inventory**: 7338 tests / 290 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 76 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Inventory**: 7348 tests / 291 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 78 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
 > **Coverage**: 96.55 / 89.74 / 95.84 / 97.51 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
@@ -17,7 +17,7 @@
 
 ## 0. Executive Summary
 
-After 400+ sprints across v10 → v14.20 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog are **shipped**. The quality gate is industry-leading for a static-PWA: 7338 tests / 290 suites, 81 fast-check property test files across 4 domains (core / cards / ui / worker), container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
+After 400+ sprints across v10 → v14.22 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog are **shipped**. The quality gate is industry-leading for a static-PWA: 7348 tests / 291 suites, 85 fast-check property test files across 4 domains (core / cards / ui / worker), container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 This v3 rethink re-opens **every** major decision made since v10 — language, architecture, tooling, dependencies, documentation, infrastructure, APIs, testing, deployment, security — and benchmarks each against the best-in-class peer in its category. The result is a consolidated plan where nothing is grandfathered.
 
@@ -153,7 +153,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Prettier           | 3.x                   | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML parity. |
 | Stylelint          | 16.x                  | Keep; consider Lightning-CSS-only validation v16.           |
 | Playwright         | 1.5x                  | Quarterly baseline regen.                                   |
-| Stryker (mutation) | 8.x                   | Threshold ≥ 87%; 135 files in scope.                        |
+| Stryker (mutation) | 8.x                   | Threshold ≥ 87%; 136 files in scope.                        |
 | `fast-check`       | 3.x                   | 81 property suites across 23 modules.                       |
 | `axe-core`         | latest                | Keep CI gate.                                               |
 | Lighthouse CI      | latest                | At `error 0.99` cached.                                     |
@@ -167,7 +167,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Unit              | Vitest 4.1 + happy-dom 20           | Keep. Suite split per file.                         |
 | Component         | `@vitest/browser` (Playwright)      | Shipped v13.16.                                     |
 | Property-based    | fast-check (81 suites, ADR-054/055) | Continue expanding to remaining core modules.       |
-| Mutation          | Stryker (135 files)                 | Threshold ≥ 87%; extend to remaining core modules.  |
+| Mutation          | Stryker (136 files)                 | Threshold ≥ 87%; extend to remaining core modules.  |
 | Visual regression | Playwright (421+ baselines)         | Extend to DO-SSE alert states + maximise-FLIP.      |
 | End-to-end        | Playwright                          | Keep.                                               |
 | Accessibility     | axe-core (CI gate)                  | Keep + manual screen-reader pass per major.         |
@@ -187,9 +187,9 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Sec   | npm + GitHub Actions provenance (Sigstore) — shipped.                                   |
 | Sec   | OWASP Top 10 audit per major release; 35+ rules scan `src/`, `worker/src/`, `scripts/`. |
 | Sec   | Origin-Agent-Cluster header — shipped v13.34.0.                                         |
-| Sec   | Permissions-Policy delegation audit — reduce inherited surface for video-news iframes.  |
+| Sec   | **Shipped v14.22.0** Permissions-Policy delegation audit — 2 OWASP A05 iframe rules (rule count 118→120), API count corrected to 42 entries. |
 | Infra | Cloudflare Pages migration — gate on measurable TTI/caching regression.                 |
-| Infra | Annual vendor-neutrality drill (ADR-031).                                               |
+| Infra | Annual vendor-neutrality drill (ADR-031) — **Shipped v14.22.0**: fly.io drill, 0/6 CF APIs detected, gate PASSES. Next: Deno Deploy pre-v15.0.0. |
 | Infra | Static-PWA constraint: no server, no auth, no backend session (rule #26).               |
 
 ### 1.9 Documentation discipline
@@ -389,9 +389,9 @@ All consumers migrated to formal `CardSignalProtocol` — shipped v14.20.0.
 | 3   | Track    | TC39 Signals one-line swap (≤ 1.5 KB, Stage 4)       | P2  | S   | Mid | v15    |          |
 | 4   | Enhance  | DO Hibernatable WebSocket — stocks live + alerts     | P1  | M   | Hi  | v15    | PLATFORM |
 | 5   | Enhance  | R2 mirror for backgrounds + offline shell            | P2  | M   | Mid | v15    | PLATFORM |
-| 6   | Refactor | Annual vendor-neutrality drill                       | P1  | L   | Hi  | v15    |          |
+| 6   | Refactor | Annual vendor-neutrality drill                       | P1  | L   | Hi  | v15    |          | **Shipped v14.22.0** (fly.io). Next drill pre-v15. |
 | 7   | Enhance  | OpenTelemetry from Worker (opt-in)                   | P2  | L   | Mid | v15    | L3       |
-| 8   | Refactor | Promote `tooling/` presets to sibling repos          | P1  | M   | Hi  | v15    | MONO     |
+| 8   | Refactor | Promote `tooling/` presets to sibling repos          | P1  | M   | Hi  | v15    | MONO     | v14.22.0: sibling adoption guide + baseline synced. Adoption by siblings pending. |
 | 9   | Enhance  | WebRTC mirror with QR pairing (gated 3+)             | P2  | L   | Mid | v15    |          |
 | 10  | Enhance  | Coverage ratchet → 97/90/96/98                       | P1  | M   | Mid | v15    |          |
 | 11  | Track    | Biome replacement for Prettier + ESLint              | P2  | M   | Mid | v16    | V16-OPEN |
@@ -403,7 +403,7 @@ All consumers migrated to formal `CardSignalProtocol` — shipped v14.20.0.
 | 17  | Track    | E-ink screen mode — peer-inspired                    | P3  | M   | Lo  | v16    | V16-OPEN |
 | 18  | Track    | i18n infrastructure (`Intl.MessageFormat`)           | P3  | M   | Lo  | v16    | V16-OPEN |
 | 19  | Enhance  | Per-card budget hard-cap ratchet (target 60 KB)      | P1  | M   | Mid | v15    |          |
-| 20  | Enhance  | Stryker mutation expansion to remaining modules      | P1  | M   | Mid | v15    |          |
+| 20  | Enhance  | Stryker mutation expansion to remaining modules      | P1  | M   | Mid | v15    |          | v14.22.0: +1 file (temporal.ts), 136 total. |
 
 ### 5.2 Per-card (from §3, open only)
 

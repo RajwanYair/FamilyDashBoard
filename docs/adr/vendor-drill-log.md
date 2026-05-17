@@ -52,7 +52,7 @@ node scripts/check-vendor-neutrality.mjs --gate
 # exit 0
 ```
 
-0/6 CF-specific APIs detected. Gate **PASSES**.  
+0/6 CF-specific APIs detected. Gate **PASSES**.
 (Durable Objects are in scope but NOT DETECTED by the regex scanner — risk is documented above and accepted.)
 
 ### Next Drill Target
