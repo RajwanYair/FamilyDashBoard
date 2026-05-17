@@ -1,6 +1,6 @@
 # 📡 Data Sources
 
-> Last updated: v14.24.0
+> Last updated: v14.25.0
 
 This document describes every external data source used by FamilyDashBoard, its
 caching strategy, worker route, and known failure modes.

@@ -19,7 +19,7 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-14.24.0-a78bfa?style=flat-square)
+![Version](https://img.shields.io/badge/Version-14.25.0-a78bfa?style=flat-square)
 ![Tests](https://img.shields.io/badge/Vitest-7542_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
@@ -365,13 +365,12 @@ This project leverages extensive GitHub features:
 | v10.0–v13.42 | TC39 Signals, hardware tiers, OTel scaffold, AI quotes, BTC card, SimHash, OWASP 120 rules       |
 | v14.0–v14.14 | TypeScript 6, Vite 8, Rolldown bundler, property-test foundation (fast-check), 83 ADRs           |
 | v14.15–v14.21 | Mutation testing (Stryker 89%), 7338+ tests, CSS/bundle ratchet, vendor-neutrality drills        |
-| v14.22–v14.24 | Stryker 89%, FSA/D1R/ERT/CRON/OTEL property suites, 7517 tests, 83 ADRs, 136 Stryker files       |
+| v14.22–v14.25 | Stryker 90%, FSA/D1R/ERT/CRON/OTEL property suites, 7542+ tests, 83 ADRs, docs modernized       |
 
 ### Upcoming
 
 | Version   | Focus                                                                                  | Status |
 | --------- | -------------------------------------------------------------------------------------- | ------ |
-| v14.25.0  | Property test expansion, Stryker 90%, Bun Deploy vendor drill, docs refresh           | 🚀     |
 | v14.26.0  | Stryker 91%, fly.io vendor drill, coverage ratchet, worker KV depth tests             | 📋     |
 | v15.0     | Coverage 97/90/96/98, bundle ≤108 KB, Temporal Polyfill, Stryker 92%, SSRF hardening  | 📋     |
 

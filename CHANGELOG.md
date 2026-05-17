@@ -9,6 +9,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.25.0] — 2026-05-17
+
+> **7542 tests / 313 suites / 0 failures** · 83 ADRs · 136 Stryker files · Stryker threshold 89→90
+
+- **test(props)**: FSA1–FSA5 fast-check property tests for `fs-access.ts`; D1R1–D1R5 for `d1-reports.ts` (worker) — 2 new suites, 10 tests
+- **test(props)**: ERT1–ERT5 fast-check property tests for `errors-route.ts`; NE13–NE15 `normalize-error` depth — 1 new suite, 8 tests
+- **test(props)**: CRON1–CRON4 fast-check cron handler property tests; OTEL1–OTEL3 `initOtel` telemetry depth — 1 new suite, 7 tests
+- **docs(adr)**: ADR-082 (Bun Deploy vendor-neutrality drill v14.25.0 PASS — 0/6 CF-specific APIs detected) + ADR-083 (Stryker mutation expansion strategy) — 83 ADRs total
+- **chore(mutation)**: Stryker mutation score gate ratcheted `high`+`break` 89→90; v14.25.0 property suites documented in `stryker.config.mjs`
+- **docs(style)**: Rule 51 — no space-separated thousands in any `.md` file; all existing occurrences corrected across docs, CHANGELOG, ADRs
+- **docs(modernize)**: README roadmap/badges, SECURITY supported versions, ARCHITECTURE test counts, SVG assets (7542+/313/83 ADRs), tech-stack.svg ES2024+TS6, GitHub topics refreshed (typescript/cloudflare-workers/pwa)
+
+---
+
 ## [14.24.0] — 2026-05-17
 
 > **7517 tests / 308 suites / 0 failures** · 81 ADRs · 136 Stryker files · Stryker threshold 88↉89
