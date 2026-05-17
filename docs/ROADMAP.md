@@ -4,8 +4,8 @@
 >
 > **v3.1 audit stamp (2026-05-16)**: Full re-litigation pass confirms zero divergence from v3 strategy. Inventory verified: 0 dead exports (142 files scanned via `check-dead-exports`), 0 `eslint-disable` / `@ts-ignore` / `@ts-expect-error` / `@ts-nocheck` in `src/`, 0 `continue-on-error` in workflows, 0 suspended/disabled CI gates (v13.x hardening sweep remains intact). All current `disabled` symbols in source are legitimate user-config semantics (`disabledFeeds`, HTML `[disabled]`, `0 = disabled` interval encodings, `ai_disabled` Workers AI opt-in flag, `video-news` opt-in default). Webhint IE compat false-positives in `.hintrc` resolved (IE EOL 2022, excluded by `.browserslistrc` since v9). Root layout left intact — Vite/Vitest/ESLint/TS/Playwright config files at root is the ecosystem convention; relocation gains nothing and forces CLI flags into every npm script, CI workflow, and operator doc. v15.0.0 reserved for the V15-OPEN feature stream (§6.1–6.6) — not consumed by structural reset. Next published version when V15-OPEN ships an exit-gate item; cleanup-only releases use patch tags.
 >
-> **Inventory**: 7549+ tests / 313 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 84 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
-> **Coverage**: 96.56 / 89.83 / 95.93 / 97.55 (statements / branches / functions / lines).
+> **Inventory**: 7572+ tests / 313 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 84 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Coverage**: 96.91 / 90.32 / 96.24 / 97.94 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -172,7 +172,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | End-to-end        | Playwright                          | Keep.                                               |
 | Accessibility     | axe-core (CI gate)                  | Keep + manual screen-reader pass per major.         |
 | Performance       | Lighthouse CI (`error 0.99`)        | Ratcheted from 0.98 in v14.19.0.                    |
-| Coverage          | 96.55 / 89.74 / 95.84 / 97.51       | Ratchet path → 97/90/96/98 by v15. +0.5% per minor. |
+| Coverage          | 96.91 / 90.32 / 96.24 / 97.94       | Ratchet path → 97/90/96/98 by v15. +0.5% per minor. |
 
 ### 1.8 Observability, security, supply chain
 
