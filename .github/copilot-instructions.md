@@ -1,9 +1,9 @@
-# GitHub Copilot Instructions — FamilyDashBoard v14.22.0
+# GitHub Copilot Instructions — FamilyDashBoard v14.24.0
 
 > TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 7 Themes · 12 Cards · Vite 8 + TS 6.0.3 + Vitest 4.1.5
 > **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 > No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`. Shared configs vendored into `tooling/`.
-> Tests: `npx vitest run` — 7348 / 291 suites / 0 failures
+> Tests: `npx vitest run` — 7517 / 308 suites / 0 failures
 > Lint: `npx eslint src tests --max-warnings 0` — 0 errors · 0 warnings · 0 suppressions
 > Coverage thresholds: `96.5 / 89.7 / 95.8 / 97.4` (statements / branches / functions / lines) — see `vitest.config.ts`
 

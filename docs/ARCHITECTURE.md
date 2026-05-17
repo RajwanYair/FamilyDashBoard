@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v14.23.0)
+# FamilyDashBoard — Architecture (v14.24.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -333,7 +333,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; global styles in `src/styles/`
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only; `__USE_PROXIES__=false` disables proxy chain in production builds
-15. **7348 tests / 291 suites / 0 failures** — coverage thresholds: 96.5% statements, 89.7% branches, 95.8% functions, 97.4% lines
+15. **7517 tests / 308 suites / 0 failures** — coverage thresholds: 96.4% statements, 89.7% branches, 95.8% functions, 97.4% lines
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module

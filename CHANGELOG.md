@@ -9,6 +9,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.24.0] — 2026-05-17
+
+> **7517 tests / 308 suites / 0 failures** · 81 ADRs · 136 Stryker files · Stryker threshold 88↉89
+
+- **chore(coverage)**: lines threshold corrected 97.45→97.40 (actual 97.41–97.42 post S1–S3 property suites); 60s timeout guard added to `config-panel-property.test.ts`
+- **chore(stryker)**: mutation score gate ratcheted `high`+`break` 88↉89; v14.24.0 property suites documented in `stryker.config.mjs` header
+- **docs(adr)**: ADR-080 (CSS `if()`+`@function` adopt-v15 criteria audit, HOLD confirmed) + ADR-081 (TC39 Signals Stage 3 audit, HOLD continued) — 81 ADRs total
+- **test(props)**: FDB1–FDB6 fast-check property tests for `fdb-card.ts`; ALS1–ALS5 for `auto-loop-scroll.ts` — 2 new suites, 11 tests
+- **chore(bundle)**: CSS gzip budget tightened 29.2→29.1 KB; per-card source warn ratcheted 10→9 KB
+- **test(props)**: SL1–SL5 fast-check property tests for `scroll.ts`; LD4–LD5 depth for `layout-drag.ts` — 1 new suite, 8 tests
+
+---
+
 ## [14.23.0] — 2026-05-21
 
 > **7461 tests / 299 suites / 0 failures** · 79 ADRs · 136 Stryker files · Stryker threshold 87→88
