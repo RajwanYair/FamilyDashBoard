@@ -16,6 +16,13 @@ import { decomposeDuration, pad2 } from "../../core/utils";
 import { cGetStale } from "../../core/cache";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import {
+  nowMs,
+  startOfDayMs,
+  parsePlainDateMs,
+  parsePlainDateTime,
+  toISODateString,
+} from "../../core/temporal";
 import type { HebcalItem } from "../../types/api";
 import type { DurationParts } from "../../core/utils";
 import type { CardConfigField } from "../../types/card";
@@ -34,7 +41,7 @@ export function getCountdownTargetDate(): Date {
   } else if (recurrence === "monthly") {
     d = advanceMonthlyDate(d);
   }
-  return new Date(`${d}T${t}:00`);
+  return parsePlainDateTime(`${d}T${t}:00`);
 }
 
 export function getCountdownTitle(): string {
@@ -93,12 +100,12 @@ function cacheDom(): void {
 export type TimeComponents = DurationParts;
 
 export function getTimeComponents(targetMs: number): TimeComponents {
-  return decomposeDuration(Math.max(0, targetMs - Date.now()));
+  return decomposeDuration(Math.max(0, targetMs - nowMs()));
 }
 
 /** Returns the number of whole days that have elapsed since `targetMs`. */
 export function getDaysSince(targetMs: number): number {
-  return Math.max(0, Math.floor((Date.now() - targetMs) / MS_PER_DAY));
+  return Math.max(0, Math.floor((nowMs() - targetMs) / MS_PER_DAY));
 }
 
 /**
@@ -108,7 +115,7 @@ export function getDaysSince(targetMs: number): number {
 export function computeProgress(startMs: number, targetMs: number): number | null {
   if (!startMs || startMs >= targetMs) return null;
   const total = targetMs - startMs;
-  const elapsed = Date.now() - startMs;
+  const elapsed = nowMs() - startMs;
   return Math.max(0, Math.min(1, elapsed / total));
 }
 
@@ -153,7 +160,7 @@ export function advanceAnnualDate(dateStr: string): string {
   let year = parseInt(parts[0] ?? "2024", 10);
   const month = parts[1] ?? "01";
   const day = parts[2] ?? "01";
-  while (new Date(`${year}-${month}-${day}T00:00:00`).getTime() < Date.now()) {
+  while (parsePlainDateTime(`${year}-${month}-${day}T00:00:00`).getTime() < nowMs()) {
     year += 1;
   }
   return `${year}-${month}-${day}`;
@@ -168,20 +175,17 @@ export function advanceMonthlyDate(dateStr: string): string {
   const parts = dateStr.split("-");
   if (parts.length < 3) return dateStr;
   const day = parts[2] ?? "01";
-  let d = new Date(`${dateStr}T00:00:00`);
+  let d = parsePlainDateTime(`${dateStr}T00:00:00`);
   if (isNaN(d.getTime())) return dateStr;
-  const now = Date.now();
-  while (d.getTime() < now) {
-    // Advance by one month
+  while (d.getTime() < nowMs()) {
+    // Advance by one month, always re-pinning to the original day-of-month.
+    // Temporal: d.add({ months: 1 }).with({ day }) with overflow:'constrain'
     const nextMonth = d.getMonth() + 1;
     const nextYear = nextMonth > 11 ? d.getFullYear() + 1 : d.getFullYear();
     const wrappedMonth = nextMonth > 11 ? 0 : nextMonth;
     d = new Date(nextYear, wrappedMonth, parseInt(day, 10));
   }
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${dd}`;
+  return toISODateString(d.getFullYear(), d.getMonth() + 1, d.getDate());
 }
 
 /**
@@ -194,15 +198,15 @@ export function getNextYomTov(
   now: Date = new Date(),
   maxDays = 90,
 ): { title: string; date: string } | null {
-  const nowMs = now.setHours(0, 0, 0, 0);
-  const cutoff = nowMs + maxDays * MS_PER_DAY;
+  const todayMs = startOfDayMs(now);
+  const cutoff = todayMs + maxDays * MS_PER_DAY;
   const upcoming = items
     .filter((i) => {
       if (i.category !== "holiday") return false;
-      const d = new Date(i.date).setHours(0, 0, 0, 0);
-      return d >= nowMs && d <= cutoff;
+      const d = parsePlainDateMs(i.date);
+      return d >= todayMs && d <= cutoff;
     })
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => parsePlainDateMs(a.date) - parsePlainDateMs(b.date));
   const first = upcoming[0];
   if (!first) return null;
   const dateStr = first.date.slice(0, 10);
@@ -218,7 +222,7 @@ export function getNextCalEventForCountdown(
   icsText: string,
   minDaysAhead = 7,
 ): { title: string; date: string } | null {
-  const minMs = Date.now() + minDaysAhead * MS_PER_DAY;
+  const minMs = nowMs() + minDaysAhead * MS_PER_DAY;
   const blocks = icsText.split("BEGIN:VEVENT");
   const events: Array<{ title: string; date: string; ms: number }> = [];
   for (const block of blocks.slice(1)) {
@@ -236,7 +240,7 @@ export function getNextCalEventForCountdown(
       );
     }
     if (!isNaN(d.getTime()) && d.getTime() >= minMs) {
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      const dateStr = toISODateString(d.getFullYear(), d.getMonth() + 1, d.getDate());
       events.push({ title, date: dateStr, ms: d.getTime() });
     }
   }
