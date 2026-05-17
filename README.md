@@ -20,7 +20,7 @@
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
 ![Version](https://img.shields.io/badge/Version-14.24.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-7517_passing-34d399?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-7542_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -272,7 +272,7 @@ FamilyDashBoard/
 │   ├── types/              # TypeScript type definitions (api · config · card)
 │   └── public/             # Static assets (icon.svg, manifest.webmanifest)
 ├── tests/
-│   ├── unit/               # Vitest — 3678 tests / 123 suites
+│   ├── unit/               # Vitest — 7542+ tests / 313 suites
 │   └── integration/        # Integration-level tests
 ├── worker/                 # Cloudflare Worker (API proxy + normalization)
 │   └── src/routes/         # Per-provider route handlers
@@ -337,11 +337,11 @@ This project leverages extensive GitHub features:
 | Feature                  | Details                                                                              |
 | ------------------------ | ------------------------------------------------------------------------------------ |
 | **GitHub Pages**         | [Live demo](https://rajwanyair.github.io/FamilyDashBoard/) auto-deployed from `main` |
-| **GitHub Actions**       | 5 workflows — CI, deploy, release, auto-label, dependabot-auto-merge                 |
+| **GitHub Actions**       | 23 workflows — CI, deploy, release, security, SBOM, scorecard, Trivy, ZAP, Playwright VR, and 14 more |
 | **Issue Templates**      | YAML forms for bugs, features, API issues with auto-labeling                         |
 | **Discussion Templates** | Ideas, Q&A, Show-and-Tell categories                                                 |
 | **Dependabot**           | Weekly updates for GitHub Actions dependencies                                       |
-| **Copilot Integration**  | 2 custom agents, 4 skills, 3 prompts, 3 instruction files                            |
+| **Copilot Integration**  | 3 custom agents, 4 skills, 18 prompts, 8 instruction files, copilot-instructions.md  |
 | **Community Health**     | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, SUPPORT, CODEOWNERS                         |
 | **Auto Release Notes**   | 8-category changelog via `release.yml`                                               |
 
@@ -353,34 +353,27 @@ This project leverages extensive GitHub features:
 
 ### Completed
 
-| Version   | Summary                                                                            |
-| --------- | ---------------------------------------------------------------------------------- |
-| v3.0–v4.4 | Glassmorphism redesign, red alerts, per-pane refresh, 5 themes, diagnostic overlay |
-| v4.5–v4.8 | Card maximize, halacha ticker, 17 news feeds, Hebrew Calendar card, stock logos    |
-| v4.9      | Parasha, Zmanim, Daf Yomi, config panel, AQI, Gold/Silver, sparklines              |
-| v4.10     | TA-35, portfolio P&L, earthquake monitor, market countdown                         |
-| v4.11     | GBP, favicons, sector headers, Shabbat pill, PWA metas                             |
-| v4.12     | 7-day forecast, ICS config, dim schedule, offline cache age                        |
-| v4.13     | SW offline, home city, news feed toggle, card drag-reorder                         |
-| v4.14     | Multi-ICS, news search, settings import/export, visited news                       |
-| v4.15     | API cache, notifications, weather cities, config tabs                              |
-| v4.16     | Toast system, UV pill, chart toggle, deeplinks                                     |
-| v4.17     | Stock alerts, P&L chip, weather toast, countdown chip                              |
-| v4.18     | Dew point, bookmarks, weather summary, help overlay                                |
-| v4.19     | Omer, sparklines, card collapse, halacha overlay                                   |
-| v5.0      | Corp proxy, SW v5, PWA install, offline fallback                                   |
-| v5.1      | Refactoring: CSS tokens, ARIA, JS constants, dead code removal                     |
+| Version      | Summary                                                                                          |
+| ------------ | ------------------------------------------------------------------------------------------------ |
+| v3.0–v4.4    | Glassmorphism redesign, red alerts, per-pane refresh, 5 themes, diagnostic overlay               |
+| v4.5–v4.8    | Card maximize, halacha ticker, 17 news feeds, Hebrew Calendar card, stock logos                  |
+| v4.9–v4.19   | Zmanim, Daf Yomi, config panel, Gold/Silver, sparklines, P&L, bookmarks, card drag-reorder       |
+| v5.0–v5.1    | Corp proxy, SW v5, PWA install, offline fallback, CSS tokens, ARIA, JS constants                 |
+| v7.0–v7.17   | Full TypeScript SPA, Vite 8, card registry v7, FdbCard base, CardRuntime interface, domain types |
+| v8.0–v8.9    | Architecture convergence, registry-driven shells, namespaced config, IDB L3 cache               |
+| v9.0–v9.19   | Cloudflare Worker routing, AES-GCM config encryption, Valibot schemas, error batching            |
+| v10.0–v13.42 | TC39 Signals, hardware tiers, OTel scaffold, AI quotes, BTC card, SimHash, OWASP 120 rules       |
+| v14.0–v14.14 | TypeScript 6, Vite 8, Rolldown bundler, property-test foundation (fast-check), 83 ADRs           |
+| v14.15–v14.21 | Mutation testing (Stryker 89%), 7338+ tests, CSS/bundle ratchet, vendor-neutrality drills        |
+| v14.22–v14.24 | Stryker 89%, FSA/D1R/ERT/CRON/OTEL property suites, 7517 tests, 83 ADRs, 136 Stryker files       |
 
 ### Upcoming
 
-| Version | Focus                                                                                | Status |
-| ------- | ------------------------------------------------------------------------------------ | ------ |
-| v7.13   | Truth & Stabilization — docs, CardRuntime interface, domain types, config validation | ✅     |
-| v7.14   | Data Boundary — provider adapters, IDB-first cache, stale-state UX                   | ✅     |
-| v7.15   | Card Shell Primitives — skeleton/empty/error states, FdbCard.withLoading             | ✅     |
-| v7.16   | Config v5 + Observability — featureFlags, config accordion, fetchWithRetry           | ✅     |
-| v7.17   | Worker Normalization — FdbCard helpers, release tooling, doc updates                 | ✅     |
-| v8.0    | Architecture Convergence — registry-driven shells, namespaced config                 | 💡     |
+| Version   | Focus                                                                                  | Status |
+| --------- | -------------------------------------------------------------------------------------- | ------ |
+| v14.25.0  | Property test expansion, Stryker 90%, Bun Deploy vendor drill, docs refresh           | 🚀     |
+| v14.26.0  | Stryker 91%, fly.io vendor drill, coverage ratchet, worker KV depth tests             | 📋     |
+| v15.0     | Coverage 97/90/96/98, bundle ≤108 KB, Temporal Polyfill, Stryker 92%, SSRF hardening  | 📋     |
 
 See [ROADMAP.md](docs/ROADMAP.md) for the full strategic plan and stream priorities.
 

@@ -92,7 +92,7 @@ npx vitest run tests/unit/core/fetch.test.ts
 npx vitest run --coverage
 ```
 
-**Thresholds** (canonical source: `vitest.config.ts`): statements 95.7%, branches 88.8%, functions 95.1%, lines 96.7%. The thresholds ratchet upward each sprint as targeted tests are added — see Roadmap #8.
+**Thresholds** (canonical source: `vitest.config.ts`): statements 96.4%, branches 89.7%, functions 95.8%, lines 97.4%. The thresholds ratchet upward each sprint as targeted tests are added — see Roadmap #8.
 
 **Rules for new tests**:
 

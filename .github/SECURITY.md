@@ -2,13 +2,13 @@
 
 ## Supported Versions
 
-| Version                  | Supported      |
-| ------------------------ | -------------- |
-| 9.x (current)            | ✅ Active      |
-| 8.x                      | ❌ End of life |
-| 7.x                      | ❌ End of life |
-| 6.x                      | ❌ End of life |
-| 5.x (BestDashBoard.html) | ❌ End of life |
+| Version              | Supported          | Notes                                   |
+| -------------------- | ------------------ | --------------------------------------- |
+| 14.x (current)       | ✅ Active          | Receives security fixes and new features |
+| 13.x                 | ⚠️ Limited         | Critical security fixes only             |
+| 12.x and below       | ❌ End of life     | No updates; upgrade recommended          |
+| 9.x                  | ❌ End of life     |                                         |
+| 5.x (BestDashBoard)  | ❌ End of life     | Legacy single-file HTML archive          |
 
 ## Reporting a Vulnerability
 

@@ -85,26 +85,26 @@
   <!-- Tests -->
   <rect x="42"  y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#60a5fa" stroke-width="0.6" stroke-opacity="0.5"/>
   <text x="105" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">TESTS</text>
-  <text x="105" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#60a5fa" text-anchor="middle">7 517</text>
+  <text x="105" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#60a5fa" text-anchor="middle">7542</text>
   <text x="105" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">vitest · 0 failures</text>
 
   <!-- Suites -->
   <rect x="184" y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#34d399" stroke-width="0.6" stroke-opacity="0.5"/>
   <text x="247" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">SUITES</text>
-  <text x="247" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#34d399" text-anchor="middle">308</text>
+  <text x="247" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#34d399" text-anchor="middle">313</text>
   <text x="247" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">test files</text>
 
   <!-- ADRs -->
   <rect x="326" y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#a78bfa" stroke-width="0.6" stroke-opacity="0.5"/>
   <text x="389" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">ADRs</text>
-  <text x="389" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#a78bfa" text-anchor="middle">81</text>
+  <text x="389" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#a78bfa" text-anchor="middle">83</text>
   <text x="389" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">arch decisions</text>
 
   <!-- Themes -->
   <rect x="468" y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#fbbf24" stroke-width="0.6" stroke-opacity="0.5"/>
   <text x="531" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">THEMES</text>
   <text x="531" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#fbbf24" text-anchor="middle">7</text>
-  <text x="531" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">dark themes</text>
+  <text x="531" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">incl. high-contrast</text>
 
   <!-- Cards -->
   <rect x="610" y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#f472b6" stroke-width="0.6" stroke-opacity="0.5"/>

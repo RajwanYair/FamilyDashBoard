@@ -25,9 +25,9 @@
   <!-- JS -->
   <rect x="300" y="50" width="110" height="110" rx="12" fill="#1e293b" stroke="#f0db4f" stroke-opacity="0.3"/>
   <text x="355" y="88" font-size="30" text-anchor="middle">⚡</text>
-  <text x="355" y="112" font-family="Segoe UI" font-size="13" fill="#f1f5f9" text-anchor="middle" font-weight="700">ES2020+</text>
-  <text x="355" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Async/Await</text>
-  <text x="355" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Optional chaining</text>
+  <text x="355" y="112" font-family="Segoe UI" font-size="13" fill="#f1f5f9" text-anchor="middle" font-weight="700">ES2024</text>
+  <text x="355" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">TypeScript 6</text>
+  <text x="355" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Vite 8 bundler</text>
 
   <!-- SVG -->
   <rect x="430" y="50" width="110" height="110" rx="12" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.3"/>
@@ -40,13 +40,13 @@
   <rect x="560" y="50" width="110" height="110" rx="12" fill="#1e293b" stroke="#34d399" stroke-opacity="0.3"/>
   <text x="615" y="88" font-size="30" text-anchor="middle">🌐</text>
   <text x="615" y="112" font-family="Segoe UI" font-size="13" fill="#f1f5f9" text-anchor="middle" font-weight="700">14+ Free APIs</text>
-  <text x="615" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Proxy fallback</text>
-  <text x="615" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Dual-layer cache</text>
+  <text x="615" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Worker proxy</text>
+  <text x="615" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">3-layer cache</text>
 
   <!-- Zero deps -->
   <rect x="690" y="50" width="80" height="110" rx="12" fill="#1e293b" stroke="#fbbf24" stroke-opacity="0.3"/>
   <text x="730" y="88" font-size="30" text-anchor="middle">🚫</text>
   <text x="730" y="112" font-family="Segoe UI" font-size="12" fill="#f1f5f9" text-anchor="middle" font-weight="700">Zero</text>
-  <text x="730" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">No npm</text>
-  <text x="730" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">No build</text>
+  <text x="730" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">No runtime</text>
+  <text x="730" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">deps in prod</text>
 </svg>
