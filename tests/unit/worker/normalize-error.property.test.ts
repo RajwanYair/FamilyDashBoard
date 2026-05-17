@@ -248,3 +248,68 @@ describe("normalizeWorkerError — NE12: deterministic", () => {
     );
   });
 });
+
+// ── NE13: nested Error.cause chains — ok always false ────────────────────────
+
+describe("normalizeWorkerError — NE13: nested Error.cause chains always ok=false", () => {
+  it("errors with cause chain always produce ok:false", () => {
+    const causeChainArb = fc
+      .array(fc.string({ maxLength: 40 }), { minLength: 1, maxLength: 4 })
+      .map((msgs) => {
+        let err: Error | undefined;
+        for (const msg of msgs) {
+          err = err ? new Error(msg, { cause: err }) : new Error(msg);
+        }
+        return err!;
+      });
+    fc.assert(
+      fc.property(causeChainArb, routeArb, (err, route) => {
+        expect(normalizeWorkerError(err, route).ok).toBe(false);
+      }),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── NE14: error-like objects (plain objects with message) ────────────────────
+
+describe("normalizeWorkerError — NE14: error-like plain objects produce valid output", () => {
+  const errorLikeArb = fc
+    .record({
+      message: fc.string({ maxLength: 80 }),
+      name: fc.string({ maxLength: 20 }),
+    })
+    .map((obj) => Object.assign(new Error(obj.message), { name: obj.name }));
+
+  it("always returns valid code and ok:false for error-like objects", () => {
+    const VALID_CODES = new Set(["FDB-070", "FDB-071", "FDB-072", "FDB-073"]);
+    fc.assert(
+      fc.property(errorLikeArb, routeArb, (err, route) => {
+        const result = normalizeWorkerError(err, route);
+        expect(result.ok).toBe(false);
+        expect(VALID_CODES.has(result.code)).toBe(true);
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── NE15: very long messages are always handled (no truncation crash) ─────────
+
+describe("normalizeWorkerError — NE15: very long error messages don't crash", () => {
+  it("handles messages up to 10KB without throwing", () => {
+    const longMsgArb = fc
+      .integer({ min: 100, max: 10000 })
+      .map((len) => new Error("x".repeat(len)));
+
+    fc.assert(
+      fc.property(longMsgArb, routeArb, (err, route) => {
+        const result = normalizeWorkerError(err, route);
+        expect(result.ok).toBe(false);
+        expect(typeof result.message).toBe("string");
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
