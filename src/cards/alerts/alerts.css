@@ -126,6 +126,12 @@
 
 /* Full-screen alert takeover dialog */
 @layer components {
+  /* Explicitly hide when not open — @layer author styles override UA
+     dialog:not([open]){display:none}, so we must re-assert it here. */
+  .alerts-takeover:not([open]) {
+    display: none;
+  }
+
   .alerts-takeover {
     position: fixed;
     inset: 0;
