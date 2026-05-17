@@ -6,6 +6,68 @@ Deno Deploy → Bun Deploy → fly.io → repeat.
 
 ---
 
+## v14.25.0 — Static-Analysis Pass (2026-05-17)
+
+**Target runtime this cycle**: Bun Deploy (second in rotation, second cycle)
+
+**Drill type**: Static portability assessment (no live deploy)
+
+**Operator**: @RajwanYair
+
+### New APIs Since v14.23.0
+
+Sprints v14.24.0–v14.25.0 introduced: property test suites for fs-access, d1-reports,
+errors-route, normalize-error depth (NE13-NE15), cron/telemetry (CRON1-CRON4, OTEL1-OTEL3).
+Test-only additions — no new worker bindings.
+
+### Cloudflare-Specific APIs Re-audit
+
+`node scripts/check-vendor-neutrality.mjs --gate` — **0/6 Cloudflare-specific APIs detected** (PASS, exit 0).
+
+| API              | Portability Risk | In Use | Delta Since v14.23.0 | Mitigation                                                  |
+| ---------------- | ---------------- | ------ | -------------------- | ------------------------------------------------------------ |
+| Workers KV       | LOW              | ✅ Yes | No change            | `KvStore` interface intact; NOT DETECTED (pattern-scan)     |
+| D1 Database      | MEDIUM           | ✅ Yes | No change            | `D1Adapter` intact; NOT DETECTED (pattern-scan)             |
+| Durable Objects  | HIGH             | ✅ Yes | No change            | Still isolated; NOT DETECTED (pattern-scan)                 |
+| Analytics Engine | LOW              | ✅ Yes | No change            | Thin shim; NOT DETECTED                                     |
+| Email Routing    | LOW              | ✅ Yes | No change            | 1 call site in `cron.ts`; NOT DETECTED                      |
+| CF runtime globals | LOW            | ✅ Yes | No change            | SW-side only; NOT DETECTED                                  |
+
+### Bun Deploy Portability Notes
+
+- **Hono HTTP framework**: `hono` compiles to standard `Request`/`Response`. `bun serve`
+  directly consumes Hono's default export — zero adapter changes required.
+- **Valibot schemas**: pure TypeScript, zero CF dependency — fully portable.
+- **Workers KV**: `bun:sqlite` in-process for dev; Upstash Redis via HTTP for prod.
+  `KvStore` interface swap is straightforward.
+- **D1 Database**: `bun:sqlite` native driver is a near-drop-in for D1. Vanilla SQL
+  schema migrations are fully portable.
+- **Durable Objects**: no Bun Deploy equivalent. BroadcastChannel (ephemeral coordination)
+  + `bun:sqlite` (persistent state). HIGH portability risk — isolated in
+  `worker/src/durable-objects/`.
+- **Analytics Engine**: removable — emit OTLP spans via `fetch` to any OTLP collector.
+- **Email Routing**: Resend SDK (1 call site in `cron.ts`) — trivial swap.
+- **Static assets** (`dist/`): Bun's file-serving handles static dirs natively.
+- **Verdict**: Portable with adapter layer. `bun:sqlite` D1 alignment makes Bun the
+  lowest-friction migration path. Live deploy feasibility: HIGH for stateless routes;
+  Durable Objects require architectural swap.
+
+### Gate Result
+
+```sh
+node scripts/check-vendor-neutrality.mjs --gate
+# → ✓  Worker appears vendor-neutral — no CF-specific APIs detected.
+# exit 0
+```
+
+0/6 CF-specific APIs detected. Gate **PASSES**.
+
+### Next Drill Target
+
+**fly.io** — before `git tag v15.0.0` (third in rotation, second cycle).
+
+---
+
 ## v14.23.0 — Static-Analysis Pass (2026-05-21)
 
 **Target runtime this cycle**: Deno Deploy (rotation restarts: first in rotation)
