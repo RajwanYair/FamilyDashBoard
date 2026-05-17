@@ -1208,10 +1208,10 @@ export function initConfigPanel(): void {
       const preset = getPreset(presetEl.value);
       if (!preset) return;
       const c = loadConfig();
-      Object.assign(c, preset.overrides);
-      saveConfig(c);
-      applyTheme(c.theme);
-      applyFontScale(c.fontScale);
+      const merged: DashboardConfig = { ...c, ...preset.overrides };
+      saveConfig(merged);
+      applyTheme(merged.theme);
+      applyFontScale(merged.fontScale);
       populateForm();
       markDirty();
       presetEl.value = ""; // reset selector to placeholder

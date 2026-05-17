@@ -17,8 +17,7 @@ export class RateLimiterDO {
     this.state = state;
   }
 
-  async fetch(request: Request): Promise<Response> {
-    // owasp-allow:A05 owasp-allow:A10 — Cloudflare DO handler
+  async fetch(request: Request): Promise<Response> { // owasp-allow:A05 owasp-allow:A10 — Cloudflare DO entry point
     const url = new URL(request.url);
 
     if (request.method === "POST" && url.pathname === "/check") {
