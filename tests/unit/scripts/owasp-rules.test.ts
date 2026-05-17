@@ -13,10 +13,10 @@ const SCRIPT = resolve(process.cwd(), "scripts/check-owasp.mjs");
 const text = readFileSync(SCRIPT, "utf-8");
 
 describe("check-owasp rule ratchet", () => {
-  it("has at least 118 rules (never decreases)", () => {
+  it("has at least 120 rules (never decreases)", () => {
     const matches = text.match(/category:\s*"A\d{2}"/g);
     expect(matches).not.toBeNull();
-    expect(matches!.length).toBeGreaterThanOrEqual(118);
+    expect(matches!.length).toBeGreaterThanOrEqual(120);
   });
 
   it("every rule has the required fields: category, label, severity, pattern", () => {

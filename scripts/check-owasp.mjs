@@ -40,6 +40,7 @@
  * (v14.18.0) — added A03 Range.createContextualFragment, A05 Access-Control-Expose-Headers *,
  *              A02 predictable UUID v1, A07 token in cookie without Secure, A04 constructor.prototype,
  *              A09 navigator.sendBeacon credentials.
+ * (v14.22.0) — added A05 iframe.allow with sensitive capabilities, A05 iframe without sandbox.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -1324,6 +1325,28 @@ const RULES = [
     severity: "warn",
     pattern: /navigator\.sendBeacon\s*\([^)]*(?:token|secret|password|credential|apiKey|auth)/i,
     safeMarkers: ["test", "spec", "// owasp-allow:A09"],
+  },
+
+  // ── v14.22.0 — Permissions-Policy iframe delegation audit ─────────────────
+
+  // A05 — Security Misconfiguration: iframe allow attribute with sensitive capabilities
+  {
+    category: "A05",
+    label:
+      "iframe.allow includes sensitive capability (camera/mic/geolocation/payment/clipboard-read) — use minimum required permissions",
+    severity: "error",
+    pattern:
+      /iframe\.allow\s*=\s*['"\`][^'"\`;]*(?:camera|microphone|geolocation|payment|clipboard-read|display-capture)/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A05"],
+  },
+
+  // A05 — Security Misconfiguration: iframe created without sandbox (grants full trust to embedded origin)
+  {
+    category: "A05",
+    label: "iframe without sandbox attribute — add sandbox to restrict embedded content capabilities",
+    severity: "warn",
+    pattern: /<iframe\b(?![^>]*\bsandbox\b)[^>]*>/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A05", "sandbox"],
   },
 ];
 
