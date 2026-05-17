@@ -158,6 +158,14 @@ describe("tick — event has passed", () => {
     expect(section?.style.display).toBe("none");
   });
 
+  it("re-shows primary section when reconfigured to a future event after being hidden", () => {
+    tick(); // past event — hides section
+    expect(document.getElementById("cd-main-section")?.style.display).toBe("none");
+    vi.mocked(loadConfig).mockReturnValue(FUTURE_CFG);
+    tick(); // future event — must make section visible again
+    expect(document.getElementById("cd-main-section")?.style.display).toBe("");
+  });
+
   it("does not update tile content when event is past and non-recurring", () => {
     tick();
     // Elements were never written — they retain their initial empty text
@@ -300,7 +308,7 @@ describe("config helper functions", () => {
     expect(msg).toContain("מזל טוב");
   });
 
-  it("getCountdownTargetDate falls back to defaults when config is empty", () => {
+  it("returns epoch Date when config date is empty (signals no event configured)", () => {
     vi.mocked(loadConfig).mockReturnValue({
       countdownCardDate: "",
       countdownCardTime: "",
@@ -309,7 +317,7 @@ describe("config helper functions", () => {
     } as DashboardConfig);
     const d = getCountdownTargetDate();
     expect(d instanceof Date).toBe(true);
-    expect(d.getFullYear()).toBe(2026);
+    expect(d.getTime()).toBe(0);
   });
 });
 

@@ -236,6 +236,21 @@ describe("Theme — initTheme without #theme-select", () => {
     document.body.innerHTML = "";
     document.body.className = "";
     localStorage.clear();
+    // Stub matchMedia: dark OS (matches: false) for deterministic defaults
+    vi.stubGlobal("matchMedia", (_query: string): MediaQueryList => ({
+      matches: false,
+      media: _query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    } as unknown as MediaQueryList));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it("applies theme from localStorage without wiring dropdown", () => {
@@ -246,9 +261,71 @@ describe("Theme — initTheme without #theme-select", () => {
     expect(document.getElementById("theme-select")).toBeNull();
   });
 
-  it("applies default black when no saved theme and no select", () => {
+  it("applies default black when no saved theme and OS is dark (no select)", () => {
     initTheme();
     expect(currentTheme()).toBe("black");
+  });
+});
+
+// ── initTheme — OS preference respected on initial load ──────────────────────
+
+describe("Theme — initTheme respects OS preference on initial load", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    document.body.className = "";
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+    localStorage.clear();
+    vi.unstubAllGlobals();
+  });
+
+  it("applies amber on first load when OS prefers light color scheme", () => {
+    vi.stubGlobal("matchMedia", (query: string): MediaQueryList => ({
+      matches: query === "(prefers-color-scheme: light)",
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    } as unknown as MediaQueryList));
+    initTheme();
+    expect(currentTheme()).toBe("amber");
+  });
+
+  it("applies black on first load when OS prefers dark color scheme", () => {
+    vi.stubGlobal("matchMedia", (_query: string): MediaQueryList => ({
+      matches: false,
+      media: _query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    } as unknown as MediaQueryList));
+    initTheme();
+    expect(currentTheme()).toBe("black");
+  });
+
+  it("saved theme takes precedence over OS light preference", () => {
+    vi.stubGlobal("matchMedia", (query: string): MediaQueryList => ({
+      matches: query === "(prefers-color-scheme: light)",
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    } as unknown as MediaQueryList));
+    localStorage.setItem("dash_theme", "purple");
+    initTheme();
+    expect(currentTheme()).toBe("purple");
   });
 });
 

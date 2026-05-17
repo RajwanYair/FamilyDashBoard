@@ -32,7 +32,8 @@ import type { SemanticPayload } from "../../types/semantic-clipboard";
 
 export function getCountdownTargetDate(): Date {
   const c = loadConfig();
-  let d = c.countdownCardDate || "2026-05-07";
+  let d = c.countdownCardDate || "";
+  if (!d) return new Date(0); // no date configured — epoch signals "past" to tick()
   const t = c.countdownCardTime || "18:00";
   // advance past recurring dates
   const recurrence = c.countdownCardRecurrence || undefined;
@@ -45,11 +46,11 @@ export function getCountdownTargetDate(): Date {
 }
 
 export function getCountdownTitle(): string {
-  return loadConfig().countdownCardTitle || "חתונת אליאור וטובה";
+  return loadConfig().countdownCardTitle || "";
 }
 
 export function getCountdownDoneMsg(): string {
-  return loadConfig().countdownCardDoneMsg || "🎉 מזל טוב לאליאור ולטובה!";
+  return loadConfig().countdownCardDoneMsg || "🎉 מזל טוב!";
 }
 
 let _cdInterval: ReturnType<typeof setInterval> | null = null;
@@ -351,6 +352,11 @@ export function tick(): void {
     return;
   }
 
+  // Ensure the section is visible (it may have been hidden by a previous past event
+  // and then re-configured to a future date).
+  const mainSecShow = els.mainSection ?? document.getElementById("cd-main-section");
+  if (mainSecShow) mainSecShow.style.display = "";
+
   const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
   if (titleEl) titleEl.textContent = getCountdownTitle();
   daysEl.textContent = String(days);
@@ -572,7 +578,7 @@ export const countdownConfigSchema: CardConfigField[] = [
     labelHe: "כותרת אירוע",
     labelEn: "Event Title",
     type: "text",
-    defaultValue: "חתונת אליאור וטובה",
+    defaultValue: "",
     tab: "calendar",
     group: "countdown",
   },
@@ -581,7 +587,7 @@ export const countdownConfigSchema: CardConfigField[] = [
     labelHe: "תאריך יעד",
     labelEn: "Target Date",
     type: "date",
-    defaultValue: "2026-05-07",
+    defaultValue: "",
     tab: "calendar",
     group: "countdown",
   },
@@ -600,7 +606,7 @@ export const countdownConfigSchema: CardConfigField[] = [
     labelHe: "הודעת סיום",
     labelEn: "Done Message",
     type: "text",
-    defaultValue: "🎉 מזל טוב לאליאור ולטובה!",
+    defaultValue: "🎉 מזל טוב!",
     tab: "calendar",
     group: "countdown",
   },

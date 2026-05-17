@@ -80,8 +80,16 @@ export function currentTheme(): ThemeName {
  * Initialize theme from localStorage and wire the config dropdown.
  */
 export function initTheme(): void {
-  const saved = localStorage.getItem(LS_THEME) ?? "black";
-  applyTheme(saved);
+  const saved = localStorage.getItem(LS_THEME);
+  if (saved) {
+    applyTheme(saved);
+  } else {
+    // No user-chosen theme — respect OS color-scheme preference.
+    // All dashboard themes are dark; amber is the warmest option for
+    // light-OS environments, while black suits dark-OS environments.
+    const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+    applyTheme(prefersLight ? "amber" : "black");
+  }
 
   const sel = document.getElementById("theme-select") as HTMLSelectElement | null;
   if (sel) {
