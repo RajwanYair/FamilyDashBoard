@@ -58,6 +58,7 @@
  *   - kv.ts                  : mutation score ≥ 75%
  *   - log.ts                 : mutation score ≥ 75%
  *   - schemas.ts             : mutation score ≥ 75%
+ *   - temporal.ts            : mutation score ≥ 80%  (TM1-TM10 property-tested; date abstraction layer)
  *
  * (Roadmap #9): hard break threshold raised 75 → 85.
  * error-tracker, config, diag confirmed in scope. Overall gate: ≥ 85% or CI fails.
@@ -91,8 +92,8 @@
  *   Total scope: 125 files.
  * (v14.19.0): extended scope to config-presets, worker routes (ai, cron, data, errors, feeds, reports),
  *   durable objects (alerts-orchestrator, rate-limiter-do), worker entry (index.ts).
- *   Total scope: 135 files.
- */
+ *   Total scope: 135 files. * (v14.22.0): extended scope to temporal.ts (CAL-T / H-T abstraction layer; TM1-TM10 property-tested).
+ *   Total scope: 136 files. */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
 export default {
@@ -277,6 +278,8 @@ export default {
     "worker/src/routes/reports.ts",
     "worker/src/durable-objects/alerts-orchestrator.ts",
     "worker/src/durable-objects/rate-limiter-do.ts",
+    // (v14.22.0): temporal.ts date/time abstraction layer (CAL-T / H-T scaffold; TM1-TM10 property-tested)
+    "src/core/temporal.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
