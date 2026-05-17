@@ -29,7 +29,7 @@ FamilyDashBoard lets you export your full configuration as an **encrypted URL fr
 | Property           | Detail                                                                                                                    |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
 | Algorithm          | AES-GCM 256-bit                                                                                                           |
-| Key derivation     | PBKDF2 · SHA-256 · 200 000 iterations                                                                                     |
+| Key derivation     | PBKDF2 · SHA-256 · 200000 iterations                                                                                     |
 | Salt               | 16 random bytes, prepended to ciphertext                                                                                  |
 | IV                 | 12 random bytes, prepended after salt                                                                                     |
 | Encoding           | Base64url (URL-safe, no padding issues)                                                                                   |
@@ -40,7 +40,7 @@ FamilyDashBoard lets you export your full configuration as an **encrypted URL fr
 ### Threat Model
 
 - **Eavesdropping**: The URL fragment is **not** sent to servers in HTTP requests (browsers do not include `#…` in the `Referer` header or server-side logs). However, it may appear in browser history, clipboard history, or forwarded chat previews.
-- **Brute-force**: PBKDF2 with 200 000 iterations makes offline dictionary attacks costly. Use a passphrase that is hard to guess.
+- **Brute-force**: PBKDF2 with 200000 iterations makes offline dictionary attacks costly. Use a passphrase that is hard to guess.
 - **Tampering**: AES-GCM provides authenticated encryption — any bit flip in the ciphertext causes decryption to fail with a clear error.
 - **Replay**: The salt and IV are randomly generated each export, so two exports of identical settings produce different ciphertexts.
 

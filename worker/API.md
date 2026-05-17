@@ -250,7 +250,7 @@ Permissions-Policy: geolocation=(), microphone=(), camera=()
 No per-client rate limiting is enforced at the worker level. Upstream APIs have their own limits:
 
 - Open-Meteo: generous free tier, no key required
-- Open Exchange Rates: 1 000 requests/month on free tier
+- Open Exchange Rates: 1000 requests/month on free tier
 - Hebcal: no public rate limit documented
 - Yahoo Finance: unofficial endpoint, may throttle
 - News feeds: subject to individual publisher robots.txt

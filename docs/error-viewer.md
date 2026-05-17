@@ -16,7 +16,7 @@ FamilyDashBoard runs a two-tier error pipeline:
 2. **Worker (`routes/errors.ts`)** — validates each entry, logs it to CF Logpush,
    and persists it to Cloudflare KV with a **7-day TTL**.
    - KV key format: `errors:YYYY-MM-DD:<8-char-hex-id>`
-   - Daily cap: **1 000 entries/day** (subsequent entries are still logged but not stored)
+   - Daily cap: **1000 entries/day** (subsequent entries are still logged but not stored)
    - Daily counter key: `errors:count:YYYY-MM-DD`
 
 ---

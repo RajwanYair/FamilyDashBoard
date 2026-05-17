@@ -197,7 +197,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ### Changed
 
-- **Disk footprint**: deleted `docs/legacy/` archive, compressed agent/skill/config prose (-6 700 lines net)
+- **Disk footprint**: deleted `docs/legacy/` archive, compressed agent/skill/config prose (-6700 lines net)
 - **Browser compat**: expanded `.browserslistrc` targets — Samsung 23+, OperaMobile 80+, iOS 17.4+, ChromeAndroid 114+, FirefoxAndroid 128+ (+7 tests)
 - **Modernize**: standardized all tsconfig targets to ES2024 (node, scripts, sw, vitest)
 - **CI**: SHA-pinned `upload-artifact` action; added `.github/hooks/`, `.github/skills/`, `.github/assets/` to `paths-ignore`
@@ -1729,7 +1729,7 @@ Seven files bumped to v13.14.0: `package.json`, `sw.js`, `README.md` badge, `.gi
 
 - **Bitcoin BTC tile in currency card (V13-DATA)** (`src/cards/currency/currency.ts`, `src/index.html`, `src/core/constants.ts`): Live BTC/ILS rate via worker `/api/crypto` + CoinGecko fallback. 7-day sparkline. `CoinGeckoResponse` type. `fetchBtcRate()`.
 - **SimHash v2 word-bigram fingerprinting with Hebrew/Arabic normalization (V13-AI-2)** (`worker/src/utils/simhash.ts`): `normalizeV2()`, `wordBigrams()`, `simHashV2()`, `isNearDuplicateV2()`. Strips Hebrew nikud (U+05B0–U+05C7) and Arabic diacritics. 14 new tests.
-- **AES-GCM encrypted config URL export/import (V13-CONTINUITY)** (`src/core/config-crypto.ts`): PBKDF2 (SHA-256, 200 000 iterations) → AES-GCM 256-bit. Payload: `[salt(16B)][iv(12B)][ciphertext]`. Base64url. `encryptConfig()` / `decryptConfig()`. 11 unit tests.
+- **AES-GCM encrypted config URL export/import (V13-CONTINUITY)** (`src/core/config-crypto.ts`): PBKDF2 (SHA-256, 200000 iterations) → AES-GCM 256-bit. Payload: `[salt(16B)][iv(12B)][ciphertext]`. Base64url. `encryptConfig()` / `decryptConfig()`. 11 unit tests.
 - **Popover API stock detail panel (V13-DATA)** (`src/cards/stocks/stocks.ts`, `src/index.html`, `src/styles/components.css`): `fillStockDetailPopover()` + `.stk-detail-btn` button with `popovertarget`. 4 new tests.
 - **WCAG 1.4.12 text-spacing Playwright E2E assertions (V13-A11Y)** (`tests/e2e/accessibility.spec.ts`): Inline CSS override (line-height 1.5, letter-spacing 0.12em, word-spacing 0.16em). Asserts card heights non-zero and stocks body has ≤2px horizontal overflow.
 - **AI-generated Hebrew motivational quote opt-in (V13-DATA)** (`src/cards/motivation/motivation.ts`, `src/types/config.ts`): `fetchAiMotivationQuote()` calls worker `/api/motivation/hebrew`. `motivationAiHebrew` boolean config toggle. Falls back to static pool on error. 5 new tests.
@@ -3100,7 +3100,7 @@ External 20-task audit evaluating the project against web-project best practices
 
 ### Sprint 16 — Startup Waterfall Timing
 
-- **`perf.ts`**: `markDomReady()` / `markStartupComplete()` added; `PerfVitals.startup` field (ms) tracks DOMContentLoaded → last card init waterfall; rated good ≤ 3 000 ms
+- **`perf.ts`**: `markDomReady()` / `markStartupComplete()` added; `PerfVitals.startup` field (ms) tracks DOMContentLoaded → last card init waterfall; rated good ≤ 3000 ms
 - **Diag overlay**: new **INIT** metric row appears when `D` key is pressed (FDB-058)
 
 ### Sprint 17 — Per-Card Config Accordion

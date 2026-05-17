@@ -57,8 +57,8 @@ test: {
 | -------------- | ------------- | ------------------------------------------------- |
 | `environment`  | `"happy-dom"` | Default; overridden by `node.mjs` preset          |
 | `globals`      | `true`        | `describe`/`it`/`expect` available without import |
-| `testTimeout`  | `10 000 ms`   | Generous for integration tests that hit IDB/LS    |
-| `hookTimeout`  | `10 000 ms`   | Matches `testTimeout`                             |
+| `testTimeout`  | `10000 ms`    | Generous for integration tests that hit IDB/LS    |
+| `hookTimeout`  | `10000 ms`    | Matches `testTimeout`                             |
 | `restoreMocks` | `true`        | Auto-restores `vi.spyOn` mocks after each test    |
 
 ---

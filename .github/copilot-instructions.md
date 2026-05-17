@@ -72,3 +72,4 @@
 48. **Build targets** — `tsconfig` base targets `ES2024`, Vite build targets `es2024`, lightningcss targets aligned with `.browserslistrc` (Chrome 114, Firefox 128, Safari 17.4). Keep all three in sync when updating browser support.
 49. **Conversation compaction** — long sessions are automatically compacted by Copilot. Key state survives in `<conversation-summary>`. When resuming after compaction, re-read critical files before editing — do not rely on stale cached content.
 50. **Vision & image tools** — use `view_image` to inspect VR baseline screenshots, test failure screenshots in `test-results/`, and SVG doc assets in `.github/assets/`. Prefer visual inspection over guessing at layout issues.
+51. **Number formatting in docs** — never use a space as a thousands separator in any `.md` file. Write full numbers without separations: `7517`, `200000`, `10000`. This applies to code, comments, docs, changelogs, and ADRs everywhere in the project.

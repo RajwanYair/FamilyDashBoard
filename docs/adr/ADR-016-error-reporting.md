@@ -42,9 +42,9 @@ The gaps:
   `errors:YYYY-MM-DD:<nanoid(8)>` with **7-day TTL** (Cloudflare KV `expirationTtl` = 604800)
 - **Aggregate key:** increment daily counter at `errors:count:YYYY-MM-DD` (value = JSON `{n}`)
   so we can get a day's total without listing all keys
-- **Max per day:** cap writes at 1 000 entries/day to avoid KV abuse; return 204 but log when
+- **Max per day:** cap writes at 1000 entries/day to avoid KV abuse; return 204 but log when
   the cap is hit
-- **Token-gated export:** `GET /api/errors/export?token=<SECRET>` returns the last 1 000 stored
+- **Token-gated export:** `GET /api/errors/export?token=<SECRET>` returns the last 1000 stored
   entries sorted descending by timestamp as `ErrorExportResponse`
 - Secret stored as Cloudflare secret `ERROR_REPORTING_TOKEN` — never in source
 
