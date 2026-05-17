@@ -44,6 +44,10 @@ jobs:
           node-version: "24"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
+      - name: Generate lockfile for audit
+        # FamilyDashBoard has zero runtime deps and no local package-lock.json.
+        # Generate a minimal lockfile so `npm audit` can run.
+        run: npm install --package-lock-only --ignore-scripts
       - name: Run npm audit (moderate+)
         run: npm audit --audit-level=moderate
 

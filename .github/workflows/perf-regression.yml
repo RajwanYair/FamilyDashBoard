@@ -103,7 +103,7 @@ jobs:
       - name: Run Lighthouse for Web Vitals
         id: lighthouse
         run: |
-          npm install -g @lhci/cli@0.14.x --silent
+          npm install -g @lhci/cli@0.14.x --silent --ignore-scripts
           npx vite preview --port 4173 &
           PREVIEW_PID=$!
           sleep 4
