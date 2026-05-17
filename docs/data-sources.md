@@ -1,4 +1,4 @@
-# Data Sources
+# 📡 Data Sources
 
 > Last updated: v14.13.1
 
@@ -9,7 +9,7 @@ caching strategy, worker route, and known failure modes.
 
 ---
 
-## Architecture Overview
+## 🏗️ Architecture Overview
 
 All production data flows through the Cloudflare Worker at
 `https://fdb.rajwanyair.workers.dev`. The worker validates upstream responses

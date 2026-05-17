@@ -1,9 +1,11 @@
-# Theme Gallery
+# 🎨 Theme Gallery
 
-> FamilyDashBoard ships 7 dark themes — all CSS custom-property-driven, zero
-> runtime dependencies. Switch via **Settings ⚙ → Theme** or keyboard `T`.
+> FamilyDashBoard ships **7 dark themes** — all CSS custom-property-driven, zero
+> runtime dependencies. Switch via **Settings ⚙ → Theme** or keyboard **`T`** (cycles) · `Shift+T` (reverse).
 
-## Themes
+![Theme cascade diagram](../.github/assets/theme-cascade.svg)
+
+## 🌈 Themes
 
 | #   | Name                  | CSS Class             | Accent               | Background             | Best For                                     |
 | --- | --------------------- | --------------------- | -------------------- | ---------------------- | -------------------------------------------- |
@@ -15,7 +17,7 @@
 | 6   | **Rose Night**        | `theme-rose`          | Soft rose `#c08898`  | Dark crimson `#180a0e` | Romantic aesthetic, warm accent              |
 | 7   | **High Contrast**     | `theme-high-contrast` | Yellow `#ffdd00`     | Pure black `#000`      | Accessibility (WCAG AAA), vision impairments |
 
-## Design Principles
+## 🏗️ Design Principles
 
 - **All themes are dark** — the dashboard is designed for always-on TV/monitor
   display where light themes cause eye strain and backlight bleed
@@ -26,7 +28,7 @@
 - **View Transitions** — theme switching uses the View Transitions L2 API for
   smooth cross-fade when supported
 
-## CSS Architecture
+## 🧱 CSS Architecture
 
 Themes live in `@layer themes` inside `src/styles/themes.css`. Each theme sets
 these custom properties on `body.theme-{name}`:
@@ -50,19 +52,19 @@ these custom properties on `body.theme-{name}`:
 --warning           Warning/caution color (yellow/amber family)
 ```
 
-## Auto-Theme
+## 🌅 Auto-Theme
 
 When **Auto-Theme** is enabled in settings, the dashboard switches between a
 configured day theme and night theme based on sunrise/sunset times for the
 user's location. This prevents a bright theme during dark hours.
 
-## OS High-Contrast Override
+## ♿ OS High-Contrast Override
 
 In addition to the explicit high-contrast theme, the dashboard respects
 `@media (prefers-contrast: more)` — boosting borders, muting backgrounds, and
 increasing text contrast regardless of the selected theme.
 
-## Adding a New Theme
+## ➕ Adding a New Theme
 
 1. Add the theme name to the `THEMES` array in `src/core/constants.ts`
 2. Add the CSS block in `src/styles/themes.css` inside `@layer themes`

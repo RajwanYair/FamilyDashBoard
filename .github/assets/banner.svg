@@ -1,35 +1,123 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="200" viewBox="0 0 900 200">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="280" viewBox="0 0 900 280">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#060b14"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#060b14"/>
+      <stop offset="0%"   stop-color="#020810"/>
+      <stop offset="45%"  stop-color="#0a1628"/>
+      <stop offset="100%" stop-color="#040c1a"/>
     </linearGradient>
     <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="0%"   stop-color="#60a5fa"/>
+      <stop offset="50%"  stop-color="#818cf8"/>
       <stop offset="100%" stop-color="#34d399"/>
     </linearGradient>
+    <linearGradient id="tile" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0c1525"/>
+    </linearGradient>
     <filter id="glow">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
-  <rect width="900" height="200" rx="16" fill="url(#bg)"/>
-  <!-- Decorative circles -->
-  <circle cx="80" cy="100" r="60" fill="#60a5fa" opacity="0.06"/>
-  <circle cx="820" cy="100" r="60" fill="#34d399" opacity="0.06"/>
-  <circle cx="450" cy="180" r="120" fill="#8b5cf6" opacity="0.04"/>
-  <!-- Accent line -->
-  <line x1="140" y1="150" x2="760" y2="150" stroke="url(#accent)" stroke-width="2" opacity="0.3"/>
-  <!-- Emoji row -->
-  <text x="200" y="100" font-size="32" text-anchor="middle">📰</text>
-  <text x="300" y="100" font-size="32" text-anchor="middle">📅</text>
-  <text x="400" y="100" font-size="32" text-anchor="middle">📈</text>
-  <text x="500" y="100" font-size="32" text-anchor="middle">🌤️</text>
-  <text x="600" y="100" font-size="32" text-anchor="middle">💱</text>
-  <text x="700" y="100" font-size="32" text-anchor="middle">💪</text>
-  <!-- Title -->
-  <text x="450" y="56" font-family="Segoe UI, Arial, sans-serif" font-size="36" font-weight="800" fill="url(#accent)" text-anchor="middle" letter-spacing="2">Family Dashboard</text>
-  <!-- Subtitle -->
-  <text x="450" y="168" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">Single-file TV dashboard · Hebrew RTL · Dark Glassmorphism · Zero Dependencies</text>
-  <text x="450" y="185" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#60a5fa" text-anchor="middle" opacity="0.7">v14.22.0 · TypeScript modular · 7348 Vitest tests · 291 suites · 0 failures · 7 themes</text>
+
+  <!-- Background -->
+  <rect width="900" height="280" rx="18" fill="url(#bg)"/>
+
+  <!-- Subtle background grid -->
+  <g opacity="0.045" stroke="#60a5fa" stroke-width="0.5">
+    <line x1="0" y1="70"  x2="900" y2="70"/>
+    <line x1="0" y1="140" x2="900" y2="140"/>
+    <line x1="0" y1="210" x2="900" y2="210"/>
+    <line x1="150" y1="0" x2="150" y2="280"/>
+    <line x1="300" y1="0" x2="300" y2="280"/>
+    <line x1="450" y1="0" x2="450" y2="280"/>
+    <line x1="600" y1="0" x2="600" y2="280"/>
+    <line x1="750" y1="0" x2="750" y2="280"/>
+  </g>
+
+  <!-- Ambient orb glows -->
+  <circle cx="60"  cy="70"  r="90"  fill="#3b82f6" opacity="0.04"/>
+  <circle cx="840" cy="70"  r="90"  fill="#34d399" opacity="0.04"/>
+  <circle cx="450" cy="260" r="150" fill="#8b5cf6" opacity="0.03"/>
+  <circle cx="200" cy="260" r="55"  fill="#60a5fa" opacity="0.04"/>
+  <circle cx="700" cy="260" r="55"  fill="#34d399" opacity="0.04"/>
+
+  <!-- Top accent strip -->
+  <rect x="0" y="0" width="900" height="3" fill="url(#accent)" opacity="0.7"/>
+
+  <!-- Hebrew subtitle (top-right) -->
+  <text x="868" y="26" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#60a5fa" text-anchor="end" opacity="0.65" letter-spacing="1">לוח בקרה משפחתי</text>
+
+  <!-- Main title -->
+  <text x="450" y="66" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="900" fill="url(#accent)" text-anchor="middle" letter-spacing="3" filter="url(#glow)">FamilyDashBoard</text>
+
+  <!-- Tagline -->
+  <text x="450" y="93" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#64748b" text-anchor="middle" letter-spacing="0.5">Zero-dependency TypeScript TV Dashboard · Hebrew RTL · Dark Glassmorphism · Always-On Display</text>
+
+  <!-- Card emoji row (9 main cards) -->
+  <text x="80"  y="133" font-size="26" text-anchor="middle">📰</text>
+  <text x="180" y="133" font-size="26" text-anchor="middle">📅</text>
+  <text x="270" y="133" font-size="26" text-anchor="middle">📈</text>
+  <text x="360" y="133" font-size="26" text-anchor="middle">🌤️</text>
+  <text x="450" y="133" font-size="26" text-anchor="middle">💱</text>
+  <text x="540" y="133" font-size="26" text-anchor="middle">✡️</text>
+  <text x="630" y="133" font-size="26" text-anchor="middle">🚨</text>
+  <text x="720" y="133" font-size="26" text-anchor="middle">💪</text>
+  <text x="820" y="133" font-size="26" text-anchor="middle">✅</text>
+
+  <!-- Card labels -->
+  <text x="80"  y="149" font-family="Segoe UI, Arial" font-size="7.5" fill="#475569" text-anchor="middle">News</text>
+  <text x="180" y="149" font-family="Segoe UI, Arial" font-size="7.5" fill="#475569" text-anchor="middle">Calendar</text>
+  <text x="270" y="149" font-family="Segoe UI, Arial" font-size="7.5" fill="#475569" text-anchor="middle">Stocks</text>
+  <text x="360" y="149" font-family="Segoe UI, Arial" font-size="7.5" fill="#475569" text-anchor="middle">Weather</text>
+  <text x="450" y="149" font-family="Segoe UI, Arial" font-size="7.5" fill="#475569" text-anchor="middle">Currency</text>
+  <text x="540" y="149" font-family="Segoe UI, Arial" font-size="7.5" fill="#475569" text-anchor="middle">Hebrew Cal</text>
+  <text x="630" y="149" font-family="Segoe UI, Arial" font-size="7.5" fill="#475569" text-anchor="middle">Alerts</text>
+  <text x="720" y="149" font-family="Segoe UI, Arial" font-size="7.5" fill="#475569" text-anchor="middle">Motivation</text>
+  <text x="820" y="149" font-family="Segoe UI, Arial" font-size="7.5" fill="#475569" text-anchor="middle">Tasks</text>
+
+  <!-- Divider -->
+  <line x1="42" y1="162" x2="858" y2="162" stroke="url(#accent)" stroke-width="0.8" opacity="0.25"/>
+
+  <!-- Stats tiles — 6 tiles at 126px each, 16px gap -->
+  <!-- x: 42, 184, 326, 468, 610, 752  |  center: 105, 247, 389, 531, 673, 815 -->
+
+  <!-- Tests -->
+  <rect x="42"  y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#60a5fa" stroke-width="0.6" stroke-opacity="0.5"/>
+  <text x="105" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">TESTS</text>
+  <text x="105" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#60a5fa" text-anchor="middle">7 461</text>
+  <text x="105" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">vitest · 0 failures</text>
+
+  <!-- Suites -->
+  <rect x="184" y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#34d399" stroke-width="0.6" stroke-opacity="0.5"/>
+  <text x="247" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">SUITES</text>
+  <text x="247" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#34d399" text-anchor="middle">299</text>
+  <text x="247" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">test files</text>
+
+  <!-- ADRs -->
+  <rect x="326" y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#a78bfa" stroke-width="0.6" stroke-opacity="0.5"/>
+  <text x="389" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">ADRs</text>
+  <text x="389" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#a78bfa" text-anchor="middle">79</text>
+  <text x="389" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">arch decisions</text>
+
+  <!-- Themes -->
+  <rect x="468" y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#fbbf24" stroke-width="0.6" stroke-opacity="0.5"/>
+  <text x="531" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">THEMES</text>
+  <text x="531" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#fbbf24" text-anchor="middle">7</text>
+  <text x="531" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">dark themes</text>
+
+  <!-- Cards -->
+  <rect x="610" y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#f472b6" stroke-width="0.6" stroke-opacity="0.5"/>
+  <text x="673" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">CARDS</text>
+  <text x="673" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#f472b6" text-anchor="middle">12</text>
+  <text x="673" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">live data cards</text>
+
+  <!-- Version -->
+  <rect x="752" y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#fb923c" stroke-width="0.6" stroke-opacity="0.5"/>
+  <text x="815" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">RELEASE</text>
+  <text x="815" y="211" font-family="Segoe UI" font-size="17" font-weight="800" fill="#fb923c" text-anchor="middle">v14.23.0</text>
+  <text x="815" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">TS 6 · Vite 8</text>
+
+  <!-- Bottom accent strip -->
+  <rect x="0" y="277" width="900" height="3" fill="url(#accent)" opacity="0.35"/>
 </svg>

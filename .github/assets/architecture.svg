@@ -12,7 +12,7 @@
   <rect width="900" height="560" rx="16" fill="url(#bg)"/>
 
   <!-- Title -->
-  <text x="450" y="34" font-family="Segoe UI,system-ui" font-size="18" font-weight="700" fill="#60a5fa" text-anchor="middle">FamilyDashBoard — Architecture (v14.22.0)</text>
+  <text x="450" y="34" font-family="Segoe UI,system-ui" font-size="18" font-weight="700" fill="#60a5fa" text-anchor="middle">FamilyDashBoard — Architecture (v14.23.0)</text>
 
   <!-- ── BROWSER LAYER ── -->
   <rect x="30" y="54" width="840" height="68" rx="10" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5" stroke-opacity="0.4"/>
@@ -22,7 +22,7 @@
 
   <!-- ── SERVICE WORKER ── -->
   <rect x="30" y="140" width="200" height="50" rx="8" fill="#1e293b" stroke="#a78bfa" stroke-width="1" stroke-opacity="0.5"/>
-  <text x="130" y="162" font-family="Segoe UI" font-size="11" font-weight="600" fill="#a78bfa" text-anchor="middle">⚙️  sw.ts (v14.22.0)</text>
+  <text x="130" y="162" font-family="Segoe UI" font-size="11" font-weight="600" fill="#a78bfa" text-anchor="middle">⚙️  sw.ts (v14.23.0)</text>
   <text x="130" y="178" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">APP_SHELL · API cache · offline HTML</text>
 
   <!-- ── CARD REGISTRY ── -->
@@ -91,7 +91,7 @@
   <!-- ── CLOUDFLARE WORKER ── -->
   <rect x="450" y="332" width="420" height="48" rx="8" fill="#1e293b" stroke="#f97316" stroke-width="1" stroke-opacity="0.5"/>
   <text x="660" y="352" font-family="Segoe UI" font-size="11" font-weight="600" fill="#f97316" text-anchor="middle">☁️  Cloudflare Worker (worker/)</text>
-  <text x="660" y="368" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">routes: weather · stocks · news · currency · calendar · alerts  ·  CORS · rate-limit · cache</text>
+  <text x="660" y="368" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">routes: weather · stocks · news · currency · calendar · alerts  ·  CORS · rate-limit · cache · OTel scaffold (ADR-079)</text>
 
   <!-- ── EXTERNAL APIs ── -->
   <text x="450" y="412" font-family="Segoe UI" font-size="10" fill="#64748b" text-anchor="middle">── External APIs ──</text>
@@ -121,7 +121,7 @@
   <line x1="660" y1="380" x2="660" y2="424" stroke="#f97316" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="3,3"/>
 
   <!-- ── FOOTER ── -->
-<text x="450" y="516" font-family="Segoe UI" font-size="9" fill="#475569" text-anchor="middle">Vite 8 · TypeScript 6.0.3 · Vitest 4.1.5 · ESLint 10  ·  7348 tests / 291 suites / 0 failures  ·  0 errors / 0 warnings</text>
+<text x="450" y="516" font-family="Segoe UI" font-size="9" fill="#475569" text-anchor="middle">Vite 8 · TypeScript 6.0.3 · Vitest 4.1.5 · ESLint 10  ·  7461 tests / 299 suites / 0 failures  ·  79 ADRs  ·  0 errors / 0 warnings</text>
 
   <!-- Legend -->
   <rect x="30" y="490" width="10" height="10" rx="2" fill="#f59e0b" opacity="0.6"/>
