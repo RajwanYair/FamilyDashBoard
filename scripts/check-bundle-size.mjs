@@ -370,8 +370,9 @@ if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
 // (v14.17.0): warn 14 → 13 KB; hard held at 64 (weather 63.8 KB blocks further drop without major refactor).
 // (v14.18.0): warn 13 → 12 KB; hard held at 64.
 // (v14.19.0): warn 12 → 11 KB; hard held at 64 (weather 63.8 KB blocks hard drop without major refactor).
+// (v14.22.0): warn 11 → 10 KB; hard held at 64 (weather still 63.8 KB, no room for hard drop).
 const PER_CARD_HARD_CAP_KB = 64;
-const PER_CARD_WARN_KB = 11;
+const PER_CARD_WARN_KB = 10;
 let perCardCapOk = true;
 console.log(
   `📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`,

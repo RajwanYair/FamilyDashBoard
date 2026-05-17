@@ -12,6 +12,7 @@
  * (v14.2.0): hard ≤ 66 (held; weather 65.1 KB), warn ≤ 28
  * (v14.3.0): hard ≤ 66 (held; weather 65.1 KB), warn ≤ 26
  * (v14.4.0): hard ≤ 66 (held; weather 65.1 KB), warn ≤ 24
+ * (v14.22.0): hard ≤ 64, warn ≤ 10
  */
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
