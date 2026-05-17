@@ -18,7 +18,7 @@ Several bugs traced back to the raw `Date` API:
 2. **Mutating date objects** — `getRoshChodesh` and `nextHolidayName` in `hebrew-cal.ts` called `.setDate()` / `.setFullYear()` on the same `Date` instance used in outer-loop comparisons, corrupting iteration state.
 3. **Scattered `new Date()` / `Date.now()` calls** — 27 independent call sites with no shared contract for "what timezone is today?", making future DST or locale changes a multi-file surgery.
 
-TC39 Temporal is at Stage 4 (May 2025) but not yet available in the minimum browser targets (`Chrome 114`, `Firefox 128`, `Safari 17.4`).  
+TC39 Temporal is at Stage 4 (May 2025) but not yet available in the minimum browser targets (`Chrome 114`, `Firefox 128`, `Safari 17.4`).
 Polyfill (`@js-temporal/polyfill`) is 47 KB gzip — above the 10 KB per-card budget gate — so the polyfill import is **CLOSED** until the bundle gate opens.
 
 ## Decision
@@ -48,12 +48,12 @@ All functions return plain values (numbers or plain objects), **never mutable `D
 | `src/cards/calendar/calendar.ts` | `nowMs`, `today`, `startOfDayMs`, `parsePlainDateMs` | UTC-midnight "yesterday" shift |
 | `src/cards/hebrew-cal/hebrew-cal.ts` | `nowMs`, `today`, `startOfDayMs`, `parsePlainDateMs`, `parsePlainDateTime` | Mutating-date loop corruption in `nextHolidayName` + `getRoshChodesh` |
 
-Raw `new Date()` / `Date.now()` calls in these three files are replaced with adapter calls.  
+Raw `new Date()` / `Date.now()` calls in these three files are replaced with adapter calls.
 All other files are **unchanged** — scope is limited to date-sensitive card logic.
 
 ### Polyfill gate (re-checked 2026-05-17)
 
-`npx bundlesize --files node_modules/@js-temporal/polyfill/dist/index.cjs`:  
+`npx bundlesize --files node_modules/@js-temporal/polyfill/dist/index.cjs`:
 **47.2 KB gzip** — CLOSED (threshold: 10 KB).
 
 Gate will be re-evaluated each minor release. When the gate opens:
