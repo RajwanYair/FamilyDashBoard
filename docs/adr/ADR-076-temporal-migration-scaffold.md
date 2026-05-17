@@ -65,11 +65,13 @@ Gate will be re-evaluated each minor release. When the gate opens:
 ## Consequences
 
 **Positive:**
+
 - All three date-bug classes (UTC-midnight skew, mutation, scattered call sites) are eliminated
 - 27 unit tests in `tests/unit/core/temporal.test.ts` lock down adapter semantics
 - One-file TC39 swap path is documented and verified
 
 **Negative / trade-offs:**
+
 - Adapter functions are a thin wrapper — they do not expose full Temporal richness (e.g. `ZonedDateTime`, calendar arithmetic). Cards needing that power must wait for the polyfill gate to open.
 - The adapter layer adds a file to maintain; it should be deleted (not emptied) once native Temporal is available in all targets.
 

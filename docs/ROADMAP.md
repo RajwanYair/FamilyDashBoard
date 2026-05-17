@@ -389,9 +389,9 @@ All consumers migrated to formal `CardSignalProtocol` — shipped v14.20.0.
 | 3   | Track    | TC39 Signals one-line swap (≤ 1.5 KB, Stage 4)       | P2  | S   | Mid | v15    |          |
 | 4   | Enhance  | DO Hibernatable WebSocket — stocks live + alerts     | P1  | M   | Hi  | v15    | PLATFORM |
 | 5   | Enhance  | R2 mirror for backgrounds + offline shell            | P2  | M   | Mid | v15    | PLATFORM |
-| 6   | Refactor | Annual vendor-neutrality drill                       | P1  | L   | Hi  | v15    |          | **Shipped v14.22.0** (fly.io). Next drill pre-v15. |
+| 6   | Refactor | Annual vendor-neutrality drill                       | P1  | L   | Hi  | v15    | ✅ v14.22.0 |
 | 7   | Enhance  | OpenTelemetry from Worker (opt-in)                   | P2  | L   | Mid | v15    | L3       |
-| 8   | Refactor | Promote `tooling/` presets to sibling repos          | P1  | M   | Hi  | v15    | MONO     | v14.22.0: sibling adoption guide + baseline synced. Adoption by siblings pending. |
+| 8   | Refactor | Promote `tooling/` presets to sibling repos          | P1  | M   | Hi  | v15    | MONO ✅v14.22 |
 | 9   | Enhance  | WebRTC mirror with QR pairing (gated 3+)             | P2  | L   | Mid | v15    |          |
 | 10  | Enhance  | Coverage ratchet → 97/90/96/98                       | P1  | M   | Mid | v15    |          |
 | 11  | Track    | Biome replacement for Prettier + ESLint              | P2  | M   | Mid | v16    | V16-OPEN |
@@ -403,7 +403,7 @@ All consumers migrated to formal `CardSignalProtocol` — shipped v14.20.0.
 | 17  | Track    | E-ink screen mode — peer-inspired                    | P3  | M   | Lo  | v16    | V16-OPEN |
 | 18  | Track    | i18n infrastructure (`Intl.MessageFormat`)           | P3  | M   | Lo  | v16    | V16-OPEN |
 | 19  | Enhance  | Per-card budget hard-cap ratchet (target 60 KB)      | P1  | M   | Mid | v15    |          |
-| 20  | Enhance  | Stryker mutation expansion to remaining modules      | P1  | M   | Mid | v15    |          | v14.22.0: +1 file (temporal.ts), 136 total. |
+| 20  | Enhance  | Stryker mutation expansion to remaining modules      | P1  | M   | Mid | v15    | 136 files |
 
 ### 5.2 Per-card (from §3, open only)
 

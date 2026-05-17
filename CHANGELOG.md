@@ -9,6 +9,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.22.0] — 2026-05-18
+
+> **7348 tests / 291 suites / 0 failures** (commit `fc628e5`) · 78 ADRs · 136 Stryker mutation files
+
+- **test(stryker)**: TM1–TM10 property tests for `temporal.ts` (fast-check, 10 arbitraries); Stryker mutation scope expanded from 135 → 136 files
+- **fix(countdown)**: past-date events now hide by default; default config clearing fixed for countdown card
+- **fix(theme)**: FOUC prevention — OS color-scheme preference respected on first load before localStorage hydration
+- **docs(adr)**: ADR-077 (countdown-past-event-hide) + ADR-078 (theme-fouc-prevention) — 78 ADRs total
+- **chore(vendor)**: v14.22.0 vendor-neutrality drill — fly.io rotation tested, 0/6 Cloudflare-only APIs detected, gate PASSES
+- **chore(tooling)**: tooling baseline synced to v14.22.0; sibling adoption guide added (BudgetManager, CrossTideWeb, Wedding repos)
+- **chore(bundle)**: per-card warn threshold ratcheted 11 → 10 KB gzip; hard cap remains 64 KB
+- **fix(security)**: OWASP A05 iframe delegation — 2 new rules (sensitive `allow` attributes, missing `sandbox`); total 120 rules; Permissions-Policy count corrected 28 → 42 entries in security.md
+- **docs(roadmap)**: ROADMAP.md updated for v14.22.0 — all shipped items marked, inventory counts synced (7348 tests / 291 suites / 78 ADRs / 136 Stryker files)
+- **docs(mermaid)**: ARCHITECTURE.md diagrams updated for Mermaid v8.8.0 compatibility — removed `direction TB` from subgraph, changed quoted subgraph titles to simple id format
+- **chore(webhint)**: `.hintrc` `compat-api/css` and `compat-api/js` set to `"off"` — browser-compat enforcement delegated to lightningcss/Vite build which already enforces `.browserslistrc` targets; eliminates ~1100 IE false-positive VS Code diagnostics
+- **fix(stylelint)**: `.stylelintrc.json` override `color-function-notation: null` — allows modern `rgba(r g b / a)` notation used in `today-pane.css` (Chrome 114+ / Firefox 128+ / Safari 17.4+ all support it)
+- **fix(markdownlint)**: 6 MD032/MD056 errors resolved — blank lines before lists in ADR-076 and ADR-078; extra table column in ROADMAP.md rows 6/8/20 moved into Stream cell
+- **docs(github)**: README badges updated — Version 14.22.0 / 7348 passing; all SVG assets version-bumped
+
+---
+
 ## [14.21.0] — 2026-05-16
 
 > Production-readiness audit & ratchet cycle · 7338 tests / 290 suites / 0 failures · 75 ADRs

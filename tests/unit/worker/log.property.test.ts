@@ -97,7 +97,12 @@ describe("log — LG3: query strings longer than 80 chars are truncated", () => 
     try {
       fc.assert(
         fc.property(
-          fc.string({ minLength: 81, maxLength: 200 }).filter((s) => /^[a-zA-Z0-9=&]+$/.test(s)),
+          fc
+            .array(fc.constantFrom(..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789=&"), {
+              minLength: 81,
+              maxLength: 200,
+            })
+            .map((chars) => chars.join("")),
           (longQuery) => {
             lines.length = 0;
             const url = `https://api.example.com/data?${longQuery}`;

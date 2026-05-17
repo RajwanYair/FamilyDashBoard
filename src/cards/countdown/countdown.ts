@@ -412,7 +412,7 @@ function tickSecondary(
   date: string | undefined,
   time: string,
   title: string,
-  doneMsg: string,
+  _doneMsg: string,
   startDate: string | undefined,
 ): void {
   const section = document.getElementById(sectionId);

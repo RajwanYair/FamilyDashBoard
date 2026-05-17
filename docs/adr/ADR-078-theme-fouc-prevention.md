@@ -61,6 +61,7 @@ export function initTheme(): void {
 ```
 
 The mapping is:
+
 - **OS prefers light** → `amber` (warm cream background — best readable light theme for TV use)
 - **OS prefers dark** (or no preference) → `black` (default dark TV theme)
 

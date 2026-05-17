@@ -19,8 +19,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-14.21.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-7338_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-14.22.0-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-7348_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -58,17 +58,17 @@ Pastel glassmorphism · 7 themes · Hebrew RTL · 12 cards · Per-pane smart ref
 
 Auto-scrolling Hebrew news from **17 RSS sources** (Ynet, Walla, Mako, Kan, N12, Rotter, Israel Hayom, Globes, Calcalist, Makor Rishon, Kikar HaShabbat, ICE, Geektime, Channel 14, Arutz 7, Srugim, Behadrei Haredim), sorted newest-first with source labels. Each item shows **absolute publication time** (HH:MM / אתמול HH:MM / DD/MM HH:MM) and **elapsed age** (MM:SS · HH:MM:SS · D:HH:MM:SS). Feeds routed through the Cloudflare Worker. Refreshes every **15 minutes**.
 
-### 📅 Family Calendar
-
-Native **ICS parser** fetches Google Calendar data via Cloudflare Worker (→ direct → 3 CORS proxy fallback chain), renders events in a pastel-themed agenda view. Falls back to iframe embed if all ICS fetches fail. Refreshes every **15 minutes**.
-
-### 📈 Stock Tracker
+### � Stock Tracker
 
 **15 live symbols** (INTC, ^GSPC, ^TA35.TA, BTC, NVDA, VIX, TSLA + top-10 S&P500: AAPL, MSFT, AMZN, GOOGL, META, BRK-B, AVGO, JPM) with **company logos**, **smooth bézier SVG charts**, colored per-symbol accents, Yahoo Finance v8/v6 API with proxy fallback, **8-second fetch timeout** (AbortController) to prevent hanging, and a **market open/closed badge** with smart refresh (5 min during market hours, 30 min off-hours). Loaded via `raceProxies()` batch for fastest response.
 
 ### 🚨 Red Alerts (צבע אדום)
 
 Live rocket/UAV alerts from the Home Front Command via [tzevaadom.co.il](https://www.tzevaadom.co.il/). Shows 24h count, last 25 events with city names, threat type, and relative time. Active alerts pulse red. Refreshes every **60 seconds** (5 min when idle).
+
+### 🕯️ Shabbat & Holidays
+
+Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** with days-remaining in the header.
 
 </td>
 <td width="50%">
@@ -77,36 +77,48 @@ Live rocket/UAV alerts from the Home Front Command via [tzevaadom.co.il](https:/
 
 Split-panel layout: **right half** shows current conditions (icon + temperature + description), **left half** shows a 2×2 grid of humidity, wind, UV index, and sunrise. Below: a **12-hour temperature curve** and an enlarged **4-day forecast** with bigger icons. Data from Open-Meteo for Jerusalem.
 
+### 📅 Family Calendar
+
+Native **ICS parser** fetches Google Calendar data via Cloudflare Worker (→ direct → 3 CORS proxy fallback chain), renders events in a pastel-themed agenda view. Falls back to iframe embed if all ICS fetches fail. Refreshes every **15 minutes**.
+
 ### 💱 Currency Exchange
 
 Live USD/ILS and EUR/ILS rates from open exchange rate APIs with colored trend indicators. GBP removed; layout optimized for 2-item display.
-
-### 🕯️ Shabbat & Holidays
-
-Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** with days-remaining in the header.
 
 ### 💪 Motivation
 
 **50 curated Hebrew quotes** with smooth crossfade animation. No network needed — purely static. Cycles every **2 minutes** for continuous TV display.
 
-### ⏱️ Smart Dashboard
+</td>
+</tr>
+</table>
+
+### ⚙️ Platform Capabilities
+
+<table>
+<tr>
+<td width="50%">
 
 - **Per-pane independent refresh** — no full-page reloads
 - **Dual-layer cache** (in-memory Map + localStorage) — survives browser restart, 7-day eviction
 - **Stale-while-revalidate** — shows cached data instantly, fetches in background
-- **7 themes** (pastel black, blue, matrix, amber, purple, rose, high-contrast) — press `T` to cycle; all colors use CSS custom properties with pasteled palettes
+- **7 themes** (black, blue, matrix, amber, purple, rose, high-contrast) — press `T` to cycle
 - **3 screen modes** (TV, tablet, phone) — phone mode enables full-page scroll
-- **6 card entrance animations** — random direction per card, attention loop every 5min
-- **Card maximize** — click any card header to expand it full-screen (FLIP animation), click again or press `Escape` to restore
-- **Alerts toggle** — press `A` or use dropdown to show/hide red alerts pane; **off by default**, persisted in localStorage
-- **Auto hard-reload every 1h** — picks up HTML file changes without manual browser refresh; defers when tab is hidden
-- **SW auto-reload** — 10-second countdown on Service Worker update + 60-min periodic SW update check for always-on TVs
-- **Closest sun event** — weather detail shows next upcoming sunrise or sunset based on current time
-- **Daily Halacha ticker** — daily halacha from Sefaria.org with reference badge and numbered segments
-- **Animated number transitions** — smooth counting effect on temperature, stock prices, and currency values
+- **6 card entrance animations** — random direction per card, attention loop every 5 min
+- **Card maximize** — click any card header to expand full-screen (FLIP animation)
+- **Alerts toggle** — press `A`; off by default, persisted in localStorage
+- **Auto hard-reload every 1h** — picks up HTML changes without manual refresh
+- **SW auto-reload** — 10-second countdown on Service Worker update
+
+</td>
+<td width="50%">
+
+- **Closest sun event** — weather detail shows next upcoming sunrise or sunset
+- **Daily Halacha ticker** — daily halacha from Sefaria.org with reference badge
+- **Animated number transitions** — smooth counting effect on prices and temperatures
 - **Exponential backoff** — failed API fetches retry with increasing delays
-- **GPU/CPU performance** — GPU-accelerated scroll layers, CPU-aware concurrency pool, `scheduleIdle()`, DocumentFragment batch writes
-- **Diagnostic overlay** — press `D` for per-pane status + fetch log, auto-opens on errors
+- **GPU/CPU performance** — GPU-accelerated scroll layers, CPU-aware concurrency pool
+- **Diagnostic overlay** — press `D` for per-pane status + fetch log; auto-opens on error
 - **Offline banner** — slides down when internet is lost, serves stale cache
 - **Startup self-check** — validates MOTIVATIONS, DOM refs, PROXIES, STOCK_SYMBOLS
 - **Day & year progress bars** in the status bar

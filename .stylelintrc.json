@@ -1,3 +1,6 @@
 {
-    "extends": ["../tooling/stylelint/base.json"]
+    "extends": ["../tooling/stylelint/base.json"],
+    "rules": {
+        "color-function-notation": null
+    }
 }

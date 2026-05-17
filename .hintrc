@@ -36,8 +36,8 @@
         "enable": []
       }
     ],
-    "compat-api/css": "default",
-    "compat-api/js": "default",
+    "compat-api/css": "off",
+    "compat-api/js": "off",
     "no-inline-styles": "off",
     "no-broken-links": "off"
   }
