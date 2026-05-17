@@ -8,10 +8,8 @@
  *                           to 108.7 KB after full rebuild; trend baseline at
  *                           v14.14.0 was 109.6 KB — JS budget held at 110 pending
  *                           a full audit; target in v15 is ≤ 108 KB)
- *   CSS gzipped: ≤ 29.5 KB (raised from 29.1 KB in v14.26.0 — CSS grew from
- *                           29.0 KB at v14.14.0 to 29.3 KB at v14.26.0 as new
- *                           themes, card CSS, and ADR-074 high-contrast additions
- *                           landed; 0.2 KB headroom; target in v15 is ≤ 29 KB)
+ *   CSS gzipped: ≤ 29.4 KB (ratcheted 29.5→29.4 in v14.27.0 — CSS stable at
+ *                           29.32 KB since v14.25.0; target in v15 is ≤ 29 KB)
  *
  * Also checks for 10% growth regression against the last baseline recorded
  * in scripts/bundle-trend.json.  Exit 1 on budget exceeded OR on > 10% growth.
@@ -30,7 +28,7 @@ const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
 const JS_BUDGET_KB = 110;
-const CSS_BUDGET_KB = 29.5;
+const CSS_BUDGET_KB = 29.4;
 /** Alert if a bundle type grows more than this fraction vs last baseline. */
 const GROWTH_THRESHOLD = 0.1;
 

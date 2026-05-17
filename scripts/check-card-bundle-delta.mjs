@@ -176,8 +176,13 @@ console.log("✅  All group budgets within limits.\n");
 // ── Per-card source folder delta (v14.10.0) ────────────────────────────────
 // Compare cardSource sizes from bundle-trend.json baseline to current state.
 // Warns on > 5% growth, fails on > 15% growth.
+// Hard cap added in v14.27.0 (ROADMAP #19): any card source folder ≥ 65 KB fails CI.
+// Target: reduce to ≤ 60 KB per card by v15 through tree-shaking and module splits.
+// Current largest: weather 63.8 KB, stocks 59.3 KB, news 58.6 KB.
 const SOURCE_DELTA_WARN = 0.05;
 const SOURCE_DELTA_FAIL = 0.15;
+/** Per-card source folder absolute cap (v14.27.0). Fail CI above this. Target ≤ 60 KB in v15. */
+const SOURCE_HARD_CAP_KB = 65;
 const baselineSource = baseline.cardSource ?? {};
 
 if (Object.keys(baselineSource).length > 0) {
@@ -204,14 +209,16 @@ if (Object.keys(baselineSource).length > 0) {
     if (currentKb === 0) continue; // card dir not found — skip
     const delta = (currentKb - baseKb) / baseKb;
     const deltaStr = (delta >= 0 ? "+" : "") + (delta * 100).toFixed(1) + "%";
-    const sign = delta > SOURCE_DELTA_FAIL ? "❌" : delta > SOURCE_DELTA_WARN ? "⚠️ " : "✅";
-    srcRows.push(`  ${sign}  ${card.padEnd(14)} ${baseKb} KB → ${currentKb} KB  (${deltaStr})`);
-    if (delta > SOURCE_DELTA_FAIL) srcFailed = true;
+    const overHardCap = currentKb > SOURCE_HARD_CAP_KB;
+    const sign = overHardCap || delta > SOURCE_DELTA_FAIL ? "❌" : delta > SOURCE_DELTA_WARN ? "⚠️ " : "✅";
+    const capNote = overHardCap ? ` ⛔ over ${SOURCE_HARD_CAP_KB} KB hard cap` : "";
+    srcRows.push(`  ${sign}  ${card.padEnd(14)} ${baseKb} KB → ${currentKb} KB  (${deltaStr})${capNote}`);
+    if (delta > SOURCE_DELTA_FAIL || overHardCap) srcFailed = true;
   }
 
   if (srcRows.length > 0) {
     console.log(
-      `Per-card source folder delta vs baseline (warn >${SOURCE_DELTA_WARN * 100}%, fail >${SOURCE_DELTA_FAIL * 100}%):\n`,
+      `Per-card source folder delta vs baseline (warn >${SOURCE_DELTA_WARN * 100}%, fail >${SOURCE_DELTA_FAIL * 100}%, hard cap ${SOURCE_HARD_CAP_KB} KB):\n`,
     );
     for (const row of srcRows) console.log(row);
     console.log("");
@@ -219,7 +226,7 @@ if (Object.keys(baselineSource).length > 0) {
     if (srcFailed) {
       console.error(
         "❌  One or more card source folders grew by more than " +
-          `${SOURCE_DELTA_FAIL * 100}%.\n` +
+          `${SOURCE_DELTA_FAIL * 100}% or exceeded the ${SOURCE_HARD_CAP_KB} KB hard cap.\n` +
           "    Investigate and refactor before releasing.\n",
       );
       process.exit(1);
