@@ -79,6 +79,10 @@
  * extended scope to ims-adapter.ts, bg-images.ts, early-hints.ts (property-tested IMS1-IMS7, BG1-BG5, CO1-CO7); removed duplicate canary entry.
  * extended scope to allowlists.ts (property-tested AW1-AW5).
  * extended scope to currency.ts (property-tested CUR9-CUR12).
+ * (v14.23.0): new property test suites (ID1-ID4 idle, VR1-VR4 vitals-reporter, SN1-SN4 snapshot,
+ *   WC1-WC4 worker-client, RS1-RS3 resizer, SC1-SC4 scroll) — all modules already in scope.
+ *   Threshold ratcheted: high 87 → 88, break 87 → 88.
+ *   Total scope: 136 files (unchanged — all new suites target already-listed modules).
  * (v14.7.0): extended scope to news.ts, theme.ts, toast.ts, boi-adapter.ts, tase-adapter.ts.
  * (v14.8.0): extended scope to alerts-adapter.ts, calendar-adapter.ts, currency-adapter.ts, hebcal-adapter.ts, stocks-adapter.ts.
  * (v14.9.0): extended scope to nws-adapter.ts, provider-toast.ts, news-adapter.ts, open-meteo-adapter.ts, auto-loop-scroll.ts.
@@ -286,9 +290,9 @@ export default {
   ],
   coverageAnalysis: "perTest",
   thresholds: {
-    high: 87,
+    high: 88,
     low: 82,
-    break: 87,
+    break: 88,
   },
   htmlReporter: {
     // Output to temp area per project patterns (never in project dir for CI)
