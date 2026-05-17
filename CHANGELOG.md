@@ -9,6 +9,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.27.0] — 2026-05-27
+
+> **7572 tests / 313 suites / 0 failures** · 84 ADRs · 136 Stryker files · Stryker threshold 90
+
+- **test(coverage)**: Sprint 1–5 — 23 new tests across config.ts (migrate v5→v6, v6→v7, sanitize), i18n.ts (meta/sw-banner paths), fdb-card.ts (base fetchCardData, null return), alerts.ts (outer catch via historyAppend), countdown.ts (recurring tick early return), tasks.ts (advanceRecurringDueDate default), system-info.ts (RTT sparkline via Connection API + nav timing)
+- **chore(coverage)**: vitest thresholds ratcheted 96.5/89.8/95.9/97.5 → 96.9/90.3/96.2/97.9; actuals: 96.91/90.32/96.24/97.94
+- **fix(security)**: OWASP 0 findings — `Object.assign` replaced with safe spread in `config-panel.ts` (A04 prototype pollution); Worker DO `fetch()` handlers annotated with `// owasp-allow:A05 owasp-allow:A10` on declaration line
+- **chore(bundle)**: CSS gzip budget ratcheted 29.5→29.4 KB; per-card source hard-cap added at 65 KB in `check-card-bundle-delta.mjs`
+- **docs**: ROADMAP coverage actuals updated (96.91/90.32/96.24/97.94); ARCHITECTURE + README updated to 7572 tests / v14.27.0; test history table updated
+
+---
+
 ## [14.26.0] — 2026-05-18
 
 > **7549 tests / 313 suites / 0 failures** · 84 ADRs · 136 Stryker files · Stryker threshold 90
