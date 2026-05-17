@@ -30,6 +30,7 @@ import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
+import { nowMs, startOfDayMs, parsePlainDateTime, toISODateString } from "../../core/temporal";
 
 // X15: cached snapshot of next event for the semantic-clipboard producer.
 let _nextEventSnapshot: { title: string; startMs: number; isAllDay: boolean } | null = null;
@@ -54,7 +55,7 @@ function buildCalendarPayload(): SemanticPayload | null {
       name: s.title,
       startDate: when.toISOString(),
     },
-    ts: Date.now(),
+    ts: nowMs(),
   };
 }
 
@@ -92,14 +93,14 @@ export function cacheDom(): void {
 function parseICSDate(raw: string): Date | null {
   if (!raw) return null;
   if (raw.length === 8) {
-    // All-day: YYYYMMDD
-    return new Date(`${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`);
+    // All-day: YYYYMMDD — parse as local midnight
+    return parsePlainDateTime(`${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`);
   }
   const s = raw.replace(
     /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/,
     "$1-$2-$3T$4:$5:$6" + (raw.endsWith("Z") ? "Z" : ""),
   );
-  const d = new Date(s);
+  const d = parsePlainDateTime(s);
   return isNaN(d.getTime()) ? null : d;
 }
 
@@ -170,7 +171,7 @@ export function detectCalCategory(summary: string): string {
  * or null when no holiday falls on that date.
  */
 export function getHolidaysByDate(items: HebcalItem[], date: Date): string | null {
-  const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  const key = toISODateString(date.getFullYear(), date.getMonth() + 1, date.getDate());
   const holidays = items.filter(
     (i) =>
       (i.category === "holiday" || i.category === "roshchodesh") && i.date.slice(0, 10) === key,
@@ -186,9 +187,7 @@ export function getHolidaysByDate(items: HebcalItem[], date: Date): string | nul
  * Returns "" for past dates (should not appear in agenda, but defensive).
  */
 export function calDaysUntilLabel(date: Date, now: Date = new Date()): string {
-  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const dateMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const diffDays = Math.round((dateMidnight.getTime() - todayMidnight.getTime()) / MS_PER_DAY);
+  const diffDays = Math.round((startOfDayMs(date) - startOfDayMs(now)) / MS_PER_DAY);
   if (diffDays <= 0) return "";
   if (diffDays === 1) return "מחר";
   return `עוד ${diffDays} ימים`;
