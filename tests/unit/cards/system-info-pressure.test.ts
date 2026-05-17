@@ -90,6 +90,30 @@ describe("Compute Pressure helper ", () => {
     expect(first).toBe(second);
   });
 
+  it("sets state to unsupported when PressureObserver constructor throws (line 574)", () => {
+    // A constructor that throws — covers the outer catch in initPressureObserver.
+    (globalThis as unknown as { PressureObserver: unknown }).PressureObserver = function () {
+      throw new Error("PressureObserver not allowed");
+    };
+    initPressureObserver();
+    expect(getPressureState()).toBe("unsupported");
+  });
+
+  it("sets state to unsupported when observe('cpu') promise rejects (line 570)", async () => {
+    // observe returns a rejected promise → the .catch callback fires.
+    class RejectingObserver {
+      observe(_source: string): Promise<void> {
+        return Promise.reject(new Error("cpu observe denied"));
+      }
+      disconnect(): void {}
+    }
+    (globalThis as unknown as { PressureObserver: unknown }).PressureObserver = RejectingObserver;
+    initPressureObserver();
+    // Flush the microtask queue so the .catch() callback executes.
+    await Promise.resolve();
+    expect(getPressureState()).toBe("unsupported");
+  });
+
   beforeEach(() => {
     destroyPressureObserver();
   });

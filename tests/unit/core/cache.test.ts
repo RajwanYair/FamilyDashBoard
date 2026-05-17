@@ -879,6 +879,20 @@ describe("Cache — cSetAsync", () => {
     const parsed = JSON.parse(raw!) as { data: { persisted: boolean }; ts: number };
     expect(parsed.data.persisted).toBe(true);
   });
+
+  it("falls back silently when localStorage quota exceeded on first write (lines 223-225)", async () => {
+    // First setItem throws; cEvict is called; second attempt also throws → silent.
+    let calls = 0;
+    vi.spyOn(localStorage, "setItem").mockImplementation(() => {
+      calls++;
+      throw new DOMException("QuotaExceededError", "QuotaExceededError");
+    });
+    await expect(cSetAsync("quota-async-key", { v: 1 })).resolves.not.toThrow();
+    // Data still readable from in-memory layer
+    expect(cGetStale("quota-async-key")).not.toBeNull();
+    expect(calls).toBeGreaterThanOrEqual(1);
+    vi.restoreAllMocks();
+  });
 });
 
 // ── cEvictIdb ────────────────────────────────────────────────────────────────
@@ -897,6 +911,21 @@ describe("Cache — cEvictIdb", () => {
   it("does not throw on repeated calls", async () => {
     await expect(cEvictIdb()).resolves.toBeGreaterThanOrEqual(0);
     await expect(cEvictIdb()).resolves.toBeGreaterThanOrEqual(0);
+  });
+
+  it("removes stale IDB entries and increments removed count (lines 407-409)", async () => {
+    // Mock idbKeys to return a stale key, idbGetEntry to return expired ts,
+    // and idbDel to resolve — covering the hot path in cEvictIdb (lines 407-409).
+    const EIGHT_DAYS_MS = 8 * 24 * 60 * 60 * 1000;
+    vi.spyOn(idbMod, "idbKeys").mockResolvedValue(["stale-evict-key"]);
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({
+      data: "old",
+      ts: Date.now() - EIGHT_DAYS_MS,
+    } as never);
+    vi.spyOn(idbMod, "idbDel").mockResolvedValue(undefined);
+    const removed = await cEvictIdb();
+    expect(removed).toBe(1);
+    vi.restoreAllMocks();
   });
 });
 
