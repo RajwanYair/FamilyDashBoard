@@ -1958,6 +1958,16 @@ describe("advanceRecurringDueDate", () => {
     const result = advanceRecurringDueDate(item, now);
     expect(result).toBe("2025-03-17");
   });
+
+  it("returns null for unknown recurrence type (line 284 default case)", () => {
+    // TypeScript union is exhaustive, but at runtime an unknown value hits the default.
+    const item = {
+      person: "אלי",
+      chore: "ניקיון @2025-01-01",
+      recurrence: "biweekly" as unknown as "weekly",
+    } as ChoreItem;
+    expect(advanceRecurringDueDate(item, new Date("2025-03-10"))).toBeNull();
+  });
 });
 
 // ── 1-level subtasks ──────────────────────────────────────

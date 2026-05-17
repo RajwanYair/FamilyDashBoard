@@ -939,6 +939,36 @@ describe("FdbCard.loadData ", () => {
     expect(card.renderCalls).toContainEqual("stale-data");
     expect(setSync).toHaveBeenCalledWith("dt4", "ok");
   });
+
+  it("sets sync to error when fetchCardData returns null and no stale (line 550)", async () => {
+    // stale = null (already mocked), data = null → setSyncState("error")
+    const card = document.createElement("fdb-data-test") as DataTestCard;
+    card.setAttribute("data-card-id", "dt5");
+    card.fetchResult = null; // fetchCardData returns null
+    document.body.appendChild(card);
+
+    await card["loadData"]("dt5", 60_000);
+    expect(setSync).toHaveBeenCalledWith("dt5", "error");
+  });
+
+  it("base fetchCardData returns null (line 508)", async () => {
+    // Use a card that does NOT override fetchCardData to hit the default impl
+    class BaseImplCard extends FdbCard {
+      renderCalls: unknown[] = [];
+      protected override renderCardData(data: unknown): void {
+        this.renderCalls.push(data);
+      }
+    }
+    const tag = "fdb-base-impl-test";
+    if (!customElements.get(tag)) customElements.define(tag, BaseImplCard);
+    const card = document.createElement(tag) as BaseImplCard;
+    card.setAttribute("data-card-id", "base-impl");
+    document.body.appendChild(card);
+
+    // Calling the base fetchCardData directly returns null
+    const result = await card["fetchCardData"]();
+    expect(result).toBeNull();
+  });
 });
 
 // ── onThemeChange + onAlert lifecycle hooks ─────────────

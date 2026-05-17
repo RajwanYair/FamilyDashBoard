@@ -32,6 +32,7 @@ import {
 import { loadConfig } from "@/core/config";
 import { cSet, cClear } from "@/core/cache";
 import { getSemanticPayload } from "@/core/semantic-clipboard";
+import * as temporalMod from "@/core/temporal";
 import type { DashboardConfig } from "@/types/config";
 
 vi.mock("@/core/config", () => ({
@@ -1748,5 +1749,32 @@ describe("buildCountdownPayload — semantic clipboard", () => {
     expect(payload).not.toBeNull();
     expect(payload!.text).toContain("היום");
     expect(payload!.text).not.toContain("ימים");
+  });
+});
+
+// ── tick() recurring path — line 352 ─────────────────────────────────────────
+
+describe("Countdown — tick() returns early for recurring event that just passed (line 352)", () => {
+  beforeEach(() => buildDOM());
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("does not hide section when past-event is recurring (line 352 return path)", () => {
+    // Mock nowMs() to a far-past date so advanceAnnualDate does NOT advance the date
+    // (the target date is already in the future relative to nowMs=2020-01-01).
+    // But Date.now() (used by tick()) is the real current time, which IS past "2024-12-31".
+    // This puts us in the "now >= targetMs AND recurrence truthy" branch → line 352.
+    vi.spyOn(temporalMod, "nowMs").mockReturnValue(new Date("2020-01-01").getTime());
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2024-12-31",
+      countdownCardTime: "00:00",
+      countdownCardRecurrence: "annual",
+    } as unknown as DashboardConfig);
+    // tick() should not throw and should not hide the section (no mainSection.style.display = "none")
+    expect(() => tick()).not.toThrow();
+    const section = document.getElementById("cd-main-section");
+    expect(section?.style.display).not.toBe("none");
   });
 });

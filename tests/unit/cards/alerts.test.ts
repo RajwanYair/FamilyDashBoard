@@ -44,6 +44,7 @@ import {
 } from "@/cards/alerts/alerts";
 import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
 import * as idleMod from "@/core/idle";
+import * as historyMod from "@/core/history";
 import type { AlertEvent } from "@/types/api";
 
 const NOW_SEC = Math.floor(Date.now() / 1000);
@@ -1216,6 +1217,36 @@ describe("Alerts — loadAlerts catch block stale=null ternary FALSE (lines 291-
     vi.spyOn(cacheModule, "cSetAsync").mockImplementationOnce(() => {
       return Promise.reject(new Error("forced cSetAsync reject for catch stale=null coverage"));
     });
+    await expect(loadAlerts()).resolves.toBeUndefined();
+  });
+});
+
+// ── loadAlerts outer catch (lines 429-431) — historyAppend throws ─────────────
+
+describe("Alerts — loadAlerts outer catch block fires when historyAppend throws (lines 429-431)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    setAlertsEnabled(true);
+  });
+
+  it("does not throw and covers lines 429-431 when historyAppend rejects after valid fetch", async () => {
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+    setAlertsEnabled(true);
+    const nowTs = Math.floor(Date.now() / 1000);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [
+          { id: "outer-catch-1", alerts: [{ cities: ["באר שבע"], threat: 1, time: nowTs - 5 }] },
+        ],
+      }),
+    );
+    // Force historyAppend to throw → falls into the outer catch block (lines 429-431)
+    vi.spyOn(historyMod, "historyAppend").mockRejectedValue(new Error("forced historyAppend error"));
     await expect(loadAlerts()).resolves.toBeUndefined();
   });
 });

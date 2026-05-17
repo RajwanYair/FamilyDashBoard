@@ -78,10 +78,12 @@ export default defineConfig({
         //             actuals: 96.68 / 90.02 / 96.14 / 97.68.
         // (v14.27.0): Sprint 4 — cSetAsync quota + cEvictIdb stale + pressure error paths.
         //             actuals: 96.76 / 90.04 / 96.19 / 97.77.
-        statements: 96.7,
-        branches: 90.0,
-        functions: 96.1,
-        lines: 97.7,
+        // (v14.27.0): Sprint 5 — config sanitize + migrate v6→v7 + i18n + fdb-card + RTT sparkline.
+        //             actuals: 96.91 / 90.32 / 96.24 / 97.94.
+        statements: 96.9,
+        branches: 90.3,
+        functions: 96.2,
+        lines: 97.9,
       },
     },
   },

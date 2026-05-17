@@ -764,6 +764,42 @@ describe("Config — serializeConfigExport ", () => {
   });
 });
 
+// ── sanitize — invalid field fallback paths (lines 231, 245-253) ──────────
+
+describe("Config — sanitize resets invalid field values to defaults (lines 231, 245-253)", () => {
+  beforeEach(() => localStorage.clear());
+  afterEach(() => localStorage.clear());
+
+  it("resets invalid interfaceLanguage to default (line 231)", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ ...DEFAULT_CONFIG, interfaceLanguage: "klingon" }),
+    );
+    const cfg = loadConfig();
+    expect(cfg.interfaceLanguage).toBe(DEFAULT_CONFIG.interfaceLanguage);
+  });
+
+  it("resets non-boolean weatherShowHourly/Wind/Sunrise and stocks/tasks flags (lines 245-253)", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({
+        ...DEFAULT_CONFIG,
+        weatherShowHourly: "yes",
+        weatherShowWind: "no",
+        weatherShowSunrise: 1,
+        stocksGroupBySector: "true",
+        tasksShowCategories: null,
+      }),
+    );
+    const cfg = loadConfig();
+    expect(typeof cfg.weatherShowHourly).toBe("boolean");
+    expect(typeof cfg.weatherShowWind).toBe("boolean");
+    expect(typeof cfg.weatherShowSunrise).toBe("boolean");
+    expect(typeof cfg.stocksGroupBySector).toBe("boolean");
+    expect(typeof cfg.tasksShowCategories).toBe("boolean");
+  });
+});
+
 // ── readFeatureFlag  ────────────────────────────────────────────
 
 describe("Config — readFeatureFlag ", () => {
@@ -860,6 +896,15 @@ describe("migrateConfig v5→v6 ", () => {
     );
   });
 
+  it("copies countdownCardStartDate into cards.countdown.settings (line 148)", () => {
+    const result = migrateConfig({
+      configVersion: 5,
+      countdownCardStartDate: "2024-01-01",
+    } as Parameters<typeof migrateConfig>[0]);
+    const s = result.cards?.["countdown"]?.settings as Record<string, unknown> | undefined;
+    expect(s?.["startDate"]).toBe("2024-01-01");
+  });
+
   it("copies countdownCard* props into cards.countdown.settings", () => {
     const result = migrateConfig({
       configVersion: 5,
@@ -887,6 +932,32 @@ describe("migrateConfig v5→v6 ", () => {
   it("does not re-run v6 migration for configVersion 6", () => {
     const result = migrateConfig({ configVersion: 6 } as Parameters<typeof migrateConfig>[0]);
     expect(result.configVersion).toBe(CONFIG_VERSION);
+  });
+});
+
+// ── v6→v7 migration ──────────────────────────────────────────
+
+describe("migrateConfig v6→v7 (alerts + calendar flat props → cards namespace)", () => {
+  it("copies alertSound, realtimeAlerts, alertVolume into cards.alerts.settings (lines 165-169)", () => {
+    const result = migrateConfig({
+      configVersion: 6,
+      alertSound: true,
+      realtimeAlerts: true,
+      alertVolume: 80,
+    } as Parameters<typeof migrateConfig>[0]);
+    const s = result.cards?.["alerts"]?.settings as Record<string, unknown> | undefined;
+    expect(s?.["sound"]).toBe(true);
+    expect(s?.["realtime"]).toBe(true);
+    expect(s?.["volume"]).toBe(80);
+  });
+
+  it("copies calendarDaysAhead into cards.calendar.settings (line 175)", () => {
+    const result = migrateConfig({
+      configVersion: 6,
+      calendarDaysAhead: 21,
+    } as Parameters<typeof migrateConfig>[0]);
+    const s = result.cards?.["calendar"]?.settings as Record<string, unknown> | undefined;
+    expect(s?.["daysAhead"]).toBe(21);
   });
 });
 

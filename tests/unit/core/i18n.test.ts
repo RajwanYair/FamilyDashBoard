@@ -39,6 +39,27 @@ describe("i18n", () => {
     expect(document.getElementById("card-title-news")?.textContent).toBe("News");
   });
 
+  it("sets meta description content when the element exists (line 328)", () => {
+    // Add a meta[name=description] element to head
+    const meta = document.createElement("meta");
+    meta.setAttribute("name", "description");
+    document.head.appendChild(meta);
+    applyInterfaceLanguage("he");
+    expect(meta.content).toBeTruthy();
+    document.head.removeChild(meta);
+  });
+
+  it("sets sw-update-banner firstChild text when element has children (line 364)", () => {
+    const banner = document.createElement("div");
+    banner.id = "sw-update-banner";
+    const textNode = document.createTextNode("old text");
+    banner.appendChild(textNode);
+    document.body.appendChild(banner);
+    applyInterfaceLanguage("he");
+    expect(banner.firstChild?.textContent).toBeTruthy();
+    document.body.removeChild(banner);
+  });
+
   it("returns localized card titles", () => {
     const item = { icon: "✨", titleHe: "מוטיבציה", titleEn: "Motivation" };
     expect(getLocalizedCardTitle(item, "he", true)).toBe("✨ מוטיבציה");

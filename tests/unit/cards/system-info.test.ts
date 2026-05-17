@@ -1187,3 +1187,51 @@ describe("SystemInfo configSchema — CS-SI1 ", () => {
     expect(systemInfoCard.configSchema).toBe(systemInfoConfigSchema);
   });
 });
+
+// ── RTT sparkline render path (lines 259, 275) ────────────────────────────────
+
+describe("SystemInfo — RTT sparkline rendered to DOM when rttHistory >= 2", () => {
+  beforeEach(() => {
+    _resetRttHistory();
+    document.body.innerHTML = `
+      <div id="sysinfo-online"></div>
+      <div id="sysinfo-battery"></div>
+      <div id="sysinfo-net"></div>
+      <div id="sysinfo-uptime"></div>
+      <div id="sysinfo-load"></div>
+      <div id="sysinfo-browser"></div>
+      <div id="sysinfo-body"></div>
+      <div id="sysinfo-rtt"></div>
+      <div id="sysinfo-rtt-spark"></div>
+    `;
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    _resetRttHistory();
+    delete (navigator as Record<string, unknown>).connection;
+  });
+
+  it("renders sparkline via Connection API when rttHistory.length >= 2 (line 259)", async () => {
+    // Pre-load history with one value so the second (from connection) makes it >= 2
+    appendRttHistory(30);
+    (navigator as Record<string, unknown>).connection = { rtt: 45, effectiveType: "4g" };
+    await renderSystemInfo();
+    const sparkEl = document.getElementById("sysinfo-rtt-spark");
+    // sparklineSvg produces an SVG string — just check it's non-empty
+    expect(sparkEl?.innerHTML).toBeTruthy();
+  });
+
+  it("renders sparkline via navigation timing when Connection API absent (line 275)", async () => {
+    // Pre-load history with one value so a second from navEntry makes it >= 2
+    appendRttHistory(50);
+    delete (navigator as Record<string, unknown>).connection;
+    // Mock performance.getEntriesByType to return a nav timing entry
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([
+      { fetchStart: 0, responseEnd: 80 } as PerformanceNavigationTiming,
+    ]);
+    await renderSystemInfo();
+    const sparkEl = document.getElementById("sysinfo-rtt-spark");
+    expect(sparkEl?.innerHTML).toBeTruthy();
+  });
+});
