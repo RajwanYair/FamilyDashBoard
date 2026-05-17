@@ -1,23 +1,23 @@
 # Shared Tooling Configs
 
-> Version: 9.3.0 · Vendored into FamilyDashBoard for CI self-sufficiency.
+> Version: 9.4.0 · Vendored into FamilyDashBoard for CI self-sufficiency.
 > Source of truth: FamilyDashBoard `tooling/` (evolved beyond parent stubs) → sync back to `MyScripts/tooling/` for sibling adoption.
 
 All TypeScript/JavaScript projects under `MyScripts/` share a single `node_modules/` install.
 Each project extends these shared configs and adds only project-specific overrides.
 
-## Sync Status (audited v14.15.0)
+## Sync Status (audited v14.22.0)
 
 | Config              | FDB vendored | Parent `MyScripts/tooling/` | Status              |
 | ------------------- | ------------ | --------------------------- | ------------------- |
-| eslint/web-ts-app   | ✅ rich      | stub                        | **FDB → parent**    |
-| eslint/node-ts-app  | ✅ rich      | stub                        | **FDB → parent**    |
+| eslint/web-ts-app   | ✅ rich      | stub                        | **FDB → parent pending** |
+| eslint/node-ts-app  | ✅ rich      | stub                        | **FDB → parent pending** |
 | eslint/base.mjs     | ✗ (renamed)  | ✅ exists                   | merged into factory |
-| tsconfig/base-ts    | ✅ rich      | stub                        | **FDB → parent**    |
+| tsconfig/base-ts    | ✅ rich      | stub                        | **FDB → parent pending** |
 | tsconfig/base-node  | ✅ match     | ✅ match                    | in sync ✓           |
-| vitest/base         | ✅ rich      | stub (176 B)                | **FDB → parent**    |
-| vitest/happy-dom    | ✅ rich      | stub                        | **FDB → parent**    |
-| vitest/node         | ✅ rich      | stub                        | **FDB → parent**    |
+| vitest/base         | ✅ rich      | stub (176 B)                | **FDB → parent pending** |
+| vitest/happy-dom    | ✅ rich      | stub                        | **FDB → parent pending** |
+| vitest/node         | ✅ rich      | stub                        | **FDB → parent pending** |
 | ci/check.yml        | ✅ FDB only  | ✗                           | promote to parent   |
 | mcp/                | ✅ FDB only  | ✗                           | promote to parent   |
 | stylelint/          | ✗            | ✅ exists                   | vendor into FDB     |
@@ -28,7 +28,96 @@ Each project extends these shared configs and adds only project-specific overrid
 | commitlint.base.cjs | ✗            | ✅ exists                   | vendor into FDB     |
 | vite.base.ts        | ✗            | ✅ exists                   | vendor into FDB     |
 
-**Next action**: Copy FDB-enriched configs → parent, then vendor remaining parent configs into FDB. Target: v14.17.0.
+**Drift status (v14.22.0)**: `eslint/web-ts-app.mjs` +491B and `vitest/base.mjs` +1250B since last baseline. Both changes are intentional (new rules + new vitest options). Baseline updated in `check-cross-project-gate.mjs`.
+
+**Next action (V14-HARMONISE backlog)**: Copy FDB-enriched configs → parent (`MyScripts/tooling/`), then vendor remaining parent configs into FDB. Target: v15.0.0.
+
+---
+
+## Sibling Repo Adoption Guide
+
+The following sibling projects under `MyScripts/` can adopt FamilyDashBoard's enriched presets instead of maintaining their own copies. No live publish is needed — all share a single `node_modules/` install at `MyScripts/`.
+
+### BudgetManager (Node.js / Python CLI)
+
+BudgetManager needs `tooling/eslint/node-ts-app.mjs` and `tooling/vitest/node.mjs` for its TypeScript modules.
+
+**Step 1 — ESLint:**
+
+```js
+// BudgetManager/eslint.config.mjs
+import { createNodeTsAppEslintConfig } from "../FamilyDashBoard/tooling/eslint/node-ts-app.mjs";
+import { dirname, fileURLToPath } from "node:url";
+
+export default createNodeTsAppEslintConfig({
+  tsconfigRootDir: dirname(fileURLToPath(import.meta.url)),
+  sourceFiles: ["src/**/*.ts"],
+  testFiles: ["Tests/**/*.ts"],
+});
+```
+
+**Step 2 — Vitest:**
+
+```js
+// BudgetManager/vitest.config.ts
+import { defineConfig } from "vitest/config";
+import base from "../FamilyDashBoard/tooling/vitest/node.mjs";
+
+export default defineConfig({ ...base, test: { ...base.test, include: ["Tests/**/*.test.ts"] } });
+```
+
+### CrossTideWeb (Static browser app)
+
+CrossTideWeb needs `tooling/ci/check.yml` for its CI pipeline.
+
+**Step 1 — CI Workflow:**
+
+```yaml
+# CrossTideWeb/.github/workflows/ci.yml
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: "npm", cache-dependency-path: "../MyScripts/package-lock.json" }
+      - run: npm install
+        working-directory: ../MyScripts
+      - uses: ./FamilyDashBoard/tooling/ci/check.yml
+        with: { working-directory: ., run-build: "true", bundle-size-limit-kb: "200" }
+```
+
+### Wedding (Browser TypeScript app)
+
+Wedding needs `tooling/eslint/web-ts-app.mjs` and `tooling/vitest/happy-dom.mjs`.
+
+**Step 1 — ESLint:**
+
+```js
+// Wedding/eslint.config.mjs
+import { createWebTsAppEslintConfig } from "../FamilyDashBoard/tooling/eslint/web-ts-app.mjs";
+import { dirname, fileURLToPath } from "node:url";
+
+export default createWebTsAppEslintConfig({
+  tsconfigRootDir: dirname(fileURLToPath(import.meta.url)),
+  sourceFiles: ["src/**/*.ts"],
+  testFiles: ["tests/**/*.ts"],
+});
+```
+
+**Step 2 — Vitest:**
+
+```js
+// Wedding/vitest.config.ts
+import { defineConfig } from "vitest/config";
+import happyDom from "../FamilyDashBoard/tooling/vitest/happy-dom.mjs";
+
+export default defineConfig({ ...happyDom, test: { ...happyDom.test, include: ["tests/**/*.test.ts"] } });
+```
+
+### Version pinning
+
+There is no npm publish; sibling repos reference `FamilyDashBoard/tooling/` by relative path. To pin to a known-good state, record the FamilyDashBoard git commit hash in the sibling repo's README under a `tooling-ref:` comment.
 
 ---
 

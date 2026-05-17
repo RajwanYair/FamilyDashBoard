@@ -23,12 +23,12 @@ const root = join(__dirname, "..");
 // Update these when a tooling file is intentionally changed.
 const TOOLING_BASELINE = [
   { path: "tooling/ci/check.yml", size: 3114 },
-  { path: "tooling/eslint/web-ts-app.mjs", size: 6562 },
+  { path: "tooling/eslint/web-ts-app.mjs", size: 7053 }, // updated v14.22.0 (+491B new rules)
   { path: "tooling/eslint/node-ts-app.mjs", size: 4425 },
   { path: "tooling/eslint/js-browser-app.mjs", size: 1857 },
   { path: "tooling/tsconfig/base-typescript.json", size: 478 },
   { path: "tooling/tsconfig/base-node.json", size: 473 },
-  { path: "tooling/vitest/base.mjs", size: 1544 },
+  { path: "tooling/vitest/base.mjs", size: 2794 }, // updated v14.22.0 (+1250B new vitest options)
   { path: "tooling/vitest/happy-dom.mjs", size: 501 },
   { path: "tooling/vitest/node.mjs", size: 472 },
 ];
