@@ -292,10 +292,10 @@ export default {
   ],
   coverageAnalysis: "perTest",
   thresholds: {
-    // (v14.24.0): ratchet 88→89 after S1-S3 property suites lift mutation score above 88%
-    high: 89,
+    // (v14.25.0): ratchet 89→90 after FSA/D1R/ERT/CRON/OTEL property suites
+    high: 90,
     low: 82,
-    break: 89,
+    break: 90,
   },
   htmlReporter: {
     // Output to temp area per project patterns (never in project dir for CI)
