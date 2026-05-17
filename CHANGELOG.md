@@ -9,6 +9,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.26.0] — 2026-05-18
+
+> **7549 tests / 313 suites / 0 failures** · 84 ADRs · 136 Stryker files · Stryker threshold 90
+
+- **ci(fix)**: 4 CI workflow failures fixed — TruffleHog BASE==HEAD empty-diff guard, Trivy pinned version, SBOM upload condition, check-dead-exports path resolution
+- **test(coverage)**: branch coverage ratcheted 89.7→89.8; motivation.ts 74.71%→89.65% and base-card.ts 86.04%→97.67% via `_resetForTest()` cache-isolation fix; IDB4 property flakiness fixed with `fc.pre(dbA !== dbB)`
+- **test(coverage)**: currency cache-isolation fix (`_resetForTest()` in beforeEach) + calendar stale-path and non-allorigins proxy tests — 7 new tests across currency + calendar
+- **chore(coverage)**: vitest thresholds ratcheted 96.4/89.7/95.8/97.4 → 96.5/89.8/95.9/97.5; actuals: 96.56/89.83/95.93/97.55
+- **chore(bundle)**: CSS gzip budget raised 29.1→29.5 KB (CSS grew from 29.0 to 29.3 KB across v14.15–v14.25); bundle-trend.json baseline updated to v14.25.0 (109.7 KB JS / 29.3 KB CSS)
+- **docs(adr)**: ADR-084 (coverage ratchet v14.26.0 decision — 4 thresholds raised, root-cause analysis of motivation + base-card + IDB4 + currency + calendar coverage gaps) — 84 ADRs total
+- **docs**: ARCHITECTURE, ROADMAP, README, AGENTS, security, data-sources, workspace.instructions all updated to v14.26.0; test counts 7542→7549
+
+---
+
 ## [14.25.0] — 2026-05-17
 
 > **7542 tests / 313 suites / 0 failures** · 83 ADRs · 136 Stryker files · Stryker threshold 89→90

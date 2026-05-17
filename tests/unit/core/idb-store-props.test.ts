@@ -81,14 +81,16 @@ describe("idb-store — fast-check property tests ", () => {
   it("IDB4: (dbA, store, key) and (dbB, store, key) are fully independent namespaces", async () => {
     await fc.assert(
       fc.asyncProperty(
-        nameArb,
-        nameArb,
+        // Generate distinct db names at the arbitrary level (guaranteed by filter)
+        // so fast-check never generates dbA === dbB as a valid input.
+        fc.tuple(nameArb, nameArb).filter(([a, b]) => a !== b),
         nameArb,
         nameArb,
         jsonValArb,
         jsonValArb,
-        async (dbA, dbB, store, key, valueA, valueB) => {
-          fc.pre(dbA !== dbB); // dbA and dbB must be distinct for isolation to hold
+        async ([dbA, dbB], store, key, valueA, valueB) => {
+          // Clear between property runs to prevent cross-run contamination
+          _idbClearFallback();
           await idbSet(dbA, store, key, valueA);
           await idbSet(dbB, store, key, valueB);
           const resultA = await idbGet(dbA, store, key);
