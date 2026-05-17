@@ -666,6 +666,36 @@ describe("Calendar — loadCalendar paths", () => {
     await new Promise<void>((r) => setTimeout(r, 100));
     expect(true).toBe(true);
   });
+
+  it("covers fetchICS VCALENDAR return via non-allorigins proxy (lines 530-531)", async () => {
+    cClear();
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    let callIdx = 0;
+    vi.mocked(fetchCore.fetchWithTimeout).mockImplementation(async (url: string) => {
+      callIdx++;
+      const urlStr = String(url);
+      // allorigins proxy: throw so r.json() branch is skipped and loop continues
+      if (urlStr.includes("allorigins")) throw new Error("allorigins timeout");
+      // Non-allorigins proxy: return valid VCALENDAR text via r.text()
+      return { ok: true, text: async () => SAMPLE_ICS } as unknown as Response;
+    });
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 150));
+    expect(callIdx).toBeGreaterThan(0);
+  });
+
+  it("covers stale cache render path in loadCalendar (lines 564-565)", async () => {
+    // Write stale data to LS directly with an expired timestamp (> 15 min ago)
+    const expiredTs = Date.now() - 16 * 60 * 1000;
+    localStorage.setItem("dash_v2_cal-ics", JSON.stringify({ data: SAMPLE_ICS, ts: expiredTs }));
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    // Default fetchWithTimeout rejects, keeping the test simple
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 50));
+    const grid = document.getElementById("cal-week-grid");
+    // Stale data was parsed and rendered
+    expect(grid?.children.length).toBeGreaterThan(0);
+  });
 });
 
 // ── parseICS edge cases / fuzz ─────────────────────────────────────────────

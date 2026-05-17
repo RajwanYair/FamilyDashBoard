@@ -26,7 +26,7 @@ import {
   getLastCurrencyRates,
 } from "@/cards/currency/currency";
 import { clearFetchLocks } from "@/core/fetch";
-import { cDelete } from "@/core/cache";
+import { cDelete, _resetForTest as _resetCacheForTest } from "@/core/cache";
 import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
 
 const MOCK_RATES: Record<string, number> = {
@@ -746,6 +746,7 @@ describe("Currency — loadCurrency async coverage", () => {
       <div id="currency-body"></div>
     `;
     _resetCurrencyForTest();
+    _resetCacheForTest(); // clear in-memory cache to ensure fetch is always called
     cacheDom();
     clearFetchLocks();
   });
@@ -815,9 +816,9 @@ describe("Currency — loadCurrency async coverage", () => {
       }),
     );
     initCurrencyCard();
-    // Advance past the schedule delay (10 min = 600000ms)
-    vi.advanceTimersByTime(600_001);
-    // The scheduled callback calls loadCurrency again
+    // Advance past the maximum TTL (1 hour) to cover market-open and market-closed schedules
+    vi.advanceTimersByTime(3_600_001);
+    // The scheduled callback calls loadCurrency and scheduleCurrencyRefresh again
     expect(true).toBe(true);
     vi.useRealTimers();
   });
