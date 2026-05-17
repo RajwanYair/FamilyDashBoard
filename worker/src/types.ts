@@ -113,6 +113,13 @@ export interface Env {
    * Optional — weekly digest is skipped when not set.
    */
   EMAIL_SEND_TO?: string;
+  /**
+   * Feature flag: enable opt-in OpenTelemetry spans (ADR-079).
+   * Set to "true" to activate OTel tracing via `worker/src/telemetry.ts`.
+   * When absent or not "true", `initOtel(env).enabled === false` — zero overhead.
+   * Full OTel implementation deferred to v15 sprint.
+   */
+  OTEL_ENABLED?: string;
 }
 
 /**
