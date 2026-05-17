@@ -38,15 +38,12 @@ afterEach(() => {
 describe("card-settings-dialog — CSD1: openCardSettings() safe for any card id", () => {
   it("resolves without throwing for any string card id when card is missing", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.string({ minLength: 1, maxLength: 30 }),
-        async (cardId) => {
-          vi.resetModules();
-          document.body.innerHTML = "";
-          const { openCardSettings } = await import("@/ui/card-settings-dialog");
-          await expect(openCardSettings(cardId)).resolves.toBeUndefined();
-        },
-      ),
+      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 30 }), async (cardId) => {
+        vi.resetModules();
+        document.body.innerHTML = "";
+        const { openCardSettings } = await import("@/ui/card-settings-dialog");
+        await expect(openCardSettings(cardId)).resolves.toBeUndefined();
+      }),
       { numRuns: 8 },
     );
   });
@@ -60,9 +57,7 @@ describe("card-settings-dialog — CSD2: initCardSettingsButtons() is idempotent
       fc.asyncProperty(fc.integer({ min: 1, max: 5 }), async (n) => {
         vi.resetModules();
         document.body.innerHTML = "";
-        const { initCardSettingsButtons } = await import(
-          "@/ui/card-settings-dialog"
-        );
+        const { initCardSettingsButtons } = await import("@/ui/card-settings-dialog");
         for (let i = 0; i < n; i++) {
           await expect(initCardSettingsButtons()).resolves.toBeUndefined();
         }
@@ -97,15 +92,12 @@ describe("card-settings-dialog — CSD3: singleton dialog is created once", () =
 describe("card-settings-dialog — CSD4: openCardSettings always resolves", () => {
   it("never rejects for alphanumeric card ids", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.stringMatching(/^[a-z][a-z0-9-]{0,19}$/),
-        async (cardId) => {
-          vi.resetModules();
-          document.body.innerHTML = "";
-          const { openCardSettings } = await import("@/ui/card-settings-dialog");
-          await expect(openCardSettings(cardId)).resolves.not.toThrow();
-        },
-      ),
+      fc.asyncProperty(fc.stringMatching(/^[a-z][a-z0-9-]{0,19}$/), async (cardId) => {
+        vi.resetModules();
+        document.body.innerHTML = "";
+        const { openCardSettings } = await import("@/ui/card-settings-dialog");
+        await expect(openCardSettings(cardId)).resolves.not.toThrow();
+      }),
       { numRuns: 8 },
     );
   });
@@ -119,9 +111,7 @@ describe("card-settings-dialog — CSD5: initCardSettingsButtons() safe with emp
       fc.asyncProperty(fc.constant(undefined), async () => {
         vi.resetModules();
         document.body.innerHTML = "";
-        const { initCardSettingsButtons } = await import(
-          "@/ui/card-settings-dialog"
-        );
+        const { initCardSettingsButtons } = await import("@/ui/card-settings-dialog");
         await expect(initCardSettingsButtons()).resolves.toBeUndefined();
       }),
       { numRuns: 5 },

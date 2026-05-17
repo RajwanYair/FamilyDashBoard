@@ -8,25 +8,25 @@ Each project extends these shared configs and adds only project-specific overrid
 
 ## Sync Status (audited v14.22.0)
 
-| Config              | FDB vendored | Parent `MyScripts/tooling/` | Status              |
-| ------------------- | ------------ | --------------------------- | ------------------- |
+| Config              | FDB vendored | Parent `MyScripts/tooling/` | Status                   |
+| ------------------- | ------------ | --------------------------- | ------------------------ |
 | eslint/web-ts-app   | ✅ rich      | stub                        | **FDB → parent pending** |
 | eslint/node-ts-app  | ✅ rich      | stub                        | **FDB → parent pending** |
-| eslint/base.mjs     | ✗ (renamed)  | ✅ exists                   | merged into factory |
+| eslint/base.mjs     | ✗ (renamed)  | ✅ exists                   | merged into factory      |
 | tsconfig/base-ts    | ✅ rich      | stub                        | **FDB → parent pending** |
-| tsconfig/base-node  | ✅ match     | ✅ match                    | in sync ✓           |
+| tsconfig/base-node  | ✅ match     | ✅ match                    | in sync ✓                |
 | vitest/base         | ✅ rich      | stub (176 B)                | **FDB → parent pending** |
 | vitest/happy-dom    | ✅ rich      | stub                        | **FDB → parent pending** |
 | vitest/node         | ✅ rich      | stub                        | **FDB → parent pending** |
-| ci/check.yml        | ✅ FDB only  | ✗                           | promote to parent   |
-| mcp/                | ✅ FDB only  | ✗                           | promote to parent   |
-| stylelint/          | ✗            | ✅ exists                   | vendor into FDB     |
-| htmlhint/           | ✗            | ✅ exists                   | vendor into FDB     |
-| markdownlint        | ✗            | ✅ exists                   | vendor into FDB     |
-| playwright.base.ts  | ✗            | ✅ exists                   | vendor into FDB     |
-| prettier.base.json  | ✗            | ✅ exists                   | vendor into FDB     |
-| commitlint.base.cjs | ✗            | ✅ exists                   | vendor into FDB     |
-| vite.base.ts        | ✗            | ✅ exists                   | vendor into FDB     |
+| ci/check.yml        | ✅ FDB only  | ✗                           | promote to parent        |
+| mcp/                | ✅ FDB only  | ✗                           | promote to parent        |
+| stylelint/          | ✗            | ✅ exists                   | vendor into FDB          |
+| htmlhint/           | ✗            | ✅ exists                   | vendor into FDB          |
+| markdownlint        | ✗            | ✅ exists                   | vendor into FDB          |
+| playwright.base.ts  | ✗            | ✅ exists                   | vendor into FDB          |
+| prettier.base.json  | ✗            | ✅ exists                   | vendor into FDB          |
+| commitlint.base.cjs | ✗            | ✅ exists                   | vendor into FDB          |
+| vite.base.ts        | ✗            | ✅ exists                   | vendor into FDB          |
 
 **Drift status (v14.22.0)**: `eslint/web-ts-app.mjs` +491B and `vitest/base.mjs` +1250B since last baseline. Both changes are intentional (new rules + new vitest options). Baseline updated in `check-cross-project-gate.mjs`.
 
@@ -80,7 +80,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: "22", cache: "npm", cache-dependency-path: "../MyScripts/package-lock.json" }
+        with:
+          {
+            node-version: "22",
+            cache: "npm",
+            cache-dependency-path: "../MyScripts/package-lock.json",
+          }
       - run: npm install
         working-directory: ../MyScripts
       - uses: ./FamilyDashBoard/tooling/ci/check.yml
@@ -112,7 +117,10 @@ export default createWebTsAppEslintConfig({
 import { defineConfig } from "vitest/config";
 import happyDom from "../FamilyDashBoard/tooling/vitest/happy-dom.mjs";
 
-export default defineConfig({ ...happyDom, test: { ...happyDom.test, include: ["tests/**/*.test.ts"] } });
+export default defineConfig({
+  ...happyDom,
+  test: { ...happyDom.test, include: ["tests/**/*.test.ts"] },
+});
 ```
 
 ### Version pinning

@@ -25,7 +25,11 @@ vi.mock("@/core/perf", () => ({
 }));
 vi.mock("@/core/error-reporter", () => ({ reportErrors: vi.fn() }));
 
-import { flushVitalsReport, scheduleVitalsReport, _resetVitalsReporter } from "@/core/vitals-reporter";
+import {
+  flushVitalsReport,
+  scheduleVitalsReport,
+  _resetVitalsReporter,
+} from "@/core/vitals-reporter";
 import { reportErrors } from "@/core/error-reporter";
 import { getPerfVitals } from "@/core/perf";
 

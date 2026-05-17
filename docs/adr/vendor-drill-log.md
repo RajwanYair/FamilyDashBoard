@@ -24,14 +24,14 @@ Test-only additions — no new worker bindings.
 
 `node scripts/check-vendor-neutrality.mjs --gate` — **0/6 Cloudflare-specific APIs detected** (PASS, exit 0).
 
-| API              | Portability Risk | In Use | Delta Since v14.23.0 | Mitigation                                                  |
-| ---------------- | ---------------- | ------ | -------------------- | ------------------------------------------------------------ |
-| Workers KV       | LOW              | ✅ Yes | No change            | `KvStore` interface intact; NOT DETECTED (pattern-scan)     |
-| D1 Database      | MEDIUM           | ✅ Yes | No change            | `D1Adapter` intact; NOT DETECTED (pattern-scan)             |
-| Durable Objects  | HIGH             | ✅ Yes | No change            | Still isolated; NOT DETECTED (pattern-scan)                 |
-| Analytics Engine | LOW              | ✅ Yes | No change            | Thin shim; NOT DETECTED                                     |
-| Email Routing    | LOW              | ✅ Yes | No change            | 1 call site in `cron.ts`; NOT DETECTED                      |
-| CF runtime globals | LOW            | ✅ Yes | No change            | SW-side only; NOT DETECTED                                  |
+| API                | Portability Risk | In Use | Delta Since v14.23.0 | Mitigation                                              |
+| ------------------ | ---------------- | ------ | -------------------- | ------------------------------------------------------- |
+| Workers KV         | LOW              | ✅ Yes | No change            | `KvStore` interface intact; NOT DETECTED (pattern-scan) |
+| D1 Database        | MEDIUM           | ✅ Yes | No change            | `D1Adapter` intact; NOT DETECTED (pattern-scan)         |
+| Durable Objects    | HIGH             | ✅ Yes | No change            | Still isolated; NOT DETECTED (pattern-scan)             |
+| Analytics Engine   | LOW              | ✅ Yes | No change            | Thin shim; NOT DETECTED                                 |
+| Email Routing      | LOW              | ✅ Yes | No change            | 1 call site in `cron.ts`; NOT DETECTED                  |
+| CF runtime globals | LOW              | ✅ Yes | No change            | SW-side only; NOT DETECTED                              |
 
 ### Bun Deploy Portability Notes
 
@@ -43,8 +43,8 @@ Test-only additions — no new worker bindings.
 - **D1 Database**: `bun:sqlite` native driver is a near-drop-in for D1. Vanilla SQL
   schema migrations are fully portable.
 - **Durable Objects**: no Bun Deploy equivalent. BroadcastChannel (ephemeral coordination)
-  + `bun:sqlite` (persistent state). HIGH portability risk — isolated in
-  `worker/src/durable-objects/`.
+  - `bun:sqlite` (persistent state). HIGH portability risk — isolated in
+    `worker/src/durable-objects/`.
 - **Analytics Engine**: removable — emit OTLP spans via `fetch` to any OTLP collector.
 - **Email Routing**: Resend SDK (1 call site in `cron.ts`) — trivial swap.
 - **Static assets** (`dist/`): Bun's file-serving handles static dirs natively.
@@ -86,14 +86,14 @@ config-presets, PA1-PA5 provider-adapter). Test-only additions — no new worker
 
 `node scripts/check-vendor-neutrality.mjs --gate` — **0/6 Cloudflare-specific APIs detected** (PASS, exit 0).
 
-| API              | Portability Risk | In Use | Delta Since v14.22.0 | Mitigation                                   |
-| ---------------- | ---------------- | ------ | -------------------- | -------------------------------------------- |
-| Workers KV       | LOW              | ✅ Yes | No change            | `KvStore` interface intact; NOT DETECTED (pattern-scan) |
-| D1 Database      | MEDIUM           | ✅ Yes | No change            | `D1Adapter` intact; NOT DETECTED (pattern-scan) |
-| Durable Objects  | HIGH             | ✅ Yes | No change            | Still isolated; NOT DETECTED (pattern-scan)  |
-| Analytics Engine | LOW              | ✅ Yes | No change            | Thin shim; NOT DETECTED                      |
-| Email Routing    | LOW              | ✅ Yes | No change            | 1 call site in cron.ts; NOT DETECTED         |
-| CF runtime globals | LOW            | ✅ Yes | No change            | SW-side only; NOT DETECTED                   |
+| API                | Portability Risk | In Use | Delta Since v14.22.0 | Mitigation                                              |
+| ------------------ | ---------------- | ------ | -------------------- | ------------------------------------------------------- |
+| Workers KV         | LOW              | ✅ Yes | No change            | `KvStore` interface intact; NOT DETECTED (pattern-scan) |
+| D1 Database        | MEDIUM           | ✅ Yes | No change            | `D1Adapter` intact; NOT DETECTED (pattern-scan)         |
+| Durable Objects    | HIGH             | ✅ Yes | No change            | Still isolated; NOT DETECTED (pattern-scan)             |
+| Analytics Engine   | LOW              | ✅ Yes | No change            | Thin shim; NOT DETECTED                                 |
+| Email Routing      | LOW              | ✅ Yes | No change            | 1 call site in cron.ts; NOT DETECTED                    |
+| CF runtime globals | LOW              | ✅ Yes | No change            | SW-side only; NOT DETECTED                              |
 
 ### Deno Deploy Portability Notes
 
@@ -139,14 +139,14 @@ Sprints v14.2.0 – v14.22.0 introduced: config-presets, worker routes (ai, cron
 
 `node scripts/check-vendor-neutrality.mjs --gate` — **0/6 Cloudflare-specific APIs detected** (PASS, exit 0).
 
-| API              | Portability Risk | In Use | Delta Since v14.1.0 | Mitigation                                   |
-| ---------------- | ---------------- | ------ | ------------------- | -------------------------------------------- |
-| Workers KV       | LOW              | ✅ Yes | No change           | `KvStore` interface intact; NOT DETECTED (pattern-scan) |
-| D1 Database      | MEDIUM           | ✅ Yes | No change           | `D1Adapter` intact; NOT DETECTED (pattern-scan) |
-| Durable Objects  | HIGH             | ✅ Yes | No change           | Still isolated; NOT DETECTED (pattern-scan)  |
-| Analytics Engine | LOW              | ✅ Yes | No change           | Thin shim; NOT DETECTED                      |
-| Email Routing    | LOW              | ✅ Yes | No change           | 1 call site in cron.ts; NOT DETECTED         |
-| CF runtime globals | LOW            | ✅ Yes | No change           | SW-side only; NOT DETECTED                   |
+| API                | Portability Risk | In Use | Delta Since v14.1.0 | Mitigation                                              |
+| ------------------ | ---------------- | ------ | ------------------- | ------------------------------------------------------- |
+| Workers KV         | LOW              | ✅ Yes | No change           | `KvStore` interface intact; NOT DETECTED (pattern-scan) |
+| D1 Database        | MEDIUM           | ✅ Yes | No change           | `D1Adapter` intact; NOT DETECTED (pattern-scan)         |
+| Durable Objects    | HIGH             | ✅ Yes | No change           | Still isolated; NOT DETECTED (pattern-scan)             |
+| Analytics Engine   | LOW              | ✅ Yes | No change           | Thin shim; NOT DETECTED                                 |
+| Email Routing      | LOW              | ✅ Yes | No change           | 1 call site in cron.ts; NOT DETECTED                    |
+| CF runtime globals | LOW              | ✅ Yes | No change           | SW-side only; NOT DETECTED                              |
 
 **Note on "NOT DETECTED"**: The static scanner uses regex patterns on TypeScript source files. Cloudflare bindings in `wrangler.toml` (type: `KVNamespace`, `D1Database`, `DurableObjectNamespace`) inject at runtime via the Workers runtime environment, not as importable JS tokens detectable by the regex scan. This means the scanner correctly reports 0 detections for runtime-injected bindings — the actual CF API usage remains documented in the table above.
 

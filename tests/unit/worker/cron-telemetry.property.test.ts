@@ -65,9 +65,8 @@ describe("cron — CRON1: handleScheduled never rejects", () => {
 describe("cron — CRON2: handleScheduled swallows all handler failures", () => {
   it("still resolves when mock handlers are changed to reject", async () => {
     // Override mocks to throw
-    const { handleCurrency, handleHebcal, handleHebcalHolidays } = await import(
-      "../../../worker/src/routes/data"
-    );
+    const { handleCurrency, handleHebcal, handleHebcalHolidays } =
+      await import("../../../worker/src/routes/data");
     const { handleStocks } = await import("../../../worker/src/routes/feeds");
     vi.mocked(handleCurrency).mockRejectedValue(new Error("currency down"));
     vi.mocked(handleHebcal).mockRejectedValue(new Error("hebcal down"));

@@ -176,21 +176,21 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 
 ### 1.8 Observability, security, supply chain
 
-| Area  | Action                                                                                  |
-| ----- | --------------------------------------------------------------------------------------- |
-| Obs   | **OpenTelemetry from Worker (opt-in, v15)**.                                            |
-| Obs   | SLO dashboard (Grafana free tier or self-hosted) — gate: > 100K req/day.                |
-| Sec   | **SLSA L3 hermetic build (ADR-035)** — shipped. Third-party rebuilder verify annually.  |
-| Sec   | Subresource Integrity auto-injected (shipped).                                          |
-| Sec   | Secret rotation per major release. Reporting API sampling audit annually.               |
-| Sec   | CSP `require-trusted-types-for 'script'` enforcement shipped.                           |
-| Sec   | npm + GitHub Actions provenance (Sigstore) — shipped.                                   |
-| Sec   | OWASP Top 10 audit per major release; 35+ rules scan `src/`, `worker/src/`, `scripts/`. |
-| Sec   | Origin-Agent-Cluster header — shipped v13.34.0.                                         |
-| Sec   | **Shipped v14.22.0** Permissions-Policy delegation audit — 2 OWASP A05 iframe rules (rule count 118→120), API count corrected to 42 entries. |
-| Infra | Cloudflare Pages migration — gate on measurable TTI/caching regression.                 |
+| Area  | Action                                                                                                                                           |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Obs   | **OpenTelemetry from Worker (opt-in, v15)**.                                                                                                     |
+| Obs   | SLO dashboard (Grafana free tier or self-hosted) — gate: > 100K req/day.                                                                         |
+| Sec   | **SLSA L3 hermetic build (ADR-035)** — shipped. Third-party rebuilder verify annually.                                                           |
+| Sec   | Subresource Integrity auto-injected (shipped).                                                                                                   |
+| Sec   | Secret rotation per major release. Reporting API sampling audit annually.                                                                        |
+| Sec   | CSP `require-trusted-types-for 'script'` enforcement shipped.                                                                                    |
+| Sec   | npm + GitHub Actions provenance (Sigstore) — shipped.                                                                                            |
+| Sec   | OWASP Top 10 audit per major release; 35+ rules scan `src/`, `worker/src/`, `scripts/`.                                                          |
+| Sec   | Origin-Agent-Cluster header — shipped v13.34.0.                                                                                                  |
+| Sec   | **Shipped v14.22.0** Permissions-Policy delegation audit — 2 OWASP A05 iframe rules (rule count 118→120), API count corrected to 42 entries.     |
+| Infra | Cloudflare Pages migration — gate on measurable TTI/caching regression.                                                                          |
 | Infra | Annual vendor-neutrality drill (ADR-031) — **Shipped v14.22.0**: fly.io drill, 0/6 CF APIs detected, gate PASSES. Next: Deno Deploy pre-v15.0.0. |
-| Infra | Static-PWA constraint: no server, no auth, no backend session (rule #26).               |
+| Infra | Static-PWA constraint: no server, no auth, no backend session (rule #26).                                                                        |
 
 ### 1.9 Documentation discipline
 
@@ -325,11 +325,11 @@ Only **genuinely open** items. Shipped items in `CHANGELOG.md`.
 
 ### 3.3 Calendar + Hebrew Calendar
 
-| ID      | P   | E   | I   | Item                                                                 | Target |
-| ------- | --- | --- | --- | -------------------------------------------------------------------- | ------ |
+| ID      | P   | E   | I   | Item                                                                                           | Target |
+| ------- | --- | --- | --- | ---------------------------------------------------------------------------------------------- | ------ |
 | CAL-T   | P1  | M   | Mid | Replace ad-hoc date math with TC39 Temporal (gate: polyfill ≤ 10 KB) · **scaffolded v14.22.0** | v15    |
 | H-T     | P1  | M   | Mid | Replace internal Hebrew date math with Temporal (same gate) · **scaffolded v14.22.0**          | v15    |
-| H-Audio | P2  | M   | Lo  | OpenSiddur parashat haftarah audio link (gated audio-CSP audit)      | v16    |
+| H-Audio | P2  | M   | Lo  | OpenSiddur parashat haftarah audio link (gated audio-CSP audit)                                | v16    |
 
 ### 3.4 Alerts
 
@@ -382,28 +382,28 @@ All consumers migrated to formal `CardSignalProtocol` — shipped v14.20.0.
 
 ### 5.1 Stack-level
 
-| #   | Type     | Item                                                 | P   | E   | I   | Target | Stream   |
-| --- | -------- | ---------------------------------------------------- | --- | --- | --- | ------ | -------- |
-| 1   | Rewrite  | SimHash → Vectorize semantic news dedup              | P0  | L   | Hi  | v15    | SEMANTIC |
-| 2   | Refactor | TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` | P1  | M   | Mid | v15    | SEMANTIC |
-| 3   | Track    | TC39 Signals one-line swap (≤ 1.5 KB, Stage 4)       | P2  | S   | Mid | v15    |          |
-| 4   | Enhance  | DO Hibernatable WebSocket — stocks live + alerts     | P1  | M   | Hi  | v15    | PLATFORM |
-| 5   | Enhance  | R2 mirror for backgrounds + offline shell            | P2  | M   | Mid | v15    | PLATFORM |
-| 6   | Refactor | Annual vendor-neutrality drill                       | P1  | L   | Hi  | v15    | ✅ v14.22.0 |
-| 7   | Enhance  | OpenTelemetry from Worker (opt-in)                   | P2  | L   | Mid | v15    | L3       |
+| #   | Type     | Item                                                 | P   | E   | I   | Target | Stream        |
+| --- | -------- | ---------------------------------------------------- | --- | --- | --- | ------ | ------------- |
+| 1   | Rewrite  | SimHash → Vectorize semantic news dedup              | P0  | L   | Hi  | v15    | SEMANTIC      |
+| 2   | Refactor | TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` | P1  | M   | Mid | v15    | SEMANTIC      |
+| 3   | Track    | TC39 Signals one-line swap (≤ 1.5 KB, Stage 4)       | P2  | S   | Mid | v15    |               |
+| 4   | Enhance  | DO Hibernatable WebSocket — stocks live + alerts     | P1  | M   | Hi  | v15    | PLATFORM      |
+| 5   | Enhance  | R2 mirror for backgrounds + offline shell            | P2  | M   | Mid | v15    | PLATFORM      |
+| 6   | Refactor | Annual vendor-neutrality drill                       | P1  | L   | Hi  | v15    | ✅ v14.22.0   |
+| 7   | Enhance  | OpenTelemetry from Worker (opt-in)                   | P2  | L   | Mid | v15    | L3            |
 | 8   | Refactor | Promote `tooling/` presets to sibling repos          | P1  | M   | Hi  | v15    | MONO ✅v14.22 |
-| 9   | Enhance  | WebRTC mirror with QR pairing (gated 3+)             | P2  | L   | Mid | v15    |          |
-| 10  | Enhance  | Coverage ratchet → 97/90/96/98                       | P1  | M   | Mid | v15    |          |
-| 11  | Track    | Biome replacement for Prettier + ESLint              | P2  | M   | Mid | v16    | V16-OPEN |
-| 12  | Track    | Rolldown auto-adopt when Vite default                | P2  | S   | Mid | v15    |          |
-| 13  | Track    | TypeScript 7 primary typecheck                       | P3  | M   | Mid | v16    | V16-OPEN |
-| 14  | Track    | Cloudflare Snippets / TEE (D6)                       | P2  | M   | Mid | v15    |          |
-| 15  | Track    | WebNN on-device inference (D2)                       | P2  | M   | Mid | v16    |          |
-| 16  | Gate     | Web Push VAPID for alerts → phone (D7)               | P3  | M   | Mid | v15    |          |
-| 17  | Track    | E-ink screen mode — peer-inspired                    | P3  | M   | Lo  | v16    | V16-OPEN |
-| 18  | Track    | i18n infrastructure (`Intl.MessageFormat`)           | P3  | M   | Lo  | v16    | V16-OPEN |
-| 19  | Enhance  | Per-card budget hard-cap ratchet (target 60 KB)      | P1  | M   | Mid | v15    |          |
-| 20  | Enhance  | Stryker mutation expansion to remaining modules      | P1  | M   | Mid | v15    | 136 files |
+| 9   | Enhance  | WebRTC mirror with QR pairing (gated 3+)             | P2  | L   | Mid | v15    |               |
+| 10  | Enhance  | Coverage ratchet → 97/90/96/98                       | P1  | M   | Mid | v15    |               |
+| 11  | Track    | Biome replacement for Prettier + ESLint              | P2  | M   | Mid | v16    | V16-OPEN      |
+| 12  | Track    | Rolldown auto-adopt when Vite default                | P2  | S   | Mid | v15    |               |
+| 13  | Track    | TypeScript 7 primary typecheck                       | P3  | M   | Mid | v16    | V16-OPEN      |
+| 14  | Track    | Cloudflare Snippets / TEE (D6)                       | P2  | M   | Mid | v15    |               |
+| 15  | Track    | WebNN on-device inference (D2)                       | P2  | M   | Mid | v16    |               |
+| 16  | Gate     | Web Push VAPID for alerts → phone (D7)               | P3  | M   | Mid | v15    |               |
+| 17  | Track    | E-ink screen mode — peer-inspired                    | P3  | M   | Lo  | v16    | V16-OPEN      |
+| 18  | Track    | i18n infrastructure (`Intl.MessageFormat`)           | P3  | M   | Lo  | v16    | V16-OPEN      |
+| 19  | Enhance  | Per-card budget hard-cap ratchet (target 60 KB)      | P1  | M   | Mid | v15    |               |
+| 20  | Enhance  | Stryker mutation expansion to remaining modules      | P1  | M   | Mid | v15    | 136 files     |
 
 ### 5.2 Per-card (from §3, open only)
 

@@ -29,7 +29,7 @@ FamilyDashBoard lets you export your full configuration as an **encrypted URL fr
 | Property           | Detail                                                                                                                    |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
 | Algorithm          | AES-GCM 256-bit                                                                                                           |
-| Key derivation     | PBKDF2 · SHA-256 · 200000 iterations                                                                                     |
+| Key derivation     | PBKDF2 · SHA-256 · 200000 iterations                                                                                      |
 | Salt               | 16 random bytes, prepended to ciphertext                                                                                  |
 | IV                 | 12 random bytes, prepended after salt                                                                                     |
 | Encoding           | Base64url (URL-safe, no padding issues)                                                                                   |

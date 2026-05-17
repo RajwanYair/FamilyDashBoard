@@ -1,12 +1,12 @@
 # ADR-083: Stryker Mutation Expansion Strategy — Ratchet to ≥ 92% by v15.0.0
 
-| Field        | Value                                                           |
-| ------------ | --------------------------------------------------------------- |
-| **Date**     | 2026-05-17                                                      |
-| **Status**   | Accepted                                                        |
-| **Deciders** | @RajwanYair                                                     |
-| **Tags**     | testing, mutation, stryker, quality-gate, v15                   |
-| **Related**  | ADR-058 (Stryker baseline), ROADMAP §1.7 item 20                |
+| Field        | Value                                            |
+| ------------ | ------------------------------------------------ |
+| **Date**     | 2026-05-17                                       |
+| **Status**   | Accepted                                         |
+| **Deciders** | @RajwanYair                                      |
+| **Tags**     | testing, mutation, stryker, quality-gate, v15    |
+| **Related**  | ADR-058 (Stryker baseline), ROADMAP §1.7 item 20 |
 
 ---
 
@@ -16,13 +16,13 @@ ROADMAP item #20 (P1): _"Stryker mutation expansion to remaining modules"_.
 
 **Current state at v14.25.0:**
 
-| Metric          | Value          |
-| --------------- | -------------- |
-| Files in scope  | 136            |
-| Threshold high  | 90%            |
-| Threshold break | 90%            |
-| Threshold low   | 82%            |
-| Achieved score  | ≥ 90% (green)  |
+| Metric          | Value         |
+| --------------- | ------------- |
+| Files in scope  | 136           |
+| Threshold high  | 90%           |
+| Threshold break | 90%           |
+| Threshold low   | 82%           |
+| Achieved score  | ≥ 90% (green) |
 
 Mutation testing has been incrementally ratcheted from 87% (v14.20.0) → 88% → 89% → 90%
 (v14.25.0). Property-based tests (Sprints 1–3 of v14.25.0 session) added 25 new tests
@@ -41,10 +41,10 @@ above the new threshold before bumping `scripts/stryker.config.mjs`.
 
 ### Ratchet schedule
 
-| Release  | Target  | Trigger condition                                             |
-| -------- | ------- | ------------------------------------------------------------- |
-| v14.26.0 | ≥ 91%   | After property suites for remaining worker utils (validation, kv, schemas) |
-| v15.0.0  | ≥ 92%   | After validation + kv + schemas property test suites land     |
+| Release  | Target | Trigger condition                                                          |
+| -------- | ------ | -------------------------------------------------------------------------- |
+| v14.26.0 | ≥ 91%  | After property suites for remaining worker utils (validation, kv, schemas) |
+| v15.0.0  | ≥ 92%  | After validation + kv + schemas property test suites land                  |
 
 ### Files with highest mutation gap (next expansion targets)
 

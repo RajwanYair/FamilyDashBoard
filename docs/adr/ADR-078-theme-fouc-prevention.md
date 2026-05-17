@@ -12,7 +12,7 @@ Before this change, `<body>` started with no theme class:
 
 ```html
 <!-- before -->
-<body>
+<body></body>
 ```
 
 The theme class was not applied until JavaScript executed. On slow machines or during long parse times, users briefly saw the browser's default styles — typically light-background, dark-text — before the theme was applied. On a dark-background TV dashboard (default `theme-black`), this manifested as a bright white flash followed by a black background, causing a jarring experience on wall-mounted displays.
@@ -36,7 +36,7 @@ Users on macOS or Windows who set their OS to light mode (`prefers-color-scheme:
 The `<body>` tag now carries the most-common default theme class:
 
 ```html
-<body class="theme-black">
+<body class="theme-black"></body>
 ```
 
 This ensures that the CSS rules for `theme-black` are active from first paint — before any JavaScript executes — eliminating the white-flash FOUC entirely. When `initTheme()` runs, it overwrites this class with the persisted or OS-derived theme.
@@ -73,12 +73,12 @@ A `matchMedia("(prefers-color-scheme: light)").addEventListener("change", ...)` 
 
 ## Consequences
 
-| Scenario | Before | After |
-|---|---|---|
-| No saved theme, OS dark | White flash → black (default) | Black from first paint (no flash) |
-| No saved theme, OS light | White flash → black (wrong) | Amber from first paint (no flash) |
-| Saved theme = purple | White flash → purple | Black flash (brief) → purple |
-| Any subsequent load | Same as saved theme | Unchanged |
+| Scenario                 | Before                        | After                             |
+| ------------------------ | ----------------------------- | --------------------------------- |
+| No saved theme, OS dark  | White flash → black (default) | Black from first paint (no flash) |
+| No saved theme, OS light | White flash → black (wrong)   | Amber from first paint (no flash) |
+| Saved theme = purple     | White flash → purple          | Black flash (brief) → purple      |
+| Any subsequent load      | Same as saved theme           | Unchanged                         |
 
 **Known limitation**: When a non-black theme is stored, the brief flash from `theme-black` (HTML default) to the stored theme is unavoidable without inlining the theme resolution in a blocking `<script>`. This is an accepted trade-off: inlining localStorage reads in a render-blocking script would hurt performance for the common case.
 

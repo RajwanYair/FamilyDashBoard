@@ -6,11 +6,11 @@
 
 FamilyDashBoard uses `new Date()` and raw `Date.now()` arithmetic throughout three date-sensitive cards:
 
-| Card | Date-math usage |
-|---|---|
-| `countdown` | Target date parsing, recurrence advance, days-remaining countdown |
-| `calendar` | Event overlap detection, week-view boundary calculations |
-| `hebrew-cal` | Shabbat detection, Rosh Chodesh calculation, zmanim display |
+| Card         | Date-math usage                                                   |
+| ------------ | ----------------------------------------------------------------- |
+| `countdown`  | Target date parsing, recurrence advance, days-remaining countdown |
+| `calendar`   | Event overlap detection, week-view boundary calculations          |
+| `hebrew-cal` | Shabbat detection, Rosh Chodesh calculation, zmanim display       |
 
 Several bugs traced back to the raw `Date` API:
 
@@ -42,10 +42,10 @@ All functions return plain values (numbers or plain objects), **never mutable `D
 
 ### Migration scope (v14.22.0)
 
-| File | Functions migrated | Bugs fixed |
-|---|---|---|
-| `src/cards/countdown/countdown.ts` | `parsePlainDateTime`, `addYears`, `addMonths`, `toISODateString` | UTC-midnight skew in date parsing |
-| `src/cards/calendar/calendar.ts` | `nowMs`, `today`, `startOfDayMs`, `parsePlainDateMs` | UTC-midnight "yesterday" shift |
+| File                                 | Functions migrated                                                         | Bugs fixed                                                            |
+| ------------------------------------ | -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `src/cards/countdown/countdown.ts`   | `parsePlainDateTime`, `addYears`, `addMonths`, `toISODateString`           | UTC-midnight skew in date parsing                                     |
+| `src/cards/calendar/calendar.ts`     | `nowMs`, `today`, `startOfDayMs`, `parsePlainDateMs`                       | UTC-midnight "yesterday" shift                                        |
 | `src/cards/hebrew-cal/hebrew-cal.ts` | `nowMs`, `today`, `startOfDayMs`, `parsePlainDateMs`, `parsePlainDateTime` | Mutating-date loop corruption in `nextHolidayName` + `getRoshChodesh` |
 
 Raw `new Date()` / `Date.now()` calls in these three files are replaced with adapter calls.

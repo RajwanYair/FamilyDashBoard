@@ -39,7 +39,14 @@ describe("snapshot — SN2: required keys always present", () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => localStorage.clear());
 
-  const REQUIRED = ["version", "timestamp", "userAgent", "config", "localStorageSummary", "diagLog"] as const;
+  const REQUIRED = [
+    "version",
+    "timestamp",
+    "userAgent",
+    "config",
+    "localStorageSummary",
+    "diagLog",
+  ] as const;
 
   it("snapshot always has version, timestamp, userAgent, config, localStorageSummary, diagLog", () => {
     fc.assert(

@@ -28,14 +28,11 @@ describe("offline-banner — OBN1: initOfflineBanner accepts any callback", () =
     await fc.assert(
       fc.asyncProperty(fc.boolean(), async (noOp) => {
         vi.resetModules();
-        document.body.innerHTML =
-          '<div id="offline-banner"></div><div id="toast"></div>';
+        document.body.innerHTML = '<div id="offline-banner"></div><div id="toast"></div>';
         // fresh event-bus so signals are clean
         const bus = await import("@/core/event-bus");
         bus._resetBusForTesting();
-        const { initOfflineBanner, _disposeOfflineBanner } = await import(
-          "@/ui/offline-banner"
-        );
+        const { initOfflineBanner, _disposeOfflineBanner } = await import("@/ui/offline-banner");
         const cb = noOp ? () => undefined : vi.fn();
         expect(() => initOfflineBanner(cb)).not.toThrow();
         _disposeOfflineBanner();
@@ -52,13 +49,10 @@ describe("offline-banner — OBN2: dispose is idempotent", () => {
     await fc.assert(
       fc.asyncProperty(fc.integer({ min: 1, max: 6 }), async (n) => {
         vi.resetModules();
-        document.body.innerHTML =
-          '<div id="offline-banner"></div>';
+        document.body.innerHTML = '<div id="offline-banner"></div>';
         const bus = await import("@/core/event-bus");
         bus._resetBusForTesting();
-        const { initOfflineBanner, _disposeOfflineBanner } = await import(
-          "@/ui/offline-banner"
-        );
+        const { initOfflineBanner, _disposeOfflineBanner } = await import("@/ui/offline-banner");
         initOfflineBanner(() => {});
         for (let i = 0; i < n; i++) {
           expect(() => _disposeOfflineBanner()).not.toThrow();
@@ -76,13 +70,10 @@ describe("offline-banner — OBN3: re-init replaces previous effect", () => {
     await fc.assert(
       fc.asyncProperty(fc.integer({ min: 2, max: 4 }), async (inits) => {
         vi.resetModules();
-        document.body.innerHTML =
-          '<div id="offline-banner"></div>';
+        document.body.innerHTML = '<div id="offline-banner"></div>';
         const bus = await import("@/core/event-bus");
         bus._resetBusForTesting();
-        const { initOfflineBanner, _disposeOfflineBanner } = await import(
-          "@/ui/offline-banner"
-        );
+        const { initOfflineBanner, _disposeOfflineBanner } = await import("@/ui/offline-banner");
         const callbacks: Array<ReturnType<typeof vi.fn>> = [];
         for (let i = 0; i < inits; i++) {
           const cb = vi.fn();
@@ -112,9 +103,7 @@ describe("offline-banner — OBN4: callback not invoked synchronously during ini
         document.body.innerHTML = '<div id="offline-banner"></div>';
         const bus = await import("@/core/event-bus");
         bus._resetBusForTesting();
-        const { initOfflineBanner, _disposeOfflineBanner } = await import(
-          "@/ui/offline-banner"
-        );
+        const { initOfflineBanner, _disposeOfflineBanner } = await import("@/ui/offline-banner");
         const cb = vi.fn();
         initOfflineBanner(cb);
         // Effect runs synchronously on init but reconnect fires only on
@@ -138,9 +127,7 @@ describe("offline-banner — OBN5: dispose → reinit cycle is stable", () => {
         document.body.innerHTML = '<div id="offline-banner"></div>';
         const bus = await import("@/core/event-bus");
         bus._resetBusForTesting();
-        const { initOfflineBanner, _disposeOfflineBanner } = await import(
-          "@/ui/offline-banner"
-        );
+        const { initOfflineBanner, _disposeOfflineBanner } = await import("@/ui/offline-banner");
         for (let i = 0; i < cycles; i++) {
           expect(() => initOfflineBanner(() => {})).not.toThrow();
           expect(() => _disposeOfflineBanner()).not.toThrow();

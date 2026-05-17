@@ -36,9 +36,7 @@ describe("status-bar — SB1: stampRefresh() is safe with any DOM state", () => 
     await fc.assert(
       fc.asyncProperty(fc.boolean(), async (addElement) => {
         vi.resetModules();
-        document.body.innerHTML = addElement
-          ? '<span id="refresh-stamp"></span>'
-          : "";
+        document.body.innerHTML = addElement ? '<span id="refresh-stamp"></span>' : "";
         const { stampRefresh } = await import("@/ui/status-bar");
         expect(() => stampRefresh()).not.toThrow();
       }),
@@ -54,9 +52,7 @@ describe("status-bar — SB2: updateRefreshAge() is safe before any stampRefresh
     await fc.assert(
       fc.asyncProperty(fc.boolean(), async (addElement) => {
         vi.resetModules();
-        document.body.innerHTML = addElement
-          ? '<span id="refresh-stamp"></span>'
-          : "";
+        document.body.innerHTML = addElement ? '<span id="refresh-stamp"></span>' : "";
         const { updateRefreshAge } = await import("@/ui/status-bar");
         expect(() => updateRefreshAge()).not.toThrow();
       }),
@@ -72,9 +68,7 @@ describe("status-bar — SB3: updateUptime() never throws", () => {
     await fc.assert(
       fc.asyncProperty(fc.boolean(), async (addElement) => {
         vi.resetModules();
-        document.body.innerHTML = addElement
-          ? '<span id="uptime-display"></span>'
-          : "";
+        document.body.innerHTML = addElement ? '<span id="uptime-display"></span>' : "";
         const { updateUptime } = await import("@/ui/status-bar");
         expect(() => updateUptime()).not.toThrow();
       }),

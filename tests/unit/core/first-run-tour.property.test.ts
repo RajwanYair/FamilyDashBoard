@@ -59,22 +59,19 @@ describe("first-run-tour — FRT1: initTour() opens dialog at most once per sess
 describe("first-run-tour — FRT2: initTour() is a no-op when tour key is set", () => {
   it("showModal is never called when localStorage tour key is present", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.string({ minLength: 1, maxLength: 20 }),
-        async (_label) => {
-          vi.resetModules();
-          document.body.innerHTML = "";
-          localStorage.clear();
-          const dlg = buildDialog();
-          const { initTour, _resetTour } = await import("@/core/first-run-tour");
-          _resetTour();
-          // Set the key AFTER _resetTour() so it is not wiped by the reset
-          localStorage.setItem("dash_tour_seen", "1");
-          initTour();
-          expect(dlg.showModal).not.toHaveBeenCalled();
-          localStorage.clear();
-        },
-      ),
+      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 20 }), async (_label) => {
+        vi.resetModules();
+        document.body.innerHTML = "";
+        localStorage.clear();
+        const dlg = buildDialog();
+        const { initTour, _resetTour } = await import("@/core/first-run-tour");
+        _resetTour();
+        // Set the key AFTER _resetTour() so it is not wiped by the reset
+        localStorage.setItem("dash_tour_seen", "1");
+        initTour();
+        expect(dlg.showModal).not.toHaveBeenCalled();
+        localStorage.clear();
+      }),
       { numRuns: 10 },
     );
   });

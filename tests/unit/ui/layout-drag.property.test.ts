@@ -89,26 +89,23 @@ describe("layout-drag — LD5: readCurrentLayout omits empty/missing card IDs", 
 
   it("cards without data-card-id are not included in result", () => {
     fc.assert(
-      fc.property(
-        fc.array(fc.boolean(), { minLength: 0, maxLength: 8 }),
-        (hasIdFlags) => {
-          document.body.innerHTML = "";
-          const col = document.createElement("div");
-          col.className = "grid-col-left";
-          for (let i = 0; i < hasIdFlags.length; i++) {
-            const card = document.createElement("div");
-            if (hasIdFlags[i]) card.dataset["cardId"] = `card-${i}`;
-            col.appendChild(card);
-          }
-          document.body.appendChild(col);
+      fc.property(fc.array(fc.boolean(), { minLength: 0, maxLength: 8 }), (hasIdFlags) => {
+        document.body.innerHTML = "";
+        const col = document.createElement("div");
+        col.className = "grid-col-left";
+        for (let i = 0; i < hasIdFlags.length; i++) {
+          const card = document.createElement("div");
+          if (hasIdFlags[i]) card.dataset["cardId"] = `card-${i}`;
+          col.appendChild(card);
+        }
+        document.body.appendChild(col);
 
-          const [left] = readCurrentLayout();
-          // No empty string should appear
-          expect(left.every((id) => id.length > 0)).toBe(true);
+        const [left] = readCurrentLayout();
+        // No empty string should appear
+        expect(left.every((id) => id.length > 0)).toBe(true);
 
-          document.body.innerHTML = "";
-        },
-      ),
+        document.body.innerHTML = "";
+      }),
       { numRuns: 10 },
     );
   });

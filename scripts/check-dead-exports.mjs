@@ -89,7 +89,7 @@ function extractExports(src) {
   const EXPORT_DEFAULT_RE_NG = /^export\s+default\s+(?:function\s+|class\s+)?(\w+)/;
   const lines = src.split("\n");
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    const line = lines[i] ?? "";
     const nextLine = lines[i + 1] ?? "";
     // Check if annotation is on this line or the next line
     if (!line.includes("dead-export-ok") && !nextLine.includes("dead-export-ok")) continue;

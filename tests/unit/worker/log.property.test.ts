@@ -98,10 +98,15 @@ describe("log — LG3: query strings longer than 80 chars are truncated", () => 
       fc.assert(
         fc.property(
           fc
-            .array(fc.constantFrom(..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789=&"), {
-              minLength: 81,
-              maxLength: 200,
-            })
+            .array(
+              fc.constantFrom(
+                ..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789=&",
+              ),
+              {
+                minLength: 81,
+                maxLength: 200,
+              },
+            )
             .map((chars) => chars.join("")),
           (longQuery) => {
             lines.length = 0;

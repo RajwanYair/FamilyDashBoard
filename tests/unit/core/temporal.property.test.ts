@@ -62,15 +62,12 @@ describe("temporal — TM2: startOfDayMs produces local midnight", () => {
 describe("temporal — TM3: startOfDayMs is non-mutating", () => {
   it("input Date is unchanged after call", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 946684800000, max: 4102444800000 }),
-        (ms) => {
-          const original = new Date(ms);
-          const originalTime = original.getTime();
-          startOfDayMs(original);
-          expect(original.getTime()).toBe(originalTime);
-        },
-      ),
+      fc.property(fc.integer({ min: 946684800000, max: 4102444800000 }), (ms) => {
+        const original = new Date(ms);
+        const originalTime = original.getTime();
+        startOfDayMs(original);
+        expect(original.getTime()).toBe(originalTime);
+      }),
       { numRuns: 50 },
     );
   });
@@ -222,13 +219,10 @@ describe("temporal — TM9: toISODateString + parsePlainDateMs round-trip", () =
 describe("temporal — TM10: startOfDayMs result ≤ input", () => {
   it("midnight is always ≤ the point-in-time that day", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 946684800000, max: 4102444800000 }),
-        (ms) => {
-          const midnight = startOfDayMs(new Date(ms));
-          expect(midnight).toBeLessThanOrEqual(ms);
-        },
-      ),
+      fc.property(fc.integer({ min: 946684800000, max: 4102444800000 }), (ms) => {
+        const midnight = startOfDayMs(new Date(ms));
+        expect(midnight).toBeLessThanOrEqual(ms);
+      }),
       { numRuns: 50 },
     );
   });

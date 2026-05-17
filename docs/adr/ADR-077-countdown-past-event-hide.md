@@ -62,13 +62,13 @@ The completion message `"🎉 מזל טוב!"` is kept as a generic celebration 
 
 ## Consequences
 
-| Aspect | Before | After |
-|---|---|---|
-| Past event | Ticks into negative numbers forever | Section hidden immediately |
-| Empty date | Shows countdown to 2027-09-05 | Section hidden |
-| Default title | "החתונה שלנו" (wedding-specific) | "" (operator fills in) |
-| User-configured future event | Visible countdown | Unchanged — still visible |
-| User-configured past event | Stale countdown | Hidden on next `tick()` |
+| Aspect                       | Before                              | After                      |
+| ---------------------------- | ----------------------------------- | -------------------------- |
+| Past event                   | Ticks into negative numbers forever | Section hidden immediately |
+| Empty date                   | Shows countdown to 2027-09-05       | Section hidden             |
+| Default title                | "החתונה שלנו" (wedding-specific)    | "" (operator fills in)     |
+| User-configured future event | Visible countdown                   | Unchanged — still visible  |
+| User-configured past event   | Stale countdown                     | Hidden on next `tick()`    |
 
 ## Rejected alternatives
 

@@ -112,13 +112,10 @@ describe("d1-reports — D1R3: storeReport swallows all errors", () => {
 describe("d1-reports — D1R4: pruneOldReports never throws", () => {
   it("never rejects for any days value when DB is unavailable", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.integer({ min: 1, max: 365 }),
-        async (days) => {
-          const db = makeFailingDb();
-          await expect(pruneOldReports(db, days)).resolves.toBeUndefined();
-        },
-      ),
+      fc.asyncProperty(fc.integer({ min: 1, max: 365 }), async (days) => {
+        const db = makeFailingDb();
+        await expect(pruneOldReports(db, days)).resolves.toBeUndefined();
+      }),
       { numRuns: 20 },
     );
   });
@@ -129,15 +126,12 @@ describe("d1-reports — D1R4: pruneOldReports never throws", () => {
 describe("d1-reports — D1R5: queryReportSummary returns [] on DB failure", () => {
   it("always returns an array even when DB is unavailable", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.integer({ min: 1, max: 90 }),
-        async (days) => {
-          const db = makeFailingDb();
-          const result = await queryReportSummary(db, days);
-          expect(Array.isArray(result)).toBe(true);
-          expect(result).toHaveLength(0);
-        },
-      ),
+      fc.asyncProperty(fc.integer({ min: 1, max: 90 }), async (days) => {
+        const db = makeFailingDb();
+        const result = await queryReportSummary(db, days);
+        expect(Array.isArray(result)).toBe(true);
+        expect(result).toHaveLength(0);
+      }),
       { numRuns: 20 },
     );
   });

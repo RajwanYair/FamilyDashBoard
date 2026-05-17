@@ -1,11 +1,11 @@
 # ADR-082: Bun Deploy Vendor-Neutrality Drill — Static-Analysis Pass
 
-| Field        | Value                                                   |
-| ------------ | ------------------------------------------------------- |
-| **Date**     | 2026-05-17                                              |
-| **Status**   | Accepted                                                |
-| **Deciders** | @RajwanYair                                             |
-| **Tags**     | infra, vendor, bun, cloudflare, portability, v14.25.0   |
+| Field        | Value                                                         |
+| ------------ | ------------------------------------------------------------- |
+| **Date**     | 2026-05-17                                                    |
+| **Status**   | Accepted                                                      |
+| **Deciders** | @RajwanYair                                                   |
+| **Tags**     | infra, vendor, bun, cloudflare, portability, v14.25.0         |
 | **Related**  | ADR-031 (vendor-neutrality drill), ADR-003 (Worker-first API) |
 
 ---
@@ -29,13 +29,13 @@ the rotation: **Deno Deploy → Bun Deploy → fly.io → repeat**.
 Worker code remains vendor-neutral by static analysis:
 
 | API                | Portability Risk | Bun Deploy Equivalent                                                  |
-| ------------------ | ---------------- | ----------------------------------------------------------------------- |
-| Workers KV         | LOW              | `bun:sqlite` in-process (dev) + external Redis/Upstash (prod) via HTTP  |
-| D1 Database        | MEDIUM           | `bun:sqlite` native driver — schema migrations are vanilla SQL           |
-| Durable Objects    | HIGH             | No native equivalent. BroadcastChannel + SQLite for ephemeral state.     |
-| Analytics Engine   | LOW              | `structuredClone` + `fetch` to OTLP endpoint — removable                 |
-| Email Routing      | LOW              | Resend SDK (1 call site in `cron.ts`) — trivial swap                     |
-| CF runtime globals | LOW              | `globalThis.caches` stub for SW side — client-only, no runtime risk      |
+| ------------------ | ---------------- | ---------------------------------------------------------------------- |
+| Workers KV         | LOW              | `bun:sqlite` in-process (dev) + external Redis/Upstash (prod) via HTTP |
+| D1 Database        | MEDIUM           | `bun:sqlite` native driver — schema migrations are vanilla SQL         |
+| Durable Objects    | HIGH             | No native equivalent. BroadcastChannel + SQLite for ephemeral state.   |
+| Analytics Engine   | LOW              | `structuredClone` + `fetch` to OTLP endpoint — removable               |
+| Email Routing      | LOW              | Resend SDK (1 call site in `cron.ts`) — trivial swap                   |
+| CF runtime globals | LOW              | `globalThis.caches` stub for SW side — client-only, no runtime risk    |
 
 Hono HTTP framework: fully compatible with Bun via `bun serve` with zero adapter changes
 (`Hono` compiles to standard `Request`/`Response`).

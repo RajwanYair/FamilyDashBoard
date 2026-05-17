@@ -22,15 +22,12 @@ afterEach(() => {
 describe("toast — TS1: showToast(msg) never throws for any string", () => {
   it("accepts arbitrary non-empty strings without throwing", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.string({ minLength: 1, maxLength: 200 }),
-        async (msg) => {
-          vi.resetModules();
-          document.body.innerHTML = '<div id="toast"></div>';
-          const { showToast } = await import("@/ui/toast");
-          expect(() => showToast(msg)).not.toThrow();
-        },
-      ),
+      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 200 }), async (msg) => {
+        vi.resetModules();
+        document.body.innerHTML = '<div id="toast"></div>';
+        const { showToast } = await import("@/ui/toast");
+        expect(() => showToast(msg)).not.toThrow();
+      }),
       { numRuns: 15 },
     );
   });
@@ -41,15 +38,12 @@ describe("toast — TS1: showToast(msg) never throws for any string", () => {
 describe("toast — TS2: showToast(msg, duration) accepts any positive duration", () => {
   it("does not throw for any duration in [1, 30000]", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.integer({ min: 1, max: 30_000 }),
-        async (durationMs) => {
-          vi.resetModules();
-          document.body.innerHTML = '<div id="toast"></div>';
-          const { showToast } = await import("@/ui/toast");
-          expect(() => showToast("test", durationMs)).not.toThrow();
-        },
-      ),
+      fc.asyncProperty(fc.integer({ min: 1, max: 30_000 }), async (durationMs) => {
+        vi.resetModules();
+        document.body.innerHTML = '<div id="toast"></div>';
+        const { showToast } = await import("@/ui/toast");
+        expect(() => showToast("test", durationMs)).not.toThrow();
+      }),
       { numRuns: 12 },
     );
   });
@@ -60,17 +54,14 @@ describe("toast — TS2: showToast(msg, duration) accepts any positive duration"
 describe("toast — TS3: showToast sets visible class on element", () => {
   it("toast element has `visible` class after a call", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.string({ minLength: 1, maxLength: 50 }),
-        async (msg) => {
-          vi.resetModules();
-          document.body.innerHTML = '<div id="toast"></div>';
-          const { showToast } = await import("@/ui/toast");
-          showToast(msg);
-          const el = document.getElementById("toast")!;
-          expect(el.classList.contains("visible")).toBe(true);
-        },
-      ),
+      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 50 }), async (msg) => {
+        vi.resetModules();
+        document.body.innerHTML = '<div id="toast"></div>';
+        const { showToast } = await import("@/ui/toast");
+        showToast(msg);
+        const el = document.getElementById("toast")!;
+        expect(el.classList.contains("visible")).toBe(true);
+      }),
       { numRuns: 10 },
     );
   });
@@ -99,15 +90,12 @@ describe("toast — TS4: successive showToast calls are safe", () => {
 describe("toast — TS5: showToast is a no-op when the toast element is absent", () => {
   it("does not throw when #toast is not in the DOM", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.string({ minLength: 0, maxLength: 100 }),
-        async (msg) => {
-          vi.resetModules();
-          document.body.innerHTML = "";
-          const { showToast } = await import("@/ui/toast");
-          expect(() => showToast(msg)).not.toThrow();
-        },
-      ),
+      fc.asyncProperty(fc.string({ minLength: 0, maxLength: 100 }), async (msg) => {
+        vi.resetModules();
+        document.body.innerHTML = "";
+        const { showToast } = await import("@/ui/toast");
+        expect(() => showToast(msg)).not.toThrow();
+      }),
       { numRuns: 10 },
     );
   });

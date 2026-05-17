@@ -67,14 +67,14 @@ execution. See `vite.config.ts` comments for the full explanation.
 
 All Cloudflare Worker responses include:
 
-| Header                         | Value                                      |
-| ------------------------------ | ------------------------------------------ |
-| `X-Content-Type-Options`       | `nosniff`                                  |
-| `X-Frame-Options`              | `DENY`                                     |
-| `Referrer-Policy`              | `strict-origin-when-cross-origin`          |
+| Header                         | Value                                                     |
+| ------------------------------ | --------------------------------------------------------- |
+| `X-Content-Type-Options`       | `nosniff`                                                 |
+| `X-Frame-Options`              | `DENY`                                                    |
+| `Referrer-Policy`              | `strict-origin-when-cross-origin`                         |
 | `Permissions-Policy`           | 42 entries (36 APIs denied, 6 self-only) — see `_headers` |
-| `Cross-Origin-Resource-Policy` | `cross-origin`                             |
-| `Access-Control-Allow-Origin`  | `*` (public read-only API)                 |
+| `Cross-Origin-Resource-Policy` | `cross-origin`                                            |
+| `Access-Control-Allow-Origin`  | `*` (public read-only API)                                |
 
 ---
 

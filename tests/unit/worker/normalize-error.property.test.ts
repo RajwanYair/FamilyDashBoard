@@ -312,4 +312,3 @@ describe("normalizeWorkerError — NE15: very long error messages don't crash", 
     );
   });
 });
-

@@ -1343,7 +1343,8 @@ const RULES = [
   // A05 — Security Misconfiguration: iframe created without sandbox (grants full trust to embedded origin)
   {
     category: "A05",
-    label: "iframe without sandbox attribute — add sandbox to restrict embedded content capabilities",
+    label:
+      "iframe without sandbox attribute — add sandbox to restrict embedded content capabilities",
     severity: "warn",
     pattern: /<iframe\b(?![^>]*\bsandbox\b)[^>]*>/i,
     safeMarkers: ["test", "spec", "// owasp-allow:A05", "sandbox"],

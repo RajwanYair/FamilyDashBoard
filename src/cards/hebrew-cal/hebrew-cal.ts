@@ -23,7 +23,13 @@ import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
-import { nowMs, today, startOfDayMs, parsePlainDateMs, parsePlainDateTime } from "../../core/temporal";
+import {
+  nowMs,
+  today,
+  startOfDayMs,
+  parsePlainDateMs,
+  parsePlainDateTime,
+} from "../../core/temporal";
 
 // Pure Hebrew-cal utility functions ───────────────────────────
 

@@ -1,12 +1,12 @@
 # ADR-079 — OpenTelemetry Worker Opt-In Scaffold
 
-| Field     | Value                                               |
-| --------- | --------------------------------------------------- |
-| Status    | **Draft**                                           |
-| Date      | 2026-05-21                                          |
-| Author    | @RajwanYair                                         |
+| Field     | Value                                              |
+| --------- | -------------------------------------------------- |
+| Status    | **Draft**                                          |
+| Date      | 2026-05-21                                         |
+| Author    | @RajwanYair                                        |
 | Milestone | v15.0.0 (V15-OPEN §0.0 Pillar 2 — observability)   |
-| Related   | ADR-029 (Analytics Engine), ADR-031 (Vendor drill)  |
+| Related   | ADR-029 (Analytics Engine), ADR-031 (Vendor drill) |
 
 ## Context
 
@@ -15,6 +15,7 @@ intent is a self-hosted OTLP ingestor on Cloudflare R2 + Workers, disabled by de
 zero-impact when the binding is absent.
 
 As of v14.23.0, the Worker emits:
+
 - **Request logs** via `worker/src/middleware/log.ts` (stdout JSON, Cloudflare Logpush)
 - **D1 telemetry** via `worker/src/utils/d1-telemetry.ts` (per-request row in `fdb-telemetry`)
 - **Analytics Engine** via `worker/src/utils/analytics.ts` (ADR-029 Analytics Engine dataset)
@@ -69,11 +70,13 @@ backward-compatible — existing deployments without the var get a no-op handle)
 ## Consequences
 
 **Positive**:
+
 - Zero runtime overhead when `OTEL_ENABLED` is absent or `"false"` — no-op path.
 - Type-safe API surface is locked before the implementation sprint.
 - CI gate remains green (`worker/src/telemetry.ts` is in stryker scope via Sprint 6 entry).
 
 **Negative**:
+
 - One extra source file ships before it does anything useful.
 - The `Env` type grows by one optional property.
 

@@ -46,14 +46,11 @@ function makeRequest(method: string, body: unknown): Request {
 describe("errors-route — ERT1: non-POST methods return 405", () => {
   it("always returns 405 for any non-POST HTTP method", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.constantFrom("GET", "PUT", "PATCH", "DELETE", "HEAD"),
-        async (method) => {
-          const req = new Request("https://worker.example.com/api/errors", { method });
-          const res = await handleErrors(req);
-          expect(res.status).toBe(405);
-        },
-      ),
+      fc.asyncProperty(fc.constantFrom("GET", "PUT", "PATCH", "DELETE", "HEAD"), async (method) => {
+        const req = new Request("https://worker.example.com/api/errors", { method });
+        const res = await handleErrors(req);
+        expect(res.status).toBe(405);
+      }),
       { numRuns: 15 },
     );
   });
@@ -101,15 +98,17 @@ describe("errors-route — ERT4: at least one valid entry returns 204 without KV
   it("returns 204 when valid entries are present (no KV env)", async () => {
     await fc.assert(
       fc.asyncProperty(
-        fc.array(validEntryArb, { minLength: 1, maxLength: 20 }).filter((arr) =>
-          arr.every(
-            (e) =>
-              typeof e.ts === "number" &&
-              isFinite(e.ts) &&
-              typeof e.message === "string" &&
-              e.message.length > 0,
+        fc
+          .array(validEntryArb, { minLength: 1, maxLength: 20 })
+          .filter((arr) =>
+            arr.every(
+              (e) =>
+                typeof e.ts === "number" &&
+                isFinite(e.ts) &&
+                typeof e.message === "string" &&
+                e.message.length > 0,
+            ),
           ),
-        ),
         async (entries) => {
           const req = makeRequest("POST", entries);
           const res = await handleErrors(req, undefined);

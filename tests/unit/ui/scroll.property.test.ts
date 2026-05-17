@@ -158,7 +158,9 @@ describe("scroll — SL5: injectScrollKeyframes embeds keyframe name in style te
   it("style textContent contains the given keyframeName", () => {
     fc.assert(
       fc.property(
-        fc.string({ minLength: 1, maxLength: 30 }).filter((s) => /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(s)),
+        fc
+          .string({ minLength: 1, maxLength: 30 })
+          .filter((s) => /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(s)),
         fc.integer({ min: 10, max: 2000 }),
         (keyframeName, distance) => {
           const styleId = `sl5-${keyframeName}`;

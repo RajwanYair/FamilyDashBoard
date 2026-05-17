@@ -334,16 +334,16 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history. Summary in the [R
 
 This project leverages extensive GitHub features:
 
-| Feature                  | Details                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------ |
-| **GitHub Pages**         | [Live demo](https://rajwanyair.github.io/FamilyDashBoard/) auto-deployed from `main` |
+| Feature                  | Details                                                                                               |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- |
+| **GitHub Pages**         | [Live demo](https://rajwanyair.github.io/FamilyDashBoard/) auto-deployed from `main`                  |
 | **GitHub Actions**       | 23 workflows — CI, deploy, release, security, SBOM, scorecard, Trivy, ZAP, Playwright VR, and 14 more |
-| **Issue Templates**      | YAML forms for bugs, features, API issues with auto-labeling                         |
-| **Discussion Templates** | Ideas, Q&A, Show-and-Tell categories                                                 |
-| **Dependabot**           | Weekly updates for GitHub Actions dependencies                                       |
-| **Copilot Integration**  | 3 custom agents, 4 skills, 18 prompts, 8 instruction files, copilot-instructions.md  |
-| **Community Health**     | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, SUPPORT, CODEOWNERS                         |
-| **Auto Release Notes**   | 8-category changelog via `release.yml`                                               |
+| **Issue Templates**      | YAML forms for bugs, features, API issues with auto-labeling                                          |
+| **Discussion Templates** | Ideas, Q&A, Show-and-Tell categories                                                                  |
+| **Dependabot**           | Weekly updates for GitHub Actions dependencies                                                        |
+| **Copilot Integration**  | 3 custom agents, 4 skills, 18 prompts, 8 instruction files, copilot-instructions.md                   |
+| **Community Health**     | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, SUPPORT, CODEOWNERS                                          |
+| **Auto Release Notes**   | 8-category changelog via `release.yml`                                                                |
 
 ---
 
@@ -353,26 +353,26 @@ This project leverages extensive GitHub features:
 
 ### Completed
 
-| Version      | Summary                                                                                          |
-| ------------ | ------------------------------------------------------------------------------------------------ |
-| v3.0–v4.4    | Glassmorphism redesign, red alerts, per-pane refresh, 5 themes, diagnostic overlay               |
-| v4.5–v4.8    | Card maximize, halacha ticker, 17 news feeds, Hebrew Calendar card, stock logos                  |
-| v4.9–v4.19   | Zmanim, Daf Yomi, config panel, Gold/Silver, sparklines, P&L, bookmarks, card drag-reorder       |
-| v5.0–v5.1    | Corp proxy, SW v5, PWA install, offline fallback, CSS tokens, ARIA, JS constants                 |
-| v7.0–v7.17   | Full TypeScript SPA, Vite 8, card registry v7, FdbCard base, CardRuntime interface, domain types |
-| v8.0–v8.9    | Architecture convergence, registry-driven shells, namespaced config, IDB L3 cache               |
-| v9.0–v9.19   | Cloudflare Worker routing, AES-GCM config encryption, Valibot schemas, error batching            |
-| v10.0–v13.42 | TC39 Signals, hardware tiers, OTel scaffold, AI quotes, BTC card, SimHash, OWASP 120 rules       |
-| v14.0–v14.14 | TypeScript 6, Vite 8, Rolldown bundler, property-test foundation (fast-check), 83 ADRs           |
+| Version       | Summary                                                                                          |
+| ------------- | ------------------------------------------------------------------------------------------------ |
+| v3.0–v4.4     | Glassmorphism redesign, red alerts, per-pane refresh, 5 themes, diagnostic overlay               |
+| v4.5–v4.8     | Card maximize, halacha ticker, 17 news feeds, Hebrew Calendar card, stock logos                  |
+| v4.9–v4.19    | Zmanim, Daf Yomi, config panel, Gold/Silver, sparklines, P&L, bookmarks, card drag-reorder       |
+| v5.0–v5.1     | Corp proxy, SW v5, PWA install, offline fallback, CSS tokens, ARIA, JS constants                 |
+| v7.0–v7.17    | Full TypeScript SPA, Vite 8, card registry v7, FdbCard base, CardRuntime interface, domain types |
+| v8.0–v8.9     | Architecture convergence, registry-driven shells, namespaced config, IDB L3 cache                |
+| v9.0–v9.19    | Cloudflare Worker routing, AES-GCM config encryption, Valibot schemas, error batching            |
+| v10.0–v13.42  | TC39 Signals, hardware tiers, OTel scaffold, AI quotes, BTC card, SimHash, OWASP 120 rules       |
+| v14.0–v14.14  | TypeScript 6, Vite 8, Rolldown bundler, property-test foundation (fast-check), 83 ADRs           |
 | v14.15–v14.21 | Mutation testing (Stryker 89%), 7338+ tests, CSS/bundle ratchet, vendor-neutrality drills        |
-| v14.22–v14.25 | Stryker 90%, FSA/D1R/ERT/CRON/OTEL property suites, 7542+ tests, 83 ADRs, docs modernized       |
+| v14.22–v14.25 | Stryker 90%, FSA/D1R/ERT/CRON/OTEL property suites, 7542+ tests, 83 ADRs, docs modernized        |
 
 ### Upcoming
 
-| Version   | Focus                                                                                  | Status |
-| --------- | -------------------------------------------------------------------------------------- | ------ |
-| v14.26.0  | Stryker 91%, fly.io vendor drill, coverage ratchet, worker KV depth tests             | 📋     |
-| v15.0     | Coverage 97/90/96/98, bundle ≤108 KB, Temporal Polyfill, Stryker 92%, SSRF hardening  | 📋     |
+| Version  | Focus                                                                                | Status |
+| -------- | ------------------------------------------------------------------------------------ | ------ |
+| v14.26.0 | Stryker 91%, fly.io vendor drill, coverage ratchet, worker KV depth tests            | 📋     |
+| v15.0    | Coverage 97/90/96/98, bundle ≤108 KB, Temporal Polyfill, Stryker 92%, SSRF hardening | 📋     |
 
 See [ROADMAP.md](docs/ROADMAP.md) for the full strategic plan and stream priorities.
 

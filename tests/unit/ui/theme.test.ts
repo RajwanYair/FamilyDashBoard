@@ -237,16 +237,20 @@ describe("Theme — initTheme without #theme-select", () => {
     document.body.className = "";
     localStorage.clear();
     // Stub matchMedia: dark OS (matches: false) for deterministic defaults
-    vi.stubGlobal("matchMedia", (_query: string): MediaQueryList => ({
-      matches: false,
-      media: _query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    } as unknown as MediaQueryList));
+    vi.stubGlobal(
+      "matchMedia",
+      (_query: string): MediaQueryList =>
+        ({
+          matches: false,
+          media: _query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
   });
 
   afterEach(() => {
@@ -283,46 +287,58 @@ describe("Theme — initTheme respects OS preference on initial load", () => {
   });
 
   it("applies amber on first load when OS prefers light color scheme", () => {
-    vi.stubGlobal("matchMedia", (query: string): MediaQueryList => ({
-      matches: query === "(prefers-color-scheme: light)",
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    } as unknown as MediaQueryList));
+    vi.stubGlobal(
+      "matchMedia",
+      (query: string): MediaQueryList =>
+        ({
+          matches: query === "(prefers-color-scheme: light)",
+          media: query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
     initTheme();
     expect(currentTheme()).toBe("amber");
   });
 
   it("applies black on first load when OS prefers dark color scheme", () => {
-    vi.stubGlobal("matchMedia", (_query: string): MediaQueryList => ({
-      matches: false,
-      media: _query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    } as unknown as MediaQueryList));
+    vi.stubGlobal(
+      "matchMedia",
+      (_query: string): MediaQueryList =>
+        ({
+          matches: false,
+          media: _query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
     initTheme();
     expect(currentTheme()).toBe("black");
   });
 
   it("saved theme takes precedence over OS light preference", () => {
-    vi.stubGlobal("matchMedia", (query: string): MediaQueryList => ({
-      matches: query === "(prefers-color-scheme: light)",
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    } as unknown as MediaQueryList));
+    vi.stubGlobal(
+      "matchMedia",
+      (query: string): MediaQueryList =>
+        ({
+          matches: query === "(prefers-color-scheme: light)",
+          media: query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
     localStorage.setItem("dash_theme", "purple");
     initTheme();
     expect(currentTheme()).toBe("purple");

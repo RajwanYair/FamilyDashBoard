@@ -12,14 +12,7 @@
 
 import { describe, it, expect, vi, afterEach } from "vitest";
 import * as fc from "fast-check";
-import {
-  idbGet,
-  idbSet,
-  idbDel,
-  idbKeys,
-  idbEvictStale,
-  _resetIdb,
-} from "@/core/idb-cache";
+import { idbGet, idbSet, idbDel, idbKeys, idbEvictStale, _resetIdb } from "@/core/idb-cache";
 
 // ── Minimal in-memory IDB mock (reused across tests) ─────────────────────────
 
@@ -41,9 +34,21 @@ function installMockIdb(): void {
 
   const objectStore = {
     get: (k: string) => req(() => store.get(k) as unknown),
-    put: (v: unknown, k: string) => req(() => { store.set(k, v); return k; }),
-    delete: (k: string) => req(() => { store.delete(k); return undefined; }),
-    clear: () => req(() => { store.clear(); return undefined; }),
+    put: (v: unknown, k: string) =>
+      req(() => {
+        store.set(k, v);
+        return k;
+      }),
+    delete: (k: string) =>
+      req(() => {
+        store.delete(k);
+        return undefined;
+      }),
+    clear: () =>
+      req(() => {
+        store.clear();
+        return undefined;
+      }),
     getAllKeys: () => req(() => [...store.keys()]),
     getAll: () => req(() => [...store.values()]),
     openCursor: () => {
@@ -62,7 +67,11 @@ function installMockIdb(): void {
               key,
               value,
               continue: next,
-              delete: () => req(() => { store.delete(key as string); return undefined; }),
+              delete: () =>
+                req(() => {
+                  store.delete(key as string);
+                  return undefined;
+                }),
             };
           } else {
             (cursorReq as unknown as { result: unknown }).result = null;
@@ -117,15 +126,12 @@ afterEach(() => {
 describe("idb-cache — IDB-C1: idbGet() returns null when IDB is unavailable", () => {
   it("returns null for any key when indexedDB is undefined", async () => {
     await fc.assert(
-      fc.asyncProperty(
-        fc.string({ minLength: 1, maxLength: 30 }),
-        async (key) => {
-          vi.stubGlobal("indexedDB", undefined);
-          _resetIdb();
-          const result = await idbGet(key);
-          expect(result).toBeNull();
-        },
-      ),
+      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 30 }), async (key) => {
+        vi.stubGlobal("indexedDB", undefined);
+        _resetIdb();
+        const result = await idbGet(key);
+        expect(result).toBeNull();
+      }),
       { numRuns: 10 },
     );
   });
@@ -138,11 +144,7 @@ describe("idb-cache — IDB-C2: idbSet+idbGet round-trip", () => {
     await fc.assert(
       fc.asyncProperty(
         fc.string({ minLength: 1, maxLength: 20 }),
-        fc.oneof(
-          fc.integer(),
-          fc.string({ minLength: 0, maxLength: 50 }),
-          fc.boolean(),
-        ),
+        fc.oneof(fc.integer(), fc.string({ minLength: 0, maxLength: 50 }), fc.boolean()),
         async (key, value) => {
           installMockIdb();
           _resetIdb();
