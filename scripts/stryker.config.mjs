@@ -284,6 +284,8 @@ export default {
     "worker/src/durable-objects/rate-limiter-do.ts",
     // (v14.22.0): temporal.ts date/time abstraction layer (CAL-T / H-T scaffold; TM1-TM10 property-tested)
     "src/core/temporal.ts",
+    // (v14.23.0): OTel no-op scaffold behind OTEL_ENABLED feature flag (ADR-079)
+    "worker/src/telemetry.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
