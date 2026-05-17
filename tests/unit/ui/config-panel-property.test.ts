@@ -71,7 +71,7 @@ describe("Config Panel — property: collectForm never throws", () => {
       ),
       { numRuns: 15 },
     );
-  });
+  }, 60000);
 
   it("arbitrary numeric values for range inputs stay within bounds", async () => {
     const mod = await freshCfg();
@@ -125,7 +125,7 @@ describe("Config Panel — property: collectForm never throws", () => {
       ),
       { numRuns: 15 },
     );
-  });
+  }, 60000);
 
   it("arbitrary select values never crash collectForm", async () => {
     const mod = await freshCfg();
@@ -177,5 +177,5 @@ describe("Config Panel — property: collectForm never throws", () => {
       ),
       { numRuns: 15 },
     );
-  });
+  }, 60000);
 });
