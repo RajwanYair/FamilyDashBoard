@@ -387,4 +387,44 @@ describe("createAsyncCardLoader", () => {
     expect(renderFn).not.toHaveBeenCalled();
     expect(syncMod.recordFailure).toHaveBeenCalledWith("test-card");
   });
+
+  it("sets ok state when validate fails and stale data exists", async () => {
+    vi.mocked(cacheMod.cGetStaleAsync).mockResolvedValue({ stale: true });
+    const fetchFn = vi.fn<() => Promise<unknown>>().mockResolvedValue("bad");
+    const renderFn = vi.fn();
+    const validate = (_d: unknown): _d is number => typeof _d === "number";
+    const load = createAsyncCardLoader(OPTS, fetchFn, renderFn, validate);
+    await load();
+    expect(syncMod.setSync).toHaveBeenCalledWith("test-card", "ok");
+    expect(syncMod.recordFailure).toHaveBeenCalledWith("test-card");
+  });
+});
+
+// ── createCardLoader validate callback ──────────────────────────
+describe("Base Card — createCardLoader validate callback", () => {
+  it("sets error state when validate rejects and no stale data", async () => {
+    const fetchData = vi.fn<() => Promise<unknown>>().mockResolvedValue("bad");
+    const renderData = vi.fn();
+    const validate = (_d: unknown): _d is number => typeof _d === "number";
+
+    const load = createCardLoader(OPTS, fetchData, renderData, validate);
+    await load();
+
+    expect(renderData).not.toHaveBeenCalled();
+    expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "error");
+    expect(syncMod.recordFailure).toHaveBeenCalledWith(OPTS.id);
+  });
+
+  it("sets ok state when validate rejects but stale data exists", async () => {
+    vi.mocked(cacheMod.cGetStale).mockReturnValue({ old: true });
+    const fetchData = vi.fn<() => Promise<unknown>>().mockResolvedValue("bad");
+    const renderData = vi.fn();
+    const validate = (_d: unknown): _d is number => typeof _d === "number";
+
+    const load = createCardLoader(OPTS, fetchData, renderData, validate);
+    await load();
+
+    expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok");
+    expect(syncMod.recordFailure).toHaveBeenCalledWith(OPTS.id);
+  });
 });

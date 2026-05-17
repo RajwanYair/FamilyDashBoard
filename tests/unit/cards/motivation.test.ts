@@ -1193,3 +1193,46 @@ describe("Motivation — initMotivationCard when category is already set", () =>
     expect(() => initMotivationCard()).not.toThrow();
   });
 });
+
+// ── fetchMotivation pool path (branch coverage D2.4) ─────────────────────────
+
+import { _resetForTest as _resetCacheForTest } from "@/core/cache";
+import { clearFetchLocks } from "@/core/fetch";
+
+describe("Motivation — fetchMotivation pool path (D2.4 branch coverage)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="moti-text"></div>
+      <div id="moti-author"></div>
+    `;
+    _resetMotivationForTest();
+    _resetCacheForTest();
+    clearFetchLocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    document.body.innerHTML = "";
+    _resetCacheForTest();
+    clearFetchLocks();
+  });
+
+  it("renders a pool quote when motivationAiHebrew is false (pool path lines 368-373)", async () => {
+    // Default config: motivationAiHebrew = false → pool path is always taken
+    initMotivationCard();
+    await loadMotivation();
+    const text = document.getElementById("moti-text")?.textContent ?? "";
+    expect(MOTIVATIONS.some((m) => m.text === text)).toBe(true);
+  });
+
+  it("falls back to pool when motivationAiHebrew is true but AI returns null", async () => {
+    // Set motivationAiHebrew = true but make the AI fetch fail
+    localStorage.setItem("dash_v2_config", JSON.stringify({ motivationAiHebrew: true }));
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("network"));
+    initMotivationCard();
+    await loadMotivation();
+    const text = document.getElementById("moti-text")?.textContent ?? "";
+    expect(MOTIVATIONS.some((m) => m.text === text)).toBe(true);
+    localStorage.removeItem("dash_v2_config");
+  });
+});

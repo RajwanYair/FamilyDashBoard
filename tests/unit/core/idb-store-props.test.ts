@@ -82,12 +82,13 @@ describe("idb-store — fast-check property tests ", () => {
     await fc.assert(
       fc.asyncProperty(
         nameArb,
-        nameArb.filter((b) => b !== "a"), // dbB !== dbA
+        nameArb,
         nameArb,
         nameArb,
         jsonValArb,
         jsonValArb,
         async (dbA, dbB, store, key, valueA, valueB) => {
+          fc.pre(dbA !== dbB); // dbA and dbB must be distinct for isolation to hold
           await idbSet(dbA, store, key, valueA);
           await idbSet(dbB, store, key, valueB);
           const resultA = await idbGet(dbA, store, key);
