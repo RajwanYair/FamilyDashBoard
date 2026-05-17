@@ -74,10 +74,12 @@ export default defineConfig({
         //             branches held at 89.7 (actual exactly 89.70, no ratchet room).
         // (v14.26.0): ratchet all four after motivation/base-card/currency/calendar branch
         //             tests (Sprints 2-3) — actuals: 96.56 / 89.83 / 95.93 / 97.55.
-        statements: 96.5,
-        branches: 89.8,
-        functions: 95.9,
-        lines: 97.5,
+        // (v14.27.0): Sprint 2 — zman-next + _lastSpecialNames.some() fix → 90.02% branches.
+        //             actuals: 96.68 / 90.02 / 96.14 / 97.68.
+        statements: 96.6,
+        branches: 90.0,
+        functions: 96.1,
+        lines: 97.6,
       },
     },
   },

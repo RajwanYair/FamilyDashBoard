@@ -287,6 +287,18 @@ describe("Hebrew Calendar — renderZmanim", () => {
     document.body.innerHTML = "<div></div>";
     expect(() => renderZmanim({ sunrise: "2026-04-13T06:05:00+03:00" })).not.toThrow();
   });
+
+  it("marks the closest future zman with zman-next class (lines 864-871)", () => {
+    const futureTime = new Date(Date.now() + 3_600_000).toISOString(); // 1 hour from now
+    const pastTime = new Date(Date.now() - 3_600_000).toISOString(); // 1 hour ago
+    renderZmanim({
+      alotHaShachar: pastTime, // past — not next
+      sunrise: futureTime,     // future — closest → zman-next
+    });
+    const nextEl = document.querySelector(".zman-next");
+    expect(nextEl).not.toBeNull();
+    expect(nextEl?.getAttribute("title")).toBeTruthy();
+  });
 });
 
 // ── renderNextCalEvent ──
@@ -2045,6 +2057,11 @@ describe("Hebrew Calendar — renderNextCalEvent dedup via _lastSpecialNames.som
     setupDom();
     vi.mocked(cGet).mockReturnValue(null);
     vi.mocked(cGetStale).mockReturnValue(null);
+    // Reset cGetStaleAsync to null to prevent state leak from previous tests
+    // (renderHoliday sort test sets cGetStaleAsync to return holiday data via clearAllMocks which
+    // preserves implementations — if not reset here, _lastHolidayName gets set and short-circuits
+    // the isDuplicate check before _lastSpecialNames.some() can be evaluated)
+    vi.mocked(cGetStaleAsync).mockResolvedValue(null);
     // Mock loadOmer (via fetchJSONWithWorker) to return a holiday with a real name
     // This populates _lastSpecialNames = ["שבועות"] after async resolution
     vi.mocked(fetchJSONWithWorker).mockImplementation(async (url: string) => {
