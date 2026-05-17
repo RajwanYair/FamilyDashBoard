@@ -67,6 +67,8 @@ interface CdEls {
   progressBar: HTMLElement | null;
   /** body element for confetti class toggle */
   body: HTMLElement | null;
+  /** primary slot wrapper — hidden when the one-time event has passed */
+  mainSection: HTMLElement | null;
 }
 
 let els: CdEls = {
@@ -79,6 +81,7 @@ let els: CdEls = {
   progressWrap: null,
   progressBar: null,
   body: null,
+  mainSection: null,
 };
 
 function cacheDom(): void {
@@ -92,6 +95,7 @@ function cacheDom(): void {
     progressWrap: document.getElementById("cd-progress-wrap"),
     progressBar: document.getElementById("cd-progress-bar"),
     body: document.querySelector(".countdown-body"),
+    mainSection: document.getElementById("cd-main-section"),
   };
 }
 
@@ -331,22 +335,19 @@ export function tick(): void {
   const now = Date.now();
 
   if (now >= targetMs) {
-    // Event has passed
-    if (titleEl) titleEl.textContent = "🎉 מזל טוב!";
-    const daysSince = getDaysSince(targetMs);
-    daysEl.textContent = String(daysSince);
-    if (hoursEl) hoursEl.textContent = "00";
-    if (minsEl) minsEl.textContent = "00";
-    if (secsEl) secsEl.textContent = "00";
-    if (msgEl)
-      msgEl.textContent =
-        daysSince > 0 ? `${getCountdownDoneMsg()} · יום ${daysSince}` : getCountdownDoneMsg();
-    // show CSS confetti on the exact day of the event (T-0)
-    setConfetti(daysSince === 0);
-    if (_cdInterval !== null) {
-      clearInterval(_cdInterval);
-      _cdInterval = null;
+    // For one-time (non-recurring) events that have passed, hide the slot.
+    const recurrence = loadConfig().countdownCardRecurrence;
+    if (!recurrence) {
+      const mainSec = els.mainSection ?? document.getElementById("cd-main-section");
+      if (mainSec) mainSec.style.display = "none";
+      if (_cdInterval !== null) {
+        clearInterval(_cdInterval);
+        _cdInterval = null;
+      }
+      return;
     }
+    // Recurring event — target date was already advanced to next occurrence;
+    // reaching here means the tick fired in the brief window before advance.
     return;
   }
 
@@ -425,18 +426,14 @@ function tickSecondary(
   const secsEl = document.getElementById(`${prefix}-secs`);
   const msgEl = document.getElementById(`${prefix}-msg`);
 
-  section.style.display = "";
-  if (titleEl) titleEl.textContent = title;
-
+  // Past one-time event — hide the slot entirely instead of showing done state
   if (now >= targetMs) {
-    const daysSince = getDaysSince(targetMs);
-    if (daysEl) daysEl.textContent = String(daysSince);
-    if (hoursEl) hoursEl.textContent = "00";
-    if (minsEl) minsEl.textContent = "00";
-    if (secsEl) secsEl.textContent = "00";
-    if (msgEl) msgEl.textContent = doneMsg;
+    section.style.display = "none";
     return;
   }
+
+  section.style.display = "";
+  if (titleEl) titleEl.textContent = title;
 
   const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
   if (daysEl) daysEl.textContent = String(days);

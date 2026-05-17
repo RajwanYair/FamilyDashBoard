@@ -57,12 +57,14 @@ const PAST_CFG: DashboardConfig = {
 
 function buildDOM(): void {
   document.body.innerHTML = `
-    <div id="cd-wedding-title"></div>
-    <div id="cd-days"></div>
-    <div id="cd-hours"></div>
-    <div id="cd-mins"></div>
-    <div id="cd-secs"></div>
-    <div id="cd-msg"></div>
+    <div id="cd-main-section">
+      <div id="cd-wedding-title"></div>
+      <div id="cd-days"></div>
+      <div id="cd-hours"></div>
+      <div id="cd-mins"></div>
+      <div id="cd-secs"></div>
+      <div id="cd-msg"></div>
+    </div>
   `;
 }
 
@@ -150,19 +152,28 @@ describe("tick — event has passed", () => {
     vi.restoreAllMocks();
   });
 
-  it("shows mazel tov message when target is in the past", () => {
+  it("hides the primary section when a one-time event has passed", () => {
     tick();
-    expect(document.getElementById("cd-wedding-title")?.textContent).toContain("מזל");
-    expect(document.getElementById("cd-msg")?.textContent).toContain("מזל טוב");
+    const section = document.getElementById("cd-main-section");
+    expect(section?.style.display).toBe("none");
   });
 
-  it("shows days-since and zeroes hours/mins/secs when target has passed", () => {
+  it("does not update tile content when event is past and non-recurring", () => {
     tick();
-    // cd-days now shows days elapsed since the event (getDaysSince)
-    expect(document.getElementById("cd-days")?.textContent).toMatch(/^\d+$/);
-    expect(document.getElementById("cd-hours")?.textContent).toBe("00");
-    expect(document.getElementById("cd-mins")?.textContent).toBe("00");
-    expect(document.getElementById("cd-secs")?.textContent).toBe("00");
+    // Elements were never written — they retain their initial empty text
+    expect(document.getElementById("cd-days")?.textContent).toBe("");
+  });
+
+  it("keeps primary section visible for a recurring (annual) past date", () => {
+    vi.mocked(loadConfig).mockReturnValue({
+      ...PAST_CFG,
+      countdownCardRecurrence: "annual",
+      // advanceAnnualDate will push countdownCardDate to a future year
+    } as DashboardConfig);
+    tick();
+    const section = document.getElementById("cd-main-section");
+    // Section should NOT be hidden (recurring advances the date to future)
+    expect(section?.style.display).not.toBe("none");
   });
 });
 
@@ -332,20 +343,23 @@ describe("Countdown — tick shows daysSince when event has passed", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     document.body.innerHTML = `
-      <div id="cd-wedding-title"></div>
-      <div id="cd-days"></div>
-      <div id="cd-hours"></div>
-      <div id="cd-mins"></div>
-      <div id="cd-secs"></div>
-      <div id="cd-msg"></div>`;
+      <div id="cd-main-section">
+        <div id="cd-wedding-title"></div>
+        <div id="cd-days"></div>
+        <div id="cd-hours"></div>
+        <div id="cd-mins"></div>
+        <div id="cd-secs"></div>
+        <div id="cd-msg"></div>
+      </div>`;
   });
 
   afterEach(() => {
+    destroyCountdownCard();
     document.body.innerHTML = "";
     vi.useRealTimers();
   });
 
-  it("shows daysSince count of 3 in daysEl when 3 days past the event", () => {
+  it("hides cd-main-section when event is 3 days in the past (one-time)", () => {
     const PAST_CFG_LOCAL = {
       countdownCardDate: "2020-01-01",
       countdownCardTime: "00:00",
@@ -356,13 +370,9 @@ describe("Countdown — tick shows daysSince when event has passed", () => {
     // Set now to 3 days + 1 hour after target
     const target = new Date("2020-01-01T00:00:00").getTime();
     vi.setSystemTime(target + 3 * 86_400_000 + 3_600_000);
-    // initCountdownCard refreshes els cache so tick() writes to the current DOM
     initCountdownCard();
-    destroyCountdownCard();
-    const daysEl = document.getElementById("cd-days");
-    expect(daysEl?.textContent).toBe("3");
-    const msgEl = document.getElementById("cd-msg");
-    expect(msgEl?.textContent).toContain("יום 3");
+    const section = document.getElementById("cd-main-section");
+    expect(section?.style.display).toBe("none");
   });
 });
 
@@ -372,12 +382,14 @@ describe("Countdown — tick() clears interval on second tick when event is past
   beforeEach(() => {
     vi.useFakeTimers();
     document.body.innerHTML = `
-      <div id="cd-wedding-title"></div>
-      <div id="cd-days"></div>
-      <div id="cd-hours"></div>
-      <div id="cd-mins"></div>
-      <div id="cd-secs"></div>
-      <div id="cd-msg"></div>`;
+      <div id="cd-main-section">
+        <div id="cd-wedding-title"></div>
+        <div id="cd-days"></div>
+        <div id="cd-hours"></div>
+        <div id="cd-mins"></div>
+        <div id="cd-secs"></div>
+        <div id="cd-msg"></div>
+      </div>`;
   });
 
   afterEach(() => {
@@ -390,13 +402,13 @@ describe("Countdown — tick() clears interval on second tick when event is past
     vi.mocked(loadConfig).mockReturnValue(PAST_CFG);
     // Position now 1 day after the 2000-01-01 target
     vi.setSystemTime(new Date("2000-01-02T12:00:00"));
-    initCountdownCard(); // first tick runs synchronously (_cdInterval still null → lines 119-120 NOT hit yet)
-    // Advance clock 1001ms: interval fires tick() again; now _cdInterval !== null → lines 119-120 HIT
+    initCountdownCard(); // first tick fires synchronously → section hidden, interval cleared
+    // Advance clock 1001ms: interval would fire tick() again if not already cleared
     vi.advanceTimersByTime(1001);
-    // destroyCountdownCard now operates on the already-nulled _cdInterval — should not throw
+    // destroyCountdownCard should not throw even when interval was already cleared
     expect(() => destroyCountdownCard()).not.toThrow();
-    const msgEl = document.getElementById("cd-msg");
-    expect(msgEl?.textContent).toContain("מזל טוב");
+    const section = document.getElementById("cd-main-section");
+    expect(section?.style.display).toBe("none");
   });
 });
 
@@ -479,7 +491,7 @@ describe("Countdown — tick2 (F8 v7.2)", () => {
     expect(document.getElementById("cd2-title")?.textContent).toBe("אירוע מיוחד");
   });
 
-  it("shows done message when event date is in the past", () => {
+  it("hides cd2-section when event date is in the past (one-time)", () => {
     build2DOM();
     vi.mocked(loadConfig).mockReturnValue({
       countdownCard2Date: "2000-01-01",
@@ -488,7 +500,7 @@ describe("Countdown — tick2 (F8 v7.2)", () => {
       countdownCard2DoneMsg: "🎉 מזל טוב!",
     } as DashboardConfig);
     tick2();
-    expect(document.getElementById("cd2-msg")?.textContent).toContain("מזל טוב");
+    expect(document.getElementById("cd2-section")?.style.display).toBe("none");
   });
 
   it("does not throw when #cd2-section is absent", () => {
@@ -657,7 +669,7 @@ describe("Countdown — tick3 ", () => {
     expect(document.getElementById("cd3-title")?.textContent).toBe("אירוע שלישי");
   });
 
-  it("shows done message when event date is in the past", () => {
+  it("hides cd3-section when event date is in the past (one-time)", () => {
     build3DOM();
     vi.mocked(loadConfig).mockReturnValue({
       countdownCard3Date: "2000-01-01",
@@ -666,7 +678,7 @@ describe("Countdown — tick3 ", () => {
       countdownCard3DoneMsg: "🎉 גמרנו!",
     } as DashboardConfig);
     tick3();
-    expect(document.getElementById("cd3-msg")?.textContent).toContain("גמרנו");
+    expect(document.getElementById("cd3-section")?.style.display).toBe("none");
   });
 
   it("falls back to default title 'אירוע 3' when title is empty", () => {
@@ -1126,12 +1138,14 @@ describe("Countdown — getNextCalEventForCountdown ( CD2)", () => {
 describe("Countdown — setConfetti ( CD4)", () => {
   function buildConfettiDOM(): void {
     document.body.innerHTML = `
-      <div id="cd-wedding-title"></div>
-      <div id="cd-days"></div>
-      <div id="cd-hours"></div>
-      <div id="cd-mins"></div>
-      <div id="cd-secs"></div>
-      <div id="cd-msg"></div>
+      <div id="cd-main-section">
+        <div id="cd-wedding-title"></div>
+        <div id="cd-days"></div>
+        <div id="cd-hours"></div>
+        <div id="cd-mins"></div>
+        <div id="cd-secs"></div>
+        <div id="cd-msg"></div>
+      </div>
       <div class="countdown-body"></div>
     `;
   }
@@ -1161,10 +1175,10 @@ describe("Countdown — setConfetti ( CD4)", () => {
     expect(() => setConfetti(true)).not.toThrow();
   });
 
-  it("tick() adds cd-confetti when event is today (daysSince === 0)", () => {
+  it("tick() hides cd-main-section when event is today (now >= targetMs, one-time)", () => {
     buildConfettiDOM();
     vi.useFakeTimers();
-    // Set now to the exact event moment so daysSince === 0
+    // Set now to the exact event moment — now >= targetMs triggers hide path
     const eventTime = new Date("2025-07-04T12:00:00");
     vi.setSystemTime(eventTime);
     vi.mocked(loadConfig).mockReturnValue({
@@ -1173,8 +1187,11 @@ describe("Countdown — setConfetti ( CD4)", () => {
       countdownCardTitle: "Test",
       countdownCardDoneMsg: "🎉",
     } as DashboardConfig);
-    tick();
-    expect(document.querySelector(".countdown-body")?.classList.contains("cd-confetti")).toBe(true);
+    // initCountdownCard refreshes the els cache so tick() uses the current DOM
+    initCountdownCard();
+    destroyCountdownCard();
+    const section = document.getElementById("cd-main-section");
+    expect(section?.style.display).toBe("none");
   });
 
   it("tick() does NOT add cd-confetti when event passed days ago (daysSince > 0)", () => {
@@ -1297,7 +1314,7 @@ describe("Countdown — coverage: tickSecondary + initCountdownCard", () => {
     expect(section.style.display).toBe("none");
   });
 
-  it("tick2() renders past-event path (daysSince >= 0)", () => {
+  it("tick2() hides cd2-section when past-event (daysSince >= 0, non-recurring)", () => {
     const section = buildCd2DOM();
     vi.mocked(loadConfig).mockReturnValue({
       countdownCardDate: "2099-12-31",
@@ -1310,9 +1327,7 @@ describe("Countdown — coverage: tickSecondary + initCountdownCard", () => {
       countdownCard2DoneMsg: "נגמר",
     } as DashboardConfig);
     tick2();
-    const days = document.getElementById("cd2-days");
-    expect(section.style.display).not.toBe("none");
-    expect(days?.textContent).toMatch(/^\d+$/);
+    expect(section.style.display).toBe("none");
   });
 
   it("tick3() renders future event", () => {
