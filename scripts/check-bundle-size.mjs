@@ -8,9 +8,8 @@
  *                           to 108.7 KB after full rebuild; trend baseline at
  *                           v14.14.0 was 109.6 KB — JS budget held at 110 pending
  *                           a full audit; target in v15 is ≤ 108 KB)
- *   CSS gzipped: ≤ 29.2 KB (tightened from 29.5 KB in v14.23.0 — ROADMAP #19
- *                           per-card budget ratchet; actual measured ~29.1 KB at
- *                           v14.14.0, 0.1 KB headroom)
+ *   CSS gzipped: ≤ 29.1 KB (tightened from 29.2 KB in v14.24.0 — actual ~29.0 KB
+ *                           at v14.14.0 baseline; 0.1 KB headroom)
  *
  * Also checks for 10% growth regression against the last baseline recorded
  * in scripts/bundle-trend.json.  Exit 1 on budget exceeded OR on > 10% growth.
@@ -29,7 +28,7 @@ const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
 const JS_BUDGET_KB = 110;
-const CSS_BUDGET_KB = 29.2;
+const CSS_BUDGET_KB = 29.1;
 /** Alert if a bundle type grows more than this fraction vs last baseline. */
 const GROWTH_THRESHOLD = 0.1;
 
@@ -373,8 +372,9 @@ if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
 // (v14.18.0): warn 13 → 12 KB; hard held at 64.
 // (v14.19.0): warn 12 → 11 KB; hard held at 64 (weather 63.8 KB blocks hard drop without major refactor).
 // (v14.22.0): warn 11 → 10 KB; hard held at 64 (weather still 63.8 KB, no room for hard drop).
+// (v14.24.0): warn 10 → 9 KB; hard held at 64.
 const PER_CARD_HARD_CAP_KB = 64;
-const PER_CARD_WARN_KB = 10;
+const PER_CARD_WARN_KB = 9;
 let perCardCapOk = true;
 console.log(
   `📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`,
