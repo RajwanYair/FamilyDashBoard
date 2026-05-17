@@ -6,6 +6,61 @@ Deno Deploy → Bun Deploy → fly.io → repeat.
 
 ---
 
+## v14.23.0 — Static-Analysis Pass (2026-05-21)
+
+**Target runtime this cycle**: Deno Deploy (rotation restarts: first in rotation)
+
+**Drill type**: Static portability assessment (no live deploy)
+
+**Operator**: @RajwanYair
+
+### New APIs Since v14.22.0
+
+Sprints v14.23.0 introduced: property test suites (ID1-ID4 idle, VR1-VR4 vitals-reporter,
+SN1-SN4 snapshot, WC1-WC4 worker-client, RS1-RS3 resizer, SC1-SC4 scroll, CP1-CP6
+config-presets, PA1-PA5 provider-adapter). Test-only additions — no new worker bindings.
+
+### Cloudflare-Specific APIs Re-audit
+
+`node scripts/check-vendor-neutrality.mjs --gate` — **0/6 Cloudflare-specific APIs detected** (PASS, exit 0).
+
+| API              | Portability Risk | In Use | Delta Since v14.22.0 | Mitigation                                   |
+| ---------------- | ---------------- | ------ | -------------------- | -------------------------------------------- |
+| Workers KV       | LOW              | ✅ Yes | No change            | `KvStore` interface intact; NOT DETECTED (pattern-scan) |
+| D1 Database      | MEDIUM           | ✅ Yes | No change            | `D1Adapter` intact; NOT DETECTED (pattern-scan) |
+| Durable Objects  | HIGH             | ✅ Yes | No change            | Still isolated; NOT DETECTED (pattern-scan)  |
+| Analytics Engine | LOW              | ✅ Yes | No change            | Thin shim; NOT DETECTED                      |
+| Email Routing    | LOW              | ✅ Yes | No change            | 1 call site in cron.ts; NOT DETECTED         |
+| CF runtime globals | LOW            | ✅ Yes | No change            | SW-side only; NOT DETECTED                   |
+
+### Deno Deploy Portability Notes
+
+- `Hono` HTTP framework: supports Deno via `hono/deno` adapter — straightforward swap.
+- `Valibot` schemas: pure TypeScript, zero CF dependency — fully portable to Deno.
+- `KV`: Deno Deploy has a native `Deno.openKv()` — `KvStore` interface swap maps directly.
+- `D1`: no Deno Deploy equivalent. Would map to `Deno.openKv()` (KV-backed) or external Turso (SQLite). Schema migrations are vanilla SQL — portable with adapter.
+- `Durable Objects`: no Deno Deploy equivalent. Would require `BroadcastChannel` for ephemeral coordination + external state store (Deno KV) for persistence.
+- `Analytics Engine`: removable — replace with `Deno.openTelemetry()` spans (built-in OTLP exporter in Deno 2.x).
+- `Email Routing`: replace with Resend SDK — 1 call site swap, package available on JSR.
+- Static assets (`dist/`): Deno Deploy serves via `serveDir` from `@std/http` — drop-in.
+- **Verdict**: Portable with adapter layer. `Deno.openKv()` removes the biggest KV migration risk. Durable Objects remain HIGH-risk. Live deploy feasibility: HIGH for the worker; pending Durable Object architectural swap.
+
+### Gate Result
+
+```sh
+node scripts/check-vendor-neutrality.mjs --gate
+# → ✓  Worker appears vendor-neutral — no CF-specific APIs detected.
+# exit 0
+```
+
+0/6 CF-specific APIs detected. Gate **PASSES**.
+
+### Next Drill Target
+
+**Bun Deploy** — before `git tag v14.24.0` or v15.0.0 (whichever comes first).
+
+---
+
 ## v14.22.0 — Static-Analysis Pass (2026-05-17)
 
 **Target runtime this cycle**: fly.io (third in rotation)
