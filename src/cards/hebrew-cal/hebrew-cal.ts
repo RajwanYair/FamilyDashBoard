@@ -23,6 +23,7 @@ import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
+import { nowMs, today, startOfDayMs, parsePlainDateMs, parsePlainDateTime } from "../../core/temporal";
 
 // Pure Hebrew-cal utility functions ───────────────────────────
 
@@ -33,12 +34,12 @@ import type { SemanticPayload } from "../../types/semantic-clipboard";
  * to a simple Friday/Saturday heuristic (covers most UI cases).
  */
 export function isShabbat(candlesMs?: number | null, havdalaMs?: number | null): boolean {
-  const now = Date.now();
+  const now = nowMs();
   if (candlesMs != null && havdalaMs != null) {
     return now >= candlesMs && now < havdalaMs;
   }
   // Heuristic: Friday after 18:00 or all of Saturday
-  const d = new Date();
+  const d = today();
   const day = d.getDay();
   const h = d.getHours();
   if (day === 6) return true; // All of Saturday
@@ -52,11 +53,10 @@ export function isShabbat(candlesMs?: number | null, havdalaMs?: number | null):
  * Returns null when there are no upcoming holidays.
  */
 export function nextHolidayName(items: HebcalItem[], now: Date = new Date()): string | null {
+  const todayMs = startOfDayMs(now);
   const upcoming = items
-    .filter(
-      (i) => i.category === "holiday" && new Date(i.date).getTime() >= now.setHours(0, 0, 0, 0),
-    )
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .filter((i) => i.category === "holiday" && parsePlainDateMs(i.date) >= todayMs)
+    .sort((a, b) => parsePlainDateMs(a.date) - parsePlainDateMs(b.date));
   return upcoming[0]?.hebrew ?? upcoming[0]?.title ?? null;
 }
 
@@ -93,11 +93,11 @@ export function getHaftarah(items: HebcalItem[]): string | null {
  * Returns the Hebrew name, or null when not Rosh Chodesh period.
  */
 export function getRoshChodesh(items: HebcalItem[], now: Date = new Date()): string | null {
-  const todayMs = new Date(now).setHours(0, 0, 0, 0);
+  const todayMs = startOfDayMs(now);
   const cutoffMs = todayMs + 2 * 86_400_000; // +2 days
   const rc = items.find((i) => {
     if (i.category !== "roshchodesh") return false;
-    const d = new Date(i.date).setHours(0, 0, 0, 0);
+    const d = parsePlainDateMs(i.date);
     return d >= todayMs && d <= cutoffMs;
   });
   return rc?.hebrew ?? rc?.title ?? null;
@@ -164,7 +164,7 @@ export async function prewarmNextYearHolidays(
 export function zmanimTimeLabel(isoOrTime: string): string {
   if (!isoOrTime) return "--";
   // Handles both "2024-01-01T06:00:00+02:00" and "06:00"
-  const d = new Date(isoOrTime);
+  const d = parsePlainDateTime(isoOrTime);
   if (!isNaN(d.getTime())) {
     return d.toLocaleTimeString("he-IL", {
       hour: "2-digit",
@@ -347,7 +347,7 @@ function buildHebrewCalPayload(): SemanticPayload | null {
     cardId: "hebrew-cal",
     text,
     jsonLd,
-    ts: Date.now(),
+    ts: nowMs(),
   };
 }
 
