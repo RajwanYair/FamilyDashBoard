@@ -327,8 +327,8 @@ Only **genuinely open** items. Shipped items in `CHANGELOG.md`.
 
 | ID      | P   | E   | I   | Item                                                                 | Target |
 | ------- | --- | --- | --- | -------------------------------------------------------------------- | ------ |
-| CAL-T   | P1  | M   | Mid | Replace ad-hoc date math with TC39 Temporal (gate: polyfill ≤ 10 KB) | v15    |
-| H-T     | P1  | M   | Mid | Replace internal Hebrew date math with Temporal (same gate)          | v15    |
+| CAL-T   | P1  | M   | Mid | Replace ad-hoc date math with TC39 Temporal (gate: polyfill ≤ 10 KB) · **scaffolded v14.22.0** | v15    |
+| H-T     | P1  | M   | Mid | Replace internal Hebrew date math with Temporal (same gate) · **scaffolded v14.22.0**          | v15    |
 | H-Audio | P2  | M   | Lo  | OpenSiddur parashat haftarah audio link (gated audio-CSP audit)      | v16    |
 
 ### 3.4 Alerts
