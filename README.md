@@ -19,8 +19,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-14.25.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-7542_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-14.26.0-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-7549_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -272,7 +272,7 @@ FamilyDashBoard/
 │   ├── types/              # TypeScript type definitions (api · config · card)
 │   └── public/             # Static assets (icon.svg, manifest.webmanifest)
 ├── tests/
-│   ├── unit/               # Vitest — 7542+ tests / 313 suites
+│   ├── unit/               # Vitest — 7549+ tests / 313 suites
 │   └── integration/        # Integration-level tests
 ├── worker/                 # Cloudflare Worker (API proxy + normalization)
 │   └── src/routes/         # Per-provider route handlers
@@ -366,6 +366,7 @@ This project leverages extensive GitHub features:
 | v14.0–v14.14  | TypeScript 6, Vite 8, Rolldown bundler, property-test foundation (fast-check), 83 ADRs           |
 | v14.15–v14.21 | Mutation testing (Stryker 89%), 7338+ tests, CSS/bundle ratchet, vendor-neutrality drills        |
 | v14.22–v14.25 | Stryker 90%, FSA/D1R/ERT/CRON/OTEL property suites, 7542+ tests, 83 ADRs, docs modernized        |
+| v14.26        | Coverage ratchet (89.8%), IDB4 property fix, CSS budget update, ADR-084, 7549+ tests, 84 ADRs   |
 
 ### Upcoming
 
