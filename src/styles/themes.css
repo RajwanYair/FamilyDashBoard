@@ -17,6 +17,8 @@
     --bg-gradient-1: rgba(200, 168, 122, 0.03);
     --bg-gradient-2: rgba(134, 196, 144, 0.02);
     --bg-gradient-3: rgba(184, 170, 212, 0.02);
+    --text-primary: #faf5ef;
+    --text-secondary: #c4b8a8;
     --text-muted: #7a6e60;
     --positive: #86c490;
     --negative: #c89090;
@@ -35,6 +37,8 @@
     --accent-bright: #96cce0;
     --accent-glow: rgba(130, 184, 216, 0.18);
     --accent-border: rgba(130, 184, 216, 0.2);
+    --text-primary: #e8f4f8;
+    --text-secondary: #b0cce0;
     --text-muted: #5e7d96;
     --cyan: #78c4d4;
     --purple: #9898cc;
@@ -59,6 +63,8 @@
     --accent-bright: #a0ceaa;
     --accent-glow: rgba(134, 196, 144, 0.18);
     --accent-border: rgba(134, 196, 144, 0.2);
+    --text-primary: #e4f0e8;
+    --text-secondary: #a8c8b0;
     --text-muted: #5e8a66;
     --cyan: #7cbcb0;
     --purple: #98b8a0;
@@ -84,6 +90,8 @@
     --accent-bright: #d4b882;
     --accent-glow: rgba(200, 160, 124, 0.18);
     --accent-border: rgba(200, 160, 124, 0.2);
+    --text-primary: #faf0e0;
+    --text-secondary: #d4c0a0;
     --text-muted: #8a7050;
     --cyan: #c4a87c;
     --purple: #c4a49a;
@@ -109,6 +117,8 @@
     --accent-bright: #c8bce0;
     --accent-glow: rgba(184, 170, 212, 0.18);
     --accent-border: rgba(184, 170, 212, 0.2);
+    --text-primary: #f0ecf8;
+    --text-secondary: #c8c0dc;
     --text-muted: #7e6e96;
     --cyan: #9898c8;
     --purple: #c0b0d8;
@@ -134,6 +144,8 @@
     --accent-bright: #d0a0b0;
     --accent-glow: rgba(192, 136, 152, 0.18);
     --accent-border: rgba(192, 136, 152, 0.2);
+    --text-primary: #faeef0;
+    --text-secondary: #d8bcc4;
     --text-muted: #8a5e70;
     --cyan: #bc9498;
     --purple: #c09898;
@@ -159,6 +171,8 @@
     --accent-bright: #ffee55;
     --accent-glow: rgba(255, 221, 0, 0.2);
     --accent-border: rgba(255, 221, 0, 0.5);
+    --text-primary: #ffffff;
+    --text-secondary: #f0f0f0;
     --text-muted: #d0d0d0;
     --cyan: #00e5ff;
     --purple: #e0b0ff;
