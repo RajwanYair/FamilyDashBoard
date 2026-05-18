@@ -41,6 +41,7 @@ import {
 import { _idbClearFallback } from "@/core/idb-store";
 import { cGet, cGetStale, cSet, cGetAsync, cGetStaleAsync, cSetAsync } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
+import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
 
 vi.mock("@/core/cache", () => ({
   cGet: vi.fn().mockReturnValue(null),
@@ -2890,5 +2891,55 @@ describe("HebrewCal — Yahrzeit Manager UI", () => {
     expect(dialog.open).toBe(true);
     dialog.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     expect(dialog.open).toBe(false);
+  });
+});
+
+// ── buildHebrewCalPayload via getSemanticPayload (lines 330-352) ──────────────
+
+describe("Hebrew Calendar — buildHebrewCalPayload via getSemanticPayload (lines 330-352)", () => {
+  beforeEach(() => {
+    buildFullDom();
+    // Return holiday data for the holidays-* key so renderHoliday sets _lastHolidayName
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(key.startsWith("holidays-") ? { items: MOCK_HEBCAL_ITEMS } : null),
+    );
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGetAsync).mockResolvedValue(null);
+    _resetSemanticProducers();
+    destroyHebrewCalCard();
+  });
+
+  it("returns non-null payload with cardId 'hebrew-cal' after holiday renders (line 330+)", async () => {
+    initHebrewCalCard();
+    for (let i = 0; i < 30; i++) await Promise.resolve();
+    const payload = getSemanticPayload("hebrew-cal");
+    expect(payload).not.toBeNull();
+    expect(payload?.cardId).toBe("hebrew-cal");
+  });
+
+  it("payload text contains the holiday name (line 343)", async () => {
+    initHebrewCalCard();
+    for (let i = 0; i < 30; i++) await Promise.resolve();
+    const payload = getSemanticPayload("hebrew-cal");
+    expect(payload?.text).toContain("חג עתידי");
+  });
+
+  it("payload jsonLd contains @context schema.org (line 344)", async () => {
+    initHebrewCalCard();
+    for (let i = 0; i < 30; i++) await Promise.resolve();
+    const payload = getSemanticPayload("hebrew-cal");
+    expect(payload?.jsonLd?.["@context"]).toBe("https://schema.org");
+  });
+
+  it("returns null when no holiday loaded (line 330 null branch)", () => {
+    // Don't init card — no producer registered; or init with empty items
+    vi.mocked(cGetAsync).mockResolvedValue(null);
+    initHebrewCalCard();
+    // Producer is registered but _lastHolidayName is empty → null
+    const payload = getSemanticPayload("hebrew-cal");
+    expect(payload).toBeNull();
   });
 });

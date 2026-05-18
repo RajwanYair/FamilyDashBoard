@@ -82,10 +82,12 @@ export default defineConfig({
         //             actuals: 96.91 / 90.32 / 96.24 / 97.94.
         // (v14.28.0): Sprint 1 — buildWeatherPayload + getSwState fallback + perf.memory + prewarm default.
         //             actuals: 97.00 / 90.46 / 96.40 / 98.04.
+        // (v14.28.0): Sprint 2 — video-news-adapter property tests + buildHebrewCalPayload coverage.
+        //             actuals: 97.09 / 90.54 / 96.46 / 98.13.
         statements: 97.0,
-        branches: 90.4,
+        branches: 90.5,
         functions: 96.4,
-        lines: 98.0,
+        lines: 98.1,
       },
     },
   },
