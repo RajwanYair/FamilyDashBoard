@@ -97,7 +97,10 @@
  * (v14.19.0): extended scope to config-presets, worker routes (ai, cron, data, errors, feeds, reports),
  *   durable objects (alerts-orchestrator, rate-limiter-do), worker entry (index.ts).
  *   Total scope: 135 files. * (v14.22.0): extended scope to temporal.ts (CAL-T / H-T abstraction layer; TM1-TM10 property-tested).
- *   Total scope: 136 files. */
+ *   Total scope: 136 files.
+ * (v14.30.0): new property tests — ticker.property.test.ts (HT1-HT6), temporal TM11-TM14 (addDays/diffDays/isSameDay).
+ *   Threshold ratcheted: high/break 90 → 91. Total scope: 136 files (unchanged).
+ */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
 export default {
@@ -293,10 +296,10 @@ export default {
   ],
   coverageAnalysis: "perTest",
   thresholds: {
-    // (v14.25.0): ratchet 89→90 after FSA/D1R/ERT/CRON/OTEL property suites
-    high: 90,
-    low: 82,
-    break: 90,
+    // (v14.30.0): ratchet 90→91 after ticker HT1-HT6, temporal TM11-TM14 property suites
+    high: 91,
+    low: 83,
+    break: 91,
   },
   htmlReporter: {
     // Output to temp area per project patterns (never in project dir for CI)
