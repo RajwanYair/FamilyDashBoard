@@ -42,14 +42,25 @@
             "labels": ["dependencies", "worker"]
         },
         {
-            "description": "D14: Minor + patch updates for CI scripts — monthly cadence, low-risk auto-merge",
+            "description": "D14: Minor devDep updates — monthly cadence, low-risk auto-merge",
             "matchDepTypes": ["devDependencies"],
-            "matchUpdateTypes": ["minor", "patch"],
+            "matchUpdateTypes": ["minor"],
             "matchFileNames": ["package.json"],
             "schedule": ["on the first day of the month"],
             "automerge": true,
             "automergeType": "branch",
             "automergeStrategy": "squash"
+        },
+        {
+            "description": "QA-6: Patch devDep updates — immediate auto-merge, no schedule constraint (lower risk than minor)",
+            "matchDepTypes": ["devDependencies"],
+            "matchUpdateTypes": ["patch"],
+            "matchFileNames": ["package.json"],
+            "schedule": ["at any time"],
+            "automerge": true,
+            "automergeType": "branch",
+            "automergeStrategy": "squash",
+            "groupName": "devDeps patch updates"
         },
         {
             "description": "D14: Major bumps — always manual review, no auto-merge, no schedule cap",
