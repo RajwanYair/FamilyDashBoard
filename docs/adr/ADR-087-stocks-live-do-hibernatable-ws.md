@@ -30,7 +30,7 @@ Object that uses the Hibernatable WebSocket API via `this.ctx.acceptWebSocket(ws
 
 ### Architecture
 
-```
+```text
 Client                 Worker (Hono)         StocksLiveDO
   │  GET /api/stocks/live?sym=AAPL  │               │
   │ ──────────────────────────────► │               │
@@ -69,14 +69,14 @@ Client                 Worker (Hono)         StocksLiveDO
 
 ## Consequences
 
-**Positive**
+### Positive
 
 - Sub-second price updates without polling overhead.
 - CPU billing only during active message processing.
 - Scales to hundreds of concurrent clients per shard.
 - No new npm packages — uses only Cloudflare DO primitives.
 
-**Negative**
+### Negative
 
 - Requires `StocksLiveDO` migration tag `v3` in `wrangler.toml`.
 - `/push` endpoint must be called by a privileged internal actor (not exposed publicly).

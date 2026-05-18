@@ -28,7 +28,7 @@ OTLP/HTTP JSON exporter using native `fetch`.
 
 ### Architecture
 
-```
+```text
 Request lifecycle              telemetry.ts                 OTLP Collector
      │                              │                              │
      │   initOtel(env)              │                              │
@@ -84,7 +84,7 @@ Request lifecycle              telemetry.ts                 OTLP Collector
 
 Enabled only when **both** env vars are set:
 
-```
+```text
 OTEL_ENABLED=true
 OTEL_ENDPOINT=https://your-collector.example.com
 ```
@@ -105,14 +105,14 @@ When either is absent, `initOtel()` returns the existing zero-cost no-op handle.
 
 ## Consequences
 
-**Positive**
+### Positive
 
 - Real end-to-end traces in any OTLP-compatible collector (Grafana, Honeycomb, OTLP Collector).
 - Zero npm dependencies added.
 - `enabled === false` path remains a true zero-cost no-op.
 - `flush()` is always safe to call (never throws).
 
-**Negative**
+### Negative
 
 - Nanosecond precision is `Date.now()` × 1 million — millisecond granularity, not true ns.
   Acceptable for server-side latency tracing; insufficient for CPU-ns profiling.
