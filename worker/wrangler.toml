@@ -61,6 +61,13 @@ class_name = "StocksLiveDO"
 tag = "v3"
 new_classes = ["StocksLiveDO"]
 
+# ADR-050: R2 bucket for static asset background cache
+# Stores pre-compressed dashboard assets, SW shell files, and icon bundles.
+# Provision via: wrangler r2 bucket create fdb-static-assets
+[[r2_buckets]]
+binding = "R2_ASSETS"
+bucket_name = "fdb-static-assets"
+
 # Cron triggers: daily pre-warm of hot API paths (V12-OPS-1)
 # 00:00 UTC — warm stocks, currency, hebcal before the working day
 # 12:00 UTC — mid-day warm to refresh stale KV entries

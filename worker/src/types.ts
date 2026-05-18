@@ -131,6 +131,12 @@ export interface Env {
    * Optional — WebSocket upgrade returns 501 when not configured.
    */
   STOCKS_DO?: DurableObjectNamespace;
+  /**
+   * R2 bucket for static asset background cache (ADR-050).
+   * Provision via: wrangler r2 bucket create fdb-static-assets
+   * Optional — asset cache helper is a no-op when not configured.
+   */
+  R2_ASSETS?: R2Bucket;
 }
 
 /**
@@ -241,4 +247,26 @@ export interface ErrorQueueMessage {
   count: number;
   /** KV key prefix for this batch (errors:<dateKey>:). */
   kvPrefix: string;
+}
+
+/**
+ * Minimal R2 bucket interface (ADR-050).
+ * The Cloudflare R2Bucket satisfies this via structural typing.
+ * Only the get/put/delete methods used by r2-cache.ts are modelled here.
+ */
+export interface R2Bucket {
+  get(key: string): Promise<R2ObjectBody | null>;
+  put(
+    key: string,
+    value: ArrayBuffer | ArrayBufferView | string | ReadableStream,
+    options?: { httpMetadata?: { contentType?: string; contentEncoding?: string }; customMetadata?: Record<string, string> },
+  ): Promise<void>;
+  delete(key: string): Promise<void>;
+}
+
+export interface R2ObjectBody {
+  arrayBuffer(): Promise<ArrayBuffer>;
+  text(): Promise<string>;
+  readonly httpMetadata?: { contentType?: string; contentEncoding?: string };
+  readonly customMetadata?: Record<string, string>;
 }
