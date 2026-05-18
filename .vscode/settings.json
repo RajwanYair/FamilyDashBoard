@@ -27,10 +27,10 @@
     // ── HTMLHint — disabled (in unwantedRecommendations; webhint covers HTML) ──
     "htmlhint.enable": false,
     // ── webhint — VS Code ext doesn't read .hintrc; compat enforced by Lightning CSS + browserslist at build time.
-    // Exclude ALL HTML files: the extension uses full file:// URIs so **/*.html covers both src/index.html and
-    // src/preview.html.  compat-api/* hints are irrelevant here — IE EOL 2022, explicitly excluded in .browserslistrc.
+    // Exclude ALL HTML and TS config files: the extension scans them via file:// URIs.
+    // compat-api/* hints are irrelevant here — IE EOL 2022, excluded in .browserslistrc.
     "webhint.enableTelemetry": "disabled",
-    "webhint.ignoredUrls": "dist/**,test-results/**,coverage/**,**/*.html",
+    "webhint.ignoredUrls": "dist/**,test-results/**,coverage/**,**/*.html,**/*.ts",
 
     // ── Files ──
     "files.eol": "\n",

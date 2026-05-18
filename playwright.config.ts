@@ -1,4 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 
 /**
  * FamilyDashBoard — Playwright Configuration
@@ -6,6 +8,11 @@ import { defineConfig, devices } from "@playwright/test";
  * E2E tests live in tests/e2e/.
  * Run locally: npx playwright test
  * Run in CI:   npx playwright test --reporter=github
+ *
+ * Intermediate artefacts (test-results/, playwright-report/) are written to
+ * $TEMP/fdb-dev/playwright so the project directory stays clean.
+ * The in-repo tests/e2e/visual-regression/ snapshots folder is intentional —
+ * VR baselines must be version-controlled.
  *
  * Browser strategy:
  *   - Chromium: ALL tests (full suite including visual regression)
@@ -19,15 +26,21 @@ import { defineConfig, devices } from "@playwright/test";
  * differences are intentional, not bugs. Cross-browser tests validate layout
  * correctness and accessibility rather than pixel-perfect output.
  */
+
+const tempBase = join(tmpdir(), "fdb-dev", "playwright");
+
 export default defineConfig({
   testDir: "./tests/e2e",
+  outputDir: join(tempBase, "test-results"),
   timeout: 25_000,
   expect: { timeout: 6_000 },
   fullyParallel: true,
   forbidOnly: !!process.env["CI"],
   retries: process.env["CI"] ? 2 : 0,
   workers: process.env["CI"] ? 1 : 4,
-  reporter: process.env["CI"] ? "github" : "list",
+  reporter: process.env["CI"]
+    ? "github"
+    : [["list"], ["html", { outputFolder: join(tempBase, "report"), open: "never" }]],
 
   use: {
     baseURL: "http://localhost:3000",
