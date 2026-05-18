@@ -25,6 +25,7 @@
  *   GET  /api/metrics                     → Prometheus text metrics (token-gated, D1-backed)
  *   POST /api/reports                     → Browser Reporting API ingest (CSP + deprecation + intervention)
  *   GET  /api/reports/digest              → Report summary digest (token-gated, D1-backed, ADR-028)
+ *   GET  /api/r2-asset?url=X             → R2 background image cache proxy (ADR-050, allowlisted CDNs only)
  *
  * Middleware:
  *   CORS · Rate-limiting · Request logging · Canary header (X-Canary: true, CANARY_PCT%) · Analytics Engine
@@ -52,6 +53,7 @@ import {
 import { handleErrors, handleErrorsExport, handleErrorsQueue } from "./routes/errors";
 import { handleMetrics } from "./routes/metrics";
 import { handleReportsIngest, handleReportsDigest } from "./routes/reports";
+import { handleR2Asset } from "./routes/r2-asset";
 import { handleScheduled, handleNextYearPreWarm, handleWeeklyDigest } from "./routes/cron";
 import { handleNewsSummarise, handleMotivationHebrew, handleAiSynthesis } from "./routes/ai";
 import {
@@ -187,6 +189,9 @@ app.get("/api/metrics", (c) => handleMetrics(c.req.raw, c.env));
 app.post("/api/reports", (c) => handleReportsIngest(c.req.raw, c.env));
 
 app.get("/api/reports/digest", (c) => handleReportsDigest(c.req.raw, c.env));
+
+// ADR-050: R2 asset caching proxy for background images and media assets
+app.get("/api/r2-asset", (c) => handleR2Asset(c.req.raw, c.env));
 
 app.all("*", (c) => c.json({ error: "Not found" }, 404));
 
