@@ -7,15 +7,68 @@
 
 ## 🌈 Themes
 
-| #   | Name                  | CSS Class             | Accent               | Background             | Best For                                     |
-| --- | --------------------- | --------------------- | -------------------- | ---------------------- | -------------------------------------------- |
-| 1   | **True Black (OLED)** | `theme-black`         | Warm gold `#c8a87a`  | Pure black `#000`      | OLED TVs — deep blacks, zero backlight bleed |
-| 2   | **Ocean Blue**        | `theme-blue`          | Sky blue `#82b8d8`   | Deep navy `#0c1824`    | Default — calm, easy on the eyes             |
-| 3   | **Forest Green**      | `theme-matrix`        | Soft green `#86c490` | Dark forest `#0e1a10`  | Nature vibe, hacker aesthetic                |
-| 4   | **Amber Glow**        | `theme-amber`         | Warm amber `#c8a07c` | Dark brown `#18120a`   | Night mode, warm tint, retro feel            |
-| 5   | **Purple Dusk**       | `theme-purple`        | Lavender `#b8aad4`   | Deep purple `#140e1e`  | Evening vibes, creative setup                |
-| 6   | **Rose Night**        | `theme-rose`          | Soft rose `#c08898`  | Dark crimson `#180a0e` | Romantic aesthetic, warm accent              |
-| 7   | **High Contrast**     | `theme-high-contrast` | Yellow `#ffdd00`     | Pure black `#000`      | Accessibility (WCAG AAA), vision impairments |
+| #   | Name                  | CSS Class             | Accent               | Background             | Best For                                     | VR Baseline |
+| --- | --------------------- | --------------------- | -------------------- | ---------------------- | -------------------------------------------- | ----------- |
+| 1   | **True Black (OLED)** | `theme-black`         | Warm gold `#c8a87a`  | Pure black `#000`      | OLED TVs — deep blacks, zero backlight bleed | [black-tv](../tests/e2e/visual-regression.spec.ts-snapshots/black-tv-chromium-win32.png) |
+| 2   | **Ocean Blue**        | `theme-blue`          | Sky blue `#82b8d8`   | Deep navy `#0c1824`    | Default — calm, easy on the eyes             | [blue-tv](../tests/e2e/visual-regression.spec.ts-snapshots/blue-tv-chromium-win32.png) |
+| 3   | **Forest Green**      | `theme-matrix`        | Soft green `#86c490` | Dark forest `#0e1a10`  | Nature vibe, hacker aesthetic                | [matrix-tv](../tests/e2e/visual-regression.spec.ts-snapshots/matrix-tv-chromium-win32.png) |
+| 4   | **Amber Glow**        | `theme-amber`         | Warm amber `#c8a07c` | Dark brown `#18120a`   | Night mode, warm tint, retro feel            | [amber-tv](../tests/e2e/visual-regression.spec.ts-snapshots/amber-tv-chromium-win32.png) |
+| 5   | **Purple Dusk**       | `theme-purple`        | Lavender `#b8aad4`   | Deep purple `#140e1e`  | Evening vibes, creative setup                | [purple-tv](../tests/e2e/visual-regression.spec.ts-snapshots/purple-tv-chromium-win32.png) |
+| 6   | **Rose Night**        | `theme-rose`          | Soft rose `#c08898`  | Dark crimson `#180a0e` | Romantic aesthetic, warm accent              | [rose-tv](../tests/e2e/visual-regression.spec.ts-snapshots/rose-tv-chromium-win32.png) |
+| 7   | **High Contrast**     | `theme-high-contrast` | Yellow `#ffdd00`     | Pure black `#000`      | Accessibility (WCAG AAA), vision impairments | *(VR pending — no snapshot yet)* |
+
+> **VR baselines** are stored in `tests/e2e/visual-regression.spec.ts-snapshots/` and updated by
+> running `npx playwright test tests/e2e/visual-regression.spec.ts --update-snapshots`.
+> The high-contrast theme (added in [ADR-074](adr/ADR-074-high-contrast-theme.md)) does not yet
+> have a VR baseline — add one before v15.
+
+## 🎨 Per-Theme Visual Properties
+
+### 1. True Black (OLED) — `theme-black`
+
+Pure `#000000` background eliminates backlight bleed on OLED displays (LG OLED C series,
+Samsung QD-OLED, Sony Bravia). Cards appear to float on the screen. Warm gold accents
+(`#c8a87a`) create a premium, minimalist aesthetic. Ideal for home-theater setups with
+ambient lighting off.
+
+### 2. Ocean Blue — `theme-blue` *(Default)*
+
+The default theme. Deep navy background (`#0c1824`) with sky blue accents (`#82b8d8`)
+mimics a deep-sea palette. Calm and readable at TV viewing distance (3 m). Recommended
+for most living-room deployments. All screenshots in docs use this theme.
+
+### 3. Forest Green — `theme-matrix`
+
+Inspired by terminal interfaces and forest environments. Dark forest background (`#0e1a10`)
+with soft green accents (`#86c490`). Natural, low-blue-light palette suitable for
+evening use. The name "matrix" reflects the monochrome-green hacker-terminal aesthetic.
+
+### 4. Amber Glow — `theme-amber`
+
+Warm amber (`#c8a07c`) on dark brown (`#18120a`) reduces blue-light exposure at night.
+The palette mimics incandescent lighting and is subjectively the most comfortable for
+late-night viewing. Positive/negative indicators adjust to amber/red to preserve the
+warm palette.
+
+### 5. Purple Dusk — `theme-purple`
+
+Deep purple background (`#140e1e`) with lavender accents (`#b8aad4`). Evocative of
+twilight. Well-suited to offices with purple neon or LED accent lighting. Creates a
+studio / broadcast aesthetic.
+
+### 6. Rose Night — `theme-rose`
+
+Deep crimson background (`#180a0e`) with soft rose accents (`#c08898`). The most
+distinctive palette — warm and intimate. Works well in bedrooms or with candle-lit
+ambient lighting. The lowest-contrast theme; if readability is a concern, prefer
+Ocean Blue or High Contrast.
+
+### 7. High Contrast — `theme-high-contrast`
+
+Designed to meet **WCAG 2.2 AAA** contrast requirements. Pure black background (`#000`)
+with maximum-contrast yellow accents (`#ffdd00`). Card headers use white text on dark
+background at ≥ 7:1 contrast ratio. This theme is also activated automatically when
+the OS reports `prefers-contrast: more`. See [ADR-074](adr/ADR-074-high-contrast-theme.md).
 
 ## 🏗️ Design Principles
 
