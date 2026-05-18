@@ -86,10 +86,14 @@ export default defineConfig({
         //             actuals: 97.09 / 90.54 / 96.46 / 98.13.
         // (v14.29.0): ratchet to actuals from v14.28.0 Sprint 2 run (0.05–0.09% headroom).
         // (v14.29.1): ratchet tighter — actuals 97.09/90.54/96.46/98.13 confirmed.
-        statements: 97.09,
-        branches: 90.5,
-        functions: 96.42,
-        lines: 98.1,
+        // (v14.31.0): Sprint 5 — temporal migration adds addWeeks/isToday/isTomorrow/isYesterday
+        //             (all 100% tested); calendar/countdown/hebrew-cal refactored to use
+        //             temporal helpers — net coverage neutral or positive.
+        //             actuals confirmed ≥ 97.09 / 90.54 / 96.46 / 98.13.
+        statements: 97.1,
+        branches: 90.54,
+        functions: 96.46,
+        lines: 98.13,
       },
     },
   },
