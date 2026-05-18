@@ -7,9 +7,9 @@
  *                           mcp-bridge chunk + card-infra split, pushing actual
  *                           to 108.7 KB after full rebuild; trend baseline at
  *                           v14.14.0 was 109.6 KB — JS budget held at 110 pending
- *                           a full audit; target in v15 is ≤ 108 KB)
+ *                           a full audit; target in v15 is ≤ 108 KB; v14.30.0 baseline)
  *   CSS gzipped: ≤ 29.4 KB (ratcheted 29.5→29.4 in v14.27.0 — CSS stable at
- *                           29.32 KB since v14.25.0; target in v15 is ≤ 29 KB)
+ *                           29.32 KB since v14.25.0; target in v15 is ≤ 29 KB; v14.30.0 baseline)
  *
  * Also checks for 10% growth regression against the last baseline recorded
  * in scripts/bundle-trend.json.  Exit 1 on budget exceeded OR on > 10% growth.
