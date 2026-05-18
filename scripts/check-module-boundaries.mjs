@@ -55,6 +55,12 @@ const FORBIDDEN = [
     importing: /from\s+["'](?:\.\.\/)*src[\\/]/,
     why: "worker/src/* must not import from src/* (worker is a separate runtime)",
   },
+  // D12-T1 (v14.30.0): production code must not import test helpers or test utils.
+  {
+    from: /[\\/]src[\\/]/,
+    importing: /from\s+["'][^"']*[\\/]tests[\\/]/,
+    why: "src/* must not import from tests/* (production code must not depend on test infrastructure)",
+  },
 ];
 
 /**
