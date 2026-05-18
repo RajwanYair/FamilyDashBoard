@@ -399,7 +399,7 @@ All consumers migrated to formal `CardSignalProtocol` — shipped v14.20.0.
 | 7   | Enhance  | OpenTelemetry from Worker (opt-in)                   | P2  | L   | Mid | v15    | L3            |
 | 8   | Refactor | Promote `tooling/` presets to sibling repos          | P1  | M   | Hi  | v15    | MONO ✅v14.22 |
 | 9   | Enhance  | WebRTC mirror with QR pairing (gated 3+)             | P2  | L   | Mid | v15    |               |
-| 10  | Enhance  | Coverage ratchet → 97/90/96/98                       | P1  | M   | Mid | v15    |               |
+| 10  | Enhance  | Coverage ratchet → 97/90/96/98                       | P1  | M   | Mid | v15    | ✅ v14.30.0   |
 | 11  | Track    | Biome replacement for Prettier + ESLint              | P2  | M   | Mid | v16    | V16-OPEN      |
 | 12  | Track    | Rolldown auto-adopt when Vite default                | P2  | S   | Mid | v15    |               |
 | 13  | Track    | TypeScript 7 primary typecheck                       | P3  | M   | Mid | v16    | V16-OPEN      |
@@ -408,8 +408,8 @@ All consumers migrated to formal `CardSignalProtocol` — shipped v14.20.0.
 | 16  | Gate     | Web Push VAPID for alerts → phone (D7)               | P3  | M   | Mid | v15    |               |
 | 17  | Track    | E-ink screen mode — peer-inspired                    | P3  | M   | Lo  | v16    | V16-OPEN      |
 | 18  | Track    | i18n infrastructure (`Intl.MessageFormat`)           | P3  | M   | Lo  | v16    | V16-OPEN      |
-| 19  | Enhance  | Per-card budget hard-cap ratchet (target 60 KB)      | P1  | M   | Mid | v15    |               |
-| 20  | Enhance  | Stryker mutation expansion to remaining modules      | P1  | M   | Mid | v15    | 136 files     |
+| 19  | Enhance  | Per-card budget hard-cap ratchet (target 60 KB)      | P1  | M   | Mid | v15    | ✅ v14.30.0   |
+| 20  | Enhance  | Stryker mutation expansion to remaining modules      | P1  | M   | Mid | v15    | ✅ v14.30.0   |
 
 ### 5.2 Per-card (from §3, open only)
 
