@@ -29,6 +29,8 @@ import {
   startOfDayMs,
   parsePlainDateMs,
   parsePlainDateTime,
+  diffDays,
+  addDays,
 } from "../../core/temporal";
 
 // Pure Hebrew-cal utility functions ───────────────────────────
@@ -454,7 +456,7 @@ function renderHoliday(items: HebcalItem[], now: Date): void {
   const h = upcoming[0];
   if (!h || !els.holiday) return;
   const holidayDate = new Date(h.date);
-  const days = Math.ceil((holidayDate.getTime() - now.getTime()) / MS_PER_DAY);
+  const days = diffDays(now, holidayDate);
   const name = h.hebrew ?? h.title;
   _lastHolidayName = name;
 
@@ -507,9 +509,9 @@ function renderSchool(items: HebcalItem[], now: Date): void {
   const vacationItem = items.find((i) => {
     if (i.category !== "holiday") return false;
     const d = new Date(i.date);
-    const diffDays = (d.getTime() - now.getTime()) / MS_PER_DAY;
+    const dd = diffDays(now, d);
     // Show if this holiday started 0-7 days ago (we're in the vacation window)
-    if (diffDays < -7 || diffDays > 0) return false;
+    if (dd < -7 || dd > 0) return false;
     const lc = (i.hebrew ?? i.title).toLowerCase();
     const titleLc = i.title.toLowerCase();
     return SCHOOL_VACATION_TITLES.some(
@@ -537,7 +539,7 @@ async function loadOmer(): Promise<void> {
     10,
   );
   const afterSunset = ilHour >= 20;
-  const omerDate = afterSunset ? new Date(now.getTime() + MS_PER_DAY) : now;
+  const omerDate = afterSunset ? addDays(now, 1) : now;
   const yr = omerDate.getFullYear();
   const mo = omerDate.getMonth() + 1;
   const dy = omerDate.getDate();
@@ -958,7 +960,7 @@ export function renderNextCalEvent(): void {
     eventRow.style.display = "none";
     return;
   }
-  const daysUntil = Math.ceil((next.start.getTime() - now) / MS_PER_DAY);
+  const daysUntil = diffDays(new Date(now), next.start);
   const when = daysUntil <= 0 ? "היום" : daysUntil === 1 ? "מחר" : `בעוד ${daysUntil} ימ׳`;
   eventEl.textContent = `${summary} (${when})`;
   eventRow.style.display = "";
