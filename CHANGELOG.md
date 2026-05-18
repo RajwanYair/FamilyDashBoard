@@ -9,6 +9,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.28.0] — 2026-05-18
+
+> **7591 tests / 314 suites / 0 failures** · 85 ADRs · 136 Stryker files · Stryker threshold 90
+
+- **test(coverage)**: Sprint 1 — 19 new tests: `buildWeatherPayload` wind-speed zero, alerts splice, UV rounding; `system-info.ts` `perf.memory` unavailable path and `prewarm()` default-arg branch; `getSwState` stale-cache fallback; Hebrew Calendar `buildHebrewCalPayload` holiday + non-holiday branches via semantic-clipboard producer
+- **test(coverage)**: Sprint 2 — `video-news-adapter.property.test.ts` (VNA1–VNA7, 7 fast-check property suites); `buildHebrewCalPayload via getSemanticPayload` block in `hebrew-cal.test.ts`; 107 property test files across 4 domains (core / cards / ui / worker)
+- **chore(coverage)**: vitest thresholds ratcheted 96.9/90.3/96.2/97.9 → 97.0/90.5/96.4/98.1; actuals: 97.09/90.54/96.46/98.13
+- **chore(bundle)**: per-card source hard-cap ratcheted 65→64 KB (`SOURCE_HARD_CAP_KB` in `check-card-bundle-delta.mjs`); all cards confirmed under cap (weather 63.8 KB)
+- **docs(adr)**: ADR-085 — coverage ratchet v14.28.0 decision (Sprints 1–4 root-cause analysis, threshold table, trade-off notes); ADR index regenerated to 85 ADRs total
+
+---
+
 ## [14.27.0] — 2026-05-27
 
 > **7572 tests / 313 suites / 0 failures** · 84 ADRs · 136 Stryker files · Stryker threshold 90

@@ -1,11 +1,11 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v3.1)
 
-> **Refresh date**: 2026-05-27 · **Shipped baseline**: v14.27.0 · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-27 · **Shipped baseline**: v14.28.0 · **Active stream**: V15-OPEN.
 >
 > **v3.1 audit stamp (2026-05-16)**: Full re-litigation pass confirms zero divergence from v3 strategy. Inventory verified: 0 dead exports (142 files scanned via `check-dead-exports`), 0 `eslint-disable` / `@ts-ignore` / `@ts-expect-error` / `@ts-nocheck` in `src/`, 0 `continue-on-error` in workflows, 0 suspended/disabled CI gates (v13.x hardening sweep remains intact). All current `disabled` symbols in source are legitimate user-config semantics (`disabledFeeds`, HTML `[disabled]`, `0 = disabled` interval encodings, `ai_disabled` Workers AI opt-in flag, `video-news` opt-in default). Webhint IE compat false-positives in `.hintrc` resolved (IE EOL 2022, excluded by `.browserslistrc` since v9). Root layout left intact — Vite/Vitest/ESLint/TS/Playwright config files at root is the ecosystem convention; relocation gains nothing and forces CLI flags into every npm script, CI workflow, and operator doc. v15.0.0 reserved for the V15-OPEN feature stream (§6.1–6.6) — not consumed by structural reset. Next published version when V15-OPEN ships an exit-gate item; cleanup-only releases use patch tags.
 >
-> **Inventory**: 7572+ tests / 313 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 84 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
-> **Coverage**: 96.91 / 90.32 / 96.24 / 97.94 (statements / branches / functions / lines).
+> **Inventory**: 7591+ tests / 314 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 85 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Coverage**: 97.09 / 90.54 / 96.46 / 98.13 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -17,7 +17,7 @@
 
 ## 0. Executive Summary
 
-After 400+ sprints across v10 → v14.27 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog are **shipped**. The quality gate is industry-leading for a static-PWA: 7572+ tests / 313 suites, 95+ fast-check property test files across 4 domains (core / cards / ui / worker), container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
+After 400+ sprints across v10 → v14.28 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog are **shipped**. The quality gate is industry-leading for a static-PWA: 7591+ tests / 314 suites, 107 fast-check property test files across 4 domains (core / cards / ui / worker), container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 This v3 rethink re-opens **every** major decision made since v10 — language, architecture, tooling, dependencies, documentation, infrastructure, APIs, testing, deployment, security — and benchmarks each against the best-in-class peer in its category. The result is a consolidated plan where nothing is grandfathered.
 
@@ -154,7 +154,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Stylelint          | 16.x                  | Keep; consider Lightning-CSS-only validation v16.           |
 | Playwright         | 1.5x                  | Quarterly baseline regen.                                   |
 | Stryker (mutation) | 8.x                   | Threshold ≥ 87%; 136 files in scope.                        |
-| `fast-check`       | 3.x                   | 81 property suites across 23 modules.                       |
+| `fast-check`       | 3.x                   | 107 property suites across 4 domains.                       |
 | `axe-core`         | latest                | Keep CI gate.                                               |
 | Lighthouse CI      | latest                | At `error 0.99` cached.                                     |
 | `pnpm` workspace   | npm + parent          | **Reject** — current pattern sufficient and simpler.        |
@@ -166,13 +166,13 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | ----------------- | ----------------------------------- | --------------------------------------------------- |
 | Unit              | Vitest 4.1 + happy-dom 20           | Keep. Suite split per file.                         |
 | Component         | `@vitest/browser` (Playwright)      | Shipped v13.16.                                     |
-| Property-based    | fast-check (81 suites, ADR-054/055) | Continue expanding to remaining core modules.       |
+| Property-based    | fast-check (107 suites, ADR-054/055/085) | All major modules covered across core/cards/ui/worker. |
 | Mutation          | Stryker (136 files)                 | Threshold ≥ 87%; extend to remaining core modules.  |
 | Visual regression | Playwright (421+ baselines)         | Extend to DO-SSE alert states + maximise-FLIP.      |
 | End-to-end        | Playwright                          | Keep.                                               |
 | Accessibility     | axe-core (CI gate)                  | Keep + manual screen-reader pass per major.         |
 | Performance       | Lighthouse CI (`error 0.99`)        | Ratcheted from 0.98 in v14.19.0.                    |
-| Coverage          | 96.91 / 90.32 / 96.24 / 97.94       | Ratchet path → 97/90/96/98 by v15. +0.5% per minor. |
+| Coverage          | 97.09 / 90.54 / 96.46 / 98.13       | Ratchet path → 97/90/96/98 by v15. +0.5% per minor. |
 
 ### 1.8 Observability, security, supply chain
 
