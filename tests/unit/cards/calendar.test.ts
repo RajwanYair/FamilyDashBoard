@@ -453,13 +453,15 @@ describe("Calendar — countdown + header count", () => {
     expect(document.getElementById("cal-countdown")!.style.display).toBe("none");
   });
 
-  it("countdown says 'מחר' when next event is within 24h", () => {
-    const soon = new Date(Date.now() + 2 * 3_600_000);
-    const end = new Date(soon.getTime() + 1_800_000);
+  it("countdown says 'מחר' when next event is tomorrow", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    const end = new Date(tomorrow.getTime() + 1_800_000);
     renderCalendar([
       {
         summary: "Soon",
-        start: soon,
+        start: tomorrow,
         end,
         allDay: false,
         icsIndex: 0,

@@ -14,7 +14,6 @@ import {
   INTERVALS,
   PROXIES,
   LS_ICS_URL,
-  MS_PER_DAY,
   MS_PER_MIN,
   WORKER_BASE_URL,
   isWorkerEnabled,
@@ -30,7 +29,7 @@ import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
-import { nowMs, startOfDayMs, parsePlainDateTime, toISODateString } from "../../core/temporal";
+import { nowMs, startOfDayMs, parsePlainDateTime, toISODateString, diffDays, addDays } from "../../core/temporal";
 
 // X15: cached snapshot of next event for the semantic-clipboard producer.
 let _nextEventSnapshot: { title: string; startMs: number; isAllDay: boolean } | null = null;
@@ -187,10 +186,10 @@ export function getHolidaysByDate(items: HebcalItem[], date: Date): string | nul
  * Returns "" for past dates (should not appear in agenda, but defensive).
  */
 export function calDaysUntilLabel(date: Date, now: Date = new Date()): string {
-  const diffDays = Math.round((startOfDayMs(date) - startOfDayMs(now)) / MS_PER_DAY);
-  if (diffDays <= 0) return "";
-  if (diffDays === 1) return "מחר";
-  return `עוד ${diffDays} ימים`;
+  const d = diffDays(now, date);
+  if (d <= 0) return "";
+  if (d === 1) return "מחר";
+  return `עוד ${d} ימים`;
 }
 
 // ── Rendering ──
@@ -262,14 +261,14 @@ function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
 function renderCalCountdown(upcoming: CalendarEvent[], now: Date): void {
   if (!els.countdown) return;
   const next7 = upcoming.filter(
-    (e) => e.start > now && e.start.getTime() - now.getTime() < 7 * MS_PER_DAY,
+    (e) => e.start > now && diffDays(now, e.start) < 7 && diffDays(now, e.start) >= 0,
   );
   const ev = next7[0];
   if (!ev) {
     els.countdown.style.display = "none";
     return;
   }
-  const days = Math.ceil((ev.start.getTime() - now.getTime()) / MS_PER_DAY);
+  const days = diffDays(now, ev.start);
   const label = days <= 0 ? "היום" : days === 1 ? "מחר" : `עוד ${days} ימים`;
   els.countdown.textContent = `${label}: ${ev.summary.substring(0, 20)}`;
   els.countdown.style.display = "";
@@ -280,7 +279,7 @@ function updateTodayEventCount(events: CalendarEvent[]): void {
   if (!hdrEl) return;
   const todayMidnight = new Date();
   todayMidnight.setHours(0, 0, 0, 0);
-  const todayEnd = new Date(todayMidnight.getTime() + MS_PER_DAY);
+  const todayEnd = addDays(todayMidnight, 1);
   const count = events.filter((e) => e.start >= todayMidnight && e.start < todayEnd).length;
   hdrEl.textContent = count > 0 ? `${count} 📅` : "";
   hdrEl.style.display = count > 0 ? "" : "none";
@@ -295,17 +294,17 @@ export function groupEventsByDay(
   now: Date = new Date(),
 ): { date: Date; events: CalendarEvent[] }[] {
   const buckets: { date: Date; events: CalendarEvent[] }[] = [];
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   for (let i = 0; i < CAL_WEEK_DAYS; i++) {
-    const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
-    buckets.push({ date: day, events: [] });
+    buckets.push({ date: addDays(today, i), events: [] });
   }
   const firstKey = buckets[0]!.date.getTime();
-  const lastKey = buckets[CAL_WEEK_DAYS - 1]!.date.getTime() + MS_PER_DAY;
+  const lastKey = addDays(buckets[CAL_WEEK_DAYS - 1]!.date, 1).getTime();
   for (const ev of events) {
     const t = ev.start.getTime();
     if (t < firstKey || t >= lastKey) continue;
-    const diffDays = Math.floor((t - firstKey) / MS_PER_DAY);
-    const bucket = buckets[diffDays];
+    const idx = diffDays(buckets[0]!.date, ev.start);
+    const bucket = buckets[idx];
     if (bucket) bucket.events.push(ev);
   }
   for (const b of buckets) {
@@ -418,8 +417,8 @@ export function renderCalendar(events: CalendarEvent[]): number {
 
   // Week window: always Sunday → Saturday of the current week
   const dayOfWeek = todayMidnight.getDay(); // 0 = Sunday
-  const weekStart = new Date(todayMidnight.getTime() - dayOfWeek * MS_PER_DAY);
-  const weekEnd = new Date(weekStart.getTime() + horizonDays * MS_PER_DAY);
+  const weekStart = addDays(todayMidnight, -dayOfWeek);
+  const weekEnd = addDays(weekStart, horizonDays);
   const upcoming = maskedEvents
     .filter((e) => e.start >= weekStart && e.start < weekEnd)
     .sort((a, b) => a.start.getTime() - b.start.getTime());
