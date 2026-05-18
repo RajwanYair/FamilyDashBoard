@@ -1,7 +1,7 @@
 # 🔏 Privacy Notice — FamilyDashBoard
 
 > This document describes the privacy practices of the FamilyDashBoard project.
-> Plain language; no legal jargon. Updated: 2026-04-22.
+> Plain language; no legal jargon. Updated: 2026-06-08.
 
 ---
 
