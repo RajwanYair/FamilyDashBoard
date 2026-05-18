@@ -664,6 +664,79 @@ describe("Status Bar — SW message handler branches", () => {
 
 // ── SW message handler with stubbed serviceWorker (lines 175-186) ──
 
+describe("Status Bar — SW VERSION_ACTIVATED calls showToast (QA-7)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    try {
+      Reflect.deleteProperty(navigator, "serviceWorker");
+    } catch {
+      /* non-configurable */
+    }
+  });
+
+  it("calls showToast with the activated version label when VERSION_ACTIVATED fires", async () => {
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+      <div id="sw-version" hidden></div>
+      <div id="toast"></div>
+    `;
+    const mockShowToast = vi.fn();
+    let capturedHandler: ((e: MessageEvent) => void) | null = null;
+    const mockSW = {
+      addEventListener: vi.fn((type: string, handler: unknown) => {
+        if (type === "message") capturedHandler = handler as (e: MessageEvent) => void;
+      }),
+    };
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: mockSW,
+      configurable: true,
+      writable: true,
+    });
+    vi.resetModules();
+    vi.doMock("@/ui/toast", () => ({ showToast: mockShowToast }));
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    expect(capturedHandler).not.toBeNull();
+    capturedHandler!({
+      data: { type: "VERSION_ACTIVATED", version: "familydashboard-v14.29.0" },
+    } as MessageEvent);
+
+    expect(mockShowToast).toHaveBeenCalledWith("✓ עודכן לגרסה v14.29.0", 4000);
+  });
+
+  it("does not call showToast when VERSION_ACTIVATED has no version field", async () => {
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+      <div id="sw-version" hidden></div>
+    `;
+    const mockShowToast = vi.fn();
+    let capturedHandler: ((e: MessageEvent) => void) | null = null;
+    const mockSW = {
+      addEventListener: vi.fn((type: string, handler: unknown) => {
+        if (type === "message") capturedHandler = handler as (e: MessageEvent) => void;
+      }),
+    };
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: mockSW,
+      configurable: true,
+      writable: true,
+    });
+    vi.resetModules();
+    vi.doMock("@/ui/toast", () => ({ showToast: mockShowToast }));
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    capturedHandler?.({ data: { type: "VERSION_ACTIVATED" } } as MessageEvent);
+    expect(mockShowToast).not.toHaveBeenCalled();
+  });
+});
+
+// ── SW message handler with stubbed serviceWorker (lines 175-186) ──
+
 describe("Status Bar — SW message handler with stubbed navigator.serviceWorker", () => {
   afterEach(() => {
     document.body.innerHTML = "";

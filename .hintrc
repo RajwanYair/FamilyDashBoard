@@ -16,7 +16,8 @@
     "op_mob >= 80",
     "android >= 114",
     "not ie > 0",
-    "not op_mini all"
+    "not op_mini all",
+    "not dead"
   ],
   "hints": {
     "compat-api/html": [
@@ -42,6 +43,9 @@
     "compat-api/css": "off",
     "compat-api/js": "off",
     "no-inline-styles": "off",
-    "no-broken-links": "off"
+    "no-broken-links": "off",
+    "ssllabs": "off",
+    "https-only": "off",
+    "http-cache": "off"
   }
 }

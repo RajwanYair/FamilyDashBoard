@@ -369,13 +369,12 @@ This project leverages extensive GitHub features:
 | v14.26        | Coverage ratchet (89.8%), IDB4 property fix, CSS budget update, ADR-084, 7549+ tests, 84 ADRs   |
 | v14.27        | Coverage 96.91%, OWASP clean (0 findings), RTT sparkline tests, bundle hard-cap 65 KB, 7572 tests |
 | v14.28        | Coverage 97.09/90.54/96.46/98.13, video-news-adapter property tests, hard-cap 64 KB, 85 ADRs, 7591 tests |
+| v14.29        | QA sprint: Renovate patch automerge, SW update toast, VS Code cleanup, Mermaid fix, docs modernization |
 
 ### Upcoming
 
 | Version  | Focus                                                                                | Status |
 | -------- | ------------------------------------------------------------------------------------ | ------ |
-| v14.27.0 | Coverage 96.91%, OWASP 0 findings, RTT sparkline, bundle hard-cap 65 KB               | ✅     |
-| v14.28.0 | Coverage 97.0/90.5/96.4/98.1, VNA property tests, hard-cap 64 KB, 85 ADRs, 7591 tests | ✅     |
 | v15.0    | Coverage 97/90/96/98, bundle ≤108 KB, Temporal Polyfill, Stryker 92%, SSRF hardening | 📋     |
 
 See [ROADMAP.md](docs/ROADMAP.md) for the full strategic plan and stream priorities.
@@ -384,7 +383,7 @@ See [ROADMAP.md](docs/ROADMAP.md) for the full strategic plan and stream priorit
 
 ---
 
-## � Troubleshooting
+## 🔧 Troubleshooting
 
 | Symptom                                         | Likely cause                             | Fix                                                           |
 | ----------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
@@ -397,7 +396,7 @@ See [ROADMAP.md](docs/ROADMAP.md) for the full strategic plan and stream priorit
 
 ---
 
-## �🤝 Contributing
+## 🤝 Contributing
 
 See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for development setup and coding standards.
 

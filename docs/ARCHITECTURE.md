@@ -174,7 +174,8 @@ flowchart TD
     Cards -->|"cGet(key,TTL) hit"| CacheL1["L1 Memory Cache\n(in-memory Map)"]
     Cards -->|"cGet miss"| FetchChain
 
-    subgraph FetchChain[Fetch Chain]
+    subgraph FetchChain
+        direction TB
         FVW["fetchViaWorker()\n(Worker-first)"] -->|"200 OK"| ParseData["Parse + cSet"]
         FVW -->|"fail/disabled"| FWR["fetchWithRetry()\n(exponential backoff)"]
         FWR -->|"fail"| Proxies["Proxy chain\n(allorigins / codetabs)"]:::faded
@@ -232,7 +233,8 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-    subgraph Cards[src/cards]
+    subgraph Cards
+        direction TB
         Stocks["stocks.ts"]
         Weather["weather.ts"]
         Currency["currency.ts"]
@@ -246,7 +248,8 @@ flowchart LR
         SysInfo["system-info.ts"]
     end
 
-    subgraph Core[src/core]
+    subgraph Core
+        direction TB
         Cache["cache.ts\n(cGet/cSet/cGetStale)"]
         Config["config.ts\n(loadConfig/saveConfig)"]
         Constants["constants.ts\n(WORKER_BASE_URL, INTERVALS)"]
@@ -257,7 +260,8 @@ flowchart LR
         ConfigCrypto["config-crypto.ts\n(AES-GCM)"]
     end
 
-    subgraph UI[src/ui]
+    subgraph UI
+        direction TB
         Theme["theme.ts"]
         Toast["toast.ts"]
         Help["help.ts"]

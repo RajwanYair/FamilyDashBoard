@@ -17,6 +17,7 @@ import { diagLog } from "../core/diag";
 import { getOldestCacheAgeMinutes } from "../core/cache";
 import { MS_PER_MIN } from "../core/constants";
 import { decomposeDuration } from "../core/utils";
+import { showToast } from "./toast";
 
 // ── Sync Pane Definitions ──
 // Each pane name maps to an HTML element ID for its sync indicator.
@@ -182,6 +183,9 @@ export function initStatusBar(): void {
           swChip.hidden = false;
           diagLog(`[status-bar] SW activated: ${data.version}`);
         }
+        // QA-7: brief confirmation toast after the new SW version activates
+        const label = data.version.replace("familydashboard-", "");
+        showToast(`✓ עודכן לגרסה ${label}`, 4000);
       }
     });
   }
