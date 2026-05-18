@@ -55,12 +55,12 @@ Deploying in shadow mode allows us to:
 
 ### Vectorize index configuration
 
-| Parameter      | Value             | Rationale                                               |
-| -------------- | ----------------- | ------------------------------------------------------- |
-| Dimensions     | 384               | bge-small-en-v1.5 output dimension                     |
-| Metric         | cosine            | Normalized — scale-invariant similarity for short text  |
-| Index name     | `fdb-news-dedup`  | Descriptive, project-namespaced                         |
-| Binding        | `VECTORIZE_INDEX` | Matches types.ts Env field                              |
+| Parameter  | Value             | Rationale                                              |
+| ---------- | ----------------- | ------------------------------------------------------ |
+| Dimensions | 384               | bge-small-en-v1.5 output dimension                     |
+| Metric     | cosine            | Normalized — scale-invariant similarity for short text |
+| Index name | `fdb-news-dedup`  | Descriptive, project-namespaced                        |
+| Binding    | `VECTORIZE_INDEX` | Matches types.ts Env field                             |
 
 Provision with:
 
@@ -78,7 +78,7 @@ with in-memory stubs only.
 
 ## Architecture
 
-```
+```text
 handleNewsAggregate()
   │
   ├── SimHash dedup pass ─────────────────────────── [authoritative]
@@ -100,13 +100,13 @@ All errors inside the block are caught and discarded.
 
 ## Components
 
-| File                                    | Role                                                       |
-| --------------------------------------- | ---------------------------------------------------------- |
-| `worker/src/utils/vectorize-client.ts`  | `vectorizeQuery`, `vectorizeUpsert`, `vectorizeShadowRun` helpers |
-| `worker/src/routes/feeds.ts`            | Shadow run wired into `handleNewsAggregate` (fire-and-forget) |
-| `worker/src/types.ts`                   | `VECTORIZE_INDEX?: VectorizeIndex` added to `Env`           |
-| `worker/wrangler.toml`                  | `[[vectorize]]` binding declaration                         |
-| `tests/unit/worker/vectorize-client.test.ts` | 13 unit tests covering all helper functions             |
+| File                                         | Role                                                              |
+| -------------------------------------------- | ----------------------------------------------------------------- |
+| `worker/src/utils/vectorize-client.ts`       | `vectorizeQuery`, `vectorizeUpsert`, `vectorizeShadowRun` helpers |
+| `worker/src/routes/feeds.ts`                 | Shadow run wired into `handleNewsAggregate` (fire-and-forget)     |
+| `worker/src/types.ts`                        | `VECTORIZE_INDEX?: VectorizeIndex` added to `Env`                 |
+| `worker/wrangler.toml`                       | `[[vectorize]]` binding declaration                               |
+| `tests/unit/worker/vectorize-client.test.ts` | 13 unit tests covering all helper functions                       |
 
 ---
 

@@ -87,7 +87,7 @@
 
   <!-- Band: Tests -->
   <rect x="60"  y="246" width="762" height="14" rx="3" fill="#78350f" opacity="0.7"/>
-  <text x="68"  y="257" font-family="Segoe UI" font-size="8" fill="#fcd34d">Tests: 510 (v6.0) → 1390 (v7.0) → 3193 (v9.x) → 5696 (v13.29) → 7037 (v14.5) → 7517 (v14.24) → 7631 (v14.31) → 7669 (v14.32) · 319 suites · 88 ADRs · 0 failures</text>
+  <text x="68"  y="257" font-family="Segoe UI" font-size="8" fill="#fcd34d">Tests: 510 (v6.0) → 1390 (v7.0) → 3193 (v9.x) → 5696 (v13.29) → 7037 (v14.5) → 7517 (v14.24) → 7631 (v14.31) → 7669 (v14.32) → 7766 (v14.33) · 326 suites · 91 ADRs · 0 failures</text>
 
   <!-- Band: Infra -->
   <rect x="60"  y="264" width="762" height="14" rx="3" fill="#3b0764" opacity="0.7"/>

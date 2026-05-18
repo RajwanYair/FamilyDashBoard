@@ -1,9 +1,9 @@
-# 🔒 Security Model — FamilyDashBoard v14.32.0
+# 🔒 Security Model — FamilyDashBoard v14.33.0
 
 ![Security Model](../.github/assets/security.svg)
 
 > This document describes the security posture, threat model, and mitigation decisions for the
-> FamilyDashBoard project. Updated: 2026-05-18 (v14.32.0).
+> FamilyDashBoard project. Updated: 2026-05-18 (v14.33.0).
 
 ---
 

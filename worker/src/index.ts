@@ -59,7 +59,12 @@ import { handleErrors, handleErrorsExport, handleErrorsQueue } from "./routes/er
 import { handleMetrics } from "./routes/metrics";
 import { handleReportsIngest, handleReportsDigest } from "./routes/reports";
 import { handleR2Asset } from "./routes/r2-asset";
-import { handlePushKey, handlePushSubscribe, handlePushUnsubscribe, handlePushSend } from "./routes/push";
+import {
+  handlePushKey,
+  handlePushSubscribe,
+  handlePushUnsubscribe,
+  handlePushSend,
+} from "./routes/push";
 import { handleScheduled, handleNextYearPreWarm, handleWeeklyDigest } from "./routes/cron";
 import { handleNewsSummarise, handleMotivationHebrew, handleAiSynthesis } from "./routes/ai";
 import {

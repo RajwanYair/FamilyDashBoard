@@ -229,9 +229,7 @@ describe("handleR2Asset — allowed origins", () => {
       );
       vi.stubGlobal("fetch", mockFetch);
 
-      const req = makeRequest(
-        `https://worker.dev/api/r2-asset?url=${encodeURIComponent(url)}`,
-      );
+      const req = makeRequest(`https://worker.dev/api/r2-asset?url=${encodeURIComponent(url)}`);
       const res = await handleR2Asset(req, env);
       expect(res.status).toBe(200);
       vi.unstubAllGlobals();

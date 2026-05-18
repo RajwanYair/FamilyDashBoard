@@ -239,17 +239,13 @@ describe("AlertsLiveDO.webSocketClose() and webSocketError()", () => {
   it("webSocketClose does not throw", () => {
     const do_ = new AlertsLiveDO(makeDoState());
     const ws = makeWS();
-    expect(() =>
-      do_.webSocketClose(ws as unknown as WebSocket, 1000, "normal"),
-    ).not.toThrow();
+    expect(() => do_.webSocketClose(ws as unknown as WebSocket, 1000, "normal")).not.toThrow();
   });
 
   it("webSocketError does not throw", () => {
     const do_ = new AlertsLiveDO(makeDoState());
     const ws = makeWS();
-    expect(() =>
-      do_.webSocketError(ws as unknown as WebSocket, new Error("test")),
-    ).not.toThrow();
+    expect(() => do_.webSocketError(ws as unknown as WebSocket, new Error("test"))).not.toThrow();
   });
 });
 

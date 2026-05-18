@@ -5,7 +5,12 @@
  */
 
 import { describe, it, expect, vi } from "vitest";
-import { handlePushKey, handlePushSubscribe, handlePushUnsubscribe, handlePushSend } from "../../../worker/src/routes/push";
+import {
+  handlePushKey,
+  handlePushSubscribe,
+  handlePushUnsubscribe,
+  handlePushSend,
+} from "../../../worker/src/routes/push";
 import type { Env } from "../../../worker/src/types";
 
 // ── Stubs ─────────────────────────────────────────────────────────────────────
@@ -142,7 +147,11 @@ describe("handlePushSubscribe", () => {
     expect(typeof body.id).toBe("string");
     expect(body.id).toHaveLength(16); // 8 bytes hex
     expect(kvPut).toHaveBeenCalledOnce();
-    const [kvKey, kvValue, kvOpts] = kvPut.mock.calls[0] as [string, string, { expirationTtl: number }];
+    const [kvKey, kvValue, kvOpts] = kvPut.mock.calls[0] as [
+      string,
+      string,
+      { expirationTtl: number },
+    ];
     expect(kvKey).toMatch(/^push:sub:[0-9a-f]{16}$/);
     expect(JSON.parse(kvValue)).toEqual(VALID_SUBSCRIPTION);
     expect(kvOpts.expirationTtl).toBe(90 * 24 * 60 * 60);
@@ -154,14 +163,22 @@ describe("handlePushSubscribe", () => {
 describe("handlePushUnsubscribe", () => {
   it("returns 503 when VAPID_ENABLED is not set", async () => {
     const env = makeEnv();
-    const req = jsonRequest("https://worker.dev/api/push/subscribe", { endpoint: "https://example.com" }, "DELETE");
+    const req = jsonRequest(
+      "https://worker.dev/api/push/subscribe",
+      { endpoint: "https://example.com" },
+      "DELETE",
+    );
     const res = await handlePushUnsubscribe(req, env);
     expect(res.status).toBe(503);
   });
 
   it("returns 400 for missing endpoint field", async () => {
     const env = makeEnv({ VAPID_ENABLED: "true" });
-    const req = jsonRequest("https://worker.dev/api/push/subscribe", { notEndpoint: "foo" }, "DELETE");
+    const req = jsonRequest(
+      "https://worker.dev/api/push/subscribe",
+      { notEndpoint: "foo" },
+      "DELETE",
+    );
     const res = await handlePushUnsubscribe(req, env);
     expect(res.status).toBe(400);
   });

@@ -56,7 +56,13 @@ async function urlToR2Key(url: string): Promise<string> {
   const data = encoder.encode(url.trim().toLowerCase());
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return "bg/" + hashArray.map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 48);
+  return (
+    "bg/" +
+    hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+      .slice(0, 48)
+  );
 }
 
 /** Map common image file extensions to MIME types. */

@@ -149,7 +149,11 @@ export async function handlePushUnsubscribe(request: Request, env: Env): Promise
     return jsonResponse({ ok: false, error: "invalid_json" }, 400);
   }
 
-  if (typeof body !== "object" || body === null || typeof (body as { endpoint?: unknown }).endpoint !== "string") {
+  if (
+    typeof body !== "object" ||
+    body === null ||
+    typeof (body as { endpoint?: unknown }).endpoint !== "string"
+  ) {
     return jsonResponse({ ok: false, error: "invalid_body" }, 400);
   }
 

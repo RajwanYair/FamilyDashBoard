@@ -1028,8 +1028,11 @@ describe("Hebrew Calendar — renderNextCalEvent with ICS data", () => {
   });
 
   it("shows 'מחר' for tomorrow event", () => {
-    // Use a time ~20 hours from now to ensure Math.ceil gives 1 day
-    const target = new Date(Date.now() + 20 * 3600_000);
+    // Explicitly target tomorrow at noon to guarantee diffDays=1 regardless of
+    // current time-of-day (diffDays uses calendar-day boundaries, not 24h windows).
+    const target = new Date();
+    target.setDate(target.getDate() + 1);
+    target.setHours(12, 0, 0, 0);
     const yr = target.getFullYear();
     const mo = String(target.getMonth() + 1).padStart(2, "0");
     const dy = String(target.getDate()).padStart(2, "0");

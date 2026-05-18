@@ -9,6 +9,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.33.0] — 2025-07-14
+
+> **7766 tests / 326 suites / 0 failures** (commit `473f819`)
+
+- **AlertsLiveDO**: Hibernatable WebSocket Durable Object for real-time alert fan-out (ADR-089) — replaces SSE AlertsOrchestrator, zero idle CPU, EU jurisdiction, `/api/alerts/live` WS route
+- **R2 asset proxy**: `/api/r2-asset` caching proxy for dashboard backgrounds (ADR-050) — 10-origin allowlist, SHA-256 keying, X-Cache HIT/MISS headers
+- **Vectorize shadow mode**: Semantic news dedup shadow run (ADR-090) — `vectorize-client.ts` helpers, fire-and-forget parallel Vectorize queries alongside SimHash (gated `VECTORIZE_INDEX+AI`)
+- **Web Push VAPID skeleton**: 4 push routes (ADR-091) — KV-backed subscription store, token-gated send, 501 until VAPID keys provisioned
+- **ADRs**: ADR-089, ADR-090, ADR-091 documented; ADR index regenerated (91 ADRs)
+- **ROADMAP**: v6.0 audit stamp with S11–S19 summary
+
+---
+
 ## [14.32.0] — 2026-05-18
 
 > **7669 tests / 319 suites / 0 failures** · Coverage: 97.1/90.54/96.46/98.13

@@ -43,12 +43,12 @@ this skeleton.
 
 ### Gating strategy
 
-| Gate                       | State         | Action                                         |
-| -------------------------- | ------------- | ---------------------------------------------- |
-| `VAPID_ENABLED` env var    | Not set       | All `/api/push/*` return 503                   |
-| `VAPID_PUBLIC_KEY` secret  | Not set       | GET /api/push/key returns 503                  |
-| `VAPID_PRIVATE_KEY` secret | Not set       | POST /api/push/send returns 501 (not_implemented) |
-| 3+ user requests gate      | Not yet met   | Feature not exposed to users                   |
+| Gate                       | State       | Action                                            |
+| -------------------------- | ----------- | ------------------------------------------------- |
+| `VAPID_ENABLED` env var    | Not set     | All `/api/push/*` return 503                      |
+| `VAPID_PUBLIC_KEY` secret  | Not set     | GET /api/push/key returns 503                     |
+| `VAPID_PRIVATE_KEY` secret | Not set     | POST /api/push/send returns 501 (not_implemented) |
+| 3+ user requests gate      | Not yet met | Feature not exposed to users                      |
 
 ### Security considerations
 
@@ -64,7 +64,7 @@ this skeleton.
 
 ## Architecture
 
-```
+```text
 Browser
   └── PushManager.subscribe({ applicationServerKey: VAPID_PUBLIC_KEY })
         └── POST /api/push/subscribe { endpoint, keys: {p256dh, auth} }

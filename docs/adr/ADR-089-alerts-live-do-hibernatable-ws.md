@@ -59,14 +59,14 @@ Client                 Worker (Hono)         AlertsLiveDO
 
 ### Key choices
 
-| Decision                                    | Rationale                                                                      |
-| ------------------------------------------- | ------------------------------------------------------------------------------ |
-| Hibernation API (not SSE)                   | Zero CPU between alerts; CF bills only active broadcast time                   |
-| Global broadcast (no per-socket tags)       | Alerts are global events; per-subscriber filtering adds complexity with no gain |
-| Single DO shard (`idFromName("global")`)    | Alerts volume is low; a single DO is sufficient, no sharding needed            |
-| 30-second alarm for keep-alive              | Prevents idle connections from silently dying through NAT/proxy timeouts       |
-| `jurisdiction = "eu"`                       | Consistent with AlertsOrchestrator — CF routes IL traffic to EU PoPs (ADR-025) |
-| Backward-compat SSE preserved              | Allows phased client migration without breaking existing deployments           |
+| Decision                                 | Rationale                                                                       |
+| ---------------------------------------- | ------------------------------------------------------------------------------- |
+| Hibernation API (not SSE)                | Zero CPU between alerts; CF bills only active broadcast time                    |
+| Global broadcast (no per-socket tags)    | Alerts are global events; per-subscriber filtering adds complexity with no gain |
+| Single DO shard (`idFromName("global")`) | Alerts volume is low; a single DO is sufficient, no sharding needed             |
+| 30-second alarm for keep-alive           | Prevents idle connections from silently dying through NAT/proxy timeouts        |
+| `jurisdiction = "eu"`                    | Consistent with AlertsOrchestrator — CF routes IL traffic to EU PoPs (ADR-025)  |
+| Backward-compat SSE preserved            | Allows phased client migration without breaking existing deployments            |
 
 ### Routes
 
@@ -76,12 +76,12 @@ Client                 Worker (Hono)         AlertsLiveDO
 
 ### Comparison with ADR-087 (StocksLiveDO)
 
-| Dimension         | StocksLiveDO (ADR-087)          | AlertsLiveDO (ADR-089)          |
-| ----------------- | ------------------------------- | ------------------------------- |
-| Fan-out targeting | Per-symbol tags                 | All sockets (global broadcast)  |
-| Sharding          | 4 shards (symbol mod 4)         | Single DO (`idFromName("global")`) |
-| Push source       | Price-pusher POST /push         | Cron POST /broadcast            |
-| Prior art         | HTTP polling → WS               | SSE → WS (SSE kept for compat)  |
+| Dimension         | StocksLiveDO (ADR-087)  | AlertsLiveDO (ADR-089)             |
+| ----------------- | ----------------------- | ---------------------------------- |
+| Fan-out targeting | Per-symbol tags         | All sockets (global broadcast)     |
+| Sharding          | 4 shards (symbol mod 4) | Single DO (`idFromName("global")`) |
+| Push source       | Price-pusher POST /push | Cron POST /broadcast               |
+| Prior art         | HTTP polling → WS       | SSE → WS (SSE kept for compat)     |
 
 ## Consequences
 

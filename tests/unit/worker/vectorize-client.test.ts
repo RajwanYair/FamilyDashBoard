@@ -17,7 +17,9 @@ import type { VectorizeIndex } from "../../../worker/src/utils/vectorize-client"
 // ── Stubs ─────────────────────────────────────────────────────────────────────
 
 function makeIndex(
-  queryResult?: { matches: Array<{ id: string; score: number; metadata?: Record<string, unknown> }> },
+  queryResult?: {
+    matches: Array<{ id: string; score: number; metadata?: Record<string, unknown> }>;
+  },
   upsertResult?: { count: number },
 ): VectorizeIndex {
   return {
@@ -36,7 +38,7 @@ describe("vectorizeQuery", () => {
     const index = makeIndex({
       matches: [
         { id: "a", score: 0.95 },
-        { id: "b", score: 0.80 },
+        { id: "b", score: 0.8 },
         { id: "c", score: 0.92 },
       ],
     });

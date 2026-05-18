@@ -272,9 +272,7 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
   if (env.VECTORIZE_INDEX && env.AI) {
     const SHADOW_LIMIT = 30;
     const shadowItems = embeddingDeduped.slice(0, SHADOW_LIMIT);
-    const droppedForShadow = unique
-      .filter((item) => !embeddingDeduped.includes(item))
-      .slice(0, 10);
+    const droppedForShadow = unique.filter((item) => !embeddingDeduped.includes(item)).slice(0, 10);
     // Fire-and-forget shadow run — silently swallow errors
     void (async () => {
       try {
