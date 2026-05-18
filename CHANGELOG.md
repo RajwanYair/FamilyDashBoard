@@ -9,7 +9,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
-## [14.31.0] — 2025-07-14
+## [14.32.0] — 2026-05-18
+
+> **7669 tests / 319 suites / 0 failures** · Coverage: 97.1/90.54/96.46/98.13
+
+- **fix(dx)**: exclude all HTML files from webhint VS Code scan — eliminates false-positive IE compat warnings on `.html` files (S1)
+- **feat(dx)**: route Playwright output to `$TEMP/fdb-dev/playwright`; suppress webhint on `.ts` files — keeps repo root clean of `test-results/` and `playwright-report/` (S2)
+- **feat(worker)**: `StocksLiveDO` — Hibernatable WebSocket live stock-price fan-out (ADR-087); 4-shard topology, 30 s alarm, zero CPU between messages (S3)
+- **feat(worker)**: OTel OTLP/JSON dep-free exporter — real spans via native `fetch`, feature-gated on `OTEL_ENABLED`; zero npm deps added (ADR-088, S4)
+- **feat(worker)**: R2 `fdb-static-assets` bucket binding + `r2-cache.ts` helper (`r2Get` / `r2Put` / `r2Delete`, fire-and-forget, ADR-050, S5)
+- **docs(adr)**: ADR-087 StocksLiveDO Hibernatable WS + ADR-088 OTel OTLP/JSON dep-free — full architecture records (S6)
+- **docs(roadmap)**: ROADMAP v5.0 audit stamp — S-DO + OTel shipped, inventory updated to 88 ADRs (S7)
+- **test(worker)**: 38 new unit tests — `StocksLiveDO` (13), OTel OTLP exporter (15), R2 cache helper (10); fix `calendar.ts` unused `startOfDayMs` import (S8)
+
+---
+
+## [14.31.0] — 2026-05-18
 
 > **7631 tests / 316 suites / 0 failures** · Coverage: 97.1/90.54/96.46/98.13
 

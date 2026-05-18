@@ -85,7 +85,7 @@
   <!-- Tests -->
   <rect x="42"  y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#60a5fa" stroke-width="0.6" stroke-opacity="0.5"/>
   <text x="105" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">TESTS</text>
-  <text x="105" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#60a5fa" text-anchor="middle">7631</text>
+  <text x="105" y="213" font-family="Segoe UI" font-size="21" font-weight="800" fill="#60a5fa" text-anchor="middle">7669</text>
   <text x="105" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">vitest · 0 failures</text>
 
   <!-- Suites -->
@@ -115,7 +115,7 @@
   <!-- Version -->
   <rect x="752" y="172" width="126" height="58" rx="8" fill="url(#tile)" stroke="#fb923c" stroke-width="0.6" stroke-opacity="0.5"/>
   <text x="815" y="190" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle" letter-spacing="1">RELEASE</text>
-  <text x="815" y="211" font-family="Segoe UI" font-size="17" font-weight="800" fill="#fb923c" text-anchor="middle">v14.31.0</text>
+  <text x="815" y="211" font-family="Segoe UI" font-size="17" font-weight="800" fill="#fb923c" text-anchor="middle">v14.32.0</text>
   <text x="815" y="228" font-family="Segoe UI" font-size="7.5" fill="#334155" text-anchor="middle">TS 6 · Vite 8</text>
 
   <!-- Bottom accent strip -->
