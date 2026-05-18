@@ -85,9 +85,10 @@ export default defineConfig({
         // (v14.28.0): Sprint 2 — video-news-adapter property tests + buildHebrewCalPayload coverage.
         //             actuals: 97.09 / 90.54 / 96.46 / 98.13.
         // (v14.29.0): ratchet to actuals from v14.28.0 Sprint 2 run (0.05–0.09% headroom).
-        statements: 97.05,
+        // (v14.29.1): ratchet tighter — actuals 97.09/90.54/96.46/98.13 confirmed.
+        statements: 97.09,
         branches: 90.5,
-        functions: 96.4,
+        functions: 96.42,
         lines: 98.1,
       },
     },
