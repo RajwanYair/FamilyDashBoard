@@ -119,3 +119,50 @@ export function addMonths(d: Date, n: number): Date {
 export function toISODateString(year: number, month: number, day: number): string {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
+
+// ── Day arithmetic & comparison ────────────────────────────────────────────────
+
+/** Milliseconds per calendar day (24 × 60 × 60 × 1000). */
+const MS_PER_DAY = 86400000;
+
+/**
+ * Return a new Date equal to `d` plus `n` calendar days.
+ * Non-mutating — creates a clone.
+ *
+ * Temporal: `Temporal.PlainDate.from(d).add({ days: n })`
+ */
+export function addDays(d: Date, n: number): Date {
+  return new Date(d.getTime() + n * MS_PER_DAY);
+}
+
+/**
+ * Return the signed number of whole calendar days from `a` to `b`.
+ * Result is positive when `b` is later than `a`.
+ * Comparison is done at local-midnight level (sub-day precision discarded).
+ *
+ * Temporal: `a.until(b, { largestUnit: 'day' }).days`
+ */
+export function diffDays(a: Date, b: Date): number {
+  return Math.round((startOfDayMs(b) - startOfDayMs(a)) / MS_PER_DAY);
+}
+
+/**
+ * Return `true` when two Date objects fall on the same calendar day in local time.
+ *
+ * Temporal: `Temporal.PlainDate.from(a).equals(Temporal.PlainDate.from(b))`
+ */
+export function isSameDay(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+}
+
+/**
+ * Whole calendar days from today until a future `target` date.
+ * Returns 0 when target is today, negative when target is in the past.
+ *
+ * Temporal: `Temporal.Now.plainDateISO().until(target, { largestUnit: 'day' }).days`
+ */
+export function daysUntil(target: Date): number {
+  return diffDays(new Date(), target);
+}

@@ -23,6 +23,10 @@ import {
   addYears,
   addMonths,
   toISODateString,
+  addDays,
+  diffDays,
+  isSameDay,
+  daysUntil,
 } from "@/core/temporal";
 
 // ── TM1: nowMs is always a finite positive integer ───────────────────────────
@@ -223,6 +227,78 @@ describe("temporal — TM10: startOfDayMs result ≤ input", () => {
         const midnight = startOfDayMs(new Date(ms));
         expect(midnight).toBeLessThanOrEqual(ms);
       }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── TM11: addDays is inverse of negative addDays ─────────────────────────────
+
+describe("temporal — TM11: addDays round-trip", () => {
+  it("addDays(d, n) then addDays(result, -n) returns same calendar day", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 946684800000, max: 4102444800000 }),
+        fc.integer({ min: -365, max: 365 }),
+        (ms, n) => {
+          const d = new Date(ms);
+          const result = addDays(addDays(d, n), -n);
+          expect(isSameDay(d, result)).toBe(true);
+        },
+      ),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── TM12: diffDays is antisymmetric ──────────────────────────────────────────
+
+describe("temporal — TM12: diffDays antisymmetry", () => {
+  it("diffDays(a, b) === -diffDays(b, a)", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 946684800000, max: 4102444800000 }),
+        fc.integer({ min: 946684800000, max: 4102444800000 }),
+        (msA, msB) => {
+          const a = new Date(msA);
+          const b = new Date(msB);
+          expect(diffDays(a, b) + diffDays(b, a)).toBe(0);
+        },
+      ),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── TM13: isSameDay reflexive ────────────────────────────────────────────────
+
+describe("temporal — TM13: isSameDay reflexive", () => {
+  it("any Date is the same day as itself", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 946684800000, max: 4102444800000 }), (ms) => {
+        const d = new Date(ms);
+        expect(isSameDay(d, d)).toBe(true);
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── TM14: addDays non-mutating ───────────────────────────────────────────────
+
+describe("temporal — TM14: addDays non-mutating", () => {
+  it("input Date is unchanged after addDays", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 946684800000, max: 4102444800000 }),
+        fc.integer({ min: -1000, max: 1000 }),
+        (ms, n) => {
+          const d = new Date(ms);
+          const before = d.getTime();
+          addDays(d, n);
+          expect(d.getTime()).toBe(before);
+        },
+      ),
       { numRuns: 50 },
     );
   });

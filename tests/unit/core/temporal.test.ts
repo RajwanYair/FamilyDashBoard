@@ -21,6 +21,10 @@ import {
   addYears,
   addMonths,
   toISODateString,
+  addDays,
+  diffDays,
+  isSameDay,
+  daysUntil,
 } from "@/core/temporal";
 
 // ── nowMs ─────────────────────────────────────────────────────────────────────
@@ -234,5 +238,94 @@ describe("toISODateString", () => {
 
   it("does not zero-pad year", () => {
     expect(toISODateString(2024, 10, 20)).toMatch(/^2024-/);
+  });
+});
+
+// ── addDays ───────────────────────────────────────────────────────────────────
+
+describe("addDays", () => {
+  it("advances by positive days", () => {
+    const d = new Date(2024, 0, 30); // Jan 30
+    const result = addDays(d, 3);
+    expect(result.getDate()).toBe(2); // Feb 2
+    expect(result.getMonth()).toBe(1);
+  });
+
+  it("goes backward with negative days", () => {
+    const d = new Date(2024, 0, 5); // Jan 5
+    const result = addDays(d, -10);
+    expect(result.getMonth()).toBe(11); // Dec
+    expect(result.getFullYear()).toBe(2023);
+  });
+
+  it("does not mutate input", () => {
+    const d = new Date(2024, 5, 15);
+    const before = d.getTime();
+    addDays(d, 7);
+    expect(d.getTime()).toBe(before);
+  });
+});
+
+// ── diffDays ──────────────────────────────────────────────────────────────────
+
+describe("diffDays", () => {
+  it("returns 0 for same day", () => {
+    const d = new Date(2024, 3, 10, 8, 30);
+    const d2 = new Date(2024, 3, 10, 22, 0);
+    expect(diffDays(d, d2)).toBe(0);
+  });
+
+  it("returns positive when b is later", () => {
+    const a = new Date(2024, 0, 1);
+    const b = new Date(2024, 0, 8);
+    expect(diffDays(a, b)).toBe(7);
+  });
+
+  it("returns negative when b is earlier", () => {
+    const a = new Date(2024, 0, 10);
+    const b = new Date(2024, 0, 3);
+    expect(diffDays(a, b)).toBe(-7);
+  });
+});
+
+// ── isSameDay ─────────────────────────────────────────────────────────────────
+
+describe("isSameDay", () => {
+  it("returns true for same day different times", () => {
+    const a = new Date(2024, 5, 15, 0, 0);
+    const b = new Date(2024, 5, 15, 23, 59);
+    expect(isSameDay(a, b)).toBe(true);
+  });
+
+  it("returns false for different days", () => {
+    const a = new Date(2024, 5, 14);
+    const b = new Date(2024, 5, 15);
+    expect(isSameDay(a, b)).toBe(false);
+  });
+
+  it("returns false for same day different months", () => {
+    const a = new Date(2024, 4, 15);
+    const b = new Date(2024, 5, 15);
+    expect(isSameDay(a, b)).toBe(false);
+  });
+});
+
+// ── daysUntil ─────────────────────────────────────────────────────────────────
+
+describe("daysUntil", () => {
+  it("returns 0 for today", () => {
+    expect(daysUntil(new Date())).toBe(0);
+  });
+
+  it("returns positive for future date", () => {
+    const future = new Date();
+    future.setDate(future.getDate() + 5);
+    expect(daysUntil(future)).toBe(5);
+  });
+
+  it("returns negative for past date", () => {
+    const past = new Date();
+    past.setDate(past.getDate() - 3);
+    expect(daysUntil(past)).toBe(-3);
   });
 });
