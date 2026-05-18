@@ -29,7 +29,7 @@ import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
-import { nowMs, startOfDayMs, parsePlainDateTime, toISODateString, diffDays, addDays } from "../../core/temporal";
+import { nowMs, parsePlainDateTime, toISODateString, diffDays, addDays } from "../../core/temporal";
 
 // X15: cached snapshot of next event for the semantic-clipboard producer.
 let _nextEventSnapshot: { title: string; startMs: number; isAllDay: boolean } | null = null;
