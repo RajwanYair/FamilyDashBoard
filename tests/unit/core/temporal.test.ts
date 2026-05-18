@@ -25,6 +25,10 @@ import {
   diffDays,
   isSameDay,
   daysUntil,
+  addWeeks,
+  isToday,
+  isTomorrow,
+  isYesterday,
 } from "@/core/temporal";
 
 // ── nowMs ─────────────────────────────────────────────────────────────────────
@@ -327,5 +331,108 @@ describe("daysUntil", () => {
     const past = new Date();
     past.setDate(past.getDate() - 3);
     expect(daysUntil(past)).toBe(-3);
+  });
+});
+
+// ── addWeeks ──────────────────────────────────────────────────────────────────
+
+describe("addWeeks", () => {
+  it("advances by 1 week (7 days)", () => {
+    const d = new Date(2024, 0, 1); // Jan 1
+    const result = addWeeks(d, 1);
+    expect(result.getDate()).toBe(8);
+    expect(result.getMonth()).toBe(0);
+  });
+
+  it("advances by 3 weeks", () => {
+    const d = new Date(2024, 0, 1);
+    const result = addWeeks(d, 3);
+    expect(result.getDate()).toBe(22);
+  });
+
+  it("goes backward with negative weeks", () => {
+    const d = new Date(2024, 0, 15);
+    const result = addWeeks(d, -2);
+    expect(result.getDate()).toBe(1);
+  });
+
+  it("does not mutate input", () => {
+    const d = new Date(2024, 5, 15);
+    const before = d.getTime();
+    addWeeks(d, 4);
+    expect(d.getTime()).toBe(before);
+  });
+
+  it("crosses month boundary", () => {
+    const d = new Date(2024, 0, 29); // Jan 29
+    const result = addWeeks(d, 1);
+    expect(result.getMonth()).toBe(1); // Feb
+    expect(result.getDate()).toBe(5);
+  });
+});
+
+// ── isToday ───────────────────────────────────────────────────────────────────
+
+describe("isToday", () => {
+  it("returns true for now", () => {
+    expect(isToday(new Date())).toBe(true);
+  });
+
+  it("returns true for earlier today", () => {
+    const d = new Date();
+    d.setHours(0, 0, 1, 0);
+    expect(isToday(d)).toBe(true);
+  });
+
+  it("returns false for yesterday", () => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    expect(isToday(d)).toBe(false);
+  });
+
+  it("returns false for tomorrow", () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    expect(isToday(d)).toBe(false);
+  });
+});
+
+// ── isTomorrow ────────────────────────────────────────────────────────────────
+
+describe("isTomorrow", () => {
+  it("returns true for tomorrow", () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    expect(isTomorrow(d)).toBe(true);
+  });
+
+  it("returns false for today", () => {
+    expect(isTomorrow(new Date())).toBe(false);
+  });
+
+  it("returns false for day-after-tomorrow", () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 2);
+    expect(isTomorrow(d)).toBe(false);
+  });
+});
+
+// ── isYesterday ───────────────────────────────────────────────────────────────
+
+describe("isYesterday", () => {
+  it("returns true for yesterday", () => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    expect(isYesterday(d)).toBe(true);
+  });
+
+  it("returns false for today", () => {
+    expect(isYesterday(new Date())).toBe(false);
+  });
+
+  it("returns false for 2 days ago", () => {
+    const d = new Date();
+    d.setDate(d.getDate() - 2);
+    expect(isYesterday(d)).toBe(false);
   });
 });

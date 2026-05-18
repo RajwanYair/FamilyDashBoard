@@ -166,3 +166,44 @@ export function isSameDay(a: Date, b: Date): boolean {
 export function daysUntil(target: Date): number {
   return diffDays(new Date(), target);
 }
+
+/**
+ * Return a new Date equal to `d` plus `n` weeks (7 × n days).
+ * Non-mutating — creates a clone.
+ *
+ * Temporal: `Temporal.PlainDate.from(d).add({ weeks: n })`
+ */
+export function addWeeks(d: Date, n: number): Date {
+  return new Date(d.getTime() + n * 7 * MS_PER_DAY);
+}
+
+/**
+ * Return `true` when `d` falls on the same calendar day as today (local time).
+ *
+ * Temporal: `Temporal.PlainDate.from(d).equals(Temporal.Now.plainDateISO())`
+ */
+export function isToday(d: Date): boolean {
+  return isSameDay(d, new Date());
+}
+
+/**
+ * Return `true` when `d` is tomorrow (local time).
+ *
+ * Temporal: `Temporal.PlainDate.from(d).equals(Temporal.Now.plainDateISO().add({ days: 1 }))`
+ */
+export function isTomorrow(d: Date): boolean {
+  const tom = new Date();
+  tom.setDate(tom.getDate() + 1);
+  return isSameDay(d, tom);
+}
+
+/**
+ * Return `true` when `d` is yesterday (local time).
+ *
+ * Temporal: `Temporal.PlainDate.from(d).equals(Temporal.Now.plainDateISO().subtract({ days: 1 }))`
+ */
+export function isYesterday(d: Date): boolean {
+  const yst = new Date();
+  yst.setDate(yst.getDate() - 1);
+  return isSameDay(d, yst);
+}
