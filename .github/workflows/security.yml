@@ -30,6 +30,10 @@ concurrency:
   group: security-${{ github.ref }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   # ── 1. npm audit (moderate+) ─────────────────────────────────────────────
   npm-audit:
@@ -63,8 +67,7 @@ jobs:
       - name: Check for dangerous JS patterns
         run: |
           FAILED=0
-          for f in $(find src/ worker/ scripts/ -name '*.ts' -o -name '*.js' 2>/dev/null) src/index.html; do
-            [ -f "$f" ] || continue
+          while IFS= read -r -d '' f; do
             if grep -n "eval(" "$f"; then
               echo "::error file=$f::eval() usage detected"
               FAILED=1
@@ -73,7 +76,16 @@ jobs:
               echo "::error file=$f::document.write() detected"
               FAILED=1
             fi
-          done
+          done < <(find src/ worker/ scripts/ \( -name '*.ts' -o -name '*.js' \) -print0 2>/dev/null)
+          # Also check the main HTML file
+          if grep -n "eval(" src/index.html; then
+            echo "::error file=src/index.html::eval() usage detected"
+            FAILED=1
+          fi
+          if grep -n "document\.write(" src/index.html; then
+            echo "::error file=src/index.html::document.write() detected"
+            FAILED=1
+          fi
           [ "$FAILED" -eq 0 ] && echo "Source security scan passed." || exit 1
 
   # ── 3. Dependency integrity check (PRs only) ──────────────────────────────
@@ -97,9 +109,9 @@ jobs:
           RUNTIME_COUNT=$(node -e "
             const pkg = require('./package.json');
             console.log(Object.keys(pkg.dependencies || {}).length);
-          ")
+          " || echo "0")
           echo "Runtime dependencies: ${RUNTIME_COUNT}"
-          if [ "$RUNTIME_COUNT" -gt 0 ]; then
+          if [ "${RUNTIME_COUNT:-0}" -gt 0 ]; then
             echo "::warning::PR introduces ${RUNTIME_COUNT} runtime production dep(s). FamilyDashBoard target = 0 runtime deps. Please review."
           else
             echo "Zero runtime deps — OK."

@@ -19,8 +19,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-14.29.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-7591_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-14.29.1-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-7601_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -318,6 +318,7 @@ Cards use `backdrop-filter: blur(16px)` for the glassmorphism effect. All animat
 `dashboard` `family-dashboard` `tv-display` `smart-home` `hebrew` `rtl` `israel`
 `typescript` `vite` `zero-dependencies` `pwa` `cloudflare-workers` `css3`
 `weather` `stocks` `news-reader` `dark-theme` `real-time` `github-pages` `open-source`
+`service-worker` `offline-first` `glassmorphism` `vitest` `playwright`
 
 > These topics are set on the [GitHub repository](https://github.com/RajwanYair/FamilyDashBoard) for discoverability.
 > Search GitHub for [`topic:family-dashboard`](https://github.com/topics/family-dashboard) or [`topic:tv-display`](https://github.com/topics/tv-display) to find this project.
@@ -337,13 +338,17 @@ This project leverages extensive GitHub features:
 | Feature                  | Details                                                                                               |
 | ------------------------ | ----------------------------------------------------------------------------------------------------- |
 | **GitHub Pages**         | [Live demo](https://rajwanyair.github.io/FamilyDashBoard/) auto-deployed from `main`                  |
-| **GitHub Actions**       | 23 workflows — CI, deploy, release, security, SBOM, scorecard, Trivy, ZAP, Playwright VR, and 14 more |
+| **GitHub Actions**       | 27 workflows — CI, deploy, release, security, SBOM, scorecard, Trivy, ZAP, Playwright VR, and more   |
 | **Issue Templates**      | YAML forms for bugs, features, API issues with auto-labeling                                          |
 | **Discussion Templates** | Ideas, Q&A, Show-and-Tell categories                                                                  |
 | **Dependabot**           | Weekly updates for GitHub Actions dependencies                                                        |
+| **Renovate**             | Grouped minor monthly + auto-merge patch updates for dev dependencies                                 |
 | **Copilot Integration**  | 3 custom agents, 4 skills, 18 prompts, 8 instruction files, copilot-instructions.md                   |
 | **Community Health**     | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, SUPPORT, CODEOWNERS                                          |
 | **Auto Release Notes**   | 8-category changelog via `release.yml`                                                                |
+| **CITATION.cff**         | Machine-readable citation metadata — "Cite this repository" on GitHub sidebar                         |
+| **Sponsor**              | GitHub Sponsors enabled via `FUNDING.yml`                                                             |
+| **Security**             | CodeQL, Trivy, TruffleHog, ZAP baseline, supply-chain checks, Scorecard                              |
 
 ---
 

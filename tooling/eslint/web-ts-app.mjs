@@ -90,8 +90,8 @@ export const sharedRules = {
   "no-fallthrough": "error",
   "no-case-declarations": "error",
   "prefer-const": "error",
-  "no-prototype-builtins": "off",
-  "no-inner-declarations": "off",
+  "no-prototype-builtins": "error",
+  "no-inner-declarations": "error",
 };
 
 export function createWebTsAppEslintConfig({

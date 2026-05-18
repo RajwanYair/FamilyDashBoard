@@ -1,5 +1,7 @@
 # 🤖 FamilyDashBoard — MCP Server Bridge (X11 / D1)
 
+![MCP Server Bridge](../.github/assets/mcp.svg)
+
 > **Status**: Shipped v14.0 · ADR-058 (design) · ADR-066 (impl plan)
 >
 > **Privacy guarantee**: zero network egress from the dashboard. The bridge

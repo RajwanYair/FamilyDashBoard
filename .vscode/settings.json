@@ -26,6 +26,9 @@
     "css.validate": false,
     // ── HTMLHint — disabled (in unwantedRecommendations; webhint covers HTML) ──
     "htmlhint.enable": false,
+    // ── webhint — VS Code ext doesn't read .hintrc; compat enforced by Lightning CSS + browserslist at build time ──
+    "webhint.enableTelemetry": "disabled",
+    "webhint.ignoredUrls": "dist/**,test-results/**,coverage/**,src/*.html",
 
     // ── Files ──
     "files.eol": "\n",

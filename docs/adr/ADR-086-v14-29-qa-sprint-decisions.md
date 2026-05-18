@@ -15,6 +15,7 @@ The remaining open items entering v14.29.0 were QA-6 (Renovate automerge), QA-7 
 toast), and QA-9 (VS Code extensions audit).
 
 Additional VS Code environment noise was producing false-positive Problems panel entries:
+
 - webhint reported `ssllabs` / `https-only` / `http-cache` rules (not applicable to static PWA).
 - HTMLHint was active (listed in extensions.json) despite no `.htmlhintrc` in the project.
 - markdownlint was flagging generated `test-results/**` markdown files.
@@ -31,6 +32,7 @@ Additional VS Code environment noise was producing false-positive Problems panel
 ### QA-6 — Renovate patch automerge
 
 Split the single `minor+patch` rule in `.github/renovate.json` into two rules:
+
 - **Monthly-schedule minor rule**: grouped minor updates, monthly schedule, no automerge.
 - **Immediate-automerge patch rule** (`groupName: "devDeps patch updates"`): instant automerge,
   patch-only, `matchUpdateTypes: ["patch"]`.
@@ -47,12 +49,14 @@ confirmation. This closes the feedback loop: users see a visual cue when a new S
 silently activated, instead of experiencing a stale-cache ghost.
 
 Two unit tests added to `tests/unit/ui/status-bar.test.ts` (total: 46):
+
 - `VERSION_ACTIVATED message → shows toast with label`
 - `VERSION_ACTIVATED message without version → shows fallback toast`
 
 ### QA-9 — VS Code extensions.json audit
 
 Two extensions removed from `recommendations` and added to `unwantedRecommendations`:
+
 - **`mhutchie.git-graph`**: redundant — GitLens already includes a rich git-graph view.
   Having both causes duplicate sidebar tabs and a VS Code prompt to install both.
 - **`hediet.vscode-drawio`**: no `.drawio` files exist in this project; `.github/assets/`
@@ -73,7 +77,8 @@ Two extensions removed from `recommendations` and added to `unwantedRecommendati
 `docs/ARCHITECTURE.md` Mermaid diagrams used `subgraph id[title]` syntax (Mermaid ≥ 9.1).
 The in-repo validator (`scripts/check-mermaid.mjs`) targets Mermaid v8.8.0 compatibility.
 All five `subgraph` blocks replaced with the v8.8.0-compatible form:
-```
+
+```text
 subgraph id
   direction TB
   ...

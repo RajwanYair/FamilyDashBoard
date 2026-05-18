@@ -1,5 +1,7 @@
 # 🗺️ Documentation Map
 
+![Documentation Map](../.github/assets/docs-map.svg)
+
 This directory is the canonical entry point for product documentation in FamilyDashBoard.
 
 ## 📚 Current Product Docs

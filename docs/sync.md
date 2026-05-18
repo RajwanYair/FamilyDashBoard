@@ -1,6 +1,8 @@
 # 🔄 Encrypted Config Sync — FamilyDashBoard
 
-> \*\*\*\* — Share your dashboard settings securely across devices using AES-GCM encrypted URL fragments. No server, no account, no plaintext.
+![Encrypted Config Sync](../.github/assets/sync.svg)
+
+> Share your dashboard settings securely across devices using AES-GCM encrypted URL fragments. No server, no account, no plaintext.
 
 ## 📋 Overview
 

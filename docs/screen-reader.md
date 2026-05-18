@@ -1,5 +1,7 @@
 # ♿ Screen Reader Testing — FamilyDashBoard
 
+![Screen Reader Testing](../.github/assets/screen-reader.svg)
+
 > Manual test protocol and findings for NVDA (Windows desktop) and VoiceOver
 > (iOS mobile). Last verified against **v14.5.0**.
 

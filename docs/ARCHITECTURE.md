@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v14.29.0)
+# FamilyDashBoard — Architecture (v14.29.1)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>

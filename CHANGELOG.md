@@ -9,6 +9,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.29.1] — 2026-05-18
+
+> **7601 tests / 315 suites / 0 failures** · 86 ADRs · 136 Stryker files · Stryker threshold 90
+
+- **fix(a11y)**: ARIA countdown-body — added `role="region"` to `.countdown-body` to satisfy axe-core `aria-prohibited-attr` (aria-label requires valid role)
+- **fix(eslint)**: Re-enabled `no-prototype-builtins` and `no-inner-declarations` rules (code passes without changes — free safety guardrails)
+- **fix(test)**: Security-doc test regex updated to handle emoji in markdown headings
+- **docs(roadmap)**: ROADMAP v4.0 deep-rethink audit stamp — documents all disabled-item decisions
+- **test(props)**: CP1-CP6 config-panel property tests: `buildConfigAccordion`, `isConfigPanelOpen`, `toggleConfigPanel`, `switchCfgTab` — 8 new tests
+- **docs(adr)**: ADR-086: v14.29.0 QA sprint decisions; ADR index regenerated to 86 ADRs
+- **chore(ci)**: ShellCheck fixes across 5 workflows (bash shell defaults, safe find iteration, quoted variables)
+
+---
+
 ## [14.29.0] — 2026-06-08
 
 > **7591 tests / 314 suites / 0 failures** · 85 ADRs · 136 Stryker files · Stryker threshold 90

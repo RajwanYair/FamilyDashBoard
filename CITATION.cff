@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+title: FamilyDashBoard
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - given-names: Reuven
+    family-names: Airhar
+    alias: RajwanYair
+repository-code: "https://github.com/RajwanYair/FamilyDashBoard"
+url: "https://rajwanyair.github.io/FamilyDashBoard/"
+keywords:
+  - dashboard
+  - family-dashboard
+  - tv-display
+  - smart-home
+  - hebrew
+  - rtl
+  - typescript
+  - pwa
+  - zero-dependencies
+  - cloudflare-workers
+license: MIT
+version: 14.29.1
+date-released: "2026-05-18"

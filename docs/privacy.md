@@ -1,5 +1,7 @@
 # 🔏 Privacy Notice — FamilyDashBoard
 
+![Privacy Notice](../.github/assets/privacy.svg)
+
 > This document describes the privacy practices of the FamilyDashBoard project.
 > Plain language; no legal jargon. Updated: 2026-06-08.
 

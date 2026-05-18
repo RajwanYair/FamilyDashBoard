@@ -1,5 +1,7 @@
 # 📺 Video News Card — FamilyDashBoard
 
+![Video News Card](../.github/assets/video-cards.svg)
+
 > A live Israeli news stream embedded in the dashboard.
 > Default state: **disabled** (opt-in via Settings → Cards).
 

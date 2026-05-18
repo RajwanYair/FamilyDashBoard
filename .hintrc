@@ -19,27 +19,13 @@
     "not op_mini all",
     "not dead"
   ],
+  "ignoredUrls": [
+    "dist/**",
+    "test-results/**",
+    "coverage/**"
+  ],
   "hints": {
-    "compat-api/html": [
-      "default",
-      {
-        "ignore": [
-          "meta[name=theme-color]",
-          "script[type=speculationrules]",
-          "main",
-          "dialog",
-          "details",
-          "summary",
-          "dir",
-          "autocomplete",
-          "popover",
-          "popovertarget",
-          "input[type=date]",
-          "input[type=time]"
-        ],
-        "enable": []
-      }
-    ],
+    "compat-api/html": "off",
     "compat-api/css": "off",
     "compat-api/js": "off",
     "no-inline-styles": "off",

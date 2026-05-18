@@ -1,5 +1,7 @@
 ﻿# 🧩 Adding a New Card to FamilyDashBoard
 
+![Adding a New Card](../.github/assets/adding-a-card.svg)
+
 This guide walks through every step needed to add a fully functional card to the
 dashboard. Follow the steps in order — each builds on the previous.
 

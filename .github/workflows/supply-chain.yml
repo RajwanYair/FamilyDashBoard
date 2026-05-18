@@ -50,6 +50,10 @@ concurrency:
   group: supply-chain-${{ github.ref }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   # ── 1. Signature verification + license compliance ──────────────────────────
   audit:

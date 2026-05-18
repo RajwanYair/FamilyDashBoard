@@ -1,5 +1,7 @@
 # 🛠️ Local Development & Verification
 
+![Local Development](../.github/assets/local-dev.svg)
+
 > FamilyDashBoard v14.13.1 · TypeScript · Vite 8 · Hebrew RTL
 
 Three verified workflows for running and testing the dashboard locally.

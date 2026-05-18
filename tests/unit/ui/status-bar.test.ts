@@ -701,10 +701,10 @@ describe("Status Bar — SW VERSION_ACTIVATED calls showToast (QA-7)", () => {
 
     expect(capturedHandler).not.toBeNull();
     capturedHandler!({
-      data: { type: "VERSION_ACTIVATED", version: "familydashboard-v14.29.0" },
+      data: { type: "VERSION_ACTIVATED", version: "familydashboard-v14.29.1" },
     } as MessageEvent);
 
-    expect(mockShowToast).toHaveBeenCalledWith("✓ עודכן לגרסה v14.29.0", 4000);
+    expect(mockShowToast).toHaveBeenCalledWith("✓ עודכן לגרסה v14.29.1", 4000);
   });
 
   it("does not call showToast when VERSION_ACTIVATED has no version field", async () => {

@@ -32,7 +32,7 @@ beforeAll(() => {
 
 describe("docs/security.md: SRI policy ", () => {
   it("contains SRI Policy section heading", () => {
-    expect(secDoc).toMatch(/##\s+\d+\.\s+SRI/i);
+    expect(secDoc).toMatch(/##\s+\d+\.\s+.*SRI/i);
   });
 
   it("explains that SRI is N/A for bundled build", () => {

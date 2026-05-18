@@ -1,5 +1,7 @@
 # 🔍 Error Viewer — FamilyDashBoard
 
+![Error Viewer](../.github/assets/error-viewer.svg)
+
 > The error viewer surfaces client-side runtime errors that were captured by the
 > dashboard and persisted to Cloudflare KV by the worker. It is the primary
 > debugging tool for production issues reported by family members.

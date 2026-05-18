@@ -1,5 +1,7 @@
 # ⌨️ Keyboard & Accessibility Guide — FamilyDashBoard
 
+![Keyboard & Accessibility](../.github/assets/keyboard.svg)
+
 > Covers keyboard shortcuts, focus-order design, and screen-reader operation.
 
 ---
