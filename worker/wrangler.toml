@@ -81,6 +81,15 @@ new_classes = ["AlertsLiveDO"]
 binding = "R2_ASSETS"
 bucket_name = "fdb-static-assets"
 
+# ADR-052 / ROADMAP §6.1 SEMANTIC: Vectorize index for semantic news dedup shadow run.
+# Shadow mode — runs in parallel with SimHash; no behavior change until
+# precision@10 ≥ SimHash + 15% over 30 days.
+# Provision via: wrangler vectorize create fdb-news-dedup --dimensions=384 --metric=cosine
+# Omit this binding to disable the shadow run (feed output is unchanged).
+[[vectorize]]
+binding = "VECTORIZE_INDEX"
+index_name = "fdb-news-dedup"
+
 # Cron triggers: daily pre-warm of hot API paths (V12-OPS-1)
 # 00:00 UTC — warm stocks, currency, hebcal before the working day
 # 12:00 UTC — mid-day warm to refresh stale KV entries

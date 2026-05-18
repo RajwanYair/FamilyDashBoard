@@ -28,6 +28,7 @@ import {
   getEmbedding,
   isNearDuplicateByEmbedding,
 } from "../utils/simhash";
+import { vectorizeShadowRun } from "../utils/vectorize-client";
 import type { Env } from "../types";
 
 export async function handleStocks(url: URL, env: Env): Promise<Response> {
@@ -263,6 +264,39 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
       }
     }
     embeddingDeduped = [...embeddingPassed, ...rest];
+  }
+
+  // ADR-052 / ROADMAP §6.1 SEMANTIC: Vectorize shadow run (fire-and-forget).
+  // Only active when VECTORIZE_INDEX and AI bindings are both present.
+  // Runs in parallel with the response — does NOT affect feed output.
+  if (env.VECTORIZE_INDEX && env.AI) {
+    const SHADOW_LIMIT = 30;
+    const shadowItems = embeddingDeduped.slice(0, SHADOW_LIMIT);
+    const droppedForShadow = unique
+      .filter((item) => !embeddingDeduped.includes(item))
+      .slice(0, 10);
+    // Fire-and-forget shadow run — silently swallow errors
+    void (async () => {
+      try {
+        const keptEmbeddings = new Map<string, number[]>();
+        await Promise.all(
+          shadowItems.map(async (item) => {
+            const vec = await getEmbedding(env.AI!, item.title);
+            if (vec) keptEmbeddings.set(item.link, vec);
+          }),
+        );
+        const droppedEmbeddings = new Map<string, number[]>();
+        await Promise.all(
+          droppedForShadow.map(async (item) => {
+            const vec = await getEmbedding(env.AI!, item.title);
+            if (vec) droppedEmbeddings.set(item.link, vec);
+          }),
+        );
+        await vectorizeShadowRun(env.VECTORIZE_INDEX!, keptEmbeddings, droppedEmbeddings);
+      } catch {
+        // Shadow run errors must never affect the news feed response
+      }
+    })();
   }
 
   // Sort newest-first (items without a valid date go to end)

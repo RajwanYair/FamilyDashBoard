@@ -144,6 +144,13 @@ export interface Env {
    * Optional — asset cache helper is a no-op when not configured.
    */
   R2_ASSETS?: R2Bucket;
+  /**
+   * Cloudflare Vectorize index for semantic news dedup shadow run (ADR-052, N-V).
+   * Provision via: wrangler vectorize create fdb-news-dedup --dimensions=384 --metric=cosine
+   * Shadow mode: runs alongside SimHash — no behavior change until precision@10 ≥ +15%.
+   * Optional — shadow run is silently skipped when not configured.
+   */
+  VECTORIZE_INDEX?: import("./utils/vectorize-client").VectorizeIndex;
 }
 
 /**
