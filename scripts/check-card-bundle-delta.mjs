@@ -177,12 +177,11 @@ console.log("✅  All group budgets within limits.\n");
 // Compare cardSource sizes from bundle-trend.json baseline to current state.
 // Warns on > 5% growth, fails on > 15% growth.
 // Hard cap added in v14.27.0 (ROADMAP #19): any card source folder ≥ 65 KB fails CI.
-// Target: reduce to ≤ 60 KB per card by v15 through tree-shaking and module splits.
-// Current largest: weather 63.8 KB, stocks 59.3 KB, news 58.6 KB.
+// v14.28.0: ratchet 65→64 KB (largest card: weather 63.8 KB). Target ≤ 60 KB by v15.
 const SOURCE_DELTA_WARN = 0.05;
 const SOURCE_DELTA_FAIL = 0.15;
-/** Per-card source folder absolute cap (v14.27.0). Fail CI above this. Target ≤ 60 KB in v15. */
-const SOURCE_HARD_CAP_KB = 65;
+/** Per-card source folder absolute cap (v14.28.0). Fail CI above this. Target ≤ 60 KB in v15. */
+const SOURCE_HARD_CAP_KB = 64;
 const baselineSource = baseline.cardSource ?? {};
 
 if (Object.keys(baselineSource).length > 0) {
