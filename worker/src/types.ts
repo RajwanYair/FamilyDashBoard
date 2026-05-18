@@ -151,6 +151,24 @@ export interface Env {
    * Optional — shadow run is silently skipped when not configured.
    */
   VECTORIZE_INDEX?: import("./utils/vectorize-client").VectorizeIndex;
+  /**
+   * Feature flag: enable Web Push VAPID routes (ADR-091).
+   * Set to "true" to activate /api/push/* endpoints.
+   * When absent or not "true", those routes return 503 {"ok":false,"error":"vapid_not_enabled"}.
+   */
+  VAPID_ENABLED?: string;
+  /**
+   * VAPID public key (URL-safe base64 uncompressed P-256 point).
+   * Returned by GET /api/push/key for browser PushManager.subscribe().
+   * Set as a Worker secret: wrangler secret put VAPID_PUBLIC_KEY
+   */
+  VAPID_PUBLIC_KEY?: string;
+  /**
+   * VAPID private key (URL-safe base64 P-256 scalar).
+   * Used to sign the VAPID JWT when sending push notifications.
+   * Set as a Worker secret: wrangler secret put VAPID_PRIVATE_KEY
+   */
+  VAPID_PRIVATE_KEY?: string;
 }
 
 /**

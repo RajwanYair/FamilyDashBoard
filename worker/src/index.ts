@@ -27,6 +27,11 @@
  *   GET  /api/reports/digest              → Report summary digest (token-gated, D1-backed, ADR-028)
  *   GET  /api/r2-asset?url=X             → R2 background image cache proxy (ADR-050, allowlisted CDNs only)
  *
+ *   GET  /api/push/key                   → VAPID public key (ADR-091, skeleton)
+ *   POST /api/push/subscribe             → Store browser push subscription (ADR-091, gated VAPID_ENABLED)
+ *   DELETE /api/push/subscribe           → Remove push subscription (ADR-091, gated VAPID_ENABLED)
+ *   POST /api/push/send                  → Trigger push broadcast (ADR-091, 501 until VAPID provisioned)
+ *
  * Middleware:
  *   CORS · Rate-limiting · Request logging · Canary header (X-Canary: true, CANARY_PCT%) · Analytics Engine
  */
@@ -54,6 +59,7 @@ import { handleErrors, handleErrorsExport, handleErrorsQueue } from "./routes/er
 import { handleMetrics } from "./routes/metrics";
 import { handleReportsIngest, handleReportsDigest } from "./routes/reports";
 import { handleR2Asset } from "./routes/r2-asset";
+import { handlePushKey, handlePushSubscribe, handlePushUnsubscribe, handlePushSend } from "./routes/push";
 import { handleScheduled, handleNextYearPreWarm, handleWeeklyDigest } from "./routes/cron";
 import { handleNewsSummarise, handleMotivationHebrew, handleAiSynthesis } from "./routes/ai";
 import {
@@ -79,7 +85,7 @@ app.use(
   "*",
   cors({
     origin: "*",
-    allowMethods: ["GET", "OPTIONS"],
+    allowMethods: ["GET", "POST", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type"],
     maxAge: 86400,
   }),
@@ -192,6 +198,12 @@ app.get("/api/reports/digest", (c) => handleReportsDigest(c.req.raw, c.env));
 
 // ADR-050: R2 asset caching proxy for background images and media assets
 app.get("/api/r2-asset", (c) => handleR2Asset(c.req.raw, c.env));
+
+// ADR-091: Web Push VAPID skeleton (opt-in, gated by VAPID_ENABLED env var)
+app.get("/api/push/key", (c) => handlePushKey(c.env));
+app.post("/api/push/subscribe", (c) => handlePushSubscribe(c.req.raw, c.env));
+app.delete("/api/push/subscribe", (c) => handlePushUnsubscribe(c.req.raw, c.env));
+app.post("/api/push/send", (c) => handlePushSend(c.req.raw, c.env));
 
 app.all("*", (c) => c.json({ error: "Not found" }, 404));
 
