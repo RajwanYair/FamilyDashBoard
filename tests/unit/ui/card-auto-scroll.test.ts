@@ -524,7 +524,9 @@ describe("CardAutoScroll — rAF tick atBottom resets scrollTop after pause", ()
     let _scrollTop = 0;
     Object.defineProperty(body, "scrollTop", {
       get: () => _scrollTop,
-      set: (v: number) => { _scrollTop = v; },
+      set: (v: number) => {
+        _scrollTop = v;
+      },
       configurable: true,
     });
 

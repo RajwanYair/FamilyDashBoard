@@ -53,13 +53,13 @@ Client                 Worker (Hono)         StocksLiveDO
 
 ### Key choices
 
-| Decision | Rationale |
-| -------- | --------- |
-| Hibernation API (not `new WebSocketPair()`) | Zero CPU between messages; CF bills only active time |
-| Tag per symbol (`sym:<TICKER>`) | Selective fan-out — a TSLA update only wakes TSLA subscribers |
-| Sharding by `firstCharCode % 4` | Balances load without shard explosion; 4 DOs cover all 26 letters |
-| 30-second alarm for keep-alive | Prevents idle connections from silently dying through NAT/proxy timeouts |
-| `jurisdiction = "eu"` | Consistent with AlertsOrchestrator — CF routes IL traffic to EU PoPs (ADR-025) |
+| Decision                                    | Rationale                                                                      |
+| ------------------------------------------- | ------------------------------------------------------------------------------ |
+| Hibernation API (not `new WebSocketPair()`) | Zero CPU between messages; CF bills only active time                           |
+| Tag per symbol (`sym:<TICKER>`)             | Selective fan-out — a TSLA update only wakes TSLA subscribers                  |
+| Sharding by `firstCharCode % 4`             | Balances load without shard explosion; 4 DOs cover all 26 letters              |
+| 30-second alarm for keep-alive              | Prevents idle connections from silently dying through NAT/proxy timeouts       |
+| `jurisdiction = "eu"`                       | Consistent with AlertsOrchestrator — CF routes IL traffic to EU PoPs (ADR-025) |
 
 ### Routes
 

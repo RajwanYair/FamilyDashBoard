@@ -259,7 +259,10 @@ export interface R2Bucket {
   put(
     key: string,
     value: ArrayBuffer | ArrayBufferView | string | ReadableStream,
-    options?: { httpMetadata?: { contentType?: string; contentEncoding?: string }; customMetadata?: Record<string, string> },
+    options?: {
+      httpMetadata?: { contentType?: string; contentEncoding?: string };
+      customMetadata?: Record<string, string>;
+    },
   ): Promise<void>;
   delete(key: string): Promise<void>;
 }

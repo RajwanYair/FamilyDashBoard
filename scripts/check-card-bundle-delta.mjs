@@ -182,7 +182,7 @@ console.log("✅  All group budgets within limits.\n");
 // v14.30.0: ratchet 64→63 KB (largest card: weather 63.8→TBD). Target ≤ 60 KB by v15.
 const SOURCE_DELTA_WARN = 0.05;
 /** (v14.31.0): ratcheted 12%→10%. */
-const SOURCE_DELTA_FAIL = 0.10;
+const SOURCE_DELTA_FAIL = 0.1;
 /** Per-card source folder absolute cap (v14.30.0). Fail CI above this. Target ≤ 60 KB in v15. */
 const SOURCE_HARD_CAP_KB = 63;
 const baselineSource = baseline.cardSource ?? {};
@@ -212,9 +212,12 @@ if (Object.keys(baselineSource).length > 0) {
     const delta = (currentKb - baseKb) / baseKb;
     const deltaStr = (delta >= 0 ? "+" : "") + (delta * 100).toFixed(1) + "%";
     const overHardCap = currentKb > SOURCE_HARD_CAP_KB;
-    const sign = overHardCap || delta > SOURCE_DELTA_FAIL ? "❌" : delta > SOURCE_DELTA_WARN ? "⚠️ " : "✅";
+    const sign =
+      overHardCap || delta > SOURCE_DELTA_FAIL ? "❌" : delta > SOURCE_DELTA_WARN ? "⚠️ " : "✅";
     const capNote = overHardCap ? ` ⛔ over ${SOURCE_HARD_CAP_KB} KB hard cap` : "";
-    srcRows.push(`  ${sign}  ${card.padEnd(14)} ${baseKb} KB → ${currentKb} KB  (${deltaStr})${capNote}`);
+    srcRows.push(
+      `  ${sign}  ${card.padEnd(14)} ${baseKb} KB → ${currentKb} KB  (${deltaStr})${capNote}`,
+    );
     if (delta > SOURCE_DELTA_FAIL || overHardCap) srcFailed = true;
   }
 

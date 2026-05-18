@@ -81,18 +81,15 @@ describe("config-panel — CP3: grouped fields create one <details> per distinct
   it("creates exactly one <details> per unique group name", () => {
     fc.assert(
       // Generate N unique group names, then one field per group — guarantees coverage
-      fc.property(
-        fc.array(safeGroup, { minLength: 1, maxLength: 4 }),
-        (rawGroups) => {
-          const groups = [...new Set(rawGroups)];
-          const container = document.createElement("div");
-          // One field per group ensures all groups appear at least once
-          const fields = groups.map((g, i) => textField(`key${i}`, g));
-          buildConfigAccordion(fields, container);
-          const details = container.querySelectorAll("details");
-          expect(details.length).toBe(groups.length);
-        },
-      ),
+      fc.property(fc.array(safeGroup, { minLength: 1, maxLength: 4 }), (rawGroups) => {
+        const groups = [...new Set(rawGroups)];
+        const container = document.createElement("div");
+        // One field per group ensures all groups appear at least once
+        const fields = groups.map((g, i) => textField(`key${i}`, g));
+        buildConfigAccordion(fields, container);
+        const details = container.querySelectorAll("details");
+        expect(details.length).toBe(groups.length);
+      }),
       { numRuns: 5 },
     );
   });

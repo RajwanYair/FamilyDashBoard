@@ -94,9 +94,15 @@ describe("ticker — HT6: higher speed → shorter duration", () => {
     fc.assert(
       fc.property(fc.integer({ min: 1, max: 4 }), (speed) => {
         applyTickerSpeed(speed);
-        const durA = parseInt(document.documentElement.style.getPropertyValue("--ticker-duration"), 10);
+        const durA = parseInt(
+          document.documentElement.style.getPropertyValue("--ticker-duration"),
+          10,
+        );
         applyTickerSpeed(speed + 1);
-        const durB = parseInt(document.documentElement.style.getPropertyValue("--ticker-duration"), 10);
+        const durB = parseInt(
+          document.documentElement.style.getPropertyValue("--ticker-duration"),
+          10,
+        );
         expect(durB).toBeLessThanOrEqual(durA);
       }),
       { numRuns: 4 },

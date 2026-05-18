@@ -1246,7 +1246,9 @@ describe("Alerts — loadAlerts outer catch block fires when historyAppend throw
       }),
     );
     // Force historyAppend to throw → falls into the outer catch block (lines 429-431)
-    vi.spyOn(historyMod, "historyAppend").mockRejectedValue(new Error("forced historyAppend error"));
+    vi.spyOn(historyMod, "historyAppend").mockRejectedValue(
+      new Error("forced historyAppend error"),
+    );
     await expect(loadAlerts()).resolves.toBeUndefined();
   });
 });

@@ -64,13 +64,13 @@ Two extensions removed from `recommendations` and added to `unwantedRecommendati
 
 ### VS Code environment cleanup
 
-| File | Change | Reason |
-|------|--------|--------|
-| `.hintrc` | `"ssllabs": "off"`, `"https-only": "off"`, `"http-cache": "off"` | Not applicable to static PWA on GitHub Pages |
-| `.hintrc` | Added `"not dead"` to browserslist | Aligns with `.browserslistrc` target |
-| `.vscode/settings.json` | `"htmlhint.enable": false` | HTMLHint not installed; extension was inadvertently active via extensions.json removal lag |
-| `.vscode/settings.json` | `markdownlint.ignore`: `test-results/**`, `dist/**`, `coverage/**` | Generated markdown in test output should not be linted |
-| `.vscode/settings.json` | `search.exclude`: `test-results/**` | Reduces noise in search results and Problems panel |
+| File                    | Change                                                             | Reason                                                                                     |
+| ----------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `.hintrc`               | `"ssllabs": "off"`, `"https-only": "off"`, `"http-cache": "off"`   | Not applicable to static PWA on GitHub Pages                                               |
+| `.hintrc`               | Added `"not dead"` to browserslist                                 | Aligns with `.browserslistrc` target                                                       |
+| `.vscode/settings.json` | `"htmlhint.enable": false`                                         | HTMLHint not installed; extension was inadvertently active via extensions.json removal lag |
+| `.vscode/settings.json` | `markdownlint.ignore`: `test-results/**`, `dist/**`, `coverage/**` | Generated markdown in test output should not be linted                                     |
+| `.vscode/settings.json` | `search.exclude`: `test-results/**`                                | Reduces noise in search results and Problems panel                                         |
 
 ### Mermaid subgraph syntax
 

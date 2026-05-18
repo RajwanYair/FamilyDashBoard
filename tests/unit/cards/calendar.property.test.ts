@@ -262,21 +262,17 @@ describe("calendar — CAL14: getHolidaysByDate match", () => {
 describe("calendar — CAL15: calDaysUntilLabel monotone", () => {
   it("further future dates produce labels with ≥ day count", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 2, max: 15 }),
-        fc.integer({ min: 1, max: 14 }),
-        (a, delta) => {
-          const now = new Date(2025, 0, 1);
-          const dateA = new Date(2025, 0, 1 + a);
-          const dateB = new Date(2025, 0, 1 + a + delta);
-          const labelA = calDaysUntilLabel(dateA, now);
-          const labelB = calDaysUntilLabel(dateB, now);
-          // Extract number from "עוד N ימים" — both should have N since a ≥ 2
-          const numA = Number(labelA.replace(/\D/g, ""));
-          const numB = Number(labelB.replace(/\D/g, ""));
-          expect(numB).toBeGreaterThanOrEqual(numA);
-        },
-      ),
+      fc.property(fc.integer({ min: 2, max: 15 }), fc.integer({ min: 1, max: 14 }), (a, delta) => {
+        const now = new Date(2025, 0, 1);
+        const dateA = new Date(2025, 0, 1 + a);
+        const dateB = new Date(2025, 0, 1 + a + delta);
+        const labelA = calDaysUntilLabel(dateA, now);
+        const labelB = calDaysUntilLabel(dateB, now);
+        // Extract number from "עוד N ימים" — both should have N since a ≥ 2
+        const numA = Number(labelA.replace(/\D/g, ""));
+        const numB = Number(labelB.replace(/\D/g, ""));
+        expect(numB).toBeGreaterThanOrEqual(numA);
+      }),
       { numRuns: 20 },
     );
   });

@@ -24,8 +24,12 @@ function makeWS(tags: string[] = []): StubWS {
     sent: [],
     closed: null,
     _tags: tags,
-    send(msg) { this.sent.push(msg); },
-    close(code, reason) { this.closed = { code, reason }; },
+    send(msg) {
+      this.sent.push(msg);
+    },
+    close(code, reason) {
+      this.closed = { code, reason };
+    },
   };
   return ws;
 }
@@ -46,8 +50,12 @@ function makeDoState() {
     },
     storage: {
       getAlarm: async () => _alarmTime,
-      setAlarm: async (t: number) => { _alarmTime = t; },
-      deleteAlarm: async () => { _alarmTime = null; },
+      setAlarm: async (t: number) => {
+        _alarmTime = t;
+      },
+      deleteAlarm: async () => {
+        _alarmTime = null;
+      },
     },
   };
 }
@@ -132,10 +140,10 @@ describe("StocksLiveDO.fetch()", () => {
     _sockets.push(aapl, msft);
 
     const do_ = new StocksLiveDO(makeDoState());
-    const res = await do_.fetch(makePushRequest([
-      { symbol: "AAPL", price: 185.42, changePercent: 0.5, ts: 1000 },
-    ]));
-    const body = await res.json() as { ok: boolean; sent: number };
+    const res = await do_.fetch(
+      makePushRequest([{ symbol: "AAPL", price: 185.42, changePercent: 0.5, ts: 1000 }]),
+    );
+    const body = (await res.json()) as { ok: boolean; sent: number };
     expect(body.ok).toBe(true);
     expect(body.sent).toBe(1);
     expect(aapl.sent).toHaveLength(1);
@@ -147,10 +155,12 @@ describe("StocksLiveDO.fetch()", () => {
     _sockets.length = 0;
     _alarmTime = null;
     const do_ = new StocksLiveDO(makeDoState());
-    const res = await do_.fetch(new Request("https://do/push", {
-      method: "POST",
-      body: "not-json",
-    }));
+    const res = await do_.fetch(
+      new Request("https://do/push", {
+        method: "POST",
+        body: "not-json",
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
@@ -159,7 +169,7 @@ describe("StocksLiveDO.fetch()", () => {
     _sockets.push(makeWS(), makeWS());
     const do_ = new StocksLiveDO(makeDoState());
     const res = await do_.fetch(new Request("https://do/state"));
-    const body = await res.json() as { ok: boolean; connections: number };
+    const body = (await res.json()) as { ok: boolean; connections: number };
     expect(body.ok).toBe(true);
     expect(body.connections).toBe(2);
   });
@@ -188,7 +198,10 @@ describe("StocksLiveDO.webSocketMessage()", () => {
     _sockets.length = 0;
     const do_ = new StocksLiveDO(makeDoState());
     const ws = makeWS();
-    do_.webSocketMessage(ws as unknown as WebSocket, JSON.stringify({ type: "subscribe", symbols: ["AAPL"] }));
+    do_.webSocketMessage(
+      ws as unknown as WebSocket,
+      JSON.stringify({ type: "subscribe", symbols: ["AAPL"] }),
+    );
     expect(ws.closed).toMatchObject({ code: 1000, reason: "resubscribe" });
   });
 
@@ -205,7 +218,9 @@ describe("StocksLiveDO.webSocketMessage()", () => {
     _sockets.length = 0;
     const do_ = new StocksLiveDO(makeDoState());
     const ws = makeWS();
-    expect(() => do_.webSocketMessage(ws as unknown as WebSocket, new ArrayBuffer(4))).not.toThrow();
+    expect(() =>
+      do_.webSocketMessage(ws as unknown as WebSocket, new ArrayBuffer(4)),
+    ).not.toThrow();
     expect(ws.sent).toHaveLength(0);
   });
 });

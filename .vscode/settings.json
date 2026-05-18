@@ -108,12 +108,7 @@
     },
 
     // ── Markdownlint — exclude auto-generated Playwright artefacts ──
-    "markdownlint.ignore": [
-        "test-results/**",
-        "dist/**",
-        "coverage/**",
-        "**/node_modules/**"
-    ],
+    "markdownlint.ignore": ["test-results/**", "dist/**", "coverage/**", "**/node_modules/**"],
 
     // ── Terminal Performance ──
     "terminal.integrated.gpuAcceleration": "on",

@@ -53,24 +53,30 @@ Request lifecycle              telemetry.ts                 OTLP Collector
 
 ```json
 {
-  "resourceSpans": [{
-    "resource": {
-      "attributes": [{"key": "service.name", "value": {"stringValue": "fdb-worker"}}]
-    },
-    "scopeSpans": [{
-      "scope": {"name": "fdb-worker"},
-      "spans": [{
-        "traceId": "<32-hex-chars>",
-        "spanId": "<16-hex-chars>",
-        "name": "route:weather",
-        "kind": 1,
-        "startTimeUnixNano": "<ns-string>",
-        "endTimeUnixNano": "<ns-string>",
-        "attributes": [{"key": "lat", "value": {"doubleValue": 32.1}}],
-        "status": {"code": 1}
-      }]
-    }]
-  }]
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [{ "key": "service.name", "value": { "stringValue": "fdb-worker" } }]
+      },
+      "scopeSpans": [
+        {
+          "scope": { "name": "fdb-worker" },
+          "spans": [
+            {
+              "traceId": "<32-hex-chars>",
+              "spanId": "<16-hex-chars>",
+              "name": "route:weather",
+              "kind": 1,
+              "startTimeUnixNano": "<ns-string>",
+              "endTimeUnixNano": "<ns-string>",
+              "attributes": [{ "key": "lat", "value": { "doubleValue": 32.1 } }],
+              "status": { "code": 1 }
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -88,14 +94,14 @@ When either is absent, `initOtel()` returns the existing zero-cost no-op handle.
 
 ### Key choices
 
-| Decision | Rationale |
-| -------- | --------- |
-| OTLP/JSON over OTLP/proto | No protobuf npm dep; JSON is trivially serialisable with `JSON.stringify` |
-| Native `fetch` | Zero bundle impact; available in all CF Workers runtimes |
-| Span timestamps as ns strings | Avoids `BigInt` — `Date.now() * 1_000_000` is within safe integer range for current epoch |
-| `flush()` errors swallowed | Telemetry must never fail a user request; best-effort only |
-| `span()` uses `try/finally` | Span always finishes, even if `fn` throws |
-| `_hex(n)` via `crypto.getRandomValues` | Correct OTLP IDs; CF Workers ships `crypto` globally |
+| Decision                               | Rationale                                                                                 |
+| -------------------------------------- | ----------------------------------------------------------------------------------------- |
+| OTLP/JSON over OTLP/proto              | No protobuf npm dep; JSON is trivially serialisable with `JSON.stringify`                 |
+| Native `fetch`                         | Zero bundle impact; available in all CF Workers runtimes                                  |
+| Span timestamps as ns strings          | Avoids `BigInt` — `Date.now() * 1_000_000` is within safe integer range for current epoch |
+| `flush()` errors swallowed             | Telemetry must never fail a user request; best-effort only                                |
+| `span()` uses `try/finally`            | Span always finishes, even if `fn` throws                                                 |
+| `_hex(n)` via `crypto.getRandomValues` | Correct OTLP IDs; CF Workers ships `crypto` globally                                      |
 
 ## Consequences
 

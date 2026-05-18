@@ -123,7 +123,16 @@ function _makeLiveHandle(endpoint: string, traceId: string): OtelHandle {
     };
 
     const finish = () => {
-      collected.push({ traceId, spanId, name, startNs, endNs: _nowNs(), attrs, statusCode, statusMessage });
+      collected.push({
+        traceId,
+        spanId,
+        name,
+        startNs,
+        endNs: _nowNs(),
+        attrs,
+        statusCode,
+        statusMessage,
+      });
     };
 
     return { span, finish };
@@ -206,4 +215,3 @@ export function initOtel(env: Env): OtelHandle {
   }
   return _makeLiveHandle(env.OTEL_ENDPOINT, _hex(16));
 }
-

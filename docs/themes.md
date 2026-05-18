@@ -7,15 +7,15 @@
 
 ## 🌈 Themes
 
-| #   | Name                  | CSS Class             | Accent               | Background             | Best For                                     | VR Baseline |
-| --- | --------------------- | --------------------- | -------------------- | ---------------------- | -------------------------------------------- | ----------- |
-| 1   | **True Black (OLED)** | `theme-black`         | Warm gold `#c8a87a`  | Pure black `#000`      | OLED TVs — deep blacks, zero backlight bleed | [black-tv](../tests/e2e/visual-regression.spec.ts-snapshots/black-tv-chromium-win32.png) |
-| 2   | **Ocean Blue**        | `theme-blue`          | Sky blue `#82b8d8`   | Deep navy `#0c1824`    | Default — calm, easy on the eyes             | [blue-tv](../tests/e2e/visual-regression.spec.ts-snapshots/blue-tv-chromium-win32.png) |
+| #   | Name                  | CSS Class             | Accent               | Background             | Best For                                     | VR Baseline                                                                                |
+| --- | --------------------- | --------------------- | -------------------- | ---------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1   | **True Black (OLED)** | `theme-black`         | Warm gold `#c8a87a`  | Pure black `#000`      | OLED TVs — deep blacks, zero backlight bleed | [black-tv](../tests/e2e/visual-regression.spec.ts-snapshots/black-tv-chromium-win32.png)   |
+| 2   | **Ocean Blue**        | `theme-blue`          | Sky blue `#82b8d8`   | Deep navy `#0c1824`    | Default — calm, easy on the eyes             | [blue-tv](../tests/e2e/visual-regression.spec.ts-snapshots/blue-tv-chromium-win32.png)     |
 | 3   | **Forest Green**      | `theme-matrix`        | Soft green `#86c490` | Dark forest `#0e1a10`  | Nature vibe, hacker aesthetic                | [matrix-tv](../tests/e2e/visual-regression.spec.ts-snapshots/matrix-tv-chromium-win32.png) |
-| 4   | **Amber Glow**        | `theme-amber`         | Warm amber `#c8a07c` | Dark brown `#18120a`   | Night mode, warm tint, retro feel            | [amber-tv](../tests/e2e/visual-regression.spec.ts-snapshots/amber-tv-chromium-win32.png) |
+| 4   | **Amber Glow**        | `theme-amber`         | Warm amber `#c8a07c` | Dark brown `#18120a`   | Night mode, warm tint, retro feel            | [amber-tv](../tests/e2e/visual-regression.spec.ts-snapshots/amber-tv-chromium-win32.png)   |
 | 5   | **Purple Dusk**       | `theme-purple`        | Lavender `#b8aad4`   | Deep purple `#140e1e`  | Evening vibes, creative setup                | [purple-tv](../tests/e2e/visual-regression.spec.ts-snapshots/purple-tv-chromium-win32.png) |
-| 6   | **Rose Night**        | `theme-rose`          | Soft rose `#c08898`  | Dark crimson `#180a0e` | Romantic aesthetic, warm accent              | [rose-tv](../tests/e2e/visual-regression.spec.ts-snapshots/rose-tv-chromium-win32.png) |
-| 7   | **High Contrast**     | `theme-high-contrast` | Yellow `#ffdd00`     | Pure black `#000`      | Accessibility (WCAG AAA), vision impairments | *(VR pending — no snapshot yet)* |
+| 6   | **Rose Night**        | `theme-rose`          | Soft rose `#c08898`  | Dark crimson `#180a0e` | Romantic aesthetic, warm accent              | [rose-tv](../tests/e2e/visual-regression.spec.ts-snapshots/rose-tv-chromium-win32.png)     |
+| 7   | **High Contrast**     | `theme-high-contrast` | Yellow `#ffdd00`     | Pure black `#000`      | Accessibility (WCAG AAA), vision impairments | _(VR pending — no snapshot yet)_                                                           |
 
 > **VR baselines** are stored in `tests/e2e/visual-regression.spec.ts-snapshots/` and updated by
 > running `npx playwright test tests/e2e/visual-regression.spec.ts --update-snapshots`.
@@ -31,7 +31,7 @@ Samsung QD-OLED, Sony Bravia). Cards appear to float on the screen. Warm gold ac
 (`#c8a87a`) create a premium, minimalist aesthetic. Ideal for home-theater setups with
 ambient lighting off.
 
-### 2. Ocean Blue — `theme-blue` *(Default)*
+### 2. Ocean Blue — `theme-blue` _(Default)_
 
 The default theme. Deep navy background (`#0c1824`) with sky blue accents (`#82b8d8`)
 mimics a deep-sea palette. Calm and readable at TV viewing distance (3 m). Recommended

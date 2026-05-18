@@ -152,10 +152,10 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Node.js            | 24 LTS                | Track 26 LTS (Oct 2027).                                              |
 | TypeScript         | 6.0.3                 | Track minor monthly; TS7 (Go-rewrite) only when zero behaviour delta. |
 | Vite               | 8.0.13                | Auto-adopt 9 + Rolldown-default when stable.                          |
-| Vitest             | 4.1.6                 | Auto-adopt 4.2; track 5.x when stable.                               |
-| ESLint             | 10.4.0                | Pair with `oxlint` fast pre-pass (ADR-039); track ESLint 11.           |
+| Vitest             | 4.1.6                 | Auto-adopt 4.2; track 5.x when stable.                                |
+| ESLint             | 10.4.0                | Pair with `oxlint` fast pre-pass (ADR-039); track ESLint 11.          |
 | Prettier           | 3.8.3                 | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML+CSS parity.       |
-| Stylelint          | 17.11.1               | Keep; Lightning-CSS-only validation evaluated v16. **Not for HTML.**   |
+| Stylelint          | 17.11.1               | Keep; Lightning-CSS-only validation evaluated v16. **Not for HTML.**  |
 | Playwright         | 1.60.0                | Quarterly baseline regen; track 2.x.                                  |
 | Stryker (mutation) | 8.x                   | Threshold ≥ 87%; 136 files in scope.                                  |
 | `fast-check`       | 4.8.0                 | 107 property suites across 4 domains.                                 |
@@ -167,17 +167,17 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 
 ### 1.7 Testing strategy
 
-| Layer             | Tooling                             | Action                                              |
-| ----------------- | ----------------------------------- | --------------------------------------------------- |
-| Unit              | Vitest 4.1 + happy-dom 20           | Keep. Suite split per file.                         |
-| Component         | `@vitest/browser` (Playwright)      | Shipped v13.16.                                     |
+| Layer             | Tooling                                  | Action                                                 |
+| ----------------- | ---------------------------------------- | ------------------------------------------------------ |
+| Unit              | Vitest 4.1 + happy-dom 20                | Keep. Suite split per file.                            |
+| Component         | `@vitest/browser` (Playwright)           | Shipped v13.16.                                        |
 | Property-based    | fast-check (107 suites, ADR-054/055/085) | All major modules covered across core/cards/ui/worker. |
-| Mutation          | Stryker (136 files)                 | Threshold ≥ 87%; extend to remaining core modules.  |
-| Visual regression | Playwright (421+ baselines)         | Extend to DO-SSE alert states + maximise-FLIP.      |
-| End-to-end        | Playwright                          | Keep.                                               |
-| Accessibility     | axe-core (CI gate)                  | Keep + manual screen-reader pass per major.         |
-| Performance       | Lighthouse CI (`error 0.99`)        | Ratcheted from 0.98 in v14.19.0.                    |
-| Coverage          | 97.09 / 90.54 / 96.46 / 98.13       | Ratchet path → 97/90/96/98 by v15. +0.5% per minor. |
+| Mutation          | Stryker (136 files)                      | Threshold ≥ 87%; extend to remaining core modules.     |
+| Visual regression | Playwright (421+ baselines)              | Extend to DO-SSE alert states + maximise-FLIP.         |
+| End-to-end        | Playwright                               | Keep.                                                  |
+| Accessibility     | axe-core (CI gate)                       | Keep + manual screen-reader pass per major.            |
+| Performance       | Lighthouse CI (`error 0.99`)             | Ratcheted from 0.98 in v14.19.0.                       |
+| Coverage          | 97.09 / 90.54 / 96.46 / 98.13            | Ratchet path → 97/90/96/98 by v15. +0.5% per minor.    |
 
 ### 1.8 Observability, security, supply chain
 
@@ -273,7 +273,7 @@ Categories: **Family/TV Dashboards** · **Homelab Dashboards** · **News/Feed Re
 | **AI integration**           | Perplexity Comet / Granola                   | LLM-native UI, real-time AI                       | Workers AI + MCP (data-only)          | **Harvest v15**: richer MCP endpoints. No embedded agent.                          |
 | **Real-time data**           | HASS Lovelace (WebSocket + SSE)              | Sub-second device state updates                   | HTTP poll + DO SSE                    | **Adopt v15**: DO Hibernatable WS for stocks + alerts.                             |
 | **Offline**                  | **FamilyDashBoard (us)**                     | 4-tier cache + `?nosw=1` + file://                | **Best in class.**                    | **Maintain**: no peer has comparable offline story.                                |
-| **Observability**            | Grafana (Prometheus + OTel)                  | Best panels, unlimited metrics                    | RUM + Vitals + D1 + AE + diag JSON    | **Shipped v14.32.0**: OTel OTLP/JSON dep-free (ADR-088, opt-in).                  |
+| **Observability**            | Grafana (Prometheus + OTel)                  | Best panels, unlimited metrics                    | RUM + Vitals + D1 + AE + diag JSON    | **Shipped v14.32.0**: OTel OTLP/JSON dep-free (ADR-088, opt-in).                   |
 | **Config management**        | Homepage (YAML, declarative)                 | File-based, version-controllable                  | LS + IDB + JSON export                | **Track v16**: optional YAML converter script (no runtime dep).                    |
 
 ### 2.3 Best Practices Harvested from Peer Analysis (v3 new)
@@ -325,8 +325,8 @@ Only **genuinely open** items. Shipped items in `CHANGELOG.md`.
 
 ### 3.2 Stocks
 
-| ID   | P   | E   | I   | Item                                                       | Target |
-| ---- | --- | --- | --- | ---------------------------------------------------------- | ------ |
+| ID   | P   | E   | I   | Item                                                       | Target               |
+| ---- | --- | --- | --- | ---------------------------------------------------------- | -------------------- |
 | S-DO | P1  | M   | Hi  | DO Hibernatable WebSocket live stream (replaces HTTP poll) | **Shipped v14.32.0** |
 
 ### 3.3 Calendar + Hebrew Calendar
@@ -427,20 +427,20 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 
 Items identified in the v3.2 full-system production-readiness audit. ✅ QA-1–QA-7 and QA-9 resolved; QA-8 deferred to v16. v4.0 audit added QA-10–QA-12.
 
-| #    | Type    | Item                                                                                   | P   | E   | I   | Status |
-| ---- | ------- | -------------------------------------------------------------------------------------- | --- | --- | --- | ------ |
-| QA-1 | Fix     | ARIA: `cal-week-grid` missing `role="list"` parent for `role="listitem"` child         | P0  | S   | Hi  | ✅ v14.29 |
-| QA-2 | Config  | Stylelint: remove `"html"` from `stylelint.validate` — Stylelint is CSS-only           | P0  | S   | Hi  | ✅ v14.29 |
-| QA-3 | Config  | `.hintrc` compat-ignore completeness: add `popovertarget`, `input[type=date/time]`    | P1  | S   | Mid | ✅ v14.29 |
-| QA-4 | Cleanup | Move `renovate.json` → `.github/renovate.json` (keep root uncluttered)                | P1  | S   | Lo  | ✅ v14.29 |
-| QA-5 | Deps    | MyScripts tools updated: Vite 8.0.13, Vitest 4.1.6, ESLint 10.4.0, PW 1.60.0         | P1  | S   | Mid | ✅ v14.29 |
-| QA-6 | Config  | Renovate: enable `automerge: true` for patch devDeps to reduce PR noise               | P2  | S   | Lo  | ✅ v14.29 |
-| QA-7 | Enhance | SW update notification toast ("new version available — refresh to apply")              | P2  | M   | Mid | ✅ v14.29 |
-| QA-8 | Monitor | `performance.measureUserAgentSpecificMemory()` for card-level memory leak detection    | P3  | M   | Lo  | v16    |
-| QA-9 | Config  | `.vscode/extensions.json` audit: remove extensions with 0 contribution to this project | P2  | S   | Lo  | ✅ v14.29 |
-| QA-10 | Fix    | ARIA: `.countdown-body` missing `role="region"` for `aria-label` (axe-core)            | P0  | S   | Hi  | ✅ v4.0 |
-| QA-11 | Config | webhint VS Code: exclude HTML from scan (ext ignores `.hintrc`; compat via build)      | P1  | S   | Mid | ✅ v4.0 |
-| QA-12 | Config | ShellCheck: 5 workflows fixed (shell default, safe find, quoted vars, null guards)     | P1  | S   | Mid | ✅ v4.0 |
+| #     | Type    | Item                                                                                   | P   | E   | I   | Status    |
+| ----- | ------- | -------------------------------------------------------------------------------------- | --- | --- | --- | --------- |
+| QA-1  | Fix     | ARIA: `cal-week-grid` missing `role="list"` parent for `role="listitem"` child         | P0  | S   | Hi  | ✅ v14.29 |
+| QA-2  | Config  | Stylelint: remove `"html"` from `stylelint.validate` — Stylelint is CSS-only           | P0  | S   | Hi  | ✅ v14.29 |
+| QA-3  | Config  | `.hintrc` compat-ignore completeness: add `popovertarget`, `input[type=date/time]`     | P1  | S   | Mid | ✅ v14.29 |
+| QA-4  | Cleanup | Move `renovate.json` → `.github/renovate.json` (keep root uncluttered)                 | P1  | S   | Lo  | ✅ v14.29 |
+| QA-5  | Deps    | MyScripts tools updated: Vite 8.0.13, Vitest 4.1.6, ESLint 10.4.0, PW 1.60.0           | P1  | S   | Mid | ✅ v14.29 |
+| QA-6  | Config  | Renovate: enable `automerge: true` for patch devDeps to reduce PR noise                | P2  | S   | Lo  | ✅ v14.29 |
+| QA-7  | Enhance | SW update notification toast ("new version available — refresh to apply")              | P2  | M   | Mid | ✅ v14.29 |
+| QA-8  | Monitor | `performance.measureUserAgentSpecificMemory()` for card-level memory leak detection    | P3  | M   | Lo  | v16       |
+| QA-9  | Config  | `.vscode/extensions.json` audit: remove extensions with 0 contribution to this project | P2  | S   | Lo  | ✅ v14.29 |
+| QA-10 | Fix     | ARIA: `.countdown-body` missing `role="region"` for `aria-label` (axe-core)            | P0  | S   | Hi  | ✅ v4.0   |
+| QA-11 | Config  | webhint VS Code: exclude HTML from scan (ext ignores `.hintrc`; compat via build)      | P1  | S   | Mid | ✅ v4.0   |
+| QA-12 | Config  | ShellCheck: 5 workflows fixed (shell default, safe find, quoted vars, null guards)     | P1  | S   | Mid | ✅ v4.0   |
 
 ---
 

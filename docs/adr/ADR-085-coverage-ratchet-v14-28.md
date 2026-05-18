@@ -49,7 +49,7 @@ safely tightened.
   using fast-check covering: channel ID uniqueness, descriptor shape invariants, mode/mute
   filtering, stream fallback, URL validation, and null-safety.
 - Extend `tests/unit/cards/hebrew-cal.test.ts` with a `buildHebrewCalPayload via
-  getSemanticPayload` block. Use static top-of-file imports for shared module state;
+getSemanticPayload` block. Use static top-of-file imports for shared module state;
   set `_lastHolidayName` via private state injection then verify the holiday field appears
   in the semantic payload.
 
@@ -61,7 +61,7 @@ safely tightened.
 **Ratchet all four V8 thresholds** in `vitest.config.ts` after each sprint:
 
 | Metric     | v14.27.0 threshold | v14.28.0 threshold | Actual (local, post-S2) |
-|------------|--------------------|--------------------|-------------------------|
+| ---------- | ------------------ | ------------------ | ----------------------- |
 | Statements | 96.9               | 97.0               | 97.09                   |
 | Branches   | 90.3               | 90.5               | 90.54                   |
 | Functions  | 96.2               | 96.4               | 96.46                   |

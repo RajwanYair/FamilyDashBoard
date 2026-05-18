@@ -72,7 +72,8 @@ export class StocksLiveDO {
 
   // ── Cloudflare DO entry-point ──────────────────────────────────────────────
 
-  async fetch(request: Request): Promise<Response> { // owasp-allow:A05 owasp-allow:A10
+  async fetch(request: Request): Promise<Response> {
+    // owasp-allow:A05 owasp-allow:A10
     const url = new URL(request.url);
 
     // ── WS upgrade path ───────────────────────────────────────────────────
@@ -83,7 +84,9 @@ export class StocksLiveDO {
       }
 
       // Cloudflare's WebSocketPair — typed minimally to avoid importing CF types.
-      const pair = new (globalThis as unknown as { WebSocketPair: new () => { 0: WebSocket; 1: WebSocket } }).WebSocketPair();
+      const pair = new (
+        globalThis as unknown as { WebSocketPair: new () => { 0: WebSocket; 1: WebSocket } }
+      ).WebSocketPair();
       const [client, server] = [pair[0], pair[1]];
 
       // Accept with hibernation — DO suspends between messages.
@@ -141,10 +144,9 @@ export class StocksLiveDO {
     // ── Connection count (diagnostic) ─────────────────────────────────────
     if (url.pathname === "/state") {
       const allSockets = this.state.getWebSockets();
-      return new Response(
-        JSON.stringify({ ok: true, connections: allSockets.length }),
-        { headers: { "Content-Type": "application/json" } },
-      );
+      return new Response(JSON.stringify({ ok: true, connections: allSockets.length }), {
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     return new Response("Not found", { status: 404 });

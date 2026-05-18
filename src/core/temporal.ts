@@ -152,9 +152,11 @@ export function diffDays(a: Date, b: Date): number {
  * Temporal: `Temporal.PlainDate.from(a).equals(Temporal.PlainDate.from(b))`
  */
 export function isSameDay(a: Date, b: Date): boolean {
-  return a.getFullYear() === b.getFullYear() &&
+  return (
+    a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate();
+    a.getDate() === b.getDate()
+  );
 }
 
 /**

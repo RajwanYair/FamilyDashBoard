@@ -113,7 +113,10 @@ describe("initOtel — live OTLP/JSON exporter", () => {
     expect(spans).toHaveLength(1);
     expect(spans[0].name).toBe("route:weather");
     expect(spans[0].attributes).toContainEqual(
-      expect.objectContaining({ key: "lat", value: expect.objectContaining({ doubleValue: 32.1 }) }),
+      expect.objectContaining({
+        key: "lat",
+        value: expect.objectContaining({ doubleValue: 32.1 }),
+      }),
     );
     expect(spans[0].status.code).toBe(1); // OK
   });
@@ -124,7 +127,9 @@ describe("initOtel — live OTLP/JSON exporter", () => {
     await h.flush();
 
     const body = JSON.parse(fetchCalls[0].init.body as string) as {
-      resourceSpans: Array<{ resource: { attributes: Array<{ key: string; value: { stringValue?: string } }> } }>;
+      resourceSpans: Array<{
+        resource: { attributes: Array<{ key: string; value: { stringValue?: string } }> };
+      }>;
     };
     const svcAttr = body.resourceSpans[0].resource.attributes.find((a) => a.key === "service.name");
     expect(svcAttr?.value.stringValue).toBe("fdb-worker");
@@ -138,7 +143,9 @@ describe("initOtel — live OTLP/JSON exporter", () => {
     await h.flush();
 
     const body = JSON.parse(fetchCalls[0].init.body as string) as {
-      resourceSpans: Array<{ scopeSpans: Array<{ spans: Array<{ status: { code: number; message?: string } }> }> }>;
+      resourceSpans: Array<{
+        scopeSpans: Array<{ spans: Array<{ status: { code: number; message?: string } }> }>;
+      }>;
     };
     const status = body.resourceSpans[0].scopeSpans[0].spans[0].status;
     expect(status.code).toBe(2); // ERROR
@@ -161,7 +168,9 @@ describe("initOtel — live OTLP/JSON exporter", () => {
   });
 
   it("flush does not throw when fetch fails", async () => {
-    globalThis.fetch = async () => { throw new Error("network error"); };
+    globalThis.fetch = async () => {
+      throw new Error("network error");
+    };
     const h = initOtel(makeLiveEnv());
     h.span("risky", () => undefined);
     await expect(h.flush()).resolves.toBeUndefined();
@@ -169,32 +178,46 @@ describe("initOtel — live OTLP/JSON exporter", () => {
 
   it("span attributes: boolean stored as boolValue", async () => {
     const h = initOtel(makeLiveEnv());
-    h.span("bool-test", (s) => { s.setAttribute("cached", true); });
+    h.span("bool-test", (s) => {
+      s.setAttribute("cached", true);
+    });
     await h.flush();
 
     const body = JSON.parse(fetchCalls[0].init.body as string) as {
-      resourceSpans: Array<{ scopeSpans: Array<{ spans: Array<{ attributes: Array<{ key: string; value: unknown }> }> }> }>;
+      resourceSpans: Array<{
+        scopeSpans: Array<{ spans: Array<{ attributes: Array<{ key: string; value: unknown }> }> }>;
+      }>;
     };
-    const attr = body.resourceSpans[0].scopeSpans[0].spans[0].attributes.find((a) => a.key === "cached");
+    const attr = body.resourceSpans[0].scopeSpans[0].spans[0].attributes.find(
+      (a) => a.key === "cached",
+    );
     expect(attr?.value).toEqual({ boolValue: true });
   });
 
   it("span attributes: integer stored as intValue string", async () => {
     const h = initOtel(makeLiveEnv());
-    h.span("int-test", (s) => { s.setAttribute("count", 5); });
+    h.span("int-test", (s) => {
+      s.setAttribute("count", 5);
+    });
     await h.flush();
 
     const body = JSON.parse(fetchCalls[0].init.body as string) as {
-      resourceSpans: Array<{ scopeSpans: Array<{ spans: Array<{ attributes: Array<{ key: string; value: unknown }> }> }> }>;
+      resourceSpans: Array<{
+        scopeSpans: Array<{ spans: Array<{ attributes: Array<{ key: string; value: unknown }> }> }>;
+      }>;
     };
-    const attr = body.resourceSpans[0].scopeSpans[0].spans[0].attributes.find((a) => a.key === "count");
+    const attr = body.resourceSpans[0].scopeSpans[0].spans[0].attributes.find(
+      (a) => a.key === "count",
+    );
     expect(attr?.value).toEqual({ intValue: "5" });
   });
 
   it("span finishes even if fn throws (span recorded)", async () => {
     const h = initOtel(makeLiveEnv());
     expect(() => {
-      h.span("throws", () => { throw new Error("boom"); });
+      h.span("throws", () => {
+        throw new Error("boom");
+      });
     }).toThrow("boom");
     await h.flush();
     expect(fetchCalls).toHaveLength(1);

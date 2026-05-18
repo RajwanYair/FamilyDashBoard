@@ -294,7 +294,7 @@ describe("Hebrew Calendar — renderZmanim", () => {
     const pastTime = new Date(Date.now() - 3_600_000).toISOString(); // 1 hour ago
     renderZmanim({
       alotHaShachar: pastTime, // past — not next
-      sunrise: futureTime,     // future — closest → zman-next
+      sunrise: futureTime, // future — closest → zman-next
     });
     const nextEl = document.querySelector(".zman-next");
     expect(nextEl).not.toBeNull();

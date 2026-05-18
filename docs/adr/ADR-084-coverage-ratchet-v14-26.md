@@ -54,7 +54,7 @@ try/catch/finally path. `calendar.ts` had uncovered lines in the non-allorigins 
 **Ratchet all four V8 thresholds** in `vitest.config.ts` after confirming the improvements:
 
 | Metric     | v14.24.0 (CI floor) | v14.26.0 (new threshold) | Actual (local) |
-|------------|---------------------|--------------------------|----------------|
+| ---------- | ------------------- | ------------------------ | -------------- |
 | Statements | 96.4                | 96.5                     | 96.56          |
 | Branches   | 89.7                | 89.8                     | 89.83          |
 | Functions  | 95.8                | 95.9                     | 95.93          |
