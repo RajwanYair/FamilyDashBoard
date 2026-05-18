@@ -80,10 +80,12 @@ export default defineConfig({
         //             actuals: 96.76 / 90.04 / 96.19 / 97.77.
         // (v14.27.0): Sprint 5 — config sanitize + migrate v6→v7 + i18n + fdb-card + RTT sparkline.
         //             actuals: 96.91 / 90.32 / 96.24 / 97.94.
-        statements: 96.9,
-        branches: 90.3,
-        functions: 96.2,
-        lines: 97.9,
+        // (v14.28.0): Sprint 1 — buildWeatherPayload + getSwState fallback + perf.memory + prewarm default.
+        //             actuals: 97.00 / 90.46 / 96.40 / 98.04.
+        statements: 97.0,
+        branches: 90.4,
+        functions: 96.4,
+        lines: 98.0,
       },
     },
   },

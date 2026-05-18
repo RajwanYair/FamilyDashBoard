@@ -979,6 +979,21 @@ describe("System-info — getSwState ", () => {
     const result = await getSwState();
     expect(result).toBe("none");
   });
+
+  it("returns 'none' when reg exists but all SW states are null (line 525)", async () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      serviceWorker: {
+        getRegistration: vi.fn().mockResolvedValue({
+          active: null,
+          installing: null,
+          waiting: null,
+        }),
+      },
+    });
+    const result = await getSwState();
+    expect(result).toBe("none");
+  });
 });
 
 // ── getStorageQuota ──────────────────────────────
@@ -1233,5 +1248,29 @@ describe("SystemInfo — RTT sparkline rendered to DOM when rttHistory >= 2", ()
     await renderSystemInfo();
     const sparkEl = document.getElementById("sysinfo-rtt-spark");
     expect(sparkEl?.innerHTML).toBeTruthy();
+  });
+});
+
+// ── renderSystemInfo JS heap (performance.memory) — line 291 ─────
+describe("SystemInfo — renderSystemInfo JS heap via performance.memory", () => {
+  beforeEach(() => {
+    buildDOM();
+    document.body.innerHTML += '<div id="sysinfo-heap"></div>';
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    delete (performance as Performance & { memory?: unknown }).memory;
+    vi.restoreAllMocks();
+  });
+
+  it("sets sysinfo-heap text when performance.memory is available (line 291)", async () => {
+    Object.defineProperty(performance, "memory", {
+      value: { usedJSHeapSize: 50 * 1024 * 1024, jsHeapSizeLimit: 2048 * 1024 * 1024 },
+      configurable: true,
+      writable: true,
+    });
+    await renderSystemInfo();
+    const heapEl = document.getElementById("sysinfo-heap");
+    expect(heapEl?.textContent).not.toBe("");
   });
 });

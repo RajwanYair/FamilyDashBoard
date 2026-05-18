@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
 import {
   toDisplayTemp,
   deg2arrow,
@@ -2810,5 +2811,124 @@ describe("Weather configSchema — CS-W2 ", () => {
     expect(vals).toContain("mm");
     expect(vals).toContain("in");
     expect(f?.defaultValue).toBe("mm");
+  });
+});
+
+// ── wxRise onclick handler (line 780) ────────────────────────────────────────
+describe("Weather — wxRise onclick triggers scrollToLinkedCard (line 780)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `
+      <div id="top-temp"></div>
+      <div id="wx-temp"></div>
+      <div id="wx-desc"></div>
+      <div id="wx-icon"></div>
+      <div id="wx-wind"></div>
+      <div id="wx-hum"></div>
+      <div id="wx-uv"></div>
+      <div id="wx-rise"></div>
+      <div id="wx-hourly"></div>
+      <div id="wx-forecast">
+        <div class="wx-fday"></div><div class="wx-fday"></div>
+        <div class="wx-fday"></div><div class="wx-fday"></div>
+        <div class="wx-fday"></div><div class="wx-fday"></div>
+        <div class="wx-fday"></div>
+      </div>
+      <div id="wx-minmax"></div>
+      <div id="wx-week-summary"></div>
+      <div id="wx-feels"></div>
+    `;
+    cacheDom();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("clicking wx-rise calls scrollToLinkedCard for hebrew-cal (line 780)", () => {
+    const card = document.createElement("section");
+    card.dataset["cardId"] = "hebrew-cal";
+    document.body.appendChild(card);
+    const scrollSpy = vi.spyOn(card, "scrollIntoView").mockImplementation(() => undefined);
+    renderWeather(makeWeather());
+    const wxRise = document.getElementById("wx-rise");
+    expect(wxRise?.onclick).toBeDefined();
+    wxRise?.onclick?.(new MouseEvent("click"));
+    expect(scrollSpy).toHaveBeenCalled();
+  });
+});
+
+// ── buildWeatherPayload semantic producer (lines 57-60) ───────────────────────
+describe("Weather — buildWeatherPayload via getSemanticPayload (lines 57-60)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `
+      <div id="top-temp"></div>
+      <div id="wx-temp"></div>
+      <div id="wx-desc"></div>
+      <div id="wx-icon"></div>
+      <div id="wx-wind"></div>
+      <div id="wx-hum"></div>
+      <div id="wx-uv"></div>
+      <div id="wx-rise"></div>
+      <div id="wx-hourly"></div>
+      <div id="wx-forecast"></div>
+      <div id="wx-minmax"></div>
+      <div id="wx-week-summary"></div>
+      <div id="wx-feels"></div>
+    `;
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, json: async () => ({}) }));
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    document.body.innerHTML = "";
+    localStorage.clear();
+    _resetSemanticProducers();
+  });
+
+  it("returns weather payload after renderWeather populates snapshot (lines 57-60)", () => {
+    initWeatherCard(); // registers buildWeatherPayload as semantic producer
+    // Add an active city tab so _lastWeatherSnapshot.cityName is set
+    const tab = document.createElement("button");
+    tab.className = "wx-city-tab active";
+    tab.textContent = "תל אביב";
+    document.body.appendChild(tab);
+    cacheDom();
+    renderWeather(makeWeather({ temperature_2m: 28 }));
+    const payload = getSemanticPayload("weather");
+    expect(payload).not.toBeNull();
+    expect(payload?.cardId).toBe("weather");
+    expect(payload?.text).toContain("28");
+  });
+});
+
+// ── initWeatherCard chart mode restore (line 852) ────────────────────────────
+describe("Weather — initWeatherCard restores rain chart mode from localStorage (line 852)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `
+      <div id="top-temp"></div><div id="wx-temp"></div>
+      <div id="wx-desc"></div><div id="wx-icon"></div>
+      <div id="wx-wind"></div><div id="wx-hum"></div>
+      <div id="wx-uv"></div><div id="wx-rise"></div>
+      <div id="wx-hourly"></div><div id="wx-forecast"></div>
+      <div id="wx-minmax"></div><div id="wx-week-summary"></div>
+      <div id="wx-feels"></div>
+    `;
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, json: async () => ({}) }));
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    document.body.innerHTML = "";
+    localStorage.clear();
+    destroyWeatherCard();
+  });
+
+  it("adds wx-chart-rain class when LS_WX_CHART_MODE is 'rain' (line 852)", () => {
+    localStorage.setItem("dash_wx_chart_mode", "rain");
+    initWeatherCard();
+    expect(document.getElementById("wx-hourly")?.classList.contains("wx-chart-rain")).toBe(true);
   });
 });

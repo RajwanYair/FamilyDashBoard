@@ -2332,6 +2332,12 @@ describe("Hebrew Calendar — prewarmNextYearHolidays", () => {
     await prewarmNextYearHolidays(() => new Date(2024, 9, 2));
     expect(cSetAsync).not.toHaveBeenCalled();
   });
+
+  it("uses default dateFn (line 147) when called without arguments", async () => {
+    // Calling without a dateFn exercises the default-parameter arrow () => new Date()
+    await prewarmNextYearHolidays();
+    expect(fetchJSONWithWorker).toHaveBeenCalled();
+  });
 });
 
 // ── branch coverage gaps ──────────────────────────────────────────
