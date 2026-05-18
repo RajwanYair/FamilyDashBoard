@@ -63,7 +63,7 @@
 
   <!-- SCHEDULED → LOADING (loop arrow) -->
   <path d="M 645 80 Q 645 55 450 55 Q 310 55 260 79" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="4 2" marker-end="url(#arr)"/>
-  <text x="450" y="50" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">interval tick</text>
+  <text x="453" y="70" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">interval tick</text>
 
   <!-- LOADING → ERROR -->
   <line x1="260" y1="130" x2="260" y2="198" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrrd)"/>
