@@ -132,6 +132,13 @@ export interface Env {
    */
   STOCKS_DO?: DurableObjectNamespace;
   /**
+   * Durable Object for Hibernatable WebSocket alert fan-out (ADR-089).
+   * Replaces SSE-based AlertsOrchestrator for real-time alert delivery.
+   * Bound in wrangler.toml as [[durable_objects.bindings]] with class AlertsLiveDO.
+   * Optional — WebSocket upgrade returns 503 when not configured.
+   */
+  ALERTS_LIVE_DO?: DurableObjectNamespace;
+  /**
    * R2 bucket for static asset background cache (ADR-050).
    * Provision via: wrangler r2 bucket create fdb-static-assets
    * Optional — asset cache helper is a no-op when not configured.

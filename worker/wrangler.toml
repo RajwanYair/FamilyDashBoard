@@ -61,6 +61,19 @@ class_name = "StocksLiveDO"
 tag = "v3"
 new_classes = ["StocksLiveDO"]
 
+# ADR-089: Hibernatable WebSocket Durable Object for real-time alert fan-out
+# Replaces SSE-based AlertsOrchestrator — zero CPU cost at idle.
+# All connected clients receive every alert broadcast (no per-socket filtering).
+# Regional jurisdiction "eu" — consistent with ALERTS_DO (ADR-025).
+[[durable_objects.bindings]]
+name = "ALERTS_LIVE_DO"
+class_name = "AlertsLiveDO"
+jurisdiction = "eu"
+
+[[migrations]]
+tag = "v4"
+new_classes = ["AlertsLiveDO"]
+
 # ADR-050: R2 bucket for static asset background cache
 # Stores pre-compressed dashboard assets, SW shell files, and icon bundles.
 # Provision via: wrangler r2 bucket create fdb-static-assets

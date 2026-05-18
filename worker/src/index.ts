@@ -15,6 +15,8 @@
  *   GET /api/motivation/hebrew            → Workers AI Hebrew motivational quote (AI_ENABLED=true, else 503)
  *   GET /api/ai/synthesis                 → Daily Hebrew synthesis tile (cached 4 h; faith-safe; AI_ENABLED=true, else 503)
  *   GET /api/alerts                       → Tzeva Adom history
+ *   GET /api/alerts/subscribe             → SSE stream (AlertsOrchestrator, ADR-025 legacy)
+ *   GET /api/alerts/live                  → WS upgrade → AlertsLiveDO (ADR-089, zero idle CPU)
  *   GET /api/calendar?url=X              → Google Calendar ICS proxy
  *   GET /api/sefaria/calendar             → Sefaria calendars (Daf Yomi)
  *   GET /api/sefaria/text?ref=X           → Sefaria individual text lookup
@@ -32,6 +34,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 // ── Durable Objects (V12-EDGE-3, V13-EDGE-6, ADR-086) — re-exported for wrangler binding ──
 export { AlertsOrchestrator } from "./durable-objects/alerts-orchestrator";
+export { AlertsLiveDO } from "./durable-objects/alerts-live-do";
 export { RateLimiterDO } from "./durable-objects/rate-limiter-do";
 export { StocksLiveDO } from "./durable-objects/stocks-live-do";
 import { handleWeather, handleCurrency, handleHebcal, handleHebcalHolidays } from "./routes/data";
@@ -142,7 +145,7 @@ app.get("/api/news", (c) => handleNews(new URL(c.req.url)));
 
 app.get("/api/alerts", earlyHintsMiddleware, (c) => handleAlerts(c.env));
 
-// V13-EDGE-1: SSE fan-out via ALERTS_DO Durable Object (ADR-025)
+// V13-EDGE-1: SSE fan-out via ALERTS_DO Durable Object (ADR-025) — legacy path
 app.get("/api/alerts/subscribe", (c) => {
   if (!c.env.ALERTS_DO) return c.json({ error: "SSE not available" }, 503);
   const id = c.env.ALERTS_DO.idFromName("global");
@@ -150,6 +153,16 @@ app.get("/api/alerts/subscribe", (c) => {
   const subscribeUrl = new URL(c.req.raw.url);
   subscribeUrl.pathname = "/subscribe";
   return stub.fetch(new Request(subscribeUrl.href, { signal: c.req.raw.signal }));
+});
+
+// ADR-089: Hibernatable WebSocket live alert stream (replaces SSE at zero idle CPU cost)
+app.get("/api/alerts/live", (c) => {
+  if (!c.env.ALERTS_LIVE_DO) return c.json({ error: "alerts WS not available" }, 503);
+  const id = c.env.ALERTS_LIVE_DO.idFromName("global");
+  const stub = c.env.ALERTS_LIVE_DO.get(id);
+  const connectUrl = new URL(c.req.raw.url);
+  connectUrl.pathname = "/connect";
+  return stub.fetch(new Request(connectUrl.href, c.req.raw));
 });
 
 app.get("/api/calendar", (c) => handleCalendar(new URL(c.req.url), c.env));
