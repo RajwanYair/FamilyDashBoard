@@ -46,6 +46,9 @@ async function walk(dir, acc = []) {
 async function main() {
   const files = await walk(ROOT);
   let violations = 0;
+  let missingCQ = 0;
+  const missingFiles = [];
+
   for (const file of files) {
     const src = await readFile(file, "utf8");
     const lines = src.split(/\r?\n/);
@@ -59,10 +62,26 @@ async function main() {
         );
       }
     });
+
+    // v14.30.0: positive assertion — card CSS should use @container or container-type.
+    // Skip tiny files (< 50 chars — likely empty or minimal resets).
+    if (src.length >= 50 && !/@container\b/.test(src) && !/container-type\s*:/.test(src)) {
+      const rel = file.replace(process.cwd() + "\\", "").replace(process.cwd() + "/", "");
+      missingFiles.push(rel);
+      missingCQ++;
+    }
   }
+
   if (violations > 0) {
     console.error(`✖ Container-query audit: ${violations} viewport query/queries in src/cards/**`);
     process.exit(1);
+  }
+
+  if (missingCQ > 0) {
+    console.warn(
+      `⚠️  ${missingCQ} card CSS file(s) have no @container usage (advisory — not blocking CI):`,
+    );
+    for (const f of missingFiles) console.warn(`    ${f}`);
   }
 
   console.log(`✅ Container-query audit: ${files.length} card stylesheet(s) clean`);
