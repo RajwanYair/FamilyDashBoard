@@ -167,14 +167,11 @@ export class StocksLiveDO {
     }
 
     if (parsed.type === "subscribe" && Array.isArray(parsed.symbols)) {
-      const tags = parsed.symbols
-        .slice(0, 20) // hard-cap: max 20 symbols per client
-        .map((s: string) => `sym:${String(s).toUpperCase().slice(0, 12)}`);
-
       // Detach and re-attach with the new tag set.
-      ws.close(1000, "resubscribe");
-      // The client must reconnect — this is the correct pattern for tag changes.
+      // Tags are applied on the new connection after ws.close(1000).
+      // The client must reconnect — correct pattern for tag changes.
       // In practice the UI only subscribes once at connect time.
+      ws.close(1000, "resubscribe");
     } else if (parsed.type === "ping") {
       ws.send(JSON.stringify({ type: "pong" }));
     }
