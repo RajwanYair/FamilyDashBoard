@@ -12,7 +12,6 @@
         "GitHub.copilot-chat",
         "GitHub.vscode-pull-request-github",
         "eamodio.gitlens",
-        "mhutchie.git-graph",
         // Testing
         "vitest.explorer",
         "ms-playwright.playwright",
@@ -43,7 +42,6 @@
         "alefragnani.bookmarks",
         // Diagrams & assets
         "mermaidchart.vscode-mermaid-chart",
-        "hediet.vscode-drawio",
         "jock.svg"
     ],
     "unwantedRecommendations": [
@@ -52,6 +50,8 @@
         "vincaslt.highlight-matching-tag",
         "ritwickdey.LiveServer",
         "HTMLHint.vscode-htmlhint",
-        "pranaygp.vscode-css-peek"
+        "pranaygp.vscode-css-peek",
+        "mhutchie.git-graph",
+        "hediet.vscode-drawio"
     ]
 }

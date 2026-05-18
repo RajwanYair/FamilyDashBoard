@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v3.2)
 
-> **Refresh date**: 2026-05-18 · **Shipped baseline**: v14.28.0 · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-06-08 · **Shipped baseline**: v14.29.0 · **Active stream**: V15-OPEN.
 >
 > **v3.2 audit stamp (2026-05-18)**: Full production-readiness re-litigation. Corrected ARIA hierarchy (`cal-week-grid` gains `role="list"`). Resolved Stylelint false-positive on HTML (removed `html` from `stylelint.validate` — Stylelint is CSS-only, not an HTML linter). Completed `.hintrc` compat-ignore list: added `popovertarget`, `input[type=date]`, `input[type=time]` (all fully supported by our `.browserslistrc` floor). Root workspace re-audited: `renovate.json` relocated to `.github/renovate.json` (Renovate supports both; `.github/` keeps root uncluttered). All other root config files (`vite.config.ts`, `vitest.config.ts`, `eslint.config.mjs`, `playwright.config.ts`, `tsconfig*.json`, `sw.ts`) are correctly at root per ecosystem convention — relocation would break all CLI invocations and operator docs. `MyScripts/` shared tools updated within semver ranges (Vite 8.0.13, Vitest 4.1.6, ESLint 10.4.0, Playwright 1.60.0, fast-check 4.8.0, Stylelint 17.11.1, typescript-eslint 8.59.3, Valibot 1.4.0). 0 dead exports · 0 dead docs · 0 dead config · 0 `eslint-disable` · 0 `@ts-ignore` · 0 suspended CI gates.
 >
@@ -19,7 +19,7 @@
 
 ## 0. Executive Summary
 
-After 400+ sprints across v10 → v14.28 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog are **shipped**. The quality gate is industry-leading for a static-PWA: 7591+ tests / 314 suites, 107 fast-check property test files across 4 domains (core / cards / ui / worker), container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
+After 400+ sprints across v10 → v14.29 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog are **shipped**. The quality gate is industry-leading for a static-PWA: 7591+ tests / 314 suites, 107 fast-check property test files across 4 domains (core / cards / ui / worker), container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 This v3 rethink re-opens **every** major decision made since v10 — language, architecture, tooling, dependencies, documentation, infrastructure, APIs, testing, deployment, security — and benchmarks each against the best-in-class peer in its category. The result is a consolidated plan where nothing is grandfathered.
 

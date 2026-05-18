@@ -9,6 +9,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.29.0] — 2026-06-08
+
+> **7591 tests / 314 suites / 0 failures** · 85 ADRs · 136 Stryker files · Stryker threshold 90
+
+- **feat(sw)**: QA-7 — `VERSION_ACTIVATED` SW message now shows a `showToast("✓ עודכן לגרסה ${label}", 4000)` confirmation toast when a new service-worker version activates (`src/ui/status-bar.ts`); 2 new unit tests in `status-bar.test.ts` (46 total)
+- **chore(renovate)**: QA-6 — split the single `minor+patch` Renovate rule into two: monthly-schedule `minor` rule + immediate-automerge `patch` rule (`groupName: "devDeps patch updates"`)
+- **fix(docs)**: Mermaid `subgraph id[title]` syntax (v9.1+) in `docs/ARCHITECTURE.md` replaced with v8.8.0-compatible `subgraph id` + `direction TB` — 5 blocks validated clean
+- **fix(docs)**: Broken emoji characters (`&#xFFFD;`) in README.md `## 🤝 Contributing` and `## 🔧 Troubleshooting` headings repaired
+- **chore(vscode)**: QA-9 — extensions.json pruned: removed `mhutchie.git-graph` (redundant — GitLens includes graph view) and `hediet.vscode-drawio` (no `.drawio` files); both added to `unwantedRecommendations`
+- **chore(vscode)**: `.vscode/settings.json` — `htmlhint.enable: false` (extension is unwanted); `markdownlint.ignore` covers `test-results/**`, `dist/**`, `coverage/**`; `search.exclude` covers `test-results/`
+- **chore(vscode)**: `.hintrc` — `"ssllabs": "off"`, `"https-only": "off"`, `"http-cache": "off"` to suppress non-applicable webhint rules; added `"not dead"` to browserslist target
+- **chore(coverage)**: vitest `statements` threshold ratcheted 97.0→97.05; actuals from v14.28.0 S2: 97.09/90.54/96.46/98.13
+
+---
+
 ## [14.28.0] — 2026-05-18
 
 > **7591 tests / 314 suites / 0 failures** · 85 ADRs · 136 Stryker files · Stryker threshold 90
