@@ -22,8 +22,9 @@ import { gzipSync } from "node:zlib";
 const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
-/** Fail CI if a card grows more than this fraction vs the baseline. */
-const DELTA_THRESHOLD = 0.1;
+/** Fail CI if a card grows more than this fraction vs the baseline.
+ * (v14.30.0): ratcheted 10%→8% per ROADMAP §5.1 #19. Target ≤ 5% by v15. */
+const DELTA_THRESHOLD = 0.08;
 
 const CARD_PATTERNS = [
   ["weather", "weather"],
@@ -177,11 +178,11 @@ console.log("✅  All group budgets within limits.\n");
 // Compare cardSource sizes from bundle-trend.json baseline to current state.
 // Warns on > 5% growth, fails on > 15% growth.
 // Hard cap added in v14.27.0 (ROADMAP #19): any card source folder ≥ 65 KB fails CI.
-// v14.28.0: ratchet 65→64 KB (largest card: weather 63.8 KB). Target ≤ 60 KB by v15.
+// v14.30.0: ratchet 64→63 KB (largest card: weather 63.8→TBD). Target ≤ 60 KB by v15.
 const SOURCE_DELTA_WARN = 0.05;
-const SOURCE_DELTA_FAIL = 0.15;
-/** Per-card source folder absolute cap (v14.28.0). Fail CI above this. Target ≤ 60 KB in v15. */
-const SOURCE_HARD_CAP_KB = 64;
+const SOURCE_DELTA_FAIL = 0.12;
+/** Per-card source folder absolute cap (v14.30.0). Fail CI above this. Target ≤ 60 KB in v15. */
+const SOURCE_HARD_CAP_KB = 63;
 const baselineSource = baseline.cardSource ?? {};
 
 if (Object.keys(baselineSource).length > 0) {
