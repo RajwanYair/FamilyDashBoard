@@ -423,7 +423,7 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 
 ### 5.5 Production-Readiness Quality Backlog (v3.2 audit findings, 2026-05-18)
 
-Items identified in the v3.2 full-system production-readiness audit. ✅ items were resolved in this session.
+Items identified in the v3.2 full-system production-readiness audit. ✅ QA-1–QA-7 and QA-9 resolved; QA-8 deferred to v16.
 
 | #    | Type    | Item                                                                                   | P   | E   | I   | Status |
 | ---- | ------- | -------------------------------------------------------------------------------------- | --- | --- | --- | ------ |
@@ -432,10 +432,10 @@ Items identified in the v3.2 full-system production-readiness audit. ✅ items w
 | QA-3 | Config  | `.hintrc` compat-ignore completeness: add `popovertarget`, `input[type=date/time]`    | P1  | S   | Mid | ✅ v14.29 |
 | QA-4 | Cleanup | Move `renovate.json` → `.github/renovate.json` (keep root uncluttered)                | P1  | S   | Lo  | ✅ v14.29 |
 | QA-5 | Deps    | MyScripts tools updated: Vite 8.0.13, Vitest 4.1.6, ESLint 10.4.0, PW 1.60.0         | P1  | S   | Mid | ✅ v14.29 |
-| QA-6 | Config  | Renovate: enable `automerge: true` for patch devDeps to reduce PR noise               | P2  | S   | Lo  | v15    |
-| QA-7 | Enhance | SW update notification toast ("new version available — refresh to apply")              | P2  | M   | Mid | v15    |
+| QA-6 | Config  | Renovate: enable `automerge: true` for patch devDeps to reduce PR noise               | P2  | S   | Lo  | ✅ v14.29 |
+| QA-7 | Enhance | SW update notification toast ("new version available — refresh to apply")              | P2  | M   | Mid | ✅ v14.29 |
 | QA-8 | Monitor | `performance.measureUserAgentSpecificMemory()` for card-level memory leak detection    | P3  | M   | Lo  | v16    |
-| QA-9 | Config  | `.vscode/extensions.json` audit: remove extensions with 0 contribution to this project | P2  | S   | Lo  | v15    |
+| QA-9 | Config  | `.vscode/extensions.json` audit: remove extensions with 0 contribution to this project | P2  | S   | Lo  | ✅ v14.29 |
 
 ---
 
