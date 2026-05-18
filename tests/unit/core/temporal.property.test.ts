@@ -12,6 +12,16 @@
  *  TM8. toISODateString(): always produces "YYYY-MM-DD" (10-char, digits+hyphens)
  *  TM9. toISODateString() + parsePlainDateMs() round-trip: year/month/day survive
  * TM10. startOfDayMs(): result ≤ input epoch-ms (midnight ≤ that moment)
+ * TM11. addDays round-trip: addDays(d, n) then addDays(result, -n) = same day
+ * TM12. diffDays antisymmetry: diffDays(a,b) + diffDays(b,a) = 0
+ * TM13. isSameDay reflexive: any Date is same day as itself
+ * TM14. addDays non-mutating
+ * TM15. addWeeks equivalence: addWeeks(d, n) = addDays(d, 7*n)
+ * TM16. addWeeks non-mutating
+ * TM17. isToday: any time on current calendar day → true
+ * TM18. isTomorrow: any time on next calendar day → true
+ * TM19. isYesterday: any time on previous calendar day → true
+ * TM20. isToday/isTomorrow/isYesterday mutually exclusive
  */
 
 import { describe, it, expect } from "vitest";
@@ -27,6 +37,10 @@ import {
   diffDays,
   isSameDay,
   daysUntil,
+  addWeeks,
+  isToday,
+  isTomorrow,
+  isYesterday,
 } from "@/core/temporal";
 
 // ── TM1: nowMs is always a finite positive integer ───────────────────────────
@@ -300,6 +314,110 @@ describe("temporal — TM14: addDays non-mutating", () => {
         },
       ),
       { numRuns: 50 },
+    );
+  });
+});
+
+// ── TM15: addWeeks equivalent to addDays(d, 7*n) ────────────────────────────
+
+describe("temporal — TM15: addWeeks equivalence to addDays", () => {
+  it("addWeeks(d, n) produces the same date as addDays(d, 7*n)", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 946684800000, max: 4102444800000 }),
+        fc.integer({ min: -52, max: 52 }),
+        (ms, n) => {
+          const d = new Date(ms);
+          const weekResult = addWeeks(d, n);
+          const dayResult = addDays(d, 7 * n);
+          expect(isSameDay(weekResult, dayResult)).toBe(true);
+        },
+      ),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── TM16: addWeeks non-mutating ──────────────────────────────────────────────
+
+describe("temporal — TM16: addWeeks non-mutating", () => {
+  it("input Date is unchanged after addWeeks", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 946684800000, max: 4102444800000 }),
+        fc.integer({ min: -52, max: 52 }),
+        (ms, n) => {
+          const d = new Date(ms);
+          const before = d.getTime();
+          addWeeks(d, n);
+          expect(d.getTime()).toBe(before);
+        },
+      ),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── TM17: isToday true for current day ───────────────────────────────────────
+
+describe("temporal — TM17: isToday for same calendar day", () => {
+  it("any time on today is recognized as today", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 86399999 }), (offsetMs) => {
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const sameDay = new Date(todayStart.getTime() + offsetMs);
+        expect(isToday(sameDay)).toBe(true);
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── TM18: isTomorrow true for next calendar day ──────────────────────────────
+
+describe("temporal — TM18: isTomorrow for next day", () => {
+  it("addDays(today, 1) is always tomorrow", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 86399999 }), (offsetMs) => {
+        const now = new Date();
+        const tomorrowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        const tomorrowTime = new Date(tomorrowStart.getTime() + offsetMs);
+        expect(isTomorrow(tomorrowTime)).toBe(true);
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── TM19: isYesterday true for previous calendar day ─────────────────────────
+
+describe("temporal — TM19: isYesterday for previous day", () => {
+  it("addDays(today, -1) is always yesterday", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 86399999 }), (offsetMs) => {
+        const now = new Date();
+        const yesterdayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        const yesterdayTime = new Date(yesterdayStart.getTime() + offsetMs);
+        expect(isYesterday(yesterdayTime)).toBe(true);
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── TM20: isToday/isTomorrow/isYesterday mutually exclusive ──────────────────
+
+describe("temporal — TM20: isToday/isTomorrow/isYesterday mutual exclusion", () => {
+  it("at most one of the three is true for any date", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: -3, max: 3 }), (offset) => {
+        const now = new Date();
+        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset, 12, 0, 0);
+        const count = [isToday(d), isTomorrow(d), isYesterday(d)].filter(Boolean).length;
+        expect(count).toBeLessThanOrEqual(1);
+      }),
+      { numRuns: 7 },
     );
   });
 });

@@ -16,6 +16,8 @@
  *  CAL12. groupEventsByDay: events sorted within each bucket
  *  CAL13. getHolidaysByDate: returns null for empty items
  *  CAL14. getHolidaysByDate: matching items → non-null string
+ *  CAL15. calDaysUntilLabel: monotone — further dates produce ≥ count
+ *  CAL16. groupEventsByDay: event placed at day-N lands in bucket N
  */
 
 import { describe, it, expect } from "vitest";
@@ -252,5 +254,58 @@ describe("calendar — CAL14: getHolidaysByDate match", () => {
     const result = getHolidaysByDate(items, d);
     expect(result).not.toBeNull();
     expect(result!.length).toBeGreaterThan(0);
+  });
+});
+
+// ── CAL15: calDaysUntilLabel monotone ────────────────────────────────────────
+
+describe("calendar — CAL15: calDaysUntilLabel monotone", () => {
+  it("further future dates produce labels with ≥ day count", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 2, max: 15 }),
+        fc.integer({ min: 1, max: 14 }),
+        (a, delta) => {
+          const now = new Date(2025, 0, 1);
+          const dateA = new Date(2025, 0, 1 + a);
+          const dateB = new Date(2025, 0, 1 + a + delta);
+          const labelA = calDaysUntilLabel(dateA, now);
+          const labelB = calDaysUntilLabel(dateB, now);
+          // Extract number from "עוד N ימים" — both should have N since a ≥ 2
+          const numA = Number(labelA.replace(/\D/g, ""));
+          const numB = Number(labelB.replace(/\D/g, ""));
+          expect(numB).toBeGreaterThanOrEqual(numA);
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── CAL16: groupEventsByDay bucket index matches diffDays ────────────────────
+
+describe("calendar — CAL16: groupEventsByDay correct bucket placement", () => {
+  it("event at day-N from anchor lands in bucket index N", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 20 }), (dayOffset) => {
+        const now = new Date(2025, 3, 10);
+        const eventStart = new Date(2025, 3, 10 + dayOffset, 12, 0);
+        const events = [
+          {
+            summary: "test",
+            start: eventStart,
+            end: new Date(eventStart.getTime() + 3600000),
+            allDay: false,
+            icsIndex: 0,
+            category: "default",
+          },
+        ];
+        const result = groupEventsByDay(events, now);
+        const bucket = result[dayOffset];
+        expect(bucket!.events.length).toBe(1);
+        expect(bucket!.events[0]!.summary).toBe("test");
+      }),
+      { numRuns: 21 },
+    );
   });
 });
