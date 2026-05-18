@@ -8,6 +8,7 @@
  *   GET /api/hebcal?geonameid=X           → Hebcal shabbat
  *   GET /api/hebcal/holidays?year=X       → Hebcal holiday list
  *   GET /api/stocks?sym=X                 → Yahoo Finance v8 chart
+ *   GET /api/stocks/live?sym=A,B          → WS upgrade → StocksLiveDO (ADR-086)
  *   GET /api/news?url=X                   → RSS feed proxy (allowlisted origins)
  *   GET /api/news/aggregate               → Aggregate all 16 curated RSS feeds
  *   GET /api/news/summarise               → Workers AI news summarisation (AI_ENABLED=true, else 503)
@@ -29,12 +30,14 @@
 
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-// ── Durable Objects (V12-EDGE-3, V13-EDGE-6) — re-exported for wrangler binding ──
+// ── Durable Objects (V12-EDGE-3, V13-EDGE-6, ADR-086) — re-exported for wrangler binding ──
 export { AlertsOrchestrator } from "./durable-objects/alerts-orchestrator";
 export { RateLimiterDO } from "./durable-objects/rate-limiter-do";
+export { StocksLiveDO } from "./durable-objects/stocks-live-do";
 import { handleWeather, handleCurrency, handleHebcal, handleHebcalHolidays } from "./routes/data";
 import {
   handleStocks,
+  handleStocksLive,
   handleNews,
   handleNewsAggregate,
   handleAlerts,
@@ -127,6 +130,9 @@ app.get("/api/hebcal/holidays", (c) => handleHebcalHolidays(new URL(c.req.url), 
 app.get("/api/hebcal", earlyHintsMiddleware, (c) => handleHebcal(new URL(c.req.url), c.env));
 
 app.get("/api/stocks", (c) => handleStocks(new URL(c.req.url), c.env));
+
+// ADR-086: Hibernatable WebSocket live stream for stock prices
+app.get("/api/stocks/live", (c) => handleStocksLive(c.req.raw, c.env));
 
 app.get("/api/news/aggregate", earlyHintsMiddleware, (c) => handleNewsAggregate(c.env));
 

@@ -117,9 +117,20 @@ export interface Env {
    * Feature flag: enable opt-in OpenTelemetry spans (ADR-079).
    * Set to "true" to activate OTel tracing via `worker/src/telemetry.ts`.
    * When absent or not "true", `initOtel(env).enabled === false` — zero overhead.
-   * Full OTel implementation deferred to v15 sprint.
    */
   OTEL_ENABLED?: string;
+  /**
+   * OTLP endpoint for OpenTelemetry span export (ADR-079).
+   * Must be an HTTPS URL accepting OTLP/JSON POST at `/v1/traces`.
+   * Optional — OTel export is silently skipped when not set.
+   */
+  OTEL_ENDPOINT?: string;
+  /**
+   * Durable Object for Hibernatable WebSocket stock price fan-out (ADR-086, S-DO).
+   * Bound in wrangler.toml as [[durable_objects.bindings]] with class StocksLiveDO.
+   * Optional — WebSocket upgrade returns 501 when not configured.
+   */
+  STOCKS_DO?: DurableObjectNamespace;
 }
 
 /**

@@ -50,6 +50,17 @@ class_name = "RateLimiterDO"
 tag = "v2"
 new_classes = ["RateLimiterDO"]
 
+# ADR-086: Hibernatable WebSocket Durable Object for live stock price fan-out
+# WebSocket Hibernation API — zero CPU cost between messages.
+# Create once; shard-keyed by first ticker symbol mod 4.
+[[durable_objects.bindings]]
+name = "STOCKS_DO"
+class_name = "StocksLiveDO"
+
+[[migrations]]
+tag = "v3"
+new_classes = ["StocksLiveDO"]
+
 # Cron triggers: daily pre-warm of hot API paths (V12-OPS-1)
 # 00:00 UTC — warm stocks, currency, hebcal before the working day
 # 12:00 UTC — mid-day warm to refresh stale KV entries

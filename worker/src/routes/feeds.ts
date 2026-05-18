@@ -471,3 +471,44 @@ export async function handleCrypto(url: URL, env: Env): Promise<Response> {
     },
   });
 }
+
+// ── Stocks Live WebSocket (ADR-086, S-DO) ─────────────────────────────────────
+
+/**
+ * Upgrade handler for GET /api/stocks/live — forwards the WebSocket connection
+ * to the StocksLiveDO Durable Object using the Hibernation API.
+ *
+ * The DO class is named per-symbol-group via a deterministic shard key so that
+ * up to `MAX_STOCKS_SHARDS` independent DOs each serve a subset of tickers,
+ * keeping per-DO connection counts low.
+ *
+ * Returns 501 when the `STOCKS_DO` binding is not configured (local dev / unit tests).
+ */
+const MAX_STOCKS_SHARDS = 4;
+
+export async function handleStocksLive(request: Request, env: Env): Promise<Response> {
+  if (!env.STOCKS_DO) {
+    return jsonResponse({ error: "stocks_ws_not_configured" }, 501);
+  }
+
+  const upgradeHeader = request.headers.get("Upgrade");
+  if (upgradeHeader?.toLowerCase() !== "websocket") {
+    return new Response("This endpoint requires a WebSocket Upgrade", { status: 426 });
+  }
+
+  const url = new URL(request.url);
+  const rawSyms = url.searchParams.get("sym") ?? "";
+
+  // Derive shard key from first symbol to distribute load.
+  const firstSym = rawSyms.split(",")[0]?.trim().toUpperCase() ?? "DEFAULT";
+  const shard = firstSym.charCodeAt(0) % MAX_STOCKS_SHARDS;
+  const doId = env.STOCKS_DO.idFromName(`stocks-shard-${shard}`);
+  const stub = env.STOCKS_DO.get(doId);
+
+  // Forward the WebSocket upgrade to the DO.
+  const doRequest = new Request(`${url.origin}/connect?sym=${encodeURIComponent(rawSyms)}`, {
+    headers: request.headers,
+  });
+  return stub.fetch(doRequest);
+}
+
