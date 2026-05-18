@@ -11,7 +11,7 @@
 import "./countdown.css";
 import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
-import { MS_PER_DAY } from "../../core/constants";
+
 import { decomposeDuration, pad2 } from "../../core/utils";
 import { cGetStale } from "../../core/cache";
 import { setCardSignal } from "../../core/card-signal-protocol";
@@ -22,6 +22,8 @@ import {
   parsePlainDateMs,
   parsePlainDateTime,
   toISODateString,
+  diffDays,
+  addDays,
 } from "../../core/temporal";
 import type { HebcalItem } from "../../types/api";
 import type { DurationParts } from "../../core/utils";
@@ -108,9 +110,9 @@ export function getTimeComponents(targetMs: number): TimeComponents {
   return decomposeDuration(Math.max(0, targetMs - nowMs()));
 }
 
-/** Returns the number of whole days that have elapsed since `targetMs`. */
+/** Returns the number of whole calendar days that have elapsed since `targetMs`. */
 export function getDaysSince(targetMs: number): number {
-  return Math.max(0, Math.floor((nowMs() - targetMs) / MS_PER_DAY));
+  return Math.max(0, diffDays(new Date(targetMs), new Date()));
 }
 
 /**
@@ -204,7 +206,7 @@ export function getNextYomTov(
   maxDays = 90,
 ): { title: string; date: string } | null {
   const todayMs = startOfDayMs(now);
-  const cutoff = todayMs + maxDays * MS_PER_DAY;
+  const cutoff = addDays(now, maxDays).getTime();
   const upcoming = items
     .filter((i) => {
       if (i.category !== "holiday") return false;
@@ -227,7 +229,7 @@ export function getNextCalEventForCountdown(
   icsText: string,
   minDaysAhead = 7,
 ): { title: string; date: string } | null {
-  const minMs = nowMs() + minDaysAhead * MS_PER_DAY;
+  const minMs = addDays(new Date(), minDaysAhead).getTime();
   const blocks = icsText.split("BEGIN:VEVENT");
   const events: Array<{ title: string; date: string; ms: number }> = [];
   for (const block of blocks.slice(1)) {
