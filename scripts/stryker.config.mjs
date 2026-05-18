@@ -241,6 +241,7 @@ export default {
     "src/ui/status-bar.ts",
     "src/ui/scroll.ts",
     // (v14.16.0): config panel, UI overlays, video-news, layout/drag, fdb-* web components
+    // (v14.30.0): config-panel CP1-CP6 property tests added (buildConfigAccordion, isConfigPanelOpen, toggleConfigPanel, switchCfgTab)
     "src/ui/config-panel.ts",
     "src/ui/config-auto-render.ts",
     "src/cards/video-news/video-news.ts",
