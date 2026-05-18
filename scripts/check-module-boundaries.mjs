@@ -61,6 +61,13 @@ const FORBIDDEN = [
     importing: /from\s+["'][^"']*[\\/]tests[\\/]/,
     why: "src/* must not import from tests/* (production code must not depend on test infrastructure)",
   },
+  // D12-C2 (v14.31.0): cards must use temporal.ts for date arithmetic, not raw MS_PER_DAY.
+  // hebrew-cal is baselined (uses MS_PER_DAY only for cache TTL, not date math).
+  {
+    from: /[\\/]src[\\/]cards[\\/]/,
+    importing: /import\s*\{[^}]*\bMS_PER_DAY\b[^}]*\}\s*from\s*["'][^"']*constants["']/,
+    why: "src/cards/* must not import MS_PER_DAY from constants for date arithmetic — use src/core/temporal.ts",
+  },
 ];
 
 /**
@@ -112,8 +119,10 @@ const BASELINE = new Set([
   "src/cards/video-news/fdb-video-news.ts",
   "src/ui/ticker.ts",
   // D12-cross: pre-existing cross-card imports (refactor tracked in ROADMAP §3)
-  "src/cards/hebrew-cal/hebrew-cal.ts", // imports from tasks
+  "src/cards/hebrew-cal/hebrew-cal.ts", // imports from tasks; MS_PER_DAY for cache TTL (D12-C2)
   "src/cards/stocks/tase-adapter.ts", // imports from currency
+  // D12-C2: pre-existing MS_PER_DAY usage (migrate to temporal.ts tracked in backlog)
+  "src/cards/news/news.ts", // MS_PER_DAY for "yesterday" label — migrate to isYesterday()
 ]);
 
 /** @returns {string[]} */
