@@ -1,9 +1,9 @@
-﻿# Adding a New Card to FamilyDashBoard
+﻿# 🧩 Adding a New Card to FamilyDashBoard
 
 This guide walks through every step needed to add a fully functional card to the
 dashboard. Follow the steps in order — each builds on the previous.
 
-## Card Creation Flow
+## 🔄 Card Creation Flow
 
 ```mermaid
 flowchart TD
@@ -24,7 +24,7 @@ flowchart TD
 
 ---
 
-## 1. Plan the Card
+## 1. 📋 Plan the Card
 
 Before writing any code decide:
 
@@ -38,7 +38,7 @@ Before writing any code decide:
 
 ---
 
-## 2. Create the Card Folder
+## 2. 📁 Create the Card Folder
 
 ```text
 src/cards/my-card/
@@ -48,7 +48,7 @@ src/cards/my-card/
 
 ---
 
-## 3. Write the Loader (`index.ts`)
+## 3. ✍️ Write the Loader (`index.ts`)
 
 Minimal template:
 
@@ -109,7 +109,7 @@ Key rules to follow:
 
 ---
 
-## 4. Add the HTML Slot
+## 4. 🧱 Add the HTML Slot
 
 Open `src/index.html` and add the card element in the correct grid region:
 
@@ -123,7 +123,7 @@ The `data-card-id` value must match the registry ID exactly (kebab-case, no alia
 
 ---
 
-## 5. Register the Card
+## 5. 📝 Register the Card
 
 Open `src/core/card-registry.ts` and register the new card:
 
@@ -140,7 +140,7 @@ registerCard({
 
 ---
 
-## 6. Add CSS
+## 6. 🎨 Add CSS
 
 In `src/cards/my-card/my-card.css` (or in `src/styles/components.css`):
 
@@ -158,7 +158,7 @@ Import it in `src/main.ts` or directly in `index.ts` (Vite handles CSS imports).
 
 ---
 
-## 7. Add Config Support (optional)
+## 7. ⚙️ Add Config Support (optional)
 
 If the card has user-configurable settings:
 
@@ -170,7 +170,7 @@ If the card has user-configurable settings:
 
 ---
 
-## 8. Write Tests
+## 8. 🧪 Write Tests
 
 Create `tests/unit/cards/my-card/my-card.test.ts`:
 
@@ -188,7 +188,7 @@ Run: `npx vitest run tests/unit/cards/my-card/`
 
 ---
 
-## 9. Update Documentation
+## 9. 📄 Update Documentation
 
 - Add the card to the **Cards** table in `README.md`.
 - Add a one-line entry in `CHANGELOG.md` under the `[Unreleased]` section.
@@ -196,7 +196,7 @@ Run: `npx vitest run tests/unit/cards/my-card/`
 
 ---
 
-## 10. Validate
+## 10. ✅ Validate
 
 ```powershell
 npx tsc --noEmit
@@ -211,7 +211,7 @@ All must pass with 0 errors, 0 warnings, 0 test failures before committing.
 
 ---
 
-## Video-Card Variant
+## 📺 Video-Card Variant
 
 Cards that display a live video stream follow a distinct pattern from data-polling cards.
 Use this section alongside the standard steps above.

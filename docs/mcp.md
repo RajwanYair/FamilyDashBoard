@@ -1,4 +1,4 @@
-# FamilyDashBoard — MCP Server Bridge (X11 / D1)
+# 🤖 FamilyDashBoard — MCP Server Bridge (X11 / D1)
 
 > **Status**: Shipped v14.0 · ADR-058 (design) · ADR-066 (impl plan)
 >
@@ -8,7 +8,7 @@
 
 ---
 
-## What it is
+## 📋 What it is
 
 The MCP bridge exposes a read-only view of today's dashboard state so that
 users' AI assistants (Claude, ChatGPT, etc.) can answer "what's on today"
@@ -32,7 +32,7 @@ itself never binds any TCP port.
 
 ---
 
-## How to enable
+## ⚡ How to enable
 
 Append `?mcp=1` to the dashboard URL on initial page load:
 
@@ -46,7 +46,7 @@ never imported — zero bytes, zero cost.
 
 ---
 
-## Available tools
+## 🧰 Available tools
 
 | Tool               | Description                                          | Source card    |
 | ------------------ | ---------------------------------------------------- | -------------- |
@@ -59,7 +59,7 @@ never imported — zero bytes, zero cost.
 
 ---
 
-## Wire protocol
+## 🔌 Wire protocol
 
 The bridge listens on `BroadcastChannel("fdb-mcp")` for **request** messages
 and posts **response** messages. Types are defined in
@@ -126,7 +126,7 @@ Requests with a `id` already seen within the last 60 seconds are rejected:
 
 ---
 
-## Security model
+## 🔒 Security model
 
 | Property                 | Detail                                                                                                                                      |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -140,7 +140,7 @@ Requests with a `id` already seen within the last 60 seconds are rejected:
 
 ---
 
-## Building a companion
+## 🔧 Building a companion
 
 A reference companion is maintained as a separate project. It:
 
@@ -169,7 +169,7 @@ ch.postMessage({
 
 ---
 
-## Changelog
+## 📝 Changelog
 
 | Version | Notes                                                                   |
 | ------- | ----------------------------------------------------------------------- |

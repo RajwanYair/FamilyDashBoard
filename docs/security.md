@@ -1,11 +1,11 @@
-# Security Model — FamilyDashBoard v14.28.0
+# 🔒 Security Model — FamilyDashBoard v14.28.0
 
 > This document describes the security posture, threat model, and mitigation decisions for the
 > FamilyDashBoard project. Updated: 2026-05-27 (v14.28.0).
 
 ---
 
-## 1. Threat Model
+## 1. ⚠️ Threat Model
 
 FamilyDashBoard is a **private, single-household, always-on family display**. It is a static PWA
 served from GitHub Pages with no authentication, no user accounts, and no server-side session
@@ -25,7 +25,7 @@ management. The realistic threat surface is small but non-zero.
 
 ---
 
-## 2. Content Security Policy
+## 2. 🛡️ Content Security Policy
 
 The `<meta http-equiv="Content-Security-Policy">` in `src/index.html` implements:
 
@@ -63,7 +63,7 @@ execution. See `vite.config.ts` comments for the full explanation.
 
 ---
 
-## 3. Worker API Security Headers
+## 3. 🌐 Worker API Security Headers
 
 All Cloudflare Worker responses include:
 
@@ -78,7 +78,7 @@ All Cloudflare Worker responses include:
 
 ---
 
-## 4. COOP / COEP Limitation
+## 4. 🔐 COOP / COEP Limitation
 
 `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy` require **HTTP response headers**.
 GitHub Pages does not support custom response headers. The `_headers` file at the repo root documents
@@ -87,7 +87,7 @@ Netlify, or Vercel.
 
 ---
 
-## 5. Sub-Resource Integrity (SRI)
+## 5. 🔏 Sub-Resource Integrity (SRI)
 
 There are **zero third-party scripts** in this project. SRI is therefore not applicable.
 All JavaScript and CSS is built from source by Vite and served from the same origin (`self`).
@@ -95,7 +95,7 @@ This decision is recorded to prevent future confusion.
 
 ---
 
-## 6. Worker Rate Limiting
+## 6. ⏱️ Worker Rate Limiting
 
 The Cloudflare Worker implements in-memory per-IP rate limiting:
 
@@ -106,7 +106,7 @@ The Cloudflare Worker implements in-memory per-IP rate limiting:
 
 ---
 
-## 7. Error Telemetry Privacy
+## 7. 👁️ Error Telemetry Privacy
 
 The error reporting system (`error-reporter.ts` → `POST /api/errors`) collects:
 
@@ -126,7 +126,7 @@ as a Cloudflare Worker secret (`wrangler secret put ERROR_REPORTING_TOKEN`).
 
 ---
 
-## 8. Secret Handling
+## 8. 🔑 Secret Handling
 
 | Secret                  | Storage                  | Rotation              |
 | ----------------------- | ------------------------ | --------------------- |
@@ -137,7 +137,7 @@ No secrets are committed to the repository. GitHub native secret scanning is ena
 
 ---
 
-## 9. Dependency Audit
+## 9. 📦 Dependency Audit
 
 | Layer         | Dependencies                      | Audit                                   |
 | ------------- | --------------------------------- | --------------------------------------- |
@@ -149,7 +149,7 @@ No secrets are committed to the repository. GitHub native secret scanning is ena
 
 ---
 
-## 10. Video Streams (video-news card — opt-in)
+## 10. 📺 Video Streams (video-news card — opt-in)
 
 The `video-news` card is **disabled by default** (`hidden: true` in the card registry).
 When enabled, it plays a live HLS stream inside a `<video>` element.
@@ -189,7 +189,7 @@ prohibit third-party embedding will not be supported.
 
 ---
 
-## 11. SRI Policy and SLSA Provenance
+## 11. 📜 SRI Policy and SLSA Provenance
 
 ### Sub-Resource Integrity (SRI)
 
@@ -227,7 +227,7 @@ For the SLSA Level 3 upgrade path (signed provenance attestations via GitHub Act
 
 ---
 
-## 12. Secret Rotation Schedule
+## 12. 🔄 Secret Rotation Schedule
 
 | Secret                  | Storage                  | Rotation cadence         | Owner              |
 | ----------------------- | ------------------------ | ------------------------ | ------------------ |

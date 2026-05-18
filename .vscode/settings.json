@@ -22,7 +22,7 @@
     "eslint.useFlatConfig": true,
     "eslint.lintTask.enable": true,
     // ── Stylelint ──
-    "stylelint.validate": ["css", "html"],
+    "stylelint.validate": ["css"],
     "css.validate": false,
     // ── HTMLHint ──
     "htmlhint.enable": true,

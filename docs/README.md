@@ -1,8 +1,8 @@
-# Documentation Map
+# 🗺️ Documentation Map
 
 This directory is the canonical entry point for product documentation in FamilyDashBoard.
 
-## Current Product Docs
+## 📚 Current Product Docs
 
 | File                                                                     | Purpose                                                          |
 | ------------------------------------------------------------------------ | ---------------------------------------------------------------- |
@@ -13,7 +13,7 @@ This directory is the canonical entry point for product documentation in FamilyD
 | [../CHANGELOG.md](../CHANGELOG.md)                                       | Versioned release history                                        |
 | [../.github/copilot-instructions.md](../.github/copilot-instructions.md) | Canonical coding rules and project constraints                   |
 
-## Release And Operations Docs
+## 🚀 Release And Operations Docs
 
 | File                                                                                                       | Purpose                                            |
 | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
@@ -23,7 +23,7 @@ This directory is the canonical entry point for product documentation in FamilyD
 | [../.github/SUPPORT.md](../.github/SUPPORT.md)                                                             | Support and operator guidance                      |
 | [../.github/SECURITY.md](../.github/SECURITY.md)                                                           | Security policy                                    |
 
-## Technical Guides
+## 🔧 Technical Guides
 
 | File                                 | Purpose                                                         |
 | ------------------------------------ | --------------------------------------------------------------- |
@@ -40,7 +40,7 @@ This directory is the canonical entry point for product documentation in FamilyD
 | [sync.md](sync.md)                   | Configuration sync and export/import                            |
 | [video-cards.md](video-cards.md)     | Video news card architecture and CSP considerations             |
 
-## Documentation Rules
+## 📋 Documentation Rules
 
 - Top-level docs must describe the modular TypeScript app, not the archived single-file dashboard.
 - If architecture changes, update [ARCHITECTURE.md](ARCHITECTURE.md), [adr/README.md](adr/README.md), and any impacted ADR in the same sprint.

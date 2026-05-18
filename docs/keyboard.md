@@ -1,10 +1,10 @@
-# Keyboard & Accessibility Guide — FamilyDashBoard
+# ⌨️ Keyboard & Accessibility Guide — FamilyDashBoard
 
 > Covers keyboard shortcuts, focus-order design, and screen-reader operation.
 
 ---
 
-## Keyboard Shortcuts
+## ⌨️ Keyboard Shortcuts
 
 All shortcuts are single-key (no modifier required) and fire from the global
 `keydown` handler in `src/ui/keyboard.ts`. Shortcuts are silenced when focus
@@ -33,7 +33,7 @@ is inside an `<input>`, `<textarea>`, or `<select>`.
 
 ---
 
-## Focus Order
+## 🎯 Focus Order
 
 The tab order follows the natural DOM order in `src/index.html`. Interactive
 elements and their tab order are:
@@ -55,7 +55,7 @@ provides built-in focus-trap and `Esc`-to-close behavior without any custom code
 
 ---
 
-## ARIA Landmarks
+## 🏷️ ARIA Landmarks
 
 | Landmark         | Element                       | Role / label                       |
 | ---------------- | ----------------------------- | ---------------------------------- |
@@ -68,7 +68,7 @@ provides built-in focus-trap and `Esc`-to-close behavior without any custom code
 
 ---
 
-## Screen Reader Operation (NVDA / VoiceOver)
+## 🔊 Screen Reader Operation (NVDA / VoiceOver)
 
 ### Recommended settings
 
@@ -109,7 +109,7 @@ provides built-in focus-trap and `Esc`-to-close behavior without any custom code
 
 ---
 
-## Touch / Pointer Accessibility
+## 👆 Touch / Pointer Accessibility
 
 All interactive touch targets meet WCAG 2.5.8 (minimum 24 × 24 px).
 News source chips have `min-height: 24px; min-width: 24px` explicitly set.
@@ -120,7 +120,7 @@ the `screen-tablet` and `screen-phone` CSS layers.
 
 ---
 
-## Color Contrast
+## 🎨 Color Contrast
 
 All 7 themes satisfy WCAG 2.1 AA (contrast ratio ≥ 4.5:1 for normal text,
 ≥ 3:1 for large text) against the respective dark background:
@@ -138,7 +138,7 @@ Verified with the Lighthouse accessibility audit (target: ≥ 0.98, see `.lighth
 
 ---
 
-## Automated Accessibility Tests
+## 🤖 Automated Accessibility Tests
 
 Playwright runs axe-core on all 3 screen modes in `tests/e2e/accessibility.spec.ts`:
 
@@ -150,7 +150,7 @@ The test uses the `wcag22aa` ruleset and fails the suite on any violation.
 
 ---
 
-## See Also
+## 🔗 See Also
 
 - [`src/ui/keyboard.ts`](../src/ui/keyboard.ts) — keyboard registry & dispatcher
 - [`tests/e2e/accessibility.spec.ts`](../tests/e2e/accessibility.spec.ts) — axe-core tests

@@ -31,7 +31,10 @@
           "summary",
           "dir",
           "autocomplete",
-          "popover"
+          "popover",
+          "popovertarget",
+          "input[type=date]",
+          "input[type=time]"
         ],
         "enable": []
       }

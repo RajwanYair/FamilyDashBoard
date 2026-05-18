@@ -1,4 +1,4 @@
-# Deployment Guide — FamilyDashBoard
+# 🚀 Deployment Guide — FamilyDashBoard
 
 FamilyDashBoard is a static PWA. There is no server to run; you just serve the
 compiled `dist/` folder from any static host.
@@ -7,9 +7,9 @@ compiled `dist/` folder from any static host.
 
 ---
 
-## Build Targets
+## 🏗️ Build Targets
 
-### GitHub Pages (default)
+### 📄 GitHub Pages (default)
 
 ```powershell
 npm run build
@@ -18,7 +18,7 @@ npm run build
 - Sets `--base /FamilyDashBoard/` so all asset paths are relative to the repo root.
 - Output: `dist/`
 
-### Local `file://` access
+### 💾 Local `file://` access
 
 ```powershell
 npm run build:local
@@ -30,7 +30,7 @@ npm run build:local
 
 ---
 
-## Deploying to GitHub Pages
+## 🌐 Deploying to GitHub Pages
 
 The repository ships a `.github/workflows/release.yml` that builds and attaches
 `dist.zip` to every tagged release. GitHub Pages is configured to deploy from the
@@ -46,7 +46,7 @@ Manual trigger:
 
 ---
 
-## Self-Hosting (any static server)
+## 🏠 Self-Hosting (any static server)
 
 1. Build: `npm run build` (or `build:local` for file:// access).
 2. Copy `dist/` to your server's web root.
@@ -54,7 +54,7 @@ Manual trigger:
 4. Ensure `sw.js` is served from the same origin as `index.html` (required for the
    Service Worker to register correctly).
 
-### nginx example
+### ⚙️ nginx example
 
 ```nginx
 server {
@@ -75,7 +75,7 @@ server {
 
 ---
 
-## Deploying the Cloudflare Worker (optional)
+## ☁️ Deploying the Cloudflare Worker (optional)
 
 The Worker (`worker/`) is optional — the dashboard works without it, falling back to
 the client-side proxy chain for external API data.
@@ -94,7 +94,7 @@ See `worker/README.md` and `worker/API.md` for full Worker documentation.
 
 ---
 
-## Environment / Configuration
+## ⚙️ Environment / Configuration
 
 FamilyDashBoard has no server-side environment variables. All configuration is stored
 in the user's `localStorage` and managed through the in-app config panel (`S` key or
@@ -106,7 +106,7 @@ server.
 
 ---
 
-## Service Worker
+## 🔧 Service Worker
 
 The Service Worker (`sw.js`) pre-caches the app shell on first load and serves cached
 responses offline. It broadcasts a `VERSION_ACTIVATED` message when a new version
@@ -117,7 +117,7 @@ To force a SW update during development: open DevTools → Application → Servi
 
 ---
 
-## Offline Mode
+## 📴 Offline Mode
 
 When offline, the Service Worker serves the last-cached `index.html`. Cards that
 cannot reach their APIs display stale data from `localStorage` cache if available, or
@@ -125,7 +125,7 @@ a graceful error tile otherwise.
 
 ---
 
-## Troubleshooting
+## 🔍 Troubleshooting
 
 | Symptom                   | Fix                                                        |
 | ------------------------- | ---------------------------------------------------------- |

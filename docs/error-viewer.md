@@ -1,4 +1,4 @@
-# Error Viewer — FamilyDashBoard
+# 🔍 Error Viewer — FamilyDashBoard
 
 > The error viewer surfaces client-side runtime errors that were captured by the
 > dashboard and persisted to Cloudflare KV by the worker. It is the primary
@@ -6,7 +6,7 @@
 
 ---
 
-## Overview
+## 📊 Overview
 
 FamilyDashBoard runs a two-tier error pipeline:
 
@@ -21,7 +21,7 @@ FamilyDashBoard runs a two-tier error pipeline:
 
 ---
 
-## Exporting Errors via the API
+## 📤 Exporting Errors via the API
 
 ### Endpoint
 
@@ -70,7 +70,7 @@ The same value is used in the `?token=` query parameter.
 
 ---
 
-## Local Diagnostic Snapshot (`Ctrl+Shift+E`)
+## 🖥️ Local Diagnostic Snapshot (`Ctrl+Shift+E`)
 
 For quick diagnosis without the API, press **`Ctrl+Shift+E`** on the dashboard.
 This exports a JSON file containing:
@@ -84,7 +84,7 @@ Share this file with the developer for support.
 
 ---
 
-## Cloudflare Logpush (Live Tail)
+## ☁️ Cloudflare Logpush (Live Tail)
 
 All error entries are also written to the Worker's `console.error` stream.
 For real-time monitoring:
@@ -98,7 +98,7 @@ npx wrangler tail --format=json | jq 'select(.logs[].message[] | contains("[FDB-
 
 ---
 
-## Daily Error Count
+## 📈 Daily Error Count
 
 To check how many errors were stored today without listing all entries:
 
@@ -112,14 +112,14 @@ Cloudflare dashboard (**Workers → KV → CACHE_KV → Filter: errors:count**).
 
 ---
 
-## Retention
+## 🗓️ Retention
 
 Error entries are stored for **7 days** (Cloudflare KV `expirationTtl = 604800`).
 After 7 days they are automatically evicted. There is no manual deletion endpoint.
 
 ---
 
-## Privacy
+## 🔏 Privacy
 
 Error payloads contain:
 
@@ -131,7 +131,7 @@ See [`docs/privacy.md`](privacy.md) for the full privacy policy.
 
 ---
 
-## See Also
+## 🔗 See Also
 
 - ADR-016: [Error Reporting Contract & KV Storage Model](adr/ADR-016-error-reporting.md)
 - Worker route: [`worker/src/routes/errors.ts`](../worker/src/routes/errors.ts)

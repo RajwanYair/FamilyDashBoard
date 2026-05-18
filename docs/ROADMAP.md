@@ -1,6 +1,8 @@
-# FamilyDashBoard — Strategic Roadmap (Deep-Rethink v3.1)
+# FamilyDashBoard — Strategic Roadmap (Deep-Rethink v3.2)
 
-> **Refresh date**: 2026-05-27 · **Shipped baseline**: v14.28.0 · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-18 · **Shipped baseline**: v14.28.0 · **Active stream**: V15-OPEN.
+>
+> **v3.2 audit stamp (2026-05-18)**: Full production-readiness re-litigation. Corrected ARIA hierarchy (`cal-week-grid` gains `role="list"`). Resolved Stylelint false-positive on HTML (removed `html` from `stylelint.validate` — Stylelint is CSS-only, not an HTML linter). Completed `.hintrc` compat-ignore list: added `popovertarget`, `input[type=date]`, `input[type=time]` (all fully supported by our `.browserslistrc` floor). Root workspace re-audited: `renovate.json` relocated to `.github/renovate.json` (Renovate supports both; `.github/` keeps root uncluttered). All other root config files (`vite.config.ts`, `vitest.config.ts`, `eslint.config.mjs`, `playwright.config.ts`, `tsconfig*.json`, `sw.ts`) are correctly at root per ecosystem convention — relocation would break all CLI invocations and operator docs. `MyScripts/` shared tools updated within semver ranges (Vite 8.0.13, Vitest 4.1.6, ESLint 10.4.0, Playwright 1.60.0, fast-check 4.8.0, Stylelint 17.11.1, typescript-eslint 8.59.3, Valibot 1.4.0). 0 dead exports · 0 dead docs · 0 dead config · 0 `eslint-disable` · 0 `@ts-ignore` · 0 suspended CI gates.
 >
 > **v3.1 audit stamp (2026-05-16)**: Full re-litigation pass confirms zero divergence from v3 strategy. Inventory verified: 0 dead exports (142 files scanned via `check-dead-exports`), 0 `eslint-disable` / `@ts-ignore` / `@ts-expect-error` / `@ts-nocheck` in `src/`, 0 `continue-on-error` in workflows, 0 suspended/disabled CI gates (v13.x hardening sweep remains intact). All current `disabled` symbols in source are legitimate user-config semantics (`disabledFeeds`, HTML `[disabled]`, `0 = disabled` interval encodings, `ai_disabled` Workers AI opt-in flag, `video-news` opt-in default). Webhint IE compat false-positives in `.hintrc` resolved (IE EOL 2022, excluded by `.browserslistrc` since v9). Root layout left intact — Vite/Vitest/ESLint/TS/Playwright config files at root is the ecosystem convention; relocation gains nothing and forces CLI flags into every npm script, CI workflow, and operator doc. v15.0.0 reserved for the V15-OPEN feature stream (§6.1–6.6) — not consumed by structural reset. Next published version when V15-OPEN ships an exit-gate item; cleanup-only releases use patch tags.
 >
@@ -143,22 +145,23 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 
 ### 1.6 Tooling & versions
 
-| Tool               | Current               | Action                                                      |
-| ------------------ | --------------------- | ----------------------------------------------------------- |
-| Node.js            | 24 LTS                | Track 26 LTS (Oct 2027).                                    |
-| TypeScript         | 6.0.3                 | Track minor monthly; TS7 only when zero-delta.              |
-| Vite               | 8                     | Auto-adopt 9 + Rolldown when default.                       |
-| Vitest             | 4.1.5                 | Auto-adopt 4.2; track 5.x.                                  |
-| ESLint             | 10                    | Pair with `oxlint` fast pre-pass (ADR-039).                 |
-| Prettier           | 3.x                   | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML parity. |
-| Stylelint          | 16.x                  | Keep; consider Lightning-CSS-only validation v16.           |
-| Playwright         | 1.5x                  | Quarterly baseline regen.                                   |
-| Stryker (mutation) | 8.x                   | Threshold ≥ 87%; 136 files in scope.                        |
-| `fast-check`       | 3.x                   | 107 property suites across 4 domains.                       |
-| `axe-core`         | latest                | Keep CI gate.                                               |
-| Lighthouse CI      | latest                | At `error 0.99` cached.                                     |
-| `pnpm` workspace   | npm + parent          | **Reject** — current pattern sufficient and simpler.        |
-| Husky / Lefthook   | none (CI is the gate) | **Reject** — pre-commit hooks slow single-maintainer.       |
+| Tool               | Current (MyScripts)   | Action                                                                |
+| ------------------ | --------------------- | --------------------------------------------------------------------- |
+| Node.js            | 24 LTS                | Track 26 LTS (Oct 2027).                                              |
+| TypeScript         | 6.0.3                 | Track minor monthly; TS7 (Go-rewrite) only when zero behaviour delta. |
+| Vite               | 8.0.13                | Auto-adopt 9 + Rolldown-default when stable.                          |
+| Vitest             | 4.1.6                 | Auto-adopt 4.2; track 5.x when stable.                               |
+| ESLint             | 10.4.0                | Pair with `oxlint` fast pre-pass (ADR-039); track ESLint 11.           |
+| Prettier           | 3.8.3                 | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML+CSS parity.       |
+| Stylelint          | 17.11.1               | Keep; Lightning-CSS-only validation evaluated v16. **Not for HTML.**   |
+| Playwright         | 1.60.0                | Quarterly baseline regen; track 2.x.                                  |
+| Stryker (mutation) | 8.x                   | Threshold ≥ 87%; 136 files in scope.                                  |
+| `fast-check`       | 4.8.0                 | 107 property suites across 4 domains.                                 |
+| `axe-core`         | latest                | Keep CI gate.                                                         |
+| Lighthouse CI      | 0.15.1                | At `error 0.99` cached.                                               |
+| `pnpm` workspace   | npm + parent          | **Reject** — current pattern sufficient and simpler.                  |
+| Husky / Lefthook   | none (CI is the gate) | **Reject** — pre-commit hooks slow single-maintainer.                 |
+| `@commitlint/cli`  | 20.5.3 (21 avail)     | Upgrade to 21 tracked; verify breaking config at v15.                 |
 
 ### 1.7 Testing strategy
 
@@ -194,15 +197,16 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 
 ### 1.9 Documentation discipline
 
-- **73 ADRs** (72 active, 1 withdrawn). One per non-trivial decision.
+- **85 ADRs** (84 active, 1 withdrawn). One per non-trivial decision.
 - **User docs** (`docs/`): `README.md` is the table of contents. Reading-level gate enforced.
 - **`CHANGELOG.md`**: single source of historical truth.
-- **`ROADMAP.md`** (this file): forward-looking only.
+- **`ROADMAP.md`** (this file): forward-looking only. v3.2 is the current audit.
 - **Architecture diagrams**: `.github/assets/*.svg` + Mermaid, auto-validated (ADR-040).
 - **Inline comments**: sparse, intent-only. No JSDoc for trivial functions.
 - **Wiki / Discussions**: **Reject** — `docs/` + ADRs cover it.
 - **14 docs** in `docs/` covering: architecture, adding-a-card, data-sources, deployment, error-viewer, keyboard, local-dev, MCP, privacy, screen-reader, security, sync, video-cards, ROADMAP.
 - **Skills** (`.github/skills/`): add-api, release, debug-fetch, update-tests — self-contained operator guides.
+- **Root workspace discipline**: config files at root (`vite.config.ts`, `vitest.config.ts`, `eslint.config.mjs`, `playwright.config.ts`, `tsconfig*.json`, `sw.ts`) are there by ecosystem convention. `renovate.json` lives in `.github/renovate.json`. All non-config non-doc files live in `src/`, `tests/`, `scripts/`, `tooling/`, `worker/`, `docs/`.
 
 ### 1.10 Decisions held rejected (consolidated 2026-Q2)
 
@@ -416,6 +420,22 @@ X13 (time-machine) · X14 (phone-as-remote).
 ### 5.4 Anti-backlog (deliberately excluded)
 
 React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB · Sentry · Codecov SaaS · Argos CI SaaS · pnpm · Husky · Bun runtime · Docker artefact · 3rd language until contributor · WebGPU hot paths · ECMAScript decorators · React Server Components · Remix/Next routing · GraphQL · gRPC · Tailwind · CSS-in-JS · Map dependencies · auto-play video · auto-translate · pollen API · embedded LLM agent · plugin marketplace · Docker socket · Kubernetes operator · WebTransport.
+
+### 5.5 Production-Readiness Quality Backlog (v3.2 audit findings, 2026-05-18)
+
+Items identified in the v3.2 full-system production-readiness audit. ✅ items were resolved in this session.
+
+| #    | Type    | Item                                                                                   | P   | E   | I   | Status |
+| ---- | ------- | -------------------------------------------------------------------------------------- | --- | --- | --- | ------ |
+| QA-1 | Fix     | ARIA: `cal-week-grid` missing `role="list"` parent for `role="listitem"` child         | P0  | S   | Hi  | ✅ v14.29 |
+| QA-2 | Config  | Stylelint: remove `"html"` from `stylelint.validate` — Stylelint is CSS-only           | P0  | S   | Hi  | ✅ v14.29 |
+| QA-3 | Config  | `.hintrc` compat-ignore completeness: add `popovertarget`, `input[type=date/time]`    | P1  | S   | Mid | ✅ v14.29 |
+| QA-4 | Cleanup | Move `renovate.json` → `.github/renovate.json` (keep root uncluttered)                | P1  | S   | Lo  | ✅ v14.29 |
+| QA-5 | Deps    | MyScripts tools updated: Vite 8.0.13, Vitest 4.1.6, ESLint 10.4.0, PW 1.60.0         | P1  | S   | Mid | ✅ v14.29 |
+| QA-6 | Config  | Renovate: enable `automerge: true` for patch devDeps to reduce PR noise               | P2  | S   | Lo  | v15    |
+| QA-7 | Enhance | SW update notification toast ("new version available — refresh to apply")              | P2  | M   | Mid | v15    |
+| QA-8 | Monitor | `performance.measureUserAgentSpecificMemory()` for card-level memory leak detection    | P3  | M   | Lo  | v16    |
+| QA-9 | Config  | `.vscode/extensions.json` audit: remove extensions with 0 contribution to this project | P2  | S   | Lo  | v15    |
 
 ---
 

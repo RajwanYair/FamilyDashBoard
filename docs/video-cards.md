@@ -1,11 +1,11 @@
-# Video News Card — FamilyDashBoard
+# 📺 Video News Card — FamilyDashBoard
 
 > A live Israeli news stream embedded in the dashboard.
 > Default state: **disabled** (opt-in via Settings → Cards).
 
 ---
 
-## Overview
+## 📋 Overview
 
 The **video-news** card renders a muted, auto-playing live news channel from a
 configurable list of Israeli news channels:
@@ -22,7 +22,7 @@ don't need it. Enable it from **Settings → Cards → ערוץ חדשות**.
 
 ---
 
-## Keyboard Shortcuts
+## ⌨️ Keyboard Shortcuts
 
 | Key | Action                     |
 | --- | -------------------------- |
@@ -34,7 +34,7 @@ on-screen.
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
 Open **Settings (S) → Cards** and enable the video-news card. Available settings
 (accessible in the card's config section):
@@ -50,7 +50,7 @@ Open **Settings (S) → Cards** and enable the video-news card. Available settin
 
 ---
 
-## Stream Integration Status
+## 📡 Stream Integration Status
 
 > Stream URLs for all channels are **pending research** (deferred to v15).
 > The card currently renders a "Stream URL pending research" state.
@@ -69,7 +69,7 @@ Open **Settings (S) → Cards** and enable the video-news card. Available settin
 
 ---
 
-## Integration Modes
+## 🔌 Integration Modes
 
 | Mode                  | Mechanism                                   | When used                         |
 | --------------------- | ------------------------------------------- | --------------------------------- |
@@ -82,7 +82,7 @@ See [ADR-019](adr/ADR-019-video-card-csp.md) for the full decision tree.
 
 ---
 
-## Error States
+## ⚠️ Error States
 
 | State                     | UI                                                        |
 | ------------------------- | --------------------------------------------------------- |
@@ -95,7 +95,7 @@ Retry schedule: 30 s → 2 min → 10 min (3 attempts total then gives up).
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ```text
 src/cards/video-news/
@@ -111,7 +111,7 @@ docs/adr/ADR-019-video-card-csp.md    Decision record
 
 ---
 
-## See Also
+## 🔗 See Also
 
 - [ADR-019: Video-Card CSP Strategy](adr/ADR-019-video-card-csp.md)
 - [ADR-045: Document PiP for video-news (Gated)](adr/ADR-045-document-pip-video-news.md)
@@ -121,7 +121,7 @@ docs/adr/ADR-019-video-card-csp.md    Decision record
 
 ---
 
-## Picture-in-Picture (Planned — Gated)
+## 🖼️ Picture-in-Picture (Planned — Gated)
 
 > **Status**: Gated on 3 user requests. See [ADR-045](adr/ADR-045-document-pip-video-news.md).
 

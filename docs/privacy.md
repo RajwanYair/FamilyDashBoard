@@ -1,11 +1,11 @@
-# Privacy Notice — FamilyDashBoard
+# 🔏 Privacy Notice — FamilyDashBoard
 
 > This document describes the privacy practices of the FamilyDashBoard project.
 > Plain language; no legal jargon. Updated: 2026-04-22.
 
 ---
 
-## What data does FamilyDashBoard collect?
+## 📊 What data does FamilyDashBoard collect?
 
 **Almost none.** FamilyDashBoard is a private, offline-capable PWA that you self-host on a single
 household device. It has no user accounts, no sign-in, and no centralised server.
@@ -21,7 +21,7 @@ household device. It has no user accounts, no sign-in, and no centralised server
 
 ---
 
-## Error telemetry (opt-in by default in production)
+## 📡 Error telemetry (opt-in by default in production)
 
 When a JavaScript error occurs, FamilyDashBoard may send:
 
@@ -42,13 +42,13 @@ advertising.
 
 ---
 
-## Cookies
+## 🍪 Cookies
 
 None. FamilyDashBoard uses no cookies.
 
 ---
 
-## Analytics
+## 📊 Analytics
 
 No analytics or tracking scripts are included. The project deliberately uses zero third-party
 scripts to eliminate any supply-chain privacy risk.
@@ -59,7 +59,7 @@ aggregate page-load metrics (LCP, FID, CLS). No PII is collected.
 
 ---
 
-## External requests
+## 🌐 External requests
 
 When the dashboard loads data, it makes requests to the Cloudflare Worker
 (`https://fdb.rajwanyair.workers.dev`). The worker then proxies requests to third-party APIs
@@ -68,7 +68,7 @@ to any third-party API in production — so third parties cannot see your IP add
 
 ---
 
-## Your rights
+## ⚖️ Your rights
 
 Since all configuration lives in your browser's `localStorage` / IndexedDB, you can delete all
 data at any time by clearing the browser storage for this site. No request to an external server
@@ -76,6 +76,6 @@ is needed.
 
 ---
 
-## Changes
+## 📝 Changes
 
 This document is versioned with the codebase. Significant changes will be noted in `CHANGELOG.md`.

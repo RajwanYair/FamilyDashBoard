@@ -1,11 +1,11 @@
-# Screen Reader Testing — FamilyDashBoard
+# ♿ Screen Reader Testing — FamilyDashBoard
 
 > Manual test protocol and findings for NVDA (Windows desktop) and VoiceOver
 > (iOS mobile). Last verified against **v14.5.0**.
 
 ---
 
-## 1. Scope
+## 1. 🎯 Scope
 
 FamilyDashBoard is primarily a **landscape TV display** (1920 × 1080). Its
 screen-reader audience is primarily:
@@ -20,7 +20,7 @@ optimisation — the dashboard is fundamentally a visual display.
 
 ---
 
-## 2. NVDA Desktop Test Protocol (Windows)
+## 2. 💻 NVDA Desktop Test Protocol (Windows)
 
 ### 2.1 Test Environment
 
@@ -100,7 +100,7 @@ aria-pressed="true/false">`) announces state change correctly.
 
 ---
 
-## 3. VoiceOver iOS Test Protocol
+## 3. 📱 VoiceOver iOS Test Protocol
 
 ### 3.1 Test Environment
 
@@ -150,7 +150,7 @@ aria-pressed="true/false">`) announces state change correctly.
 
 ---
 
-## 4. Automated Coverage Complement
+## 4. 🤖 Automated Coverage Complement
 
 Manual tests are complemented by automated axe-core checks in CI:
 
@@ -173,7 +173,7 @@ The automated suite covers:
 
 ---
 
-## 5. Remediation History
+## 5. 📋 Remediation History
 
 | Version | Issue                                                      | Fix                                                  |
 | ------- | ---------------------------------------------------------- | ---------------------------------------------------- |
@@ -186,7 +186,7 @@ The automated suite covers:
 
 ---
 
-## 6. See Also
+## 6. 🔗 See Also
 
 - [`docs/keyboard.md`](keyboard.md) — full keyboard shortcut reference + ARIA landmark map
 - [`tests/e2e/accessibility.spec.ts`](../tests/e2e/accessibility.spec.ts) — axe-core Playwright suite

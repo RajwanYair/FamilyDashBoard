@@ -1,4 +1,4 @@
-# Local Development & Verification
+# 🛠️ Local Development & Verification
 
 > FamilyDashBoard v14.13.1 · TypeScript · Vite 8 · Hebrew RTL
 
@@ -6,7 +6,7 @@ Three verified workflows for running and testing the dashboard locally.
 
 ---
 
-## Prerequisites
+## 📦 Prerequisites
 
 All dev tools live in the **parent** `MyScripts/` directory:
 
@@ -22,7 +22,7 @@ npm install
 
 ---
 
-## Workflow 1 — Hot-Reload Dev Server (recommended)
+## 🔥 Workflow 1 — Hot-Reload Dev Server (recommended)
 
 ```powershell
 cd FamilyDashBoard
@@ -42,7 +42,7 @@ Open <http://localhost:5173> in Chrome.
 
 ---
 
-## Workflow 2 — Production Preview Server
+## 🧪 Workflow 2 — Production Preview Server
 
 Use this to verify the exact production build before tagging a release.
 
@@ -63,7 +63,7 @@ Open <http://localhost:4173/FamilyDashBoard/>.
 
 ---
 
-## Workflow 3 — Local `file://` Access (offline / TV)
+## 💾 Workflow 3 — Local `file://` Access (offline / TV)
 
 For devices where no server is available (e.g., opening on a Smart TV USB drive):
 
@@ -83,7 +83,7 @@ Start-Process "dist\index.html"
 
 ---
 
-## Verification Checklist
+## ✅ Verification Checklist
 
 After starting any workflow, verify the following:
 
@@ -104,7 +104,7 @@ After starting any workflow, verify the following:
 
 ---
 
-## Quality Gate (run before every commit)
+## 🔒 Quality Gate (run before every commit)
 
 ```powershell
 npm run check
@@ -115,7 +115,7 @@ Expected output: all green, **4925+ tests / 159+ suites / 0 failures**.
 
 ---
 
-## Corp-Proxy Quickstart
+## 🏢 Corp-Proxy Quickstart
 
 If you're behind a hostile corporate forward proxy (e.g. Intel, Cisco AnyConnect
 with TLS-MITM) where public origins are blocked or rewritten, follow this exact
@@ -161,7 +161,7 @@ sequence:
 
 ---
 
-## Troubleshooting
+## 🔍 Troubleshooting
 
 | Problem                       | Fix                                                                                                                                                                                                      |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -174,7 +174,7 @@ sequence:
 
 ---
 
-## VS Code Tasks
+## 🧩 VS Code Tasks
 
 All common workflows are wired as VS Code tasks (`Ctrl+Shift+B`):
 
