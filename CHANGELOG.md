@@ -9,6 +9,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.31.0] — 2025-07-14
+
+> **7631 tests / 316 suites / 0 failures** · Coverage: 97.1/90.54/96.46/98.13
+
+- **feat(temporal)**: TC39 Temporal migration — calendar, countdown, hebrew-cal cards refactored to use `diffDays()`, `addDays()` from `src/core/temporal.ts` instead of raw `MS_PER_DAY` arithmetic
+- **feat(temporal)**: `addWeeks`, `isToday`, `isTomorrow`, `isYesterday` added to temporal module (4 new exports, 15 unit tests)
+- **chore(coverage)**: ratcheted thresholds 97.09/90.5/96.42/98.1 → 97.1/90.54/96.46/98.13
+- **test(props)**: TM15–TM20 property tests for temporal v2 functions (addWeeks equivalence, non-mutating, isToday/isTomorrow/isYesterday semantics, mutual exclusion)
+- **test(props)**: CAL15–CAL16 property tests (calDaysUntilLabel monotonicity, groupEventsByDay bucket placement)
+- **chore(boundary)**: D12-C2 module boundary rule — `src/cards/*` must not import `MS_PER_DAY` from constants (enforces temporal.ts usage)
+- **test(integration)**: `temporal-calendar.test.ts` cross-module integration (7 cases: diffDays agreement, bucket placement, month boundary, midnight edge, past dates, 21-day range, window exclusion)
+- **chore(bundle)**: per-card delta threshold ratcheted 8%→7%, source-delta-fail 12%→10%
+
+---
+
 ## [14.29.1] — 2026-05-18
 
 > **7601 tests / 315 suites / 0 failures** · 86 ADRs · 136 Stryker files · Stryker threshold 90
