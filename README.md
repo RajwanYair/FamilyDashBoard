@@ -31,7 +31,7 @@
 **A zero-dependency TypeScript family dashboard for always-on TV display.**<br/>
 Pastel glassmorphism · 7 themes · Hebrew RTL · 12 cards · Per-pane smart refresh · Drag-and-drop layout · SW auto-reload · Diagnostic overlay
 
-[Getting Started](#-getting-started) · [Features](#-features) · [Data Sources](#-data-sources) · [Architecture](#%EF%B8%8F-architecture) · [Docs](docs/README.md) · [Changelog](#-changelog) · [Contributing](.github/CONTRIBUTING.md)
+[🌐 Live Demo](https://rajwanyair.github.io/FamilyDashBoard/) · [Getting Started](#-getting-started) · [Features](#-features) · [Data Sources](#-data-sources) · [Architecture](#%EF%B8%8F-architecture) · [Docs](docs/README.md) · [Changelog](#-changelog) · [Contributing](.github/CONTRIBUTING.md)
 
 </div>
 
