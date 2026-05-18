@@ -1,14 +1,14 @@
-# FamilyDashBoard — Strategic Roadmap (Deep-Rethink v4.0)
+# FamilyDashBoard — Strategic Roadmap (Deep-Rethink v5.0)
 
-> **Refresh date**: 2025-07-14 · **Shipped baseline**: v14.31.0 · **Active stream**: V15-OPEN.
+> **Refresh date**: 2025-07-14 · **Shipped baseline**: v14.32.0 · **Active stream**: V15-OPEN.
 >
-> **v4.0 audit stamp (2026-06-08)**: Full production-readiness deep-rethink. Fixed ARIA violation: `.countdown-body` gains `role="region"` (axe-core `aria-prohibited-attr`). Resolved webhint VS Code extension false positives (58 IE-compat warnings) — root cause: extension ignores `.hintrc` config; real browser-compat enforcement is at build time via Lightning CSS + `.browserslistrc` + Vite target; VS Code setting updated to exclude HTML from webhint scan. ShellCheck: 5 workflows fixed (`defaults.run.shell: bash`, safe `find` iteration, quoted variables, null guards). ESLint `no-unsafe-*` × 5 rules confirmed as deliberate architectural decision: Worker validates all external data with Valibot at boundary; client trusts validated responses; enabling these rules would require either a client-side validation library (breaks ADR-002 zero-deps) or 400+ manual type guards (net-negative DX for zero runtime benefit). `.hintrc` 8 rules OFF confirmed as production decisions — not workarounds: `compat-api/*` redundant with build-time enforcement; `no-inline-styles` incompatible with dynamic JS layout; `ssllabs`/`https-only`/`http-cache` irrelevant for static PWA local dev. `skipLibCheck: true` is standard practice (1100+ ms build savings). `forceExit: true` in Vitest is a happy-dom limitation (iframe/fetch handles). All disabled items audited and classified as either "correct production config" or "documented architectural consequence" — 0 genuine workarounds remain.
+> **v5.0 audit stamp (2026-06-09)**: v14.32.0 sprint batch. Playwright output routed to `$TEMP/fdb-dev/playwright` (eliminates `test-results/` and `playwright-report/` in repo root). StocksLiveDO Hibernatable WebSocket fan-out shipped (ADR-087) — replaces HTTP polling with persistent CF DO WS, zero CPU between messages, 4-shard topology. OTel OTLP/JSON dep-free exporter shipped (ADR-088) — replaces TODO stub with real span collection and `fetch`-based export to any OTLP collector; zero npm deps added. R2 `fdb-static-assets` bucket binding added (ADR-050) with structural `R2Bucket` interface and `r2-cache.ts` helper. ADR-087 and ADR-088 documented. All worker types clean.
 >
 > **v3.2 audit stamp (2026-05-18)**: Full production-readiness re-litigation. Corrected ARIA hierarchy (`cal-week-grid` gains `role="list"`). Resolved Stylelint false-positive on HTML (removed `html` from `stylelint.validate` — Stylelint is CSS-only, not an HTML linter). Completed `.hintrc` compat-ignore list: added `popovertarget`, `input[type=date]`, `input[type=time]` (all fully supported by our `.browserslistrc` floor). Root workspace re-audited: `renovate.json` relocated to `.github/renovate.json` (Renovate supports both; `.github/` keeps root uncluttered). All other root config files (`vite.config.ts`, `vitest.config.ts`, `eslint.config.mjs`, `playwright.config.ts`, `tsconfig*.json`, `sw.ts`) are correctly at root per ecosystem convention — relocation would break all CLI invocations and operator docs. `MyScripts/` shared tools updated within semver ranges (Vite 8.0.13, Vitest 4.1.6, ESLint 10.4.0, Playwright 1.60.0, fast-check 4.8.0, Stylelint 17.11.1, typescript-eslint 8.59.3, Valibot 1.4.0). 0 dead exports · 0 dead docs · 0 dead config · 0 `eslint-disable` · 0 `@ts-ignore` · 0 suspended CI gates.
 >
 > **v3.1 audit stamp (2026-05-16)**: Full re-litigation pass confirms zero divergence from v3 strategy. Inventory verified: 0 dead exports (142 files scanned via `check-dead-exports`), 0 `eslint-disable` / `@ts-ignore` / `@ts-expect-error` / `@ts-nocheck` in `src/`, 0 `continue-on-error` in workflows, 0 suspended/disabled CI gates (v13.x hardening sweep remains intact). All current `disabled` symbols in source are legitimate user-config semantics (`disabledFeeds`, HTML `[disabled]`, `0 = disabled` interval encodings, `ai_disabled` Workers AI opt-in flag, `video-news` opt-in default). Webhint IE compat false-positives in `.hintrc` resolved (IE EOL 2022, excluded by `.browserslistrc` since v9). Root layout left intact — Vite/Vitest/ESLint/TS/Playwright config files at root is the ecosystem convention; relocation gains nothing and forces CLI flags into every npm script, CI workflow, and operator doc. v15.0.0 reserved for the V15-OPEN feature stream (§6.1–6.6) — not consumed by structural reset. Next published version when V15-OPEN ships an exit-gate item; cleanup-only releases use patch tags.
 >
-> **Inventory**: 7591+ tests / 314 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 85 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Inventory**: 7631+ tests / 316 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 88 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
 > **Coverage**: 97.09 / 90.54 / 96.46 / 98.13 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
@@ -273,7 +273,7 @@ Categories: **Family/TV Dashboards** · **Homelab Dashboards** · **News/Feed Re
 | **AI integration**           | Perplexity Comet / Granola                   | LLM-native UI, real-time AI                       | Workers AI + MCP (data-only)          | **Harvest v15**: richer MCP endpoints. No embedded agent.                          |
 | **Real-time data**           | HASS Lovelace (WebSocket + SSE)              | Sub-second device state updates                   | HTTP poll + DO SSE                    | **Adopt v15**: DO Hibernatable WS for stocks + alerts.                             |
 | **Offline**                  | **FamilyDashBoard (us)**                     | 4-tier cache + `?nosw=1` + file://                | **Best in class.**                    | **Maintain**: no peer has comparable offline story.                                |
-| **Observability**            | Grafana (Prometheus + OTel)                  | Best panels, unlimited metrics                    | RUM + Vitals + D1 + AE + diag JSON    | **Harvest v15**: OTel from Worker (opt-in).                                        |
+| **Observability**            | Grafana (Prometheus + OTel)                  | Best panels, unlimited metrics                    | RUM + Vitals + D1 + AE + diag JSON    | **Shipped v14.32.0**: OTel OTLP/JSON dep-free (ADR-088, opt-in).                  |
 | **Config management**        | Homepage (YAML, declarative)                 | File-based, version-controllable                  | LS + IDB + JSON export                | **Track v16**: optional YAML converter script (no runtime dep).                    |
 
 ### 2.3 Best Practices Harvested from Peer Analysis (v3 new)
@@ -327,7 +327,7 @@ Only **genuinely open** items. Shipped items in `CHANGELOG.md`.
 
 | ID   | P   | E   | I   | Item                                                       | Target |
 | ---- | --- | --- | --- | ---------------------------------------------------------- | ------ |
-| S-DO | P1  | M   | Hi  | DO Hibernatable WebSocket live stream (replaces HTTP poll) | v15    |
+| S-DO | P1  | M   | Hi  | DO Hibernatable WebSocket live stream (replaces HTTP poll) | **Shipped v14.32.0** |
 
 ### 3.3 Calendar + Hebrew Calendar
 
@@ -468,7 +468,7 @@ Each stream has a hard exit gate. No stream lingers.
 
 ### 6.3 DEPTH — Per-card depth & UX polish (v15, Q3–Q4 2027)
 
-- [ ] S-DO Stocks live stream.
+- [x] S-DO Stocks live stream.
 - [ ] CAL-T + H-T Temporal migration.
 - [x] High-contrast theme (WCAG AAA) — shipped v14.20.
 - [x] Config presets (Family TV / Kitchen Tablet / Office Monitor) — shipped v14.20.
