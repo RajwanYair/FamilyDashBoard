@@ -1,7 +1,7 @@
 # ADR-084 — Coverage Ratchet v14.26.0 (Branch + All Thresholds)
 
-**Status**: Accepted  
-**Date**: 2026-05-18  
+**Status**: Accepted
+**Date**: 2026-05-18
 **Deciders**: @RajwanYair
 
 ---
