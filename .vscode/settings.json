@@ -108,17 +108,18 @@
     "terminal.integrated.scrollback": 5000,
     "terminal.integrated.shellIntegration.enabled": true,
     "terminal.integrated.shellIntegration.decorationsEnabled": "never",
+    "terminal.integrated.shellIntegration.history": 100,
     "terminal.integrated.enableImages": false,
     "terminal.integrated.defaultProfile.windows": "PowerShell Fast",
     "terminal.integrated.profiles.windows": {
         "PowerShell Fast": {
             "source": "PowerShell",
-            "args": ["-NoLogo"],
+            "args": ["-NoLogo", "-ExecutionPolicy", "Bypass"],
             "icon": "terminal-powershell"
         },
         "PowerShell NoProfile": {
             "source": "PowerShell",
-            "args": ["-NoLogo", "-NoProfile"],
+            "args": ["-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass"],
             "icon": "terminal-powershell"
         }
     },
