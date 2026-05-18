@@ -23,8 +23,9 @@ const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
 /** Fail CI if a card grows more than this fraction vs the baseline.
- * (v14.30.0): ratcheted 10%→8% per ROADMAP §5.1 #19. Target ≤ 5% by v15. */
-const DELTA_THRESHOLD = 0.08;
+ * (v14.30.0): ratcheted 10%→8% per ROADMAP §5.1 #19. Target ≤ 5% by v15.
+ * (v14.31.0): ratcheted 8%→7%. */
+const DELTA_THRESHOLD = 0.07;
 
 const CARD_PATTERNS = [
   ["weather", "weather"],
@@ -180,7 +181,8 @@ console.log("✅  All group budgets within limits.\n");
 // Hard cap added in v14.27.0 (ROADMAP #19): any card source folder ≥ 65 KB fails CI.
 // v14.30.0: ratchet 64→63 KB (largest card: weather 63.8→TBD). Target ≤ 60 KB by v15.
 const SOURCE_DELTA_WARN = 0.05;
-const SOURCE_DELTA_FAIL = 0.12;
+/** (v14.31.0): ratcheted 12%→10%. */
+const SOURCE_DELTA_FAIL = 0.10;
 /** Per-card source folder absolute cap (v14.30.0). Fail CI above this. Target ≤ 60 KB in v15. */
 const SOURCE_HARD_CAP_KB = 63;
 const baselineSource = baseline.cardSource ?? {};
