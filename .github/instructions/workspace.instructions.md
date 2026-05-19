@@ -8,8 +8,8 @@ description: "Project context and file map for FamilyDashBoard."
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.6 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 7 themes · 3 screen modes · 12 cards
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`. Shared tooling configs are vendored into `tooling/` (tsconfig/, eslint/, vitest/).
-> **Tests**: 7801 / 328 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
-> **Coverage**: 97.1 / 90.54 / 96.46 / 98.13 (statements / branches / functions / lines) — see `vitest.config.ts`
+> **Validation**: `npm run check` is the canonical full gate. Use focused commands only when narrowing a local slice.
+> **Coverage thresholds**: see `vitest.config.ts`
 
 ## Shell / Terminal
 
@@ -24,7 +24,7 @@ tests/unit/                 # Vitest unit tests
 sw.js                       # ServiceWorker reference (compiled to dist/sw.js by build-sw.mjs)
 docs/ARCHITECTURE.md        # Runtime structure, cache layers, worker topology
 docs/ROADMAP.md             # Strategic plan, stream priorities, forward release plan
-docs/adr/                   # Accepted architectural decisions (ADR-001 → ADR-073)
+docs/adr/                   # Accepted architectural decisions
 .github/SUPPORT.md          # Support and operator guidance (GitHub community health file)
 .github/skills/             # add-api, release, debug-fetch, update-tests
 .github/agents/             # api-integrator, dashboard-designer, quality-reviewer
@@ -36,11 +36,11 @@ docs/adr/                   # Accepted architectural decisions (ADR-001 → ADR-
 
 Prefer `get_errors` over terminal for lint/tsc/CSS/spell/compat checks. Use `run_task` for Vitest/Playwright/build commands. Use MCP `gitkraken` for git history. See `AGENTS.md` for full extension map.
 
-Key extensions installed: ESLint, Stylelint, webhint, markdownlint, Spell Checker (EN+HE), Error Lens, Coverage Gutters, Console Ninja, Baseline Lens, Version Lens, TODO Tree, Bookmarks, Mermaid Chart, Draw.io, SVG Preview, Path IntelliSense, npm IntelliSense, caniuse, browserslist. Full config in `.github/copilot/config.json`.
+Key extensions installed: ESLint, Stylelint, markdownlint, Spell Checker (EN+HE), Error Lens, Coverage Gutters, Console Ninja, Baseline Lens, Version Lens, TODO Tree, Bookmarks, Mermaid Chart, SVG Preview, Path IntelliSense, npm IntelliSense, caniuse, browserslist. Full config in `.github/copilot/config.json`.
 
 ## Token Optimization Strategy
 
-- `get_errors` aggregates ESLint + Stylelint + webhint + markdownlint + spell-check
+- `get_errors` aggregates ESLint + Stylelint + markdownlint + spell-check
 - `run_task` over `run_in_terminal` for workspace tasks
 - `multi_replace_string_in_file` for batch edits
 - `runSubagent` for multi-file exploration

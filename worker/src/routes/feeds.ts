@@ -294,7 +294,11 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
         );
         const otel = initOtel(env);
         const shadowMetrics = await otel.asyncSpan("vectorize-shadow", async (s) => {
-          const metrics = await vectorizeShadowRun(env.VECTORIZE_INDEX!, keptEmbeddings, droppedEmbeddings);
+          const metrics = await vectorizeShadowRun(
+            env.VECTORIZE_INDEX!,
+            keptEmbeddings,
+            droppedEmbeddings,
+          );
           s.setAttribute("agrees", metrics.agrees);
           s.setAttribute("vectorize_would_drop", metrics.vectorizeWouldDrop);
           s.setAttribute("vectorize_would_keep", metrics.vectorizeWouldKeep);

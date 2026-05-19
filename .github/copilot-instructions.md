@@ -3,9 +3,8 @@
 > TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 7 Themes · 12 Cards · Vite 8 + TS 6.0.3 + Vitest 4.1.6
 > **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 > No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`. Shared configs vendored into `tooling/`.
-> Tests: `npx vitest run` — 7801 / 328 suites / 0 failures
-> Lint: `npx eslint src tests --max-warnings 0` — 0 errors · 0 warnings · 0 suppressions
-> Coverage thresholds: `97.1 / 90.54 / 96.46 / 98.13` (statements / branches / functions / lines) — see `vitest.config.ts`
+> Validation: `npm run check` for the canonical repository gate; `npx vitest run` and `npx eslint src tests --max-warnings 0` for focused checks
+> Coverage thresholds: see `vitest.config.ts`
 
 ## Mandatory Rules
 
@@ -41,7 +40,7 @@
 17. New overlays: use `<dialog>` + `showModal()` / `close()` — not `<div>` visibility toggling
 18. CSS architecture: `@layer tokens, themes, base, layout, components, animations` — add new rules to correct layer
 19. Worker fetch: prefer `fetchJSONWithWorker<T>()` when `isWorkerEnabled()` — fallback to proxy chain otherwise
-20. Themes: 6 total — black · blue · matrix · amber · purple · rose (ThemeName union in `types/config.ts`)
+20. Themes: 7 total — black · blue · matrix · amber · purple · rose · high-contrast (ThemeName union in `types/config.ts`)
 21. After each sprint/set of changes: `git add -A && git commit -m "feat|fix|chore: <description>"` before proceeding to the next sprint
 22. `cGet()` and `cGetStale()` return `null` (not `undefined`) for cache misses — always check `!== null`, never `!== undefined`
 23. `dist/` is built with `--base ./` for `file://` access; `removeCrossOrigin` Vite plugin strips `crossorigin` attrs, strips CSP meta, converts `type=module` → plain `<script>`, and outputs a single IIFE bundle
@@ -67,7 +66,7 @@
 43. **Interactive CLI flows** — use `send_to_terminal` + `get_terminal_output` for multi-step interactive prompts (npm init, wrangler login, etc.). Use `vscode_askQuestions` to gather user input before sending to terminal.
 44. **MCP tools are deferred** — always call `tool_search` before using any MCP-provided tool or deferred VS Code tool. Do not retry if the first search returns no results.
 45. **Task tracking** — use `manage_todo_list` for multi-step work. Mark one item `in-progress` at a time. Mark `completed` immediately after finishing each step. Skip for single-step operations.
-46. **Extension-aware tooling** — prefer `get_errors` over terminal lint/tsc for single-file validation (ESLint, Stylelint, webhint, markdownlint, spell-checker all surface via `get_errors`). Use `run_task` for predefined workspace tasks (Vitest, Playwright, build, coverage) instead of manual terminal commands. Use `view_image` on VR screenshots in `test-results/` for visual regression diagnosis. Use `tool_search("playwright")` for MCP browser automation in chat.
+46. **Extension-aware tooling** — prefer `get_errors` over terminal lint/tsc for single-file validation (ESLint, Stylelint, markdownlint, spell-checker all surface via `get_errors`). Use `run_task` for predefined workspace tasks (Vitest, Playwright, build, coverage) instead of manual terminal commands. Use `view_image` on VR screenshots in `test-results/` for visual regression diagnosis. Use `tool_search("playwright")` for MCP browser automation in chat.
 47. **ESM config files** — all config files (`vite.config.ts`, `vitest.config.ts`, `playwright.config.ts`) use `import.meta.dirname` instead of `__dirname`. Never introduce CommonJS patterns (`require`, `__dirname`, `__filename`) in ESM config files.
 48. **Build targets** — `tsconfig` base targets `ES2024`, Vite build targets `es2024`, lightningcss targets aligned with `.browserslistrc` (Chrome 114, Firefox 128, Safari 17.4). Keep all three in sync when updating browser support.
 49. **Conversation compaction** — long sessions are automatically compacted by Copilot. Key state survives in `<conversation-summary>`. When resuming after compaction, re-read critical files before editing — do not rely on stale cached content.

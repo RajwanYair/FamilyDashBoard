@@ -148,7 +148,7 @@ See `css.instructions.md` for layer order, custom properties, themes, RTL, and T
 
 - **HTML CSS Support** (`ecmel.vscode-html-css`): auto-completes CSS class/ID references in HTML — ensures `class=` and `id=` values match existing CSS selectors.
 - **Auto Rename Tag** (`formulahendry.auto-rename-tag`): renames paired HTML tags — prevents mismatched open/close tags.
-- **webhint** (`webhint.vscode-webhint`): checks HTML for browser compat, accessibility, and performance issues inline via `get_errors`.
+- **Baseline Lens** (`kwesinavilot.baseline-lens`): inline browser-compat annotations for HTML features — verifies availability against `.browserslistrc` targets.
 - **Edge DevTools** (`ms-edgetools.vscode-edge-devtools`): element inspector inside VS Code — use for debugging layout issues on the dashboard.
 - **Color Highlight** (`naumovs.color-highlight`): inline color preview — detects hardcoded colors that should use CSS custom properties.
 - **Error Lens** (`usernamehw.errorlens`): shows all HTML/CSS diagnostics inline in the editor.

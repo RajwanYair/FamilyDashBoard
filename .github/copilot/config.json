@@ -1,7 +1,7 @@
 {
     "version": "2.0.0",
     "project": "FamilyDashBoard",
-    "appVersion": "14.19.0",
+    "appVersion": "14.34.0",
     "copilot": {
         "enabled": true,
         "features": {
@@ -59,10 +59,6 @@
         "github-actions": {
             "id": "GitHub.vscode-github-actions"
         },
-        "webhint": {
-            "id": "webhint.vscode-webhint",
-            "token_hint": "Browser compat via get_errors"
-        },
         "spell-checker": {
             "id": "streetsidesoftware.code-spell-checker",
             "token_hint": "Spell-check via get_errors (HE+EN)"
@@ -84,9 +80,6 @@
         "powershell": {
             "id": "ms-vscode.powershell",
             "token_hint": "All terminal commands must be PowerShell"
-        },
-        "git-graph": {
-            "id": "mhutchie.git-graph"
         },
         "editorconfig": {
             "id": "EditorConfig.EditorConfig",
@@ -120,9 +113,6 @@
         "mermaid-chart": {
             "id": "mermaidchart.vscode-mermaid-chart"
         },
-        "drawio": {
-            "id": "hediet.vscode-drawio"
-        },
         "caniuse": {
             "id": "akamud.vscode-caniuse"
         },
@@ -137,7 +127,7 @@
         "strategy": "context-economy",
         "rules": [
             "Instructions use applyTo globs — only loaded when relevant",
-            "get_errors aggregates ESLint + Stylelint + webhint + markdownlint + spell-check",
+            "get_errors aggregates ESLint + Stylelint + markdownlint + spell-check",
             "run_task / runTests over terminal for predefined workspace commands",
             "multi_replace_string_in_file for batch edits (2+ independent changes)",
             "search_subagent / runSubagent for multi-file exploration — avoids main-thread clutter",

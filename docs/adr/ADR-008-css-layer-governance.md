@@ -18,14 +18,14 @@ FamilyDashBoard uses a `@layer` cascade to control CSS specificity across tokens
 
 Layer responsibilities:
 
-| Layer        | File(s)                                                                                              | Purpose                                                                        |
-| ------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `tokens`     | `tokens.css`                                                                                         | Custom property definitions — colors, spacing, radii, fonts                    |
-| `themes`     | `themes.css`                                                                                         | Per-theme token overrides (6 themes: black, blue, matrix, amber, purple, rose) |
-| `base`       | `base.css`, `a11y.css`, `scroll.css`                                                                 | Element resets, focus styles, scroll behavior                                  |
-| `layout`     | `layout.css`, `screen-modes.css`                                                                     | Grid/flexbox page skeleton, responsive breakpoints, screen modes               |
-| `components` | `components.css`, `config-panel.css`, `diag-overlay.css`, `print.css`, `sprints.css`, `maximize.css` | Card shells, overlays, UI widgets                                              |
-| `animations` | `animations.css`                                                                                     | `@keyframes` and `animation:` declarations only                                |
+| Layer        | File(s)                                                                                              | Purpose                                                                                       |
+| ------------ | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `tokens`     | `tokens.css`                                                                                         | Custom property definitions — colors, spacing, radii, fonts                                   |
+| `themes`     | `themes.css`                                                                                         | Per-theme token overrides (7 themes: black, blue, matrix, amber, purple, rose, high-contrast) |
+| `base`       | `base.css`, `a11y.css`, `scroll.css`                                                                 | Element resets, focus styles, scroll behavior                                                 |
+| `layout`     | `layout.css`, `screen-modes.css`                                                                     | Grid/flexbox page skeleton, responsive breakpoints, screen modes                              |
+| `components` | `components.css`, `config-panel.css`, `diag-overlay.css`, `print.css`, `sprints.css`, `maximize.css` | Card shells, overlays, UI widgets                                                             |
+| `animations` | `animations.css`                                                                                     | `@keyframes` and `animation:` declarations only                                               |
 
 ### Enforcement Rules
 

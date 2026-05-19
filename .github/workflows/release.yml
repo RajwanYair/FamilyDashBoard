@@ -44,65 +44,29 @@ jobs:
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
 
-      - name: Type-check
-        run: npx tsc --noEmit
+      - name: Full repository quality gate
+        run: npm run check
 
-      - name: SW type-check
-        run: npx tsc --project tsconfig.sw.json --noEmit
+      - name: GitHub Actions SHA-pinned check
+        run: node scripts/check-actions-pinned.mjs
 
-      - name: Worker type-check
-        run: npx tsc --project worker/tsconfig.json --noEmit
+      - name: npm ignore-scripts gate
+        run: node scripts/check-npm-ignore-scripts.mjs
 
-      - name: Scripts type-check (@ts-check opt-in)
-        run: npx tsc --project tsconfig.scripts.json --noEmit
+      - name: Sigstore provenance check
+        run: node scripts/check-sigstore.mjs
 
-      - name: oxlint (fast Rust pre-pass )
-        run: npx oxlint --quiet src tests
-
-      - name: ESLint (0 warnings allowed)
-        run: npx eslint src tests --max-warnings 0
-
-      - name: Prettier format check
-        run: npx prettier --check .
-
-      - name: Markdownlint
-        run: npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**" "#**/dist/**"
-
-      - name: Run tests
-        run: npx vitest run
+      - name: Reproducible build dry-run
+        run: node scripts/check-reproducible.mjs --dry-run
 
       - name: Production build
         run: npm run build
 
       - name: Bundle size check
-        run: node scripts/check-bundle-size.mjs
+        run: npm run check:bundle
 
       - name: Per-card bundle delta check
-        run: node scripts/check-card-bundle-delta.mjs
-
-      - name: SW version check
-        run: node scripts/check-sw-version.mjs
-
-      - name: Mermaid diagram validation
-        run: node scripts/check-mermaid.mjs
-
-      - name: Container-query audit
-        run: node scripts/check-container-queries.mjs
-
-      - name: Worker-client / OpenAPI sync check (F18)
-        run: node scripts/check-worker-client.mjs
-
-      - name: ADR index staleness check (V13-OPS)
-        run: node scripts/check-adr-index.mjs
-
-      - name: OpenAPI x-kv-ttl annotation check (V13-EDGE)
-        run: node scripts/check-openapi-ttl.mjs
-
-      - name: Release notes CHANGELOG check (V13-OPS)
-        run: node scripts/check-release-notes.mjs
-
-      - name: Reading-level audit (V13-A11Y)
-        run: node scripts/check-reading-level.mjs
+        run: npm run check:card-bundle
 
       - name: Release checklist in step summary (V13-OPS)
         run: node scripts/release-checklist.mjs

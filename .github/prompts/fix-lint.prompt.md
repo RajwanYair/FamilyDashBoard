@@ -20,7 +20,7 @@ tools:
 
 # Fix Lint and Type Errors
 
-> **Extension shortcut**: Call `get_errors` on the target file FIRST — it surfaces ESLint + Stylelint + webhint diagnostics without terminal. Only fall back to terminal `npx eslint` when you need the full workspace sweep.
+> **Extension shortcut**: Call `get_errors` on the target file FIRST — it surfaces ESLint + Stylelint diagnostics without terminal. Only fall back to terminal `npx eslint` when you need the full workspace sweep.
 
 ## Context
 

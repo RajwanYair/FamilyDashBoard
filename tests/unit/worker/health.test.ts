@@ -27,7 +27,10 @@ function makeRequest(path: string): Request {
 }
 
 function makeCtx(): ExecutionContext {
-  return { waitUntil: () => undefined, passThroughOnException: () => undefined } as unknown as ExecutionContext;
+  return {
+    waitUntil: () => undefined,
+    passThroughOnException: () => undefined,
+  } as unknown as ExecutionContext;
 }
 
 // ── /health base shape ────────────────────────────────────────────────────────
@@ -36,7 +39,7 @@ describe("/health — base response shape", () => {
   it("returns 200 with ok:true and status:healthy", async () => {
     const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv(), makeCtx());
     expect(res.status).toBe(200);
-    const body = await res.json() as Record<string, unknown>;
+    const body = (await res.json()) as Record<string, unknown>;
     expect(body.ok).toBe(true);
     expect(body.status).toBe("healthy");
   });
@@ -45,21 +48,25 @@ describe("/health — base response shape", () => {
     const before = Date.now();
     const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv(), makeCtx());
     const after = Date.now();
-    const body = await res.json() as { ts: number };
+    const body = (await res.json()) as { ts: number };
     expect(body.ts).toBeGreaterThanOrEqual(before);
     expect(body.ts).toBeLessThanOrEqual(after);
   });
 
   it("includes version string", async () => {
     const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv(), makeCtx());
-    const body = await res.json() as { version: string };
+    const body = (await res.json()) as { version: string };
     expect(typeof body.version).toBe("string");
     expect(body.version).toMatch(/^\d+\.\d+\.\d+$/);
   });
 
   it("includes environment from env.ENVIRONMENT", async () => {
-    const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv({ ENVIRONMENT: "staging" }), makeCtx());
-    const body = await res.json() as { environment: string };
+    const res = await worker.fetch(
+      makeRequest("/health"),
+      makeMinimalEnv({ ENVIRONMENT: "staging" }),
+      makeCtx(),
+    );
+    const body = (await res.json()) as { environment: string };
     expect(body.environment).toBe("staging");
   });
 
@@ -67,7 +74,7 @@ describe("/health — base response shape", () => {
     const env = makeMinimalEnv();
     delete (env as Partial<typeof env>).ENVIRONMENT;
     const res = await worker.fetch(makeRequest("/health"), env, makeCtx());
-    const body = await res.json() as { environment: string };
+    const body = (await res.json()) as { environment: string };
     expect(body.environment).toBe("production");
   });
 });
@@ -77,56 +84,68 @@ describe("/health — base response shape", () => {
 describe("/health — bindings flags", () => {
   it("cache_kv is always true", async () => {
     const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv(), makeCtx());
-    const body = await res.json() as { bindings: Record<string, boolean> };
+    const body = (await res.json()) as { bindings: Record<string, boolean> };
     expect(body.bindings.cache_kv).toBe(true);
   });
 
   it("analytics is false when ANALYTICS is absent", async () => {
     const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv(), makeCtx());
-    const body = await res.json() as { bindings: Record<string, boolean> };
+    const body = (await res.json()) as { bindings: Record<string, boolean> };
     expect(body.bindings.analytics).toBe(false);
   });
 
   it("analytics is true when ANALYTICS is bound", async () => {
-    const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv({ ANALYTICS: { writeDataPoint: () => undefined } as never }), makeCtx());
-    const body = await res.json() as { bindings: Record<string, boolean> };
+    const res = await worker.fetch(
+      makeRequest("/health"),
+      makeMinimalEnv({ ANALYTICS: { writeDataPoint: () => undefined } as never }),
+      makeCtx(),
+    );
+    const body = (await res.json()) as { bindings: Record<string, boolean> };
     expect(body.bindings.analytics).toBe(true);
   });
 
   it("r2_assets is false when R2_ASSETS is absent", async () => {
     const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv(), makeCtx());
-    const body = await res.json() as { bindings: Record<string, boolean> };
+    const body = (await res.json()) as { bindings: Record<string, boolean> };
     expect(body.bindings.r2_assets).toBe(false);
   });
 
   it("r2_assets is true when R2_ASSETS is bound", async () => {
     const env = makeMinimalEnv({ R2_ASSETS: {} as never });
     const res = await worker.fetch(makeRequest("/health"), env, makeCtx());
-    const body = await res.json() as { bindings: Record<string, boolean> };
+    const body = (await res.json()) as { bindings: Record<string, boolean> };
     expect(body.bindings.r2_assets).toBe(true);
   });
 
   it("vapid is false when VAPID_ENABLED is absent", async () => {
     const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv(), makeCtx());
-    const body = await res.json() as { bindings: Record<string, boolean> };
+    const body = (await res.json()) as { bindings: Record<string, boolean> };
     expect(body.bindings.vapid).toBe(false);
   });
 
   it("vapid is true when VAPID_ENABLED='true'", async () => {
-    const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv({ VAPID_ENABLED: "true" }), makeCtx());
-    const body = await res.json() as { bindings: Record<string, boolean> };
+    const res = await worker.fetch(
+      makeRequest("/health"),
+      makeMinimalEnv({ VAPID_ENABLED: "true" }),
+      makeCtx(),
+    );
+    const body = (await res.json()) as { bindings: Record<string, boolean> };
     expect(body.bindings.vapid).toBe(true);
   });
 
   it("otel is true when OTEL_ENABLED='true'", async () => {
-    const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv({ OTEL_ENABLED: "true" }), makeCtx());
-    const body = await res.json() as { bindings: Record<string, boolean> };
+    const res = await worker.fetch(
+      makeRequest("/health"),
+      makeMinimalEnv({ OTEL_ENABLED: "true" }),
+      makeCtx(),
+    );
+    const body = (await res.json()) as { bindings: Record<string, boolean> };
     expect(body.bindings.otel).toBe(true);
   });
 
   it("bindings object includes all expected keys", async () => {
     const res = await worker.fetch(makeRequest("/health"), makeMinimalEnv(), makeCtx());
-    const body = await res.json() as { bindings: Record<string, unknown> };
+    const body = (await res.json()) as { bindings: Record<string, unknown> };
     const keys = Object.keys(body.bindings);
     expect(keys).toContain("cache_kv");
     expect(keys).toContain("analytics");

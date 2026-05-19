@@ -9,21 +9,21 @@ Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.m
 
 ## Stack
 
-| Decision         | Choice                                                                                                     | Rationale                                                     |
-| ---------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking      |
-| Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks            |
-| Test framework   | **Vitest 4.1.6 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 7766+ tests / 326 suites    |
-| Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
-| API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
-| Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                               |
-| CSS approach     | **Vanilla CSS** with `@layer`, design tokens, `color-mix()`                                                | No preprocessor; cascade-aware; container queries             |
-| Module format    | **ES Modules** native `import`/`export`                                                                    |                                                               |
-| npm model        | Tools installed at parent **`MyScripts/`**; shared configs vendored into `tooling/`; no local lock file    | Single-root install for all scripts in the monorepo           |
-| CI               | `.github/ci/install-tools.sh` — no `npm ci` or lock file needed; `tooling/` is self-contained              |                                                               |
-| Tooling ESLint   | `tooling/eslint/web-ts-app.mjs` (browser TS) · `node-ts-app.mjs` (Node/Worker) · `js-browser-app.mjs` (JS) | Shared factory functions; project-specific overrides only     |
-| Tooling Vitest   | `tooling/vitest/base.mjs` · `happy-dom.mjs` (DOM) · `node.mjs` (server)                                    | Layered presets; projects extend the relevant preset          |
-| Tooling tsconfig | `tooling/tsconfig/base-typescript.json` (browser/bundler) · `base-node.json` (Node/Worker)                 | All TS projects extend one of these bases                     |
+| Decision         | Choice                                                                                                     | Rationale                                                            |
+| ---------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking             |
+| Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks                   |
+| Test framework   | **Vitest 4.1.6 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, canonical gate via `npm run check` |
+| Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced        |
+| API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed             |
+| Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                                      |
+| CSS approach     | **Vanilla CSS** with `@layer`, design tokens, `color-mix()`                                                | No preprocessor; cascade-aware; container queries                    |
+| Module format    | **ES Modules** native `import`/`export`                                                                    |                                                                      |
+| npm model        | Tools installed at parent **`MyScripts/`**; shared configs vendored into `tooling/`; no local lock file    | Single-root install for all scripts in the monorepo                  |
+| CI               | `.github/ci/install-tools.sh` — no `npm ci` or lock file needed; `tooling/` is self-contained              |                                                                      |
+| Tooling ESLint   | `tooling/eslint/web-ts-app.mjs` (browser TS) · `node-ts-app.mjs` (Node/Worker) · `js-browser-app.mjs` (JS) | Shared factory functions; project-specific overrides only            |
+| Tooling Vitest   | `tooling/vitest/base.mjs` · `happy-dom.mjs` (DOM) · `node.mjs` (server)                                    | Layered presets; projects extend the relevant preset                 |
+| Tooling tsconfig | `tooling/tsconfig/base-typescript.json` (browser/bundler) · `base-node.json` (Node/Worker)                 | All TS projects extend one of these bases                            |
 
 ## File Structure
 
@@ -62,7 +62,7 @@ src/
 │   ├── history.ts              # Generic ring-buffer helpers: historyAppend/historyGet/sparklineSvg — used by alerts, system-info, weather
 │   └── snapshot.ts             # Dashboard snapshot export: buildSnapshot() / downloadSnapshot() — wired to Ctrl+Shift+S
 ├── ui/
-│   ├── theme.ts                # 6-theme system: black·blue·matrix·amber·purple·rose
+│   ├── theme.ts                # 7-theme system: black·blue·matrix·amber·purple·rose·high-contrast
 │   ├── keyboard.ts             # All keyboard shortcuts (T/D/A/S/N/+/-/P/B/H/C/Esc)
 │   ├── maximize.ts             # Card maximize/FLIP + collapse (startViewTransition)
 │   ├── scroll.ts               # Scroll loop helpers + GPU keyframe injection
@@ -337,7 +337,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; global styles in `src/styles/`
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only; `__USE_PROXIES__=false` disables proxy chain in production builds
-15. **7766+ tests / 326 suites / 0 failures** — coverage thresholds: 97.1% statements, 90.54% branches, 96.46% functions, 98.13% lines
+15. **Repository gate enforced** — canonical validation via `npm run check`; coverage thresholds live in `vitest.config.ts`
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module

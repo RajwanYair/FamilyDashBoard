@@ -24,7 +24,7 @@ Cards use global CSS from the document stylesheet. No `attachShadow()` calls.
 
 ## Rationale
 
-1. **Global theming** — The dashboard has 6 themes applied via `[data-theme]` CSS vars on `<html>`. Shadow DOM creates an encapsulation boundary that breaks `:root` / `[data-theme]` token inheritance without explicit `adoptedStyleSheets` plumbing.
+1. **Global theming** — The dashboard has 7 themes applied via `[data-theme]` CSS vars on `<html>`. Shadow DOM creates an encapsulation boundary that breaks `:root` / `[data-theme]` token inheritance without explicit `adoptedStyleSheets` plumbing.
 2. **Cross-card layout** — Cards are positioned by the parent grid system. Shadow DOM does not help and creates slot/slotted complexity with no benefit.
 3. **Typography uniformity** — RTL Hebrew typography depends on global `font-family` and `direction: rtl` set at the document level. Shadow DOM would require duplicating this in each card's shadow root.
 4. **Diagnostics and testing** — Global `querySelectorAll` is used in tests and the diagnostic overlay. Shadow DOM piercing requires `shadowRoot.querySelector` on each element, adding test complexity.

@@ -7,11 +7,11 @@
 
 ## Context
 
-The dashboard ships **6 themes** (black, blue, matrix, amber, purple,
-rose) implemented as `body.theme-<name>` selectors over a base set of
-~40 CSS custom properties (`--accent`, `--bg`, `--fg`, etc.). Each
-theme block today is approximately 40 lines of `--name: value;`
-declarations — six near-identical blocks total.
+The dashboard ships **7 themes** (black, blue, matrix, amber, purple,
+rose, high-contrast) implemented as `body.theme-<name>` selectors over a
+base set of ~40 CSS custom properties (`--accent`, `--bg`, `--fg`,
+etc.). Each theme block today is approximately 40 lines of `--name:
+value;` declarations — seven near-identical blocks total.
 
 CSS `if()` (CSS Values L5) and `@function` (CSS Functions L1) would
 collapse these to a single declarative table:

@@ -2,7 +2,11 @@
  * Tests for worker/src/utils/analytics.ts (b, ADR-029).
  */
 import { describe, it, expect, vi } from "vitest";
-import { writeAnalyticsHit, normaliseRoute, writeVectorizeShadowMetrics } from "../../../worker/src/utils/analytics";
+import {
+  writeAnalyticsHit,
+  normaliseRoute,
+  writeVectorizeShadowMetrics,
+} from "../../../worker/src/utils/analytics";
 import type { AnalyticsEngineDataset } from "../../../worker/src/types";
 
 // ── normaliseRoute ────────────────────────────────────────────────────────────
@@ -109,7 +113,12 @@ describe("writeVectorizeShadowMetrics", () => {
 
   it("writes all-zero metrics without throwing", () => {
     const dataset: AnalyticsEngineDataset = { writeDataPoint: vi.fn() };
-    writeVectorizeShadowMetrics(dataset, { agrees: 0, vectorizeWouldDrop: 0, vectorizeWouldKeep: 0, upserted: 0 });
+    writeVectorizeShadowMetrics(dataset, {
+      agrees: 0,
+      vectorizeWouldDrop: 0,
+      vectorizeWouldKeep: 0,
+      upserted: 0,
+    });
     expect(dataset.writeDataPoint).toHaveBeenCalledWith({
       blobs: ["vectorize-shadow"],
       doubles: [0, 0, 0, 0],
@@ -119,7 +128,9 @@ describe("writeVectorizeShadowMetrics", () => {
 
   it("does not throw when writeDataPoint throws", () => {
     const dataset: AnalyticsEngineDataset = {
-      writeDataPoint: vi.fn(() => { throw new Error("AE unavailable"); }),
+      writeDataPoint: vi.fn(() => {
+        throw new Error("AE unavailable");
+      }),
     };
     expect(() => writeVectorizeShadowMetrics(dataset, baseMetrics)).not.toThrow();
   });
@@ -127,7 +138,9 @@ describe("writeVectorizeShadowMetrics", () => {
   it("uses 'vectorize-shadow' as the primary index", () => {
     const dataset: AnalyticsEngineDataset = { writeDataPoint: vi.fn() };
     writeVectorizeShadowMetrics(dataset, baseMetrics);
-    const call = (dataset.writeDataPoint as ReturnType<typeof vi.fn>).mock.calls[0][0] as { indexes: string[] };
+    const call = (dataset.writeDataPoint as ReturnType<typeof vi.fn>).mock.calls[0][0] as {
+      indexes: string[];
+    };
     expect(call.indexes).toEqual(["vectorize-shadow"]);
   });
 });

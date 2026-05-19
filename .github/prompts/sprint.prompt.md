@@ -65,7 +65,7 @@ Choose the correct layer:
 ### 3. Write / Update Tests
 
 - File: `tests/unit/cards/<name>.test.ts` or `tests/unit/<name>.test.ts`
-- Coverage thresholds: 94.2 / 85.4 / 94.5 / 95.6 (statements / branches / functions / lines)
+- Coverage thresholds: read the live values from `vitest.config.ts`
 - Run: `npx vitest run tests/unit/<target-file>.test.ts`
 - Must show all tests passing with no regressions
 

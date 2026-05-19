@@ -28,7 +28,7 @@ op_mob >= 80
 
 # ── Chromium-based (Brave, Vivaldi, Arc, Yandex) ──────────────────────────
 # These resolve to Chrome >= 114 via the Chromium engine; listed explicitly
-# so `npx browserslist` reports them and webhint validates coverage.
+# so `npx browserslist` reports them and build-time compat checks validate coverage.
 
 # ── WebKit-based (UC Browser, QQ Browser) ─────────────────────────────────
 # UC Browser and QQ Browser for Android use a WebKit/Chromium core aligned

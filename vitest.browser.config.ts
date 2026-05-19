@@ -17,7 +17,7 @@ import { playwright } from "@vitest/browser-playwright";
 
 export default defineConfig({
   resolve: {
-    alias: [{ find: "@", replacement: resolve(__dirname, "src") }],
+    alias: [{ find: "@", replacement: resolve(import.meta.dirname, "src") }],
   },
   test: {
     // Browser mode — requires @vitest/browser + @vitest/browser-playwright

@@ -248,7 +248,11 @@ describe("OtelHandle — asyncSpan (S23 addition)", () => {
   });
 
   function makeLiveEnv(endpoint = "https://otel.example.com") {
-    return { ENVIRONMENT: "test", OTEL_ENABLED: "true", OTEL_ENDPOINT: endpoint } as unknown as import("../../../worker/src/types").Env;
+    return {
+      ENVIRONMENT: "test",
+      OTEL_ENABLED: "true",
+      OTEL_ENDPOINT: endpoint,
+    } as unknown as import("../../../worker/src/types").Env;
   }
   function makeDisabledEnv() {
     return { ENVIRONMENT: "test" } as unknown as import("../../../worker/src/types").Env;
@@ -271,7 +275,9 @@ describe("OtelHandle — asyncSpan (S23 addition)", () => {
     await h.flush();
 
     const body = JSON.parse(fetchCalls[0].init.body as string) as {
-      resourceSpans: Array<{ scopeSpans: Array<{ spans: Array<{ name: string; attributes: Array<{ key: string }> }> }> }>;
+      resourceSpans: Array<{
+        scopeSpans: Array<{ spans: Array<{ name: string; attributes: Array<{ key: string }> }> }>;
+      }>;
     };
     const span = body.resourceSpans[0].scopeSpans[0].spans[0];
     expect(span.name).toBe("vectorize-shadow");
@@ -281,7 +287,11 @@ describe("OtelHandle — asyncSpan (S23 addition)", () => {
 
   it("live asyncSpan still records span when fn rejects", async () => {
     const h = initOtel(makeLiveEnv());
-    await expect(h.asyncSpan("failing", async () => { throw new Error("async fail"); })).rejects.toThrow("async fail");
+    await expect(
+      h.asyncSpan("failing", async () => {
+        throw new Error("async fail");
+      }),
+    ).rejects.toThrow("async fail");
     await h.flush();
     expect(fetchCalls).toHaveLength(1);
     const body = JSON.parse(fetchCalls[0].init.body as string) as {

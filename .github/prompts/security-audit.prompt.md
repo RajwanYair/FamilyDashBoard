@@ -91,7 +91,7 @@ node scripts/check-dead-exports.mjs
 
 ## Reporting
 
-Use `get_errors` to surface webhint + ESLint security-related diagnostics before manual review.
+Use `get_errors` to surface ESLint security-related diagnostics before manual review.
 Use `manage_todo_list` to track findings and fixes across the A03–A09 checklist.
 
 For each finding:

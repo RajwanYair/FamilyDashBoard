@@ -89,7 +89,6 @@ import { initHebrewCalCard } from "./cards/hebrew-cal/hebrew-cal";
 import { initCalendarCard } from "./cards/calendar/calendar";
 import { initTasksCard } from "./cards/tasks/tasks";
 import { initSystemInfoCard } from "./cards/system-info/system-info";
-import { initCountdownCard } from "./cards/countdown/countdown";
 // Eagerly define <fdb-video-news> custom element so it upgrades when index.html is parsed
 import "./cards/video-news/fdb-video-news";
 
@@ -198,9 +197,18 @@ export function applySeasonClass(): void {
   document.body.classList.add(cls);
 }
 
+let countdownInitPromise: Promise<() => void> | null = null;
+
+function getCountdownInit(): Promise<() => void> {
+  countdownInitPromise ??= import("./cards/countdown/countdown").then(
+    ({ initCountdownCard }) => initCountdownCard,
+  );
+  return countdownInitPromise;
+}
+
 /** Refresh every card individually with 350 ms stagger — never reloads the page. */
 export function refreshAllCardsStaggered(): void {
-  const inits: Array<() => void> = [
+  const inits: Array<() => void | Promise<void>> = [
     initWeatherCard,
     initNewsCard,
     initAlertsCard,
@@ -209,12 +217,14 @@ export function refreshAllCardsStaggered(): void {
     initStocksCard,
     initCurrencyCard,
     initTasksCard,
-    initCountdownCard,
+    async () => (await getCountdownInit())(),
     initMotivationCard,
     initSystemInfoCard,
   ];
   inits.forEach((fn, i) => {
-    setTimeout(fn, i * 350);
+    setTimeout(() => {
+      void fn();
+    }, i * 350);
   });
 }
 
@@ -404,7 +414,7 @@ export function init(): void {
 
   // Cards — priority-based init: high-value visible cards first (v7.10)
   // wrap each init with timing; error-boundary catches init failures
-  const timedInit = (id: string, fn: () => void): void => {
+  const timedInit = (id: string, fn: () => void | Promise<void>): void => {
     const t0 = performance.now();
     void withErrorBoundary(id, fn)().then(() => {
       recordCardInitTime(id, performance.now() - t0);
@@ -420,7 +430,7 @@ export function init(): void {
   timedInit("stocks", initStocksCard);
   timedInit("currency", initCurrencyCard);
   timedInit("tasks", initTasksCard);
-  timedInit("countdown", initCountdownCard);
+  timedInit("countdown", async () => (await getCountdownInit())());
   // LOW priority: ambient / decorative — deferred to reduce TTI (V11-PERF)
   // Use requestIdleCallback when available so the main thread is free for interaction first.
   const _lowPriorityInit = (): void => {

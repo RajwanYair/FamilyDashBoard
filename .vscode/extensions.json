@@ -16,7 +16,6 @@
         "vitest.explorer",
         "ms-playwright.playwright",
         // Browser compatibility
-        "webhint.vscode-webhint",
         "ms-edgetools.vscode-edge-devtools",
         "kwesinavilot.baseline-lens",
         "akamud.vscode-caniuse",
@@ -50,6 +49,7 @@
         "vincaslt.highlight-matching-tag",
         "ritwickdey.LiveServer",
         "HTMLHint.vscode-htmlhint",
+        "webhint.vscode-webhint",
         "pranaygp.vscode-css-peek",
         "mhutchie.git-graph",
         "hediet.vscode-drawio"

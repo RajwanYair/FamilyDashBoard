@@ -43,7 +43,7 @@ Review the TypeScript source files in `src/` for the following:
 
 - [ ] RTL layout intact (`dir="rtl"`)
 - [ ] CSS custom properties used — no hardcoded colors
-- [ ] 6 themes covered: black · blue · matrix · amber · purple · rose
+- [ ] 7 themes covered: black · blue · matrix · amber · purple · rose · high-contrast
 - [ ] Font sizes readable on TV from 3m distance
 - [ ] New CSS rules in correct `@layer` (tokens → themes → base → layout → components → animations)
 - [ ] No duplicate CSS selectors
@@ -52,7 +52,7 @@ Review the TypeScript source files in `src/` for the following:
 
 > Use `runSubagent` with `@api-integrator` for deep data flow, cache, proxy fallback, and sync state review.
 > Use `runSubagent` with `@dashboard-designer` for a11y, performance, and TV-readability review.
-> Use `get_errors` (webhint extension) for browser-compat diagnostics without terminal commands.
+> Use Baseline Lens extension for browser-compat verification against `.browserslistrc` targets.
 
 Quick gates:
 

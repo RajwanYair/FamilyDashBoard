@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Sync labels
-        uses: EndBug/label-sync@v2 # pin-allow: initial addition — Dependabot will SHA-pin
+        uses: EndBug/label-sync@52074158190acb45f3077f9099fea818aa43f97a # v2.3.3
         with:
           config-file: .github/labels.yml
           # Keep any labels created manually in the GitHub UI

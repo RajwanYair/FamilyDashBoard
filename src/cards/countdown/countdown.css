@@ -181,7 +181,7 @@
 
   /*
    * Two pseudo-elements each render a grid of confetti particles via
-   * box-shadow. Colours use CSS custom properties so all 6 themes are
+    * box-shadow. Colours use CSS custom properties so all 7 themes are
    * covered. Motion is suppressed when the user prefers reduced motion.
    */
   @media (prefers-reduced-motion: no-preference) {

@@ -388,33 +388,8 @@ describe("DOM Contract — A11y voice-control accessible names (Y)", () => {
 const previewHtml = readFileSync(resolve(__dirname, "../../../src/preview.html"), "utf8");
 
 describe("DOM Contract — F13 Speculation Rules API audit", () => {
-  it("index.html contains a speculationrules script block", () => {
-    expect(html).toContain('type="speculationrules"');
-  });
-
-  it("index.html speculationrules has prerender for preview.html", () => {
-    expect(html).toContain('"prerender"');
-    expect(html).toContain("/FamilyDashBoard/preview.html");
-  });
-
-  it("index.html prerender eagerness is conservative (avoids wasted bandwidth)", () => {
-    // Extract the speculationrules block and verify prerender eagerness
-    const srMatch = html.match(/<script type="speculationrules">([\s\S]*?)<\/script>/);
-    expect(srMatch).not.toBeNull();
-    const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
-    const prerender = (srJson["prerender"] as Array<{ eagerness?: string }>) ?? [];
-    expect(prerender.length).toBeGreaterThan(0);
-    expect(prerender[0]?.["eagerness"]).toBe("conservative");
-  });
-
-  it("index.html prefetch eagerness is moderate or conservative", () => {
-    const srMatch = html.match(/<script type="speculationrules">([\s\S]*?)<\/script>/);
-    expect(srMatch).not.toBeNull();
-    const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
-    const prefetch = (srJson["prefetch"] as Array<{ eagerness?: string }>) ?? [];
-    expect(prefetch.length).toBeGreaterThan(0);
-    const allowedEagerness = ["conservative", "moderate"];
-    expect(allowedEagerness).toContain(prefetch[0]?.["eagerness"]);
+  it("index.html does NOT contain speculation rules for dev-only preview.html", () => {
+    expect(html).not.toContain("/FamilyDashBoard/preview.html");
   });
 
   it("preview.html contains a speculationrules block for back-navigation (F13)", () => {
@@ -429,34 +404,5 @@ describe("DOM Contract — F13 Speculation Rules API audit", () => {
     const allUrls = prefetch.flatMap((r) => r.urls ?? []);
     const coversDashboard = allUrls.some((u) => u.includes("/FamilyDashBoard"));
     expect(coversDashboard).toBe(true);
-  });
-
-  it("no external (cross-origin) URLs appear in index.html speculationrules (F13 audit)", () => {
-    // External links like Sefaria, Hebcal, IDF Tzeva-Adom cannot be targeted by Speculation Rules
-    // Verify no http(s):// URLs slip into the JSON block
-    const srMatch = html.match(/<script type="speculationrules">([\s\S]*?)<\/script>/);
-    expect(srMatch).not.toBeNull();
-    const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
-    const allRulesets = [
-      ...((srJson["prerender"] as Array<{ urls?: string[] }>) ?? []),
-      ...((srJson["prefetch"] as Array<{ urls?: string[] }>) ?? []),
-    ];
-    const allUrls = allRulesets.flatMap((r) => r.urls ?? []);
-    const externalUrls = allUrls.filter((u) => u.startsWith("http://") || u.startsWith("https://"));
-    expect(externalUrls).toHaveLength(0);
-  });
-
-  it("all speculationrules URLs in index.html are same-origin paths (start with /)", () => {
-    const srMatch = html.match(/<script type="speculationrules">([\s\S]*?)<\/script>/);
-    expect(srMatch).not.toBeNull();
-    const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
-    const allRulesets = [
-      ...((srJson["prerender"] as Array<{ urls?: string[] }>) ?? []),
-      ...((srJson["prefetch"] as Array<{ urls?: string[] }>) ?? []),
-    ];
-    const allUrls = allRulesets.flatMap((r) => r.urls ?? []);
-    allUrls.forEach((u) => {
-      expect(u).toMatch(/^\//); // must be a root-relative path
-    });
   });
 });

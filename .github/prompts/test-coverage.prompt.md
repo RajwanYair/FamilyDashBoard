@@ -1,5 +1,5 @@
 ---
-description: "Identify gaps in test coverage for a given module or card and add targeted tests to meet the 94.2%/85.4%/94.5%/95.6% thresholds (canonical source: vitest.config.ts)."
+description: "Identify gaps in test coverage for a given module or card and add targeted tests to meet the live thresholds defined in vitest.config.ts."
 tools:
   [
     "read_file",
@@ -25,14 +25,7 @@ Analyse the current test coverage for the specified module and add the minimum s
 
 ## Coverage Thresholds
 
-| Metric     | Threshold |
-| ---------- | --------- |
-| Statements | 94.2%     |
-| Branches   | 85.4%     |
-| Functions  | 94.5%     |
-| Lines      | 95.6%     |
-
-Canonical source: `vitest.config.ts`. The thresholds ratchet upward each sprint — see Roadmap #8.
+Canonical source: `vitest.config.ts`. Read the live thresholds from config instead of copying them into the prompt.
 
 ## Steps
 

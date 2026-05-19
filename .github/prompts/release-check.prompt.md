@@ -31,7 +31,7 @@ Run the automated check first:
 node scripts/check-version-consistency.mjs
 ```
 
-Expected: **All 7 files match package.json vX.Y.Z**
+Expected: version anchors match `package.json` in every documented release file.
 
 Then confirm `vX.Y.Z` appears consistently in ALL 16 documented files:
 
@@ -48,100 +48,53 @@ Then confirm `vX.Y.Z` appears consistently in ALL 16 documented files:
 
 > Full file list in `.github/skills/release/SKILL.md`.
 
-## 2. Type Check
-
-```sh
-npx tsc --noEmit
-```
-
-Expected: **0 errors**
-
-## 2a. Worker Type Check (V13-OPS)
-
-```sh
-cd worker && npx tsc --noEmit && cd ..
-```
-
-Expected: **0 errors** in `worker/src/`
-
-## 3. Lint
-
-```sh
-npx eslint src tests --max-warnings 0
-```
-
-Expected: **0 errors · 0 warnings · 0 suppressions**
-
-No `@ts-ignore`, `eslint-disable`, or `// @ts-expect-error` in committed source.
-
-## 4. Markdown Lint
-
-```sh
-npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"
-```
-
-Expected: **0 errors**
-
-## 5. Tests
-
-```sh
-npx vitest run
-```
-
-Expected: **0 failures**
-
-## 6. Build
-
-```sh
-npm run build
-```
-
-Expected: **0 errors · dist/ generated**
-
-## 7. Bundle Size
-
-```sh
-npm run check:bundle
-```
-
-Expected: **below threshold** (exits 0)
-
-## 8. SW Version
-
-```sh
-npm run check:sw
-```
-
-Expected: **version in sw.js matches package.json**
-
-## 9. OWASP Script
+## 2. Canonical Quality Gate
 
 ```powershell
-node scripts/check-owasp.mjs
+npm run check
 ```
 
-Expected: **0 findings** (Exit 0)
+Expected: **0 failures** across typecheck, lint, markdown, tests, dead-export gate, OWASP, Trusted Types, build-artifact hygiene, and all other repository checks.
 
-## 10. A11Y Audit (V13-A11Y)
+## 3. CI-Parity Supply-Chain Checks
 
-Verify no regressions in accessibility contract:
-
-```sh
-npx vitest run tests/unit/html/dom-contract.test.ts
+```powershell
+npm run check:actions-pinned
+npm run check:ignore-scripts
+npm run check:sigstore
+npm run check:reproducible
 ```
 
-Expected: **all 112+ tests pass** — confirms every dialog has `aria-labelledby`, all
-icon-only buttons have `aria-label`, all cards have `role=region`.
+Expected: **0 failures**.
 
-## 11. Open Issues
+## 4. Build and Package Gates
+
+```powershell
+npm run build
+npm run check:bundle
+npm run check:card-bundle
+```
+
+Expected: clean build and passing bundle budgets.
+
+## 5. Release Notes and Version Audit
+
+```powershell
+node scripts/check-version-consistency.mjs
+node scripts/check-release-notes.mjs
+```
+
+Expected: **0 failures**.
+
+## 6. Open Issues
 
 All GitHub issues assigned to the milestone must be **closed** with a commit hash in the closing comment before tagging.
 
-## 12. Tag & Release
+## 7. Tag & Release
 
 Only after all 12 gates are green:
 
-```sh
+```powershell
 git tag vX.Y.Z
 git push origin vX.Y.Z
 gh release create vX.Y.Z --generate-notes
@@ -151,14 +104,3 @@ gh release create vX.Y.Z --generate-notes
 
 Report each gate as ✅ PASS or ❌ FAIL with the command output summary.
 Do NOT proceed to the tag step if any gate fails.
-
----
-
-## v13 Gate Summary (added V13-OPS)
-
-| New gate                           | Command                                               | Threshold              |
-| ---------------------------------- | ----------------------------------------------------- | ---------------------- |
-| Worker typecheck                   | `cd worker && npx tsc --noEmit`                       | 0 errors               |
-| sw.ts version                      | `npm run check:sw`                                    | matches `package.json` |
-| A11Y contract                      | `npx vitest run tests/unit/html/dom-contract.test.ts` | 0 failures             |
-| AI routes (when `AI_ENABLED=true`) | `npx vitest run tests/unit/worker/ai.test.ts`         | 0 failures             |

@@ -41,7 +41,7 @@ jobs:
           fetch-depth: 0
 
       - name: TruffleHog OSS — only verified findings
-        uses: trufflesecurity/trufflehog@main # pin-allow: initial addition — Dependabot will SHA-pin
+        uses: trufflesecurity/trufflehog@37b77001d0174ebec2fcca2bd83ff83a6d45a3ab # v3.95.3
         with:
           path: ./
           # Push events: compare before..after to avoid BASE==HEAD false-failure.

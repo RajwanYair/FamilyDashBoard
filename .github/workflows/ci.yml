@@ -8,32 +8,8 @@ name: CI
 on:
   push:
     branches: [main]
-    # Skip CI for AI customization / documentation-only pushes that cannot
-    # affect runtime behaviour. Harvested from CrossTide parallel project.
-    paths-ignore:
-      - ".github/instructions/**"
-      - ".github/prompts/**"
-      - ".github/agents/**"
-      - ".github/copilot/**"
-      - ".github/copilot-instructions.md"
-      - ".github/AGENTS.md"
-      - ".github/hooks/**"
-      - ".github/skills/**"
-      - ".github/assets/**"
-      - "tooling/mcp/**"
   pull_request:
     branches: [main]
-    paths-ignore:
-      - ".github/instructions/**"
-      - ".github/prompts/**"
-      - ".github/agents/**"
-      - ".github/copilot/**"
-      - ".github/copilot-instructions.md"
-      - ".github/AGENTS.md"
-      - ".github/hooks/**"
-      - ".github/skills/**"
-      - ".github/assets/**"
-      - "tooling/mcp/**"
   workflow_dispatch:
 
 # Cancel any in-progress CI run for the same branch/PR on new pushes.
@@ -216,7 +192,7 @@ jobs:
       - name: Smart contrast audit (WCAG)
         run: node scripts/check-smart-contrast.mjs
       - name: Dead exports check
-        run: node scripts/check-dead-exports.mjs --max-allowed 5
+        run: node scripts/check-dead-exports.mjs --fail-on-dead
       - name: Build artifacts untracked check
         run: node scripts/check-build-artifacts-untracked.mjs
       - name: Vendor-neutrality gate

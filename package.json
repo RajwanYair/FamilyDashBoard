@@ -95,7 +95,7 @@
         "check:vendor": "node scripts/check-vendor-neutrality.mjs",
         "check:vendor-gate": "node scripts/check-vendor-neutrality.mjs --gate",
         "check:temporal-polyfill": "node scripts/check-temporal-polyfill-size.mjs",
-        "check:dead-exports": "node scripts/check-dead-exports.mjs --max-allowed 5",
+        "check:dead-exports": "node scripts/check-dead-exports.mjs --fail-on-dead",
         "commitlint": "commitlint --from=HEAD~1 --to=HEAD --verbose",
         "changeset": "changeset",
         "changeset:add": "changeset add",

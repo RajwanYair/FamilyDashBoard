@@ -235,7 +235,18 @@ app.get("/api/r2-asset", async (c) => {
   const res = await otel.asyncSpan("route:r2-asset", (s) => {
     const urlParam = new URL(c.req.url).searchParams.get("url") ?? "";
     s.setAttribute("asset.url_len", urlParam.length);
-    s.setAttribute("asset.host", urlParam ? (() => { try { return new URL(urlParam).hostname; } catch { return "invalid"; } })() : "");
+    s.setAttribute(
+      "asset.host",
+      urlParam
+        ? (() => {
+            try {
+              return new URL(urlParam).hostname;
+            } catch {
+              return "invalid";
+            }
+          })()
+        : "",
+    );
     return handleR2Asset(c.req.raw, c.env);
   });
   c.executionCtx.waitUntil(otel.flush());

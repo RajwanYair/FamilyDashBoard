@@ -172,7 +172,7 @@ const UI_TEXT: Record<InterfaceLanguage, Record<TranslationKey, string>> = {
   },
   en: {
     dashboardTitle: "Rajwan Family Dashboard",
-    documentDescription: "Family TV dashboard — English/Hebrew interface, 6 themes, live data.",
+    documentDescription: "Family TV dashboard — English/Hebrew interface, 7 themes, live data.",
     pwaInstall: "📲 Install",
     pwaInstallTitle: "Install as a standalone app — works offline too",
     refreshing: "🔄 Refreshing...",

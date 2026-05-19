@@ -69,7 +69,7 @@ Use this agent when:
 2. **Run type check** — `npx tsc --noEmit`. Fix any errors before continuing.
 3. **Run lint** — `npx eslint src tests --max-warnings 0`. Fix all warnings.
 4. **Run tests** — `npx vitest run`. Report any failures and fix them.
-5. **Check coverage** (full review only) — `npx vitest run --coverage`. Flag modules below threshold (94.2 / 85.4 / 94.5 / 95.6).
+5. **Check coverage** (full review only) — `npx vitest run --coverage`. Flag modules below the thresholds defined in `vitest.config.ts`.
 6. **OWASP check** — `node scripts/check-owasp.mjs`. Exit 0 required.
 7. **Security scan** — grep for `innerHTML` with unsanitized data, `eval`, `new Function`, hardcoded secrets.
 8. **Dead code scan** — grep for exports that have no consumers in `src/` or `tests/`.
@@ -78,27 +78,20 @@ Use this agent when:
 
 ## Quality Gates (Zero Tolerance)
 
-| Gate          | Command                                                 | Expected                                       |
-| ------------- | ------------------------------------------------------- | ---------------------------------------------- |
-| Type errors   | `npx tsc --noEmit`                                      | 0 errors                                       |
-| Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                          |
-| Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                       |
-| Test failures | `npx vitest run`                                        | 0 failures (7228 / 282 suites)                 |
-| Coverage      | `npx vitest run --coverage`                             | stmts 95.7 / branches 88.8 / fn 95.1 / ln 96.7 |
-| OWASP check   | `node scripts/check-owasp.mjs`                          | 0 findings                                     |
-| Build         | `npm run build`                                         | 0 errors                                       |
-| Bundle size   | `npm run check:bundle`                                  | JS gzip ≤ 100 KB · CSS ≤ 26 KB · card ≤ 66 KB  |
+| Gate          | Command                                                 | Expected                                      |
+| ------------- | ------------------------------------------------------- | --------------------------------------------- |
+| Type errors   | `npx tsc --noEmit`                                      | 0 errors                                      |
+| Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                         |
+| Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                      |
+| Test failures | `npx vitest run`                                        | 0 failures                                    |
+| Coverage      | `npx vitest run --coverage`                             | Meets thresholds in `vitest.config.ts`        |
+| OWASP check   | `node scripts/check-owasp.mjs`                          | 0 findings                                    |
+| Build         | `npm run build`                                         | 0 errors                                      |
+| Bundle size   | `npm run check:bundle`                                  | JS gzip ≤ 100 KB · CSS ≤ 26 KB · card ≤ 66 KB |
 
 ## Coverage Thresholds
 
-| Metric     | Threshold |
-| ---------- | --------- |
-| Statements | 95.7%     |
-| Branches   | 88.8%     |
-| Functions  | 95.1%     |
-| Lines      | 96.7%     |
-
-Canonical source: `vitest.config.ts`. The thresholds ratchet upward each sprint as targeted tests are added — see Roadmap #8.
+Canonical source: `vitest.config.ts`. Read the live thresholds from config instead of copying them into the agent.
 
 ## Security Checklist
 

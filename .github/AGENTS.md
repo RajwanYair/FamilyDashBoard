@@ -1,6 +1,6 @@
 # AI Customizations — FamilyDashBoard
 
-> Version: v14.34.0 · Tests: 7801 / 328 suites · Coverage: 97.1 / 90.54 / 96.46 / 98.13
+> Version: v14.34.0 · Validation: `npm run check` · Coverage thresholds: see `vitest.config.ts`
 
 ## Customization Model
 
@@ -98,7 +98,6 @@ Extensions that surface data via `get_errors` (single call replaces multiple ter
 | ------------------ | ---------------------------------- | --------------------------------------------- |
 | ESLint             | Lint errors/warnings               | Skip `npx eslint` for single files            |
 | Stylelint          | CSS layer/property violations      | Skip `npx stylelint` for single files         |
-| webhint            | Browser compat warnings            | Skip manual `.browserslistrc` checks          |
 | markdownlint       | MD formatting issues               | Skip `npx markdownlint-cli2` for single files |
 | Code Spell Checker | Spelling errors (Hebrew + English) | No manual spell-check needed                  |
 | TypeScript         | Type errors                        | Skip `npx tsc --noEmit` for single files      |

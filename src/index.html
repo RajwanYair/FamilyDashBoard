@@ -47,30 +47,6 @@
          first API call. Limited to the single hot origin; lighthouse caps preconnects ≤ 4. -->
     <link rel="preconnect" href="https://fdb.rajwanyair.workers.dev" crossorigin>
     <link rel="dns-prefetch" href="https://fdb.rajwanyair.workers.dev">
-    <!-- Speculation Rules API: F13 — audited coverage (V12-PERF-1 + F13)
-         Strategy:
-           prerender preview.html — eagerness: conservative (same-origin, lightweight page,
-             triggered only on hover/pointer-down to avoid wasting bandwidth).
-           prefetch  preview.html — eagerness: moderate (fallback for browsers that support
-             prefetch but not prerender, e.g. Firefox).
-         External links (Sefaria, Hebcal, IDF Tzeva-Adom) are cross-origin so Speculation
-         Rules cannot apply to them. No "eager" rules: dashboard is a long-lived tab. -->
-    <script type="speculationrules">
-      {
-        "prerender": [
-          {
-            "urls": ["/FamilyDashBoard/preview.html"],
-            "eagerness": "conservative"
-          }
-        ],
-        "prefetch": [
-          {
-            "urls": ["/FamilyDashBoard/preview.html"],
-            "eagerness": "moderate"
-          }
-        ]
-      }
-    </script>
 </head>
 <body class="theme-black">
     <!-- A11y: skip to main content -->

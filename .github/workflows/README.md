@@ -15,8 +15,8 @@ This directory contains the operational GitHub Actions workflows for build, vali
 | Workflow              | File                        | Purpose                                                                             | Trigger                               |
 | --------------------- | --------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------- |
 | CI                    | `ci.yml`                    | Typecheck, lint, markdownlint, tests, security scan, worker tests, production build | push, pull_request, manual            |
-| Pages Deploy          | `deploy.yml`                | Build `dist/` and publish to GitHub Pages                                           | push to `main`, manual                |
-| Release               | `release.yml`               | Build release artifacts, generate changelog body, publish GitHub Release            | tag push                              |
+| Pages Deploy          | `deploy.yml`                | Build `dist/` and publish to GitHub Pages after successful CI on `main`             | CI workflow success, manual           |
+| Release               | `release.yml`               | Re-run the production gate, build release artifacts, and publish GitHub Release     | tag push                              |
 | Worker Deploy         | `deploy-worker.yml`         | Deploy Cloudflare Worker from `worker/`                                             | `worker/**` changes on `main`, manual |
 | Auto Label            | `auto-label.yml`            | Apply repository labels automatically                                               | event-driven                          |
 | Dependabot Auto Merge | `dependabot-auto-merge.yml` | Controlled automation for dependency PR flow                                        | Dependabot events                     |
@@ -58,6 +58,8 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 
 `deploy.yml` is responsible for publishing the built dashboard to GitHub Pages.
 
+- run only after a successful `ci.yml` completion on `main` (or manual dispatch)
+- checkout the exact commit SHA that passed CI
 - build with the repository's shared CI toolchain
 - upload the `dist/` artifact
 - deploy using the Pages actions already pinned in the workflow
@@ -74,7 +76,8 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 
 `release.yml` is triggered by version tags.
 
-- it re-runs validation relevant to tagged builds
+- it re-runs the repository's canonical production gate (`npm run check`)
+- it runs the CI-only supply-chain checks that are not part of `npm run check`
 - it packages `dist.zip`
 - it attaches `dist.zip`, `sw.js`, and `dist/icon.svg`
 - it uses generated release notes plus the repository release-note configuration in `.github/release.yml`
@@ -141,9 +144,9 @@ concurrency:
   cancel-in-progress: true
 ```
 
-- `ci.yml` — cancel older runs on the same branch. PRs always run to completion.
+- `ci.yml` — cancel older runs on the same branch or PR ref.
 - `deploy.yml` — cancel older deploys. Only one Pages deploy active at a time.
-- `release.yml` — **no cancel** (`cancel-in-progress: false`). Tag builds must always complete.
+- `release.yml` — cancel older in-progress runs for the same tag ref.
 - `deploy-worker.yml` — cancel older worker deploys on same branch.
 
 ---

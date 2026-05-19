@@ -10,29 +10,29 @@ Use this skill only when you are doing an actual versioned release or preparing 
 
 ## Version Bump Locations
 
-Update ALL of these (search current version string, e.g. `13.29.0`):
+Update the live version anchors and release metadata below. Do not reintroduce stale test-count snapshots into active operator docs.
 
-| #   | File                                             | Field / location                                      | Notes                                            |
-| --- | ------------------------------------------------ | ----------------------------------------------------- | ------------------------------------------------ |
-| 1   | `package.json`                                   | `"version"` field                                     | Single source of truth for `__APP_VERSION__`     |
-| 2   | `sw.js`                                          | Comment header version string                         | e.g. `/* FamilyDashBoard ServiceWorker — vX.Y.Z` |
-| 3   | `CHANGELOG.md`                                   | New `## [X.Y.Z]` section at top; test count line      | Move `[Unreleased]` → versioned section          |
-| 4   | `README.md`                                      | `Version-X.Y.Z` badge + `Vitest-NNNN_passing` badge   | Lines ~22-23                                     |
-| 5   | `.github/copilot-instructions.md`                | Header version + test count                           | Lines 1, 6                                       |
-| 6   | `.github/instructions/workspace.instructions.md` | Header version + test count                           | Line 6                                           |
-| 7   | `docs/ARCHITECTURE.md`                           | Test count in stack table + constraint list           | Lines ~14, ~195                                  |
-| 8   | `.github/assets/banner.svg`                      | Version string + test count in footer text            | Line ~34                                         |
-| 9   | `.github/assets/architecture.svg`                | Version (×3: title, sw.js label, footer) + test count | Lines ~15, 25, 124, 142                          |
-| 10  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                        | Line ~156                                        |
-| 11  | `.github/assets/data-sources.svg`                | `Data Sources… — vX.Y.Z` title                        | Line ~9                                          |
-| 12  | `.github/assets/roadmap.svg`                     | Test count progression line                           | Line ~90                                         |
-| 13  | `docs/ROADMAP.md`                                | New row in the version history table                  | Bottom of the released versions table            |
-| 14  | `.github/skills/release/SKILL.md`                | Verification guidance if the baseline changed         | Keep it aligned with current repo state          |
-| 15  | `docs/security.md`                               | Title `Security Model — FamilyDashBoard vX.Y.Z`       | Lines 1 and 4 (updated date + version)           |
-| 16  | `.github/AGENTS.md`                              | Header `> Version: vX.Y.Z · Tests: NNNN / SS suites`  | Single header line                               |
+| #   | File                                             | Field / location                                          | Notes                                            |
+| --- | ------------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------ |
+| 1   | `package.json`                                   | `"version"` field                                         | Single source of truth for `__APP_VERSION__`     |
+| 2   | `sw.js`                                          | Comment header version string                             | e.g. `/* FamilyDashBoard ServiceWorker — vX.Y.Z` |
+| 3   | `CHANGELOG.md`                                   | New `## [X.Y.Z]` section at top; release evidence line    | Move `[Unreleased]` → versioned section          |
+| 4   | `README.md`                                      | `Version-X.Y.Z` badge and any release-facing version text | Keep badges aligned with the shipped version     |
+| 5   | `.github/copilot-instructions.md`                | Header version only                                       | Keep validation guidance canonical               |
+| 6   | `.github/instructions/workspace.instructions.md` | Header version only                                       | Keep validation guidance canonical               |
+| 7   | `docs/ARCHITECTURE.md`                           | Title `(vX.Y.Z)` and any release-facing version text      | Do not duplicate volatile test totals            |
+| 8   | `.github/assets/banner.svg`                      | Version string in footer text                             |                                                  |
+| 9   | `.github/assets/architecture.svg`                | Version (×3: title, sw.js label, footer)                  |                                                  |
+| 10  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                            | Line ~156                                        |
+| 11  | `.github/assets/data-sources.svg`                | `Data Sources… — vX.Y.Z` title                            | Line ~9                                          |
+| 12  | `.github/assets/roadmap.svg`                     | Release-facing version text only                          | Keep the asset descriptive, not snapshot-driven  |
+| 13  | `docs/ROADMAP.md`                                | `Shipped baseline: vX.Y.Z` when a new release is prepared | Keep roadmap forward-only                        |
+| 14  | `.github/skills/release/SKILL.md`                | Verification guidance if the release process changed      | Keep it aligned with current repo state          |
+| 15  | `docs/security.md`                               | Title `Security Model — FamilyDashBoard vX.Y.Z`           | Lines 1 and 4 (updated date + version)           |
+| 16  | `.github/AGENTS.md`                              | Header `> Version: vX.Y.Z ...`                            | Keep it descriptive, not snapshot-driven         |
 
 > `BestDashBoard.html` is legacy/archived — do NOT update its version.
-> `docs/ROADMAP.md` comment `<!-- Last updated: vX.Y.Z -->` at the bottom should also be bumped.
+> Keep active docs descriptive. Historical counts belong in `CHANGELOG.md`, release evidence, or generated reports.
 
 ## CHANGELOG Format
 
@@ -67,14 +67,17 @@ Validate XML: open in browser or run `Get-Content .github/assets/banner.svg -Raw
 Quick summary (PowerShell):
 
 ```powershell
-npx tsc --noEmit
-npx eslint src tests --max-warnings 0
-npx markdownlint-cli2 "**/*.md" --ignore node_modules --ignore dist
-npx vitest run
-npx vite build
+npm run check
+npm run check:actions-pinned
+npm run check:ignore-scripts
+npm run check:sigstore
+npm run check:reproducible
+npm run build
+npm run check:bundle
+npm run check:card-bundle
 ```
 
-All five must exit 0. No `eslint-disable`, no `@ts-ignore`, no `console.log` in `src/`.
+All commands must exit 0. No `eslint-disable`, no `@ts-ignore`, no dead exports, and no release without CI-parity checks.
 
 Also verify the workflow docs and release configuration still match reality:
 
@@ -98,19 +101,20 @@ git push origin main --tags
 Run the full pre-release gate in order; every command must exit 0:
 
 ```powershell
-npx tsc --noEmit
-npx eslint src tests --max-warnings 0
-npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**"
-npx vitest run
+npm run check
+npm run check:actions-pinned
+npm run check:ignore-scripts
+npm run check:sigstore
+npm run check:reproducible
 npm run build
-node scripts/check-bundle-size.mjs
-node scripts/check-sw-version.mjs
+npm run check:bundle
+npm run check:card-bundle
 node scripts/check-version-consistency.mjs
 ```
 
 Zero tolerance: 0 type errors · 0 lint errors/warnings · 0 markdownlint errors ·
-0 test failures · JS gzip ≤ 100 KB · CSS gzip ≤ 26 KB · SW version matches `package.json`.
-Always confirm test count (7037+ at v14.5.0) and update all 16 documented files before tagging.
+0 test failures · 0 dead exports · clean build · bundle budgets green · version anchors consistent.
+Always confirm the live release evidence in `CHANGELOG.md` and generated checks before tagging; do not carry forward stale totals into active docs.
 
 Read `.github/instructions/workspace.instructions.md` before updating any
-hardcoded test-count or toolchain text. Do not carry forward stale totals.
+release-facing toolchain text. Do not carry forward stale totals.

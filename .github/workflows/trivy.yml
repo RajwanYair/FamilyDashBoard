@@ -64,13 +64,13 @@ jobs:
           exit-code: "0"
 
       - name: Upload filesystem SARIF
-        uses: github/codeql-action/upload-sarif@v3 # pin-allow: initial addition — Dependabot will SHA-pin
+        uses: github/codeql-action/upload-sarif@458d36d7d4f47d0dd16ca424c1d3cda0060f1360 # v3.35.5
         with:
           sarif_file: trivy-fs.sarif
           category: trivy-fs
 
       - name: Upload config SARIF
-        uses: github/codeql-action/upload-sarif@v3 # pin-allow: initial addition — Dependabot will SHA-pin
+        uses: github/codeql-action/upload-sarif@458d36d7d4f47d0dd16ca424c1d3cda0060f1360 # v3.35.5
         with:
           sarif_file: trivy-config.sarif
           category: trivy-config

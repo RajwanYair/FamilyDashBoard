@@ -298,11 +298,10 @@ describe("buildVapidJwt (S27 VAPID JWT signing)", () => {
   let privateKeyB64url: string;
 
   beforeEach(async () => {
-    const keyPair = await crypto.subtle.generateKey(
-      { name: "ECDSA", namedCurve: "P-256" },
-      true,
-      ["sign", "verify"],
-    );
+    const keyPair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, [
+      "sign",
+      "verify",
+    ]);
     // Export private key as PKCS#8, then extract just the raw scalar (last 32 bytes)
     const pkcs8 = await crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
     const pkcs8Bytes = new Uint8Array(pkcs8);
@@ -330,7 +329,9 @@ describe("buildVapidJwt (S27 VAPID JWT signing)", () => {
   it("JWT header decodes to { typ: 'JWT', alg: 'ES256' }", async () => {
     const jwt = await buildVapidJwt(privateKeyB64url, "https://fcm.googleapis.com/fcm/send/abc");
     const [headerB64] = jwt.split(".");
-    const header = JSON.parse(atob((headerB64 ?? "").replace(/-/g, "+").replace(/_/g, "/"))) as unknown;
+    const header = JSON.parse(
+      atob((headerB64 ?? "").replace(/-/g, "+").replace(/_/g, "/")),
+    ) as unknown;
     expect(header).toEqual({ typ: "JWT", alg: "ES256" });
   });
 
@@ -338,9 +339,11 @@ describe("buildVapidJwt (S27 VAPID JWT signing)", () => {
     const endpoint = "https://updates.push.services.mozilla.com/push/v1/abc";
     const jwt = await buildVapidJwt(privateKeyB64url, endpoint);
     const parts = jwt.split(".");
-    const payload = JSON.parse(
-      atob((parts[1] ?? "").replace(/-/g, "+").replace(/_/g, "/")),
-    ) as { aud: string; exp: number; sub: string };
+    const payload = JSON.parse(atob((parts[1] ?? "").replace(/-/g, "+").replace(/_/g, "/"))) as {
+      aud: string;
+      exp: number;
+      sub: string;
+    };
     expect(payload.aud).toBe("https://updates.push.services.mozilla.com");
   });
 
@@ -349,9 +352,9 @@ describe("buildVapidJwt (S27 VAPID JWT signing)", () => {
     const jwt = await buildVapidJwt(privateKeyB64url, "https://fcm.googleapis.com/abc");
     const after = Math.floor(Date.now() / 1000);
     const parts = jwt.split(".");
-    const payload = JSON.parse(
-      atob((parts[1] ?? "").replace(/-/g, "+").replace(/_/g, "/")),
-    ) as { exp: number };
+    const payload = JSON.parse(atob((parts[1] ?? "").replace(/-/g, "+").replace(/_/g, "/"))) as {
+      exp: number;
+    };
     expect(payload.exp).toBeGreaterThanOrEqual(before + 43200);
     expect(payload.exp).toBeLessThanOrEqual(after + 43200);
   });

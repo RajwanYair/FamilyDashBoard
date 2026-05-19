@@ -113,7 +113,7 @@ npm run check
 # Runs: tsc + tsc sw + lint + markdownlint + sw-version check + vitest
 ```
 
-Expected output: all green, **4925+ tests / 159+ suites / 0 failures**.
+Expected output: all repository checks green with 0 failures.
 
 ---
 

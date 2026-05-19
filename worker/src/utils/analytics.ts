@@ -83,7 +83,12 @@ export function writeVectorizeShadowMetrics(
   try {
     dataset.writeDataPoint({
       blobs: ["vectorize-shadow"],
-      doubles: [metrics.agrees, metrics.vectorizeWouldDrop, metrics.vectorizeWouldKeep, metrics.upserted],
+      doubles: [
+        metrics.agrees,
+        metrics.vectorizeWouldDrop,
+        metrics.vectorizeWouldKeep,
+        metrics.upserted,
+      ],
       indexes: ["vectorize-shadow"],
     });
   } catch {

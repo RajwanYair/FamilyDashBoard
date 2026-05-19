@@ -128,19 +128,3 @@ describe(".browserslistrc — implicit Chromium/WebKit coverage", () => {
     expect(BROWSERSLIST).toContain("WebKit-based");
   });
 });
-
-describe(".hintrc — browserslist sync", () => {
-  const HINTRC = readFileSync(resolve(ROOT, ".hintrc"), "utf-8");
-
-  it("includes android chrome (and_chr) target", () => {
-    expect(HINTRC).toContain("and_chr >= 114");
-  });
-
-  it("includes android firefox (and_ff) target", () => {
-    expect(HINTRC).toContain("and_ff >= 128");
-  });
-
-  it("includes android webview target", () => {
-    expect(HINTRC).toContain("android >= 114");
-  });
-});

@@ -11,33 +11,22 @@ Run every step below in order. **All gates must be green before `git tag vX.Y.Z`
 
 ## 1 · Quality Gates (zero tolerance)
 
+Use the canonical repository gate first, then the release-only build/package steps.
+
 ```powershell
-# Type-check — 0 errors
-npx tsc --noEmit
+# Canonical production gate
+npm run check
 
-# Lint — 0 errors, 0 warnings, 0 suppressions
-npx eslint src tests --max-warnings 0
+# CI-only supply-chain parity checks
+npm run check:actions-pinned
+npm run check:ignore-scripts
+npm run check:sigstore
+npm run check:reproducible
 
-# Markdown — 0 lint errors
-npx markdownlint-cli2 "**/*.md" --ignore node_modules --ignore dist
-
-# Tests — all pass, 0 failures
-npx vitest run
-
-# Build — must succeed cleanly
-npx vite build
-
-# Module boundaries — 0 new violations (D12 + D12-cross)
-node scripts/check-module-boundaries.mjs
-
-# Bundle budgets — per-card warn/hard-cap + group budgets
-node scripts/check-bundle-size.mjs
-
-# OWASP pattern scan — 0 errors (warnings are informational)
-node scripts/check-owasp.mjs
-
-# Dead exports — must not exceed threshold
-node scripts/check-dead-exports.mjs --max-allowed 5
+# Release-only packaging gates
+npm run build
+npm run check:bundle
+npm run check:card-bundle
 ```
 
 **Hard rules:**
@@ -48,12 +37,13 @@ node scripts/check-dead-exports.mjs --max-allowed 5
 - No deprecated API calls — check ESLint deprecation rules and TypeScript `--target` output
 - No `console.log` in `src/` (use `diagLog()`)
 - ESLint config (`eslint.config.mjs`) must use the latest flat-config format — no legacy `.eslintrc`
+- Dead exports are zero-tolerance: `node scripts/check-dead-exports.mjs --fail-on-dead`
 
 ---
 
 ## 2 · Dead Code / Dead Config / Dead Files
 
-- [ ] Run `npx tsc --noEmit` — no "unused variable" or "unused import" warnings
+- [ ] Run `npm run check` — all repository gates pass with 0 failures
 - [ ] No orphaned test files (every `tests/unit/X.test.ts` has a matching `src/X.ts`)
 - [ ] No unreferenced CSS selectors in `src/styles/` — cross-check against `src/index.html`
 - [ ] No `src/assets/` files that aren't imported anywhere
@@ -71,27 +61,27 @@ Update ALL of these on every version bump. Search the old version string (e.g. `
 | --- | ------------------------------------------------ | -------------------------------------------------------------------------------- |
 | 1   | `package.json`                                   | `"version"` — canonical single source                                            |
 | 2   | `sw.js`                                          | Comment header version string (e.g. `/* FamilyDashBoard ServiceWorker — vX.Y.Z`) |
-| 3   | `CHANGELOG.md`                                   | New `## [X.Y.Z]` section with test count; move `[Unreleased]` block              |
-| 4   | `README.md`                                      | `Version-X.Y.Z` badge + `Vitest-NNNN_passing` badge (~lines 22-23)               |
-| 5   | `.github/copilot-instructions.md`                | Header version (line 1) + test count (line 6)                                    |
-| 6   | `.github/instructions/workspace.instructions.md` | Header version + test count (line 6)                                             |
-| 7   | `.github/AGENTS.md`                              | Header line `> Version: vX.Y.Z · Tests: NNNN / SS suites · Coverage: …`          |
-| 8   | `docs/ARCHITECTURE.md`                           | Title `(vX.Y.Z)` (line 1) + test count in stack table + constraint list          |
-| 9   | `.github/assets/banner.svg`                      | Version string + test count in footer text                                       |
-| 10  | `.github/assets/architecture.svg`                | Version ×3 (title, sw.js label, footer) + test count                             |
+| 3   | `CHANGELOG.md`                                   | New `## [X.Y.Z]` section with release evidence; move `[Unreleased]` block        |
+| 4   | `README.md`                                      | `Version-X.Y.Z` badge and release-facing version text                            |
+| 5   | `.github/copilot-instructions.md`                | Header version only                                                              |
+| 6   | `.github/instructions/workspace.instructions.md` | Header version only                                                              |
+| 7   | `.github/AGENTS.md`                              | Header line `> Version: vX.Y.Z ...`                                              |
+| 8   | `docs/ARCHITECTURE.md`                           | Title `(vX.Y.Z)` and release-facing version text                                 |
+| 9   | `.github/assets/banner.svg`                      | Version string in footer text                                                    |
+| 10  | `.github/assets/architecture.svg`                | Version ×3 (title, sw.js label, footer)                                          |
 | 11  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                                                   |
 | 12  | `.github/assets/data-sources.svg`                | Title line `— vX.Y.Z`                                                            |
-| 13  | `.github/assets/roadmap.svg`                     | Test count progression line                                                      |
+| 13  | `.github/assets/roadmap.svg`                     | Release-facing version text only                                                 |
 | 14  | `docs/ROADMAP.md`                                | Refresh-date header `Shipped baseline: vX.Y.Z`                                   |
-| 15  | `.github/skills/release/SKILL.md`                | `All N+ tests / M+ suites` verification line                                     |
+| 15  | `.github/skills/release/SKILL.md`                | Release-process guidance if the release flow changed                             |
 | 16  | `docs/security.md`                               | Title `Security Model — FamilyDashBoard vX.Y.Z` (line 1)                         |
 
-- [ ] All 16 files above have been updated with the new version and/or test count
+- [ ] All 16 files above have been updated with the new version and release-facing metadata
 - [ ] **Run `node scripts/check-version-consistency.mjs`** — must exit 0 (CI also enforces this)
 - [ ] `CHANGELOG.md` — unreleased items moved to new version section; old sprints collapsed to one line each
 - [ ] `docs/ARCHITECTURE.md` — reflects current card list (12 cards), module graph, CSS layer order
 
-**Deduplication rule:** If a fact appears in more than one file, keep it only in `copilot-instructions.md` (the single source of truth) and replace duplicates with a reference: `See copilot-instructions.md`.
+**Deduplication rule:** Keep volatile release evidence in `CHANGELOG.md`, generated check output, or config files such as `vitest.config.ts`. Active operator docs should reference those canonical sources instead of copying changing counts.
 
 ---
 
@@ -146,9 +136,9 @@ git tag vX.Y.Z
 git push origin main --tags
 ```
 
-- Tag format: `vMAJOR.MINOR.PATCH` — CI (`release.yml`) auto-creates GitHub Release on push
+- Tag format: `vMAJOR.MINOR.PATCH` — `release.yml` auto-creates GitHub Release on push
 - Attach `dist.zip`, `sw.js`, `dist/icon.svg` — handled by `release.yml` automatically
-- After tag push: verify GitHub Actions `ci.yml` passes on the tag run
+- After tag push: verify both `release.yml` and the Pages deploy triggered from successful `ci.yml` are green
 
 ---
 
