@@ -127,9 +127,28 @@ app.use("*", async (c, next) => {
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
-app.get("/health", earlyHintsMiddleware, (c) =>
-  c.json({ ok: true, status: "healthy", ts: Date.now() }),
-);
+app.get("/health", earlyHintsMiddleware, (c) => {
+  const env = c.env;
+  return c.json({
+    ok: true,
+    status: "healthy",
+    ts: Date.now(),
+    version: "14.34.0",
+    environment: env.ENVIRONMENT ?? "production",
+    bindings: {
+      cache_kv: true, // always required
+      analytics: !!env.ANALYTICS,
+      r2_assets: !!env.R2_ASSETS,
+      vectorize: !!env.VECTORIZE_INDEX,
+      ai: !!env.AI,
+      alerts_live_do: !!env.ALERTS_LIVE_DO,
+      stocks_do: !!env.STOCKS_DO,
+      vapid: env.VAPID_ENABLED === "true",
+      otel: env.OTEL_ENABLED === "true",
+      rate_limiter_do: !!env.RATE_LIMITER_DO,
+    },
+  });
+});
 
 // V13-EDGE-5: Canary health endpoint — reveals canary percentage and current tag status
 app.get("/api/canary", (c) => {
