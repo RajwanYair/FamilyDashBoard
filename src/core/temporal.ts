@@ -231,3 +231,13 @@ export function fromEpochMs(ms: number): Date {
 export function fromParts(year: number, month: number, day: number): Date {
   return new Date(year, month - 1, day);
 }
+
+/**
+ * Parse any date string and return its epoch-milliseconds.
+ * Returns `NaN` when the string is malformed.
+ *
+ * Temporal: `Temporal.Instant.from(str).epochMilliseconds`
+ */
+export function parseEpochMs(str: string): number {
+  return new Date(str).getTime();
+}

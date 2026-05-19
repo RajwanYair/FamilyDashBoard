@@ -30,6 +30,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { renderFreshnessBadge } from "../../core/freshness";
 import { deduplicateBySimHash } from "../../core/simhash";
+import { nowMs, parseEpochMs, startOfDayMs } from "../../core/temporal";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
 // X15: cached snapshot of top headline for the semantic-clipboard producer.
@@ -157,9 +158,8 @@ export function pubTimeLabel(pubDate: string): string {
     hour12: false,
     timeZone: "Asia/Jerusalem",
   });
-  const now = new Date();
-  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  const pubMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const todayMidnight = startOfDayMs();
+  const pubMidnight = startOfDayMs(d);
   if (pubMidnight === todayMidnight) return timeStr;
   if (pubMidnight === todayMidnight - MS_PER_DAY) return `אתמול ${timeStr}`;
   const dd = String(d.getDate()).padStart(2, "0");
@@ -175,9 +175,9 @@ export function pubTimeLabel(pubDate: string): string {
  */
 export function relativeAge(pubDate: string): string {
   if (!pubDate) return "";
-  const d = new Date(pubDate);
-  if (isNaN(d.getTime())) return "";
-  const ageMs = Date.now() - d.getTime();
+  const ms = parseEpochMs(pubDate);
+  if (isNaN(ms)) return "";
+  const ageMs = nowMs() - ms;
   if (ageMs < 0) return "";
   if (ageMs < 60_000) return "עכשיו";
   const totalSecs = Math.floor(ageMs / 1000);
@@ -200,9 +200,9 @@ export function relativeAge(pubDate: string): string {
  */
 export function ageFreshness(pubDate: string): "fresh2m" | "fresh1h" | "fresh1d" | "old" {
   if (!pubDate) return "old";
-  const d = new Date(pubDate);
-  if (isNaN(d.getTime())) return "old";
-  const ageMs = Date.now() - d.getTime();
+  const ms = parseEpochMs(pubDate);
+  if (isNaN(ms)) return "old";
+  const ageMs = nowMs() - ms;
   if (ageMs < 0) return "old";
   if (ageMs < 2 * 60_000) return "fresh2m";
   if (ageMs < 60 * 60_000) return "fresh1h";
@@ -234,9 +234,9 @@ export function isBreaking(title: string, pubDate: string): boolean {
   const lc = title.toLowerCase();
   if (BREAKING_KEYWORDS.some((kw) => lc.includes(kw))) return true;
   if (!pubDate) return false;
-  const d = new Date(pubDate);
-  if (isNaN(d.getTime())) return false;
-  const ageMs = Date.now() - d.getTime();
+  const ms = parseEpochMs(pubDate);
+  if (isNaN(ms)) return false;
+  const ageMs = nowMs() - ms;
   return ageMs >= 0 && ageMs < 30 * 60 * 1000;
 }
 
@@ -400,7 +400,7 @@ export async function starArticle(item: NewsItem): Promise<void> {
     title: item.title,
     link: item.link,
     source: item.source,
-    starredAt: new Date().toISOString(),
+    starredAt: new Date(nowMs()).toISOString(),
   };
   await idbSet<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE, id, entry);
 }
@@ -468,7 +468,7 @@ export async function openStarredDrawer(): Promise<void> {
       const dateSpan = document.createElement("span");
       dateSpan.className = "news-starred-date";
       try {
-        dateSpan.textContent = new Date(art.starredAt).toLocaleString("he-IL", {
+        dateSpan.textContent = new Date(parseEpochMs(art.starredAt)).toLocaleString("he-IL", {
           timeZone: "Asia/Jerusalem",
           day: "2-digit",
           month: "2-digit",
@@ -758,8 +758,8 @@ function getActiveFeeds(): NewsFeed[] {
  * Result is a number suitable for descending sort (higher = more relevant).
  */
 export function newsRankScore(item: { title: string; pubDate: string; category?: string | undefined }): number {
-  const now = Date.now();
-  const pubMs = item.pubDate ? new Date(item.pubDate).getTime() : 0;
+  const now = nowMs();
+  const pubMs = item.pubDate ? parseEpochMs(item.pubDate) : 0;
   const validPub = !isNaN(pubMs) && pubMs > 0 ? pubMs : 0;
 
   // Base score: timestamp in minutes from epoch (avoids large numbers)
@@ -870,7 +870,7 @@ export function renderNews(items: NewsItem[]): void {
 
       // Stale age tinting (F136) — primary items only
       if (!isClone && item.pubDate) {
-        const ageH = Math.floor((Date.now() - new Date(item.pubDate).getTime()) / MS_PER_HOUR);
+        const ageH = Math.floor((nowMs() - parseEpochMs(item.pubDate)) / MS_PER_HOUR);
         if (ageH >= 24) div.classList.add("stale-old");
         else if (ageH >= 12) div.classList.add("stale-day");
         else if (ageH >= 6) div.classList.add("stale-half");
@@ -941,7 +941,7 @@ export function renderNews(items: NewsItem[]): void {
             ptEl.className = "news-pub-time";
             ptEl.textContent = pubTime;
             ptEl.title = item.pubDate
-              ? new Date(item.pubDate).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })
+              ? new Date(parseEpochMs(item.pubDate)).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })
               : "";
             timeWrap.appendChild(ptEl);
           }
