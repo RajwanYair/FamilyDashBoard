@@ -29,6 +29,7 @@ import {
   isNearDuplicateByEmbedding,
 } from "../utils/simhash";
 import { vectorizeShadowRun } from "../utils/vectorize-client";
+import { writeVectorizeShadowMetrics } from "../utils/analytics";
 import type { Env } from "../types";
 
 export async function handleStocks(url: URL, env: Env): Promise<Response> {
@@ -290,7 +291,8 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
             if (vec) droppedEmbeddings.set(item.link, vec);
           }),
         );
-        await vectorizeShadowRun(env.VECTORIZE_INDEX!, keptEmbeddings, droppedEmbeddings);
+        const shadowMetrics = await vectorizeShadowRun(env.VECTORIZE_INDEX!, keptEmbeddings, droppedEmbeddings);
+        writeVectorizeShadowMetrics(env.ANALYTICS, shadowMetrics);
       } catch {
         // Shadow run errors must never affect the news feed response
       }
