@@ -14,6 +14,7 @@ import {
 } from "../../core/provider";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import { diagLog } from "../../core/diag";
+import { today } from "../../core/temporal";
 import type { ProviderStatus } from "../../core/provider";
 
 const PROVIDER_ID = "hebcal";
@@ -47,7 +48,7 @@ export function createHebcalAdapter(geonameid = 281184): ProviderAdapter<HebcalR
         return { ok: true, data: cached };
       }
 
-      const now = new Date();
+      const now = today();
       const url = `${API.HEBCAL}?v=1&cfg=json&maj=on&min=on&year=${now.getFullYear()}&month=x&geonameid=${geonameid}`;
 
       try {

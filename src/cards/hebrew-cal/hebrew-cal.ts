@@ -26,9 +26,11 @@ import type { SemanticPayload } from "../../types/semantic-clipboard";
 import {
   nowMs,
   today,
+  fromEpochMs,
   startOfDayMs,
   parsePlainDateMs,
   parsePlainDateTime,
+  toISODateString,
   diffDays,
   addDays,
 } from "../../core/temporal";
@@ -60,7 +62,7 @@ export function isShabbat(candlesMs?: number | null, havdalaMs?: number | null):
  * Looks at items with category "holiday" and a future date.
  * Returns null when there are no upcoming holidays.
  */
-export function nextHolidayName(items: HebcalItem[], now: Date = new Date()): string | null {
+export function nextHolidayName(items: HebcalItem[], now: Date = today()): string | null {
   const todayMs = startOfDayMs(now);
   const upcoming = items
     .filter((i) => i.category === "holiday" && parsePlainDateMs(i.date) >= todayMs)
@@ -72,7 +74,7 @@ export function nextHolidayName(items: HebcalItem[], now: Date = new Date()): st
  * Get the Hebrew date month name (e.g. "תשרי", "ניסן") for a given date
  * using the `Intl.DateTimeFormat` Hebrew calendar extension.
  */
-export function hebrewMonthName(date: Date = new Date()): string {
+export function hebrewMonthName(date: Date = today()): string {
   return new Intl.DateTimeFormat("he-u-ca-hebrew", { month: "long" }).format(date);
 }
 
@@ -100,7 +102,7 @@ export function getHaftarah(items: HebcalItem[]): string | null {
  * today or within the next 2 days (covers both days of a two-day Rosh Chodesh).
  * Returns the Hebrew name, or null when not Rosh Chodesh period.
  */
-export function getRoshChodesh(items: HebcalItem[], now: Date = new Date()): string | null {
+export function getRoshChodesh(items: HebcalItem[], now: Date = today()): string | null {
   const todayMs = startOfDayMs(now);
   const cutoffMs = todayMs + 2 * 86_400_000; // +2 days
   const rc = items.find((i) => {
@@ -117,7 +119,7 @@ export function getRoshChodesh(items: HebcalItem[], now: Date = new Date()): str
  * holiday data from the Hebcal API so it is available immediately on Rosh Hashana.
  * Uses `Intl.DateTimeFormat` with `ca-hebrew` extension (rule 28).
  */
-export function is29Elul(date: Date = new Date()): boolean {
+export function is29Elul(date: Date = today()): boolean {
   const fmt = new Intl.DateTimeFormat("he-u-ca-hebrew", {
     day: "numeric",
     month: "long",
@@ -135,7 +137,7 @@ export function is29Elul(date: Date = new Date()): boolean {
  * holidays. Returns the current Gregorian year + 1 as a simple approximation
  * (Rosh Hashana always falls in Sept–Oct, so next Hebrew year maps to next Gregorian year).
  */
-export function nextHebrewYearGregorianApprox(date: Date = new Date()): number {
+export function nextHebrewYearGregorianApprox(date: Date = today()): number {
   return date.getFullYear() + 1;
 }
 
@@ -146,7 +148,7 @@ export function nextHebrewYearGregorianApprox(date: Date = new Date()): number {
  * current-year entry. Safe to call multiple times — skips if already cached.
  */
 export async function prewarmNextYearHolidays(
-  dateFn: () => Date = () => new Date(),
+  dateFn: () => Date = () => today(),
 ): Promise<void> {
   const nextYear = nextHebrewYearGregorianApprox(dateFn());
   const key = `holidays-prewarm-${nextYear}`;
@@ -310,7 +312,7 @@ function getGeonameid(): string {
 }
 
 function fmtTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleTimeString("he-IL", {
+  return parsePlainDateTime(dateStr).toLocaleTimeString("he-IL", {
     hour: "2-digit",
     minute: "2-digit",
     timeZone: "Asia/Jerusalem",
@@ -330,12 +332,12 @@ let _hebCalScheduleId: number | null = null;
 // X15: semantic-clipboard producer for hebrew-cal.
 function buildHebrewCalPayload(): SemanticPayload | null {
   if (!_lastHolidayName) return null;
-  const today = new Date();
+  const nowDate = today();
   const hebrewDate = new Intl.DateTimeFormat("he-u-ca-hebrew", {
     day: "numeric",
     month: "long",
     year: "numeric",
-  }).format(today);
+  }).format(nowDate);
   const candlesNote = _candlesTime
     ? ` · הדלקת נרות ${pad2(_candlesTime.getHours())}:${pad2(_candlesTime.getMinutes())}`
     : "";
@@ -347,7 +349,7 @@ function buildHebrewCalPayload(): SemanticPayload | null {
     "@context": "https://schema.org",
     "@type": "Event",
     name: _lastHolidayName,
-    startDate: today.toISOString(),
+    startDate: nowDate.toISOString(),
   };
   if (_candlesTime) jsonLd["candleLighting"] = _candlesTime.toISOString();
   if (_havdalaTime) jsonLd["havdala"] = _havdalaTime.toISOString();
@@ -392,7 +394,7 @@ const SCHOOL_VACATION_TITLES = [
 // ── Candles + Havdalah ──
 async function loadCandlesHavdala(): Promise<void> {
   const geonameid = getGeonameid();
-  const key = `shabbat-${new Date().toDateString()}`;
+  const key = `shabbat-${today().toDateString()}`;
   const fresh = await cGetAsync<HebcalResponse>(key, INTERVALS.HEBREW_CAL);
   if (fresh !== null) {
     renderCandlesHavdala(fresh.items);
@@ -421,14 +423,14 @@ function renderCandlesHavdala(items: HebcalItem[]): void {
     els.havdala.textContent = havdala ? fmtTime(havdala.date) : "--";
   }
   // Capture times for Shabbat countdown
-  if (candle) _candlesTime = new Date(candle.date);
-  if (havdala) _havdalaTime = new Date(havdala.date);
+  if (candle) _candlesTime = parsePlainDateTime(candle.date);
+  if (havdala) _havdalaTime = parsePlainDateTime(havdala.date);
   startCountdown();
 }
 
 // ── Next Holiday ──
 async function loadHoliday(): Promise<void> {
-  const now = new Date();
+  const now = today();
   const key = `holidays-${now.getFullYear()}-${now.getMonth()}`;
   const fresh = await cGetAsync<HebcalResponse>(key, INTERVALS.HALACHA); // 12h TTL
   const items = fresh?.items;
@@ -450,12 +452,12 @@ async function loadHoliday(): Promise<void> {
 
 function renderHoliday(items: HebcalItem[], now: Date): void {
   const upcoming = items
-    .filter((i) => i.category === "holiday" && new Date(i.date) >= now)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .filter((i) => i.category === "holiday" && parsePlainDateTime(i.date) >= now)
+    .sort((a, b) => parsePlainDateTime(a.date).getTime() - parsePlainDateTime(b.date).getTime());
 
   const h = upcoming[0];
   if (!h || !els.holiday) return;
-  const holidayDate = new Date(h.date);
+  const holidayDate = parsePlainDateTime(h.date);
   const days = diffDays(now, holidayDate);
   const name = h.hebrew ?? h.title;
   _lastHolidayName = name;
@@ -508,7 +510,7 @@ function renderSchool(items: HebcalItem[], now: Date): void {
   if (!els.school || !els.schoolRow) return;
   const vacationItem = items.find((i) => {
     if (i.category !== "holiday") return false;
-    const d = new Date(i.date);
+    const d = parsePlainDateTime(i.date);
     const dd = diffDays(now, d);
     // Show if this holiday started 0-7 days ago (we're in the vacation window)
     if (dd < -7 || dd > 0) return false;
@@ -528,7 +530,7 @@ function renderSchool(items: HebcalItem[], now: Date): void {
 
 // ── Omer + Special items ──
 async function loadOmer(): Promise<void> {
-  const now = new Date();
+  const now = today();
   // Detect after-sunset (Hebrew calendar day advances)
   const ilHour = parseInt(
     now.toLocaleTimeString("en-US", {
@@ -595,7 +597,7 @@ function renderOmer(item: HebcalItem | null): void {
 // ── Parasha ──
 async function loadParasha(): Promise<void> {
   const geonameid = getGeonameid();
-  const key = `parasha-${new Date().toDateString()}`;
+  const key = `parasha-${today().toDateString()}`;
   const fresh = await cGetAsync<HebcalResponse>(key, INTERVALS.DAY);
   if (fresh?.items) {
     renderParasha(fresh.items);
@@ -641,7 +643,7 @@ function renderParasha(items: HebcalItem[]): void {
 
 // ── Daf Yomi ──
 async function loadDafYomi(): Promise<void> {
-  const now = new Date();
+  const now = today();
   const key = `daf-${now.toDateString()}`;
   const fresh = await cGetAsync<{ ref: string; heRef: string }>(key, INTERVALS.DAY);
   if (fresh !== null) {
@@ -730,8 +732,8 @@ function tickCountdown(): void {
   const el = els.countdown ?? document.getElementById("hc-countdown");
   const row = els.countdownRow ?? document.getElementById("hc-countdown-row");
   if (!el || !row) return;
-  const now = Date.now();
-  const dow = new Date().getDay(); // 5=Fri, 6=Sat
+  const now = nowMs();
+  const dow = today().getDay(); // 5=Fri, 6=Sat
   // Saturday: show havdala countdown
   if (dow === 6 && _havdalaTime && _havdalaTime.getTime() > now) {
     el.textContent = `הבדלה בעוד ${formatCountdown(_havdalaTime.getTime() - now)}`;
@@ -813,7 +815,7 @@ export function renderMoonPhase(): void {
   const moonEl = els.moonEl ?? document.getElementById("hc-moon");
   const moonRow = els.moonRow ?? document.getElementById("hc-moon-row");
   if (!moonEl) return;
-  const { emoji, label } = computeMoonPhase(new Date());
+  const { emoji, label } = computeMoonPhase(today());
   moonEl.textContent = `${emoji} ${label}`;
   if (moonRow) moonRow.style.display = "";
 }
@@ -839,14 +841,14 @@ export function renderZmanim(times: Record<string, string>): void {
   const grid = els.zmanimGrid ?? document.getElementById("zmanim-grid");
   const section = els.zmanimSection ?? document.getElementById("zmanim-section");
   if (!grid || !section) return;
-  const now = Date.now();
+  const now = nowMs();
   const frag = document.createDocumentFragment();
   let nextItem: HTMLElement | null = null;
   let nextTime = Infinity;
   for (const [key, label] of ZMANIM_DISPLAY) {
     const raw = times[key];
     if (!raw) continue;
-    const t = new Date(raw).getTime();
+    const t = parsePlainDateTime(raw).getTime();
     const item = document.createElement("div");
     item.className = "zman-item";
     const nameEl = document.createElement("div");
@@ -854,7 +856,7 @@ export function renderZmanim(times: Record<string, string>): void {
     nameEl.textContent = label;
     const timeEl = document.createElement("div");
     timeEl.className = "zman-time";
-    timeEl.textContent = new Date(raw).toLocaleTimeString("he-IL", {
+    timeEl.textContent = parsePlainDateTime(raw).toLocaleTimeString("he-IL", {
       hour: "2-digit",
       minute: "2-digit",
       timeZone: "Asia/Jerusalem",
@@ -887,8 +889,8 @@ export function renderZmanim(times: Record<string, string>): void {
 }
 
 async function loadZmanim(): Promise<void> {
-  const today = new Date().toISOString().slice(0, 10);
-  const key = `zmanim-${today}`;
+  const todayStr = toISODateString(today());
+  const key = `zmanim-${todayStr}`;
   const fresh = await cGetAsync<ZmanimResponse>(key, INTERVALS.HALACHA);
   if (fresh) {
     renderZmanim(fresh.times);
@@ -897,7 +899,7 @@ async function loadZmanim(): Promise<void> {
   const stale = await cGetStaleAsync<ZmanimResponse>(key);
   if (stale) renderZmanim(stale.times);
   const geonameid = getGeonameid();
-  const url = `${API.ZMANIM}?cfg=json&geonameid=${geonameid}&date=${today}&tzid=Asia%2FJerusalem`;
+  const url = `${API.ZMANIM}?cfg=json&geonameid=${geonameid}&date=${todayStr}&tzid=Asia%2FJerusalem`;
   try {
     const data = await fetchJSONWithWorker<ZmanimResponse>(url);
     if (data?.times) {
@@ -924,7 +926,7 @@ export function renderNextCalEvent(): void {
     eventRow.style.display = "none";
     return;
   }
-  const now = Date.now();
+  const now = nowMs();
   const events: Array<{ summary: string; start: Date }> = [];
   const blocks = icsText.split("BEGIN:VEVENT");
   for (const block of blocks.slice(1)) {
@@ -936,9 +938,9 @@ export function renderNextCalEvent(): void {
     if (!raw) continue;
     let d: Date;
     if (raw.length === 8) {
-      d = new Date(`${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`);
+      d = parsePlainDateTime(`${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`);
     } else {
-      d = new Date(
+      d = parsePlainDateTime(
         raw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/, "$1-$2-$3T$4:$5:$6$7"),
       );
     }
@@ -960,7 +962,7 @@ export function renderNextCalEvent(): void {
     eventRow.style.display = "none";
     return;
   }
-  const daysUntil = diffDays(new Date(now), next.start);
+  const daysUntil = diffDays(fromEpochMs(now), next.start);
   const when = daysUntil <= 0 ? "היום" : daysUntil === 1 ? "מחר" : `בעוד ${daysUntil} ימ׳`;
   eventEl.textContent = `${summary} (${when})`;
   eventRow.style.display = "";
@@ -979,7 +981,7 @@ export function renderPsalmOfDay(): void {
   const psalmEl = els.psalmEl ?? document.getElementById("hc-psalm");
   const psalmRow = els.psalmRow ?? document.getElementById("hc-psalm-row");
   if (!psalmEl || !psalmRow) return;
-  const num = getPsalmOfDay(new Date());
+  const num = getPsalmOfDay(today());
   psalmEl.textContent = `תהילים ${num}`;
   psalmRow.style.display = "";
 }
@@ -1052,7 +1054,7 @@ export interface YahrzeitEntry {
 }
 
 /** Return today's Hebrew {month, day} using Intl API. */
-export function todayHebrewMD(now: Date = new Date()): { month: number; day: number } {
+export function todayHebrewMD(now: Date = today()): { month: number; day: number } {
   const fmt = new Intl.DateTimeFormat("he-u-ca-hebrew", { month: "numeric", day: "numeric" });
   const parts = fmt.formatToParts(now);
   const month = parseInt(parts.find((p) => p.type === "month")?.value ?? "1", 10);
@@ -1073,7 +1075,7 @@ export async function addYahrzeit(
     name: name.trim(),
     hebrewMonth,
     hebrewDay,
-    addedAt: new Date().toISOString(),
+    addedAt: today().toISOString(),
   };
   const updated = [entry, ...existing.filter((e) => e.id !== id)].slice(0, YZ_MAX);
   await idbSet<YahrzeitEntry[]>(IDB_HC_DB, IDB_YZ_STORE, "__list__", updated);
@@ -1100,17 +1102,17 @@ export async function getYahrzeits(): Promise<YahrzeitEntry[]> {
  */
 export async function getUpcomingYahrzeits(
   days = 7,
-  now: Date = new Date(),
+  now: Date = today(),
 ): Promise<YahrzeitEntry[]> {
   const all = await getYahrzeits();
-  const today = todayHebrewMD(now);
+  const todayHeb = todayHebrewMD(now);
   return all.filter((yz) => {
-    const monthDiff = yz.hebrewMonth - today.month;
+    const monthDiff = yz.hebrewMonth - todayHeb.month;
     const dayDiff =
       monthDiff === 0
-        ? yz.hebrewDay - today.day
+        ? yz.hebrewDay - todayHeb.day
         : monthDiff === 1
-          ? 30 - today.day + yz.hebrewDay
+          ? 30 - todayHeb.day + yz.hebrewDay
           : -1;
     return dayDiff >= 0 && dayDiff < days;
   });
