@@ -56,6 +56,12 @@ describe("Metric tile ", () => {
   it("defines .metric-tile__label", () => {
     expect(css).toContain(".metric-tile__label");
   });
+  it("defines .metric-tile--primary modifier", () => {
+    expect(css).toContain(".metric-tile--primary");
+  });
+  it("defines .metric-tile--secondary modifier", () => {
+    expect(css).toContain(".metric-tile--secondary");
+  });
 });
 
 // ── Animation CSS tests ────────────────────────────────────

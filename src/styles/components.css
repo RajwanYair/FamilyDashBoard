@@ -1533,6 +1533,22 @@ select.cfg-input {
   letter-spacing: 0.05em;
 }
 
+/* P1 Info Hierarchy — primary metric is 3× larger than secondary */
+.metric-tile--primary .metric-tile__value {
+  font-size: 2.8em;
+  line-height: 1.1;
+}
+.metric-tile--primary .metric-tile__label {
+  font-size: 0.85em;
+}
+.metric-tile--secondary .metric-tile__value {
+  font-size: 0.95em;
+  font-weight: 500;
+}
+.metric-tile--secondary .metric-tile__label {
+  font-size: 0.65em;
+}
+
 /* ═══════════════════════════════════════════════════════
    Stream F (v7.21): Card Anatomy — formal body/footer zones
    ═══════════════════════════════════════════════════════
