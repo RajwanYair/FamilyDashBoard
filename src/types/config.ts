@@ -233,6 +233,8 @@ export interface DashboardConfig {
   tasksShowCategories: boolean;
   /** News card: show source domain badge on each news item. Default: true. */
   newsShowSource: boolean;
+  /** News card: dedup sensitivity level ("low" | "mid" | "hi"). Default: "mid". */
+  newsDedup: "low" | "mid" | "hi";
   /** System info card: show network RTT tile. Default: true. */
   sysInfoShowRtt: boolean;
 
@@ -364,6 +366,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   synthesisEnabled: false,
   tasksShowCategories: true,
   newsShowSource: true,
+  newsDedup: "mid",
   sysInfoShowRtt: true,
 
   // Config v4 defaults

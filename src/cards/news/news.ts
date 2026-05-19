@@ -29,6 +29,7 @@ import type { CardConfigField, CardDefinition } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { renderFreshnessBadge } from "../../core/freshness";
+import { deduplicateBySimHash } from "../../core/simhash";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
 // X15: cached snapshot of top headline for the semantic-clipboard producer.
@@ -753,14 +754,11 @@ async function fetchAllNews(): Promise<NewsItem[]> {
     if (r.status === "fulfilled") allItems.push(...r.value);
   }
 
-  // Deduplicate by first 40 chars of title
-  const seen = new Set<string>();
-  const unique = allItems.filter((item) => {
-    const key = item.title.trim().substring(0, 40);
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  // Deduplicate by SimHash fingerprinting (P3 Feed Intelligence)
+  const cfg = loadConfig();
+  const dedupLevel = cfg.newsDedup ?? "mid";
+  const threshold = dedupLevel === "hi" ? 8 : dedupLevel === "low" ? 2 : 4;
+  const unique = deduplicateBySimHash(allItems, (item) => item.title, threshold);
 
   unique.sort((a, b) => {
     const da = a.pubDate ? new Date(a.pubDate).getTime() : 0;
