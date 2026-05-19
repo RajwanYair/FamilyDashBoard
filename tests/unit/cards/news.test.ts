@@ -49,6 +49,7 @@ import {
   recordShadowVectorizeComparison,
   getShadowVectorizeLog,
   newsConfigSchema,
+  newsRankScore,
 } from "@/cards/news/news";
 import { _idbClearFallback, idbGetAll } from "@/core/idb-store";
 import { getSemanticPayload } from "@/core/semantic-clipboard";
@@ -2756,5 +2757,46 @@ describe("News — buildNewsPayload ", () => {
     } else {
       expect(payload).toBeNull();
     }
+  });
+});
+
+// ── newsRankScore ──────────────────────────────────────────────────────────────
+describe("newsRankScore", () => {
+  it("newer items score higher than older items", () => {
+    const newer = { title: "headline", pubDate: new Date(Date.now() - 60_000).toISOString() };
+    const older = { title: "headline", pubDate: new Date(Date.now() - 3_600_000).toISOString() };
+    expect(newsRankScore(newer)).toBeGreaterThan(newsRankScore(older));
+  });
+
+  it("breaking news gets a bonus over non-breaking at same time", () => {
+    const pubDate = new Date(Date.now() - 3_600_000).toISOString(); // 1h ago (past 30-min auto-break)
+    const breaking = { title: "מבזק: headline", pubDate };
+    const regular = { title: "headline", pubDate };
+    expect(newsRankScore(breaking)).toBeGreaterThan(newsRankScore(regular));
+  });
+
+  it("items with category score higher than without (same time)", () => {
+    const pubDate = new Date(Date.now() - 300_000).toISOString();
+    const withCat = { title: "headline", pubDate, category: "tech" };
+    const noCat = { title: "headline", pubDate };
+    expect(newsRankScore(withCat)).toBeGreaterThan(newsRankScore(noCat));
+  });
+
+  it("applies decay penalty for items older than 6 hours", () => {
+    const sixHoursAgo = new Date(Date.now() - 6 * 3_600_000).toISOString();
+    const sevenHoursAgo = new Date(Date.now() - 7 * 3_600_000).toISOString();
+    const score6h = newsRankScore({ title: "a", pubDate: sixHoursAgo });
+    const score7h = newsRankScore({ title: "a", pubDate: sevenHoursAgo });
+    // 7h item loses extra 5 points (1 hour past threshold × 5)
+    const diff = score6h - score7h;
+    expect(diff).toBeGreaterThan(60); // at least 60 min natural gap + penalty
+  });
+
+  it("returns 0 for items with no pubDate", () => {
+    expect(newsRankScore({ title: "no date", pubDate: "" })).toBe(0);
+  });
+
+  it("returns 0 for items with invalid pubDate", () => {
+    expect(newsRankScore({ title: "bad", pubDate: "not-a-date" })).toBe(0);
   });
 });

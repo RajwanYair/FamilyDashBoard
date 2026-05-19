@@ -744,6 +744,48 @@ function getActiveFeeds(): NewsFeed[] {
   return NEWS_FEEDS.filter((f) => !disabled.has(f.src));
 }
 
+// ── Recency-weighted ranking (P3 Feed Intelligence) ──
+
+/**
+ * Compute a composite ranking score for a news item.
+ *
+ * Score components:
+ * - Base: pubDate timestamp (newer = higher)
+ * - Bonus: +30 min equivalent for breaking news
+ * - Bonus: +15 min equivalent for items with a detected category
+ * - Decay: items older than 6 hours get progressively penalised
+ *
+ * Result is a number suitable for descending sort (higher = more relevant).
+ */
+export function newsRankScore(item: { title: string; pubDate: string; category?: string | undefined }): number {
+  const now = Date.now();
+  const pubMs = item.pubDate ? new Date(item.pubDate).getTime() : 0;
+  const validPub = !isNaN(pubMs) && pubMs > 0 ? pubMs : 0;
+
+  // Base score: timestamp in minutes from epoch (avoids large numbers)
+  let score = validPub / 60_000;
+
+  // Breaking news bonus (+30 min equivalent)
+  if (isBreaking(item.title, item.pubDate)) {
+    score += 30;
+  }
+
+  // Category-detected bonus (+15 min equivalent)
+  if (item.category) {
+    score += 15;
+  }
+
+  // Decay penalty for old items (>6 hours): lose 5 min per hour past 6h
+  if (validPub > 0) {
+    const ageHours = (now - validPub) / (60 * 60_000);
+    if (ageHours > 6) {
+      score -= (ageHours - 6) * 5;
+    }
+  }
+
+  return score;
+}
+
 // ── Fetch all feeds concurrently ──
 async function fetchAllNews(): Promise<NewsItem[]> {
   const feeds = getActiveFeeds();
@@ -760,11 +802,8 @@ async function fetchAllNews(): Promise<NewsItem[]> {
   const threshold = dedupLevel === "hi" ? 8 : dedupLevel === "low" ? 2 : 4;
   const unique = deduplicateBySimHash(allItems, (item) => item.title, threshold);
 
-  unique.sort((a, b) => {
-    const da = a.pubDate ? new Date(a.pubDate).getTime() : 0;
-    const db = b.pubDate ? new Date(b.pubDate).getTime() : 0;
-    return db - da;
-  });
+  // Recency-weighted ranking (P3 Feed Intelligence)
+  unique.sort((a, b) => newsRankScore(b) - newsRankScore(a));
 
   return unique.slice(0, 50);
 }
