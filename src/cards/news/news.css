@@ -228,7 +228,7 @@
   font-size: 0.65em;
   padding: 1px 5px;
   border-radius: 4px;
-  background: rgba(96, 165, 250, 0.12);
+  background: rgb(96 165 250 / 0.12);
   color: var(--accent);
   cursor: pointer;
   border: 1px solid var(--accent-border);
@@ -237,12 +237,12 @@
 }
 .rss-translate-btn:hover {
   opacity: 1;
-  background: rgba(96, 165, 250, 0.22);
+  background: rgb(96 165 250 / 0.22);
 }
 
 /* F129: Search keyword highlight */
 .rss-highlight {
-  background: rgba(251, 191, 36, 0.3);
+  background: rgb(251 191 36 / 0.3);
   border-radius: 2px;
   padding: 0 1px;
   color: var(--text-primary);
@@ -272,23 +272,23 @@
   display: inline-block;
 }
 .news-cat.cat-security {
-  background: rgba(248, 113, 113, 0.18);
+  background: rgb(248 113 113 / 0.18);
   color: #f87171;
 }
 .news-cat.cat-politics {
-  background: rgba(168, 85, 247, 0.18);
+  background: rgb(168 85 247 / 0.18);
   color: #a855f7;
 }
 .news-cat.cat-economy {
-  background: rgba(52, 211, 153, 0.18);
+  background: rgb(52 211 153 / 0.18);
   color: #34d399;
 }
 .news-cat.cat-sport {
-  background: rgba(59, 130, 246, 0.18);
+  background: rgb(59 130 246 / 0.18);
   color: #60a5fa;
 }
 .news-cat.cat-tech {
-  background: rgba(192, 132, 252, 0.18);
+  background: rgb(192 132 252 / 0.18);
   color: #c084fc;
 }
 
@@ -327,7 +327,7 @@
   color: #60a5fa;
 }
 .rss-item.bookmarked {
-  background: rgba(96, 165, 250, 0.07) !important;
+  background: rgb(96 165 250 / 0.07) !important;
 }
 
 /* F156: Bookmarks-only news filter badge (now a button for D11 popover trigger) */
@@ -335,7 +335,7 @@
   font-size: 0.55em;
   padding: 1px 5px;
   border-radius: 4px;
-  background: rgba(96, 165, 250, 0.15);
+  background: rgb(96 165 250 / 0.15);
   color: #60a5fa;
   font-weight: 700;
   margin-right: 4px;
@@ -356,9 +356,9 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
 .news-bkm-popover {
   padding: 6px;
   border-radius: 8px;
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--border, rgb(255 255 255 / 0.1));
   background: var(--bg-card, #1e1e2e);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.4);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -380,7 +380,7 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   white-space: nowrap;
 }
 .news-bkm-popover-btn:hover {
-  background: var(--bg-card-hover, rgba(255, 255, 255, 0.08));
+  background: var(--bg-card-hover, rgb(255 255 255 / 0.08));
 }
 .news-bkm-popover-btn--danger:hover {
   background: color-mix(in srgb, var(--danger, #f87171) 15%, transparent);

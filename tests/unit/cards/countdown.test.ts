@@ -156,15 +156,15 @@ describe("tick — event has passed", () => {
   it("hides the primary section when a one-time event has passed", () => {
     tick();
     const section = document.getElementById("cd-main-section");
-    expect(section?.style.display).toBe("none");
+    expect(section?.classList.contains("is-hidden")).toBe(true);
   });
 
   it("re-shows primary section when reconfigured to a future event after being hidden", () => {
     tick(); // past event — hides section
-    expect(document.getElementById("cd-main-section")?.style.display).toBe("none");
+    expect(document.getElementById("cd-main-section")?.classList.contains("is-hidden")).toBe(true);
     vi.mocked(loadConfig).mockReturnValue(FUTURE_CFG);
     tick(); // future event — must make section visible again
-    expect(document.getElementById("cd-main-section")?.style.display).toBe("");
+    expect(document.getElementById("cd-main-section")?.classList.contains("is-hidden")).toBe(false);
   });
 
   it("does not update tile content when event is past and non-recurring", () => {
@@ -182,7 +182,7 @@ describe("tick — event has passed", () => {
     tick();
     const section = document.getElementById("cd-main-section");
     // Section should NOT be hidden (recurring advances the date to future)
-    expect(section?.style.display).not.toBe("none");
+    expect(section?.classList.contains("is-hidden")).toBe(false);
   });
 });
 
@@ -381,7 +381,7 @@ describe("Countdown — tick shows daysSince when event has passed", () => {
     vi.setSystemTime(target + 3 * 86_400_000 + 3_600_000);
     initCountdownCard();
     const section = document.getElementById("cd-main-section");
-    expect(section?.style.display).toBe("none");
+    expect(section?.classList.contains("is-hidden")).toBe(true);
   });
 });
 
@@ -417,7 +417,7 @@ describe("Countdown — tick() clears interval on second tick when event is past
     // destroyCountdownCard should not throw even when interval was already cleared
     expect(() => destroyCountdownCard()).not.toThrow();
     const section = document.getElementById("cd-main-section");
-    expect(section?.style.display).toBe("none");
+    expect(section?.classList.contains("is-hidden")).toBe(true);
   });
 });
 
@@ -484,7 +484,7 @@ describe("Countdown — tick2 (F8 v7.2)", () => {
       countdownCard2DoneMsg: "🎉",
     } as DashboardConfig);
     tick2();
-    expect(document.getElementById("cd2-section")?.style.display).toBe("none");
+    expect(document.getElementById("cd2-section")?.classList.contains("is-hidden")).toBe(true);
   });
 
   it("shows #cd2-section and renders title when date is set", () => {
@@ -496,7 +496,7 @@ describe("Countdown — tick2 (F8 v7.2)", () => {
       countdownCard2DoneMsg: "🎉",
     } as DashboardConfig);
     tick2();
-    expect(document.getElementById("cd2-section")?.style.display).not.toBe("none");
+    expect(document.getElementById("cd2-section")?.classList.contains("is-hidden")).toBe(false);
     expect(document.getElementById("cd2-title")?.textContent).toBe("אירוע מיוחד");
   });
 
@@ -509,7 +509,7 @@ describe("Countdown — tick2 (F8 v7.2)", () => {
       countdownCard2DoneMsg: "🎉 מזל טוב!",
     } as DashboardConfig);
     tick2();
-    expect(document.getElementById("cd2-section")?.style.display).toBe("none");
+    expect(document.getElementById("cd2-section")?.classList.contains("is-hidden")).toBe(true);
   });
 
   it("does not throw when #cd2-section is absent", () => {
@@ -662,7 +662,7 @@ describe("Countdown — tick3 ", () => {
       countdownCard3DoneMsg: "🎉",
     } as DashboardConfig);
     tick3();
-    expect(document.getElementById("cd3-section")?.style.display).toBe("none");
+    expect(document.getElementById("cd3-section")?.classList.contains("is-hidden")).toBe(true);
   });
 
   it("shows #cd3-section and renders title when date is set", () => {
@@ -674,7 +674,7 @@ describe("Countdown — tick3 ", () => {
       countdownCard3DoneMsg: "🎉",
     } as DashboardConfig);
     tick3();
-    expect(document.getElementById("cd3-section")?.style.display).not.toBe("none");
+    expect(document.getElementById("cd3-section")?.classList.contains("is-hidden")).toBe(false);
     expect(document.getElementById("cd3-title")?.textContent).toBe("אירוע שלישי");
   });
 
@@ -687,7 +687,7 @@ describe("Countdown — tick3 ", () => {
       countdownCard3DoneMsg: "🎉 גמרנו!",
     } as DashboardConfig);
     tick3();
-    expect(document.getElementById("cd3-section")?.style.display).toBe("none");
+    expect(document.getElementById("cd3-section")?.classList.contains("is-hidden")).toBe(true);
   });
 
   it("falls back to default title 'אירוע 3' when title is empty", () => {
@@ -724,7 +724,7 @@ describe("Countdown — tick2 progress bar ", () => {
       <div id="cd2-days"></div><div id="cd2-hours"></div>
       <div id="cd2-mins"></div><div id="cd2-secs"></div>
       <div id="cd2-msg"></div>
-      <div id="cd2-progress-wrap" style="display:none"><div id="cd2-progress-bar"></div></div>
+      <div id="cd2-progress-wrap" class="is-hidden"><div id="cd2-progress-bar"></div></div>
     `;
   }
 
@@ -746,7 +746,9 @@ describe("Countdown — tick2 progress bar ", () => {
       countdownCard2StartDate: "2025-01-01",
     } as DashboardConfig);
     tick2();
-    expect(document.getElementById("cd2-progress-wrap")?.style.display).toBe("");
+    expect(document.getElementById("cd2-progress-wrap")?.classList.contains("is-hidden")).toBe(
+      false,
+    );
     const bar = document.getElementById("cd2-progress-bar") as HTMLElement;
     expect(bar.style.width).toMatch(/^\d+%$/);
   });
@@ -763,7 +765,9 @@ describe("Countdown — tick2 progress bar ", () => {
       countdownCard2StartDate: "",
     } as DashboardConfig);
     tick2();
-    expect(document.getElementById("cd2-progress-wrap")?.style.display).toBe("none");
+    expect(document.getElementById("cd2-progress-wrap")?.classList.contains("is-hidden")).toBe(
+      true,
+    );
   });
 
   it("shows 50% progress when midpoint is reached", () => {
@@ -796,7 +800,9 @@ describe("Countdown — tick2 progress bar ", () => {
       countdownCard2StartDate: "2027-01-01", // startMs > targetMs → computeProgress returns null
     } as DashboardConfig);
     tick2();
-    expect(document.getElementById("cd2-progress-wrap")?.style.display).toBe("none");
+    expect(document.getElementById("cd2-progress-wrap")?.classList.contains("is-hidden")).toBe(
+      true,
+    );
   });
 });
 
@@ -808,7 +814,7 @@ describe("Countdown — tick3 progress bar ", () => {
       <div id="cd3-days"></div><div id="cd3-hours"></div>
       <div id="cd3-mins"></div><div id="cd3-secs"></div>
       <div id="cd3-msg"></div>
-      <div id="cd3-progress-wrap" style="display:none"><div id="cd3-progress-bar"></div></div>
+      <div id="cd3-progress-wrap" class="is-hidden"><div id="cd3-progress-bar"></div></div>
     `;
   }
 
@@ -830,7 +836,9 @@ describe("Countdown — tick3 progress bar ", () => {
       countdownCard3StartDate: "2025-01-01",
     } as DashboardConfig);
     tick3();
-    expect(document.getElementById("cd3-progress-wrap")?.style.display).toBe("");
+    expect(document.getElementById("cd3-progress-wrap")?.classList.contains("is-hidden")).toBe(
+      false,
+    );
     const bar = document.getElementById("cd3-progress-bar") as HTMLElement;
     expect(bar.style.width).toMatch(/^\d+%$/);
   });
@@ -847,7 +855,9 @@ describe("Countdown — tick3 progress bar ", () => {
       countdownCard3StartDate: "",
     } as DashboardConfig);
     tick3();
-    expect(document.getElementById("cd3-progress-wrap")?.style.display).toBe("none");
+    expect(document.getElementById("cd3-progress-wrap")?.classList.contains("is-hidden")).toBe(
+      true,
+    );
   });
 
   it("does not throw when progress DOM absent with start date set", () => {
@@ -913,7 +923,7 @@ describe("Countdown — tick() primary progress bar", () => {
       <div id="cd-mins"></div>
       <div id="cd-secs"></div>
       <div id="cd-msg"></div>
-      <div id="cd-progress-wrap" style="display:none"><div id="cd-progress-bar"></div></div>
+      <div id="cd-progress-wrap" class="is-hidden"><div id="cd-progress-bar"></div></div>
     `;
   }
 
@@ -936,7 +946,9 @@ describe("Countdown — tick() primary progress bar", () => {
       countdownCardStartDate: "2025-01-01",
     } as DashboardConfig);
     tick();
-    expect(document.getElementById("cd-progress-wrap")?.style.display).toBe("");
+    expect(document.getElementById("cd-progress-wrap")?.classList.contains("is-hidden")).toBe(
+      false,
+    );
     const bar = document.getElementById("cd-progress-bar") as HTMLElement;
     expect(bar.style.width).toMatch(/^\d+%$/);
   });
@@ -953,7 +965,7 @@ describe("Countdown — tick() primary progress bar", () => {
       countdownCardStartDate: "",
     } as DashboardConfig);
     tick();
-    expect(document.getElementById("cd-progress-wrap")?.style.display).toBe("none");
+    expect(document.getElementById("cd-progress-wrap")?.classList.contains("is-hidden")).toBe(true);
   });
 
   it("hides progress wrap when computeProgress returns null (startMs >= targetMs, line 206-208)", () => {
@@ -969,7 +981,7 @@ describe("Countdown — tick() primary progress bar", () => {
       countdownCardStartDate: "2025-12-01", // start > target → computeProgress returns null
     } as DashboardConfig);
     tick();
-    expect(document.getElementById("cd-progress-wrap")?.style.display).toBe("none");
+    expect(document.getElementById("cd-progress-wrap")?.classList.contains("is-hidden")).toBe(true);
   });
 
   it("hides progress wrap when startDate is after target (line 208 — now < target, startMs >= targetMs)", () => {
@@ -985,7 +997,7 @@ describe("Countdown — tick() primary progress bar", () => {
       countdownCardStartDate: "2027-01-01", // startMs > targetMs → computeProgress returns null
     } as DashboardConfig);
     tick();
-    expect(document.getElementById("cd-progress-wrap")?.style.display).toBe("none");
+    expect(document.getElementById("cd-progress-wrap")?.classList.contains("is-hidden")).toBe(true);
   });
 });
 
@@ -1200,7 +1212,7 @@ describe("Countdown — setConfetti ( CD4)", () => {
     initCountdownCard();
     destroyCountdownCard();
     const section = document.getElementById("cd-main-section");
-    expect(section?.style.display).toBe("none");
+    expect(section?.classList.contains("is-hidden")).toBe(true);
   });
 
   it("tick() does NOT add cd-confetti when event passed days ago (daysSince > 0)", () => {
@@ -1308,9 +1320,9 @@ describe("Countdown — coverage: tickSecondary + initCountdownCard", () => {
     } as DashboardConfig);
     tick2();
     const pw = document.getElementById("cd2-progress-wrap");
-    expect(section.style.display).not.toBe("none");
+    expect(section.classList.contains("is-hidden")).toBe(false);
     // Progress wrap should be displayed
-    expect(pw?.style.display).not.toBe("none");
+    expect(pw?.classList.contains("is-hidden")).toBe(false);
   });
 
   it("tick2() hides section when no date configured", () => {
@@ -1320,7 +1332,7 @@ describe("Countdown — coverage: tickSecondary + initCountdownCard", () => {
       countdownCard2Date: undefined,
     } as DashboardConfig);
     tick2();
-    expect(section.style.display).toBe("none");
+    expect(section.classList.contains("is-hidden")).toBe(true);
   });
 
   it("tick2() hides cd2-section when past-event (daysSince >= 0, non-recurring)", () => {
@@ -1336,7 +1348,7 @@ describe("Countdown — coverage: tickSecondary + initCountdownCard", () => {
       countdownCard2DoneMsg: "נגמר",
     } as DashboardConfig);
     tick2();
-    expect(section.style.display).toBe("none");
+    expect(section.classList.contains("is-hidden")).toBe(true);
   });
 
   it("tick3() renders future event", () => {
@@ -1353,7 +1365,7 @@ describe("Countdown — coverage: tickSecondary + initCountdownCard", () => {
       countdownCard3DoneMsg: "🎉",
     } as DashboardConfig);
     tick3();
-    expect(section.style.display).not.toBe("none");
+    expect(section.classList.contains("is-hidden")).toBe(false);
   });
 
   it("initCountdownCard auto-populates slot 2 from Yom Tov when countdownCard2Date unset", () => {
@@ -1772,9 +1784,9 @@ describe("Countdown — tick() returns early for recurring event that just passe
       countdownCardTime: "00:00",
       countdownCardRecurrence: "annual",
     } as unknown as DashboardConfig);
-    // tick() should not throw and should not hide the section (no mainSection.style.display = "none")
+    // tick() should not throw and should not hide the section (no classList.add("is-hidden"))
     expect(() => tick()).not.toThrow();
     const section = document.getElementById("cd-main-section");
-    expect(section?.style.display).not.toBe("none");
+    expect(section?.classList.contains("is-hidden")).toBe(false);
   });
 });

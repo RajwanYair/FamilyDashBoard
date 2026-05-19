@@ -118,12 +118,12 @@
   position: fixed;
   inset: 0;
   z-index: 899;
-  background: rgba(0, 0, 0, 0);
+  background: rgb(0 0 0 / 0);
   pointer-events: none;
   transition: background 0.4s ease;
 }
 .maximize-backdrop.active {
-  background: rgba(0, 0, 0, 0.55);
+  background: rgb(0 0 0 / 0.55);
   pointer-events: auto;
 }
 

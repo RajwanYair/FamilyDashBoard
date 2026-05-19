@@ -80,12 +80,13 @@ COOP requires an HTTP response header. GitHub Pages does not support custom head
 
 - If the project migrates to Cloudflare Pages, add `COOP: same-origin` and `COEP: require-corp`
   via a `_headers` file (Cloudflare Pages format)
-- The `_headers` file at the repo root documents the intended values for any CDN/proxy deployment
+- The `_headers` file at `src/public/_headers` documents the intended values for any CDN/proxy deployment
 - For now, `COEP` and `COOP` are noted as TODO for the Pages migration consideration in v12
 
-### `_headers` file at repo root
+### `_headers` file (`src/public/_headers`)
 
-Documents intended headers (active on Cloudflare Pages, Netlify, Vercel; ignored by GitHub Pages):
+Documents intended headers (active on Cloudflare Pages, Netlify, Vercel; ignored by GitHub Pages).
+Vite copies `src/public/` → `dist/` verbatim, placing `_headers` where deployment platforms expect it.
 
 ```text
 /*

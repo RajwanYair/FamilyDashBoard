@@ -83,9 +83,9 @@ All Cloudflare Worker responses include:
 ## 4. 🔐 COOP / COEP Limitation
 
 `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy` require **HTTP response headers**.
-GitHub Pages does not support custom response headers. The `_headers` file at the repo root documents
+GitHub Pages does not support custom response headers. The `_headers` file at `src/public/_headers` documents
 the intended values and will become effective if the deployment target changes to Cloudflare Pages,
-Netlify, or Vercel.
+Netlify, or Vercel. Vite copies it to `dist/_headers` during build.
 
 ---
 

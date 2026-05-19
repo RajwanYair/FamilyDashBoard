@@ -72,7 +72,7 @@
   font-size: 0.68em;
   padding: 1px 6px;
   border-radius: 8px;
-  background: rgba(96, 165, 250, 0.14);
+  background: rgb(96 165 250 / 0.14);
   color: var(--accent);
   margin-inline-end: 8px;
   white-space: nowrap;
@@ -81,23 +81,23 @@
 
 /* F106: Halacha category color tags */
 .hc-tag-shabbat {
-  background: rgba(251, 191, 36, 0.16) !important;
+  background: rgb(251 191 36 / 0.16) !important;
   color: var(--warning) !important;
 }
 .hc-tag-tefila {
-  background: rgba(96, 165, 250, 0.16) !important;
+  background: rgb(96 165 250 / 0.16) !important;
   color: var(--accent) !important;
 }
 .hc-tag-kashrut {
-  background: rgba(52, 211, 153, 0.16) !important;
+  background: rgb(52 211 153 / 0.16) !important;
   color: var(--positive) !important;
 }
 .hc-tag-family {
-  background: rgba(244, 114, 182, 0.16) !important;
+  background: rgb(244 114 182 / 0.16) !important;
   color: #f472b6 !important;
 }
 .hc-tag-moadim {
-  background: rgba(167, 139, 250, 0.16) !important;
+  background: rgb(167 139 250 / 0.16) !important;
   color: #a78bfa !important;
 }
 
@@ -119,7 +119,7 @@
   position: fixed;
   inset: 0;
   z-index: 9500;
-  background: rgba(6, 11, 20, 0.92);
+  background: rgb(6 11 20 / 0.92);
   display: none;
   align-items: center;
   justify-content: center;

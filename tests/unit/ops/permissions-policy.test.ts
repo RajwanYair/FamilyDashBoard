@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dir, "..", "..", "..");
-const HEADERS = readFileSync(resolve(ROOT, "_headers"), "utf-8");
+const HEADERS = readFileSync(resolve(ROOT, "src/public/_headers"), "utf-8");
 
 /** Extract the Permissions-Policy value from the _headers file. */
 function getPermissionsPolicy(): string {

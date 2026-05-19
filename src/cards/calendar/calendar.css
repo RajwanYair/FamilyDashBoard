@@ -74,7 +74,7 @@
 }
 .cal-day-tile.is-today {
   border-color: var(--accent);
-  background: rgba(96, 165, 250, 0.08);
+  background: rgb(96 165 250 / 0.08);
 }
 .cal-day-tile.is-empty {
   opacity: 0.45;
@@ -190,7 +190,7 @@
 
 /* event-soon: upcoming within 60 min */
 .cal-event.event-soon {
-  background: rgba(251, 191, 36, 0.12);
+  background: rgb(251 191 36 / 0.12);
   border-inline-start-color: #fbbf24 !important;
 }
 .cal-event.event-soon .cal-event-time {

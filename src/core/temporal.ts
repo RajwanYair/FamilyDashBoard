@@ -209,3 +209,25 @@ export function isYesterday(d: Date): boolean {
   yst.setDate(yst.getDate() - 1);
   return isSameDay(d, yst);
 }
+
+// ── Epoch-ms conversion ─────────────────────────────────────────────────────
+
+/**
+ * Create a Date from epoch-milliseconds.
+ * Syntactic sugar to eliminate `new Date(ms)` call-sites.
+ *
+ * Temporal: `Temporal.Instant.fromEpochMilliseconds(ms).toZonedDateTimeISO(timeZoneId)`
+ */
+export function fromEpochMs(ms: number): Date {
+  return new Date(ms);
+}
+
+/**
+ * Construct a Date from local year/month/day components.
+ * `month` is **1-indexed** (January = 1) — matching ISO 8601 and Temporal.
+ *
+ * Temporal: `Temporal.PlainDate.from({ year, month, day }).toZonedDateTime(timeZoneId)`
+ */
+export function fromParts(year: number, month: number, day: number): Date {
+  return new Date(year, month - 1, day);
+}

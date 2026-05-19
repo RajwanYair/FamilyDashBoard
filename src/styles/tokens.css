@@ -35,7 +35,7 @@
 @property --bg-card {
   syntax: "<color>";
   inherits: true;
-  initial-value: rgba(42, 34, 26, 0.82);
+  initial-value: rgb(42 34 26 / 0.82);
 }
 @property --text-primary {
   syntax: "<color>";
@@ -67,17 +67,17 @@
 @property --bg-card-header {
   syntax: "<color>";
   inherits: true;
-  initial-value: rgba(56, 46, 36, 0.88);
+  initial-value: rgb(56 46 36 / 0.88);
 }
 @property --bg-card-inner {
   syntax: "<color>";
   inherits: true;
-  initial-value: rgba(48, 40, 30, 0.55);
+  initial-value: rgb(48 40 30 / 0.55);
 }
 @property --bg-card-hover {
   syntax: "<color>";
   inherits: true;
-  initial-value: rgba(66, 54, 42, 0.65);
+  initial-value: rgb(66 54 42 / 0.65);
 }
 @property --text-muted {
   syntax: "<color>";
@@ -103,22 +103,22 @@
 @property --accent-glow {
   syntax: "<color>";
   inherits: true;
-  initial-value: rgba(200, 168, 122, 0.18);
+  initial-value: rgb(200 168 122 / 0.18);
 }
 @property --accent-border {
   syntax: "<color>";
   inherits: true;
-  initial-value: rgba(200, 168, 122, 0.2);
+  initial-value: rgb(200 168 122 / 0.2);
 }
 @property --positive-glow {
   syntax: "<color>";
   inherits: true;
-  initial-value: rgba(134, 196, 144, 0.18);
+  initial-value: rgb(134 196 144 / 0.18);
 }
 @property --negative-glow {
   syntax: "<color>";
   inherits: true;
-  initial-value: rgba(200, 144, 144, 0.18);
+  initial-value: rgb(200 144 144 / 0.18);
 }
 
 /*
@@ -308,21 +308,21 @@
   color-scheme: dark light;
   /* ── Colors: System Light / Warm Dark (default) ── */
   --bg-primary: light-dark(#f5f0ea, #1a1410);
-  --bg-card: light-dark(rgba(255, 252, 248, 0.96), rgba(42, 34, 26, 0.82));
-  --bg-card-header: light-dark(rgba(244, 238, 232, 0.98), rgba(56, 46, 36, 0.88));
-  --bg-card-inner: light-dark(rgba(248, 244, 240, 0.8), rgba(48, 40, 30, 0.55));
-  --bg-card-hover: light-dark(rgba(235, 230, 224, 0.98), rgba(66, 54, 42, 0.65));
+  --bg-card: light-dark(rgb(255 252 248 / 0.96), rgb(42 34 26 / 0.82));
+  --bg-card-header: light-dark(rgb(244 238 232 / 0.98), rgb(56 46 36 / 0.88));
+  --bg-card-inner: light-dark(rgb(248 244 240 / 0.8), rgb(48 40 30 / 0.55));
+  --bg-card-hover: light-dark(rgb(235 230 224 / 0.98), rgb(66 54 42 / 0.65));
   --accent: light-dark(#8a6020, #c8a87a);
   --accent-bright: light-dark(#704a10, #d9bc9e);
-  --accent-glow: rgba(200, 168, 122, 0.18);
-  --accent-border: rgba(200, 168, 122, 0.2);
+  --accent-glow: rgb(200 168 122 / 0.18);
+  --accent-border: rgb(200 168 122 / 0.2);
   --text-primary: light-dark(#1c1008, #faf5ef);
   --text-secondary: light-dark(#4a3d30, #c4b8a8);
   --text-muted: light-dark(#6a5e50, #8a7e70);
   --positive: light-dark(#3a7d44, #86c490);
-  --positive-glow: rgba(134, 196, 144, 0.18);
+  --positive-glow: rgb(134 196 144 / 0.18);
   --negative: light-dark(#8b2020, #c89090);
-  --negative-glow: rgba(200, 144, 144, 0.18);
+  --negative-glow: rgb(200 144 144 / 0.18);
   --warning: light-dark(#8a6520, #d4b870);
   /* Semantic contrast tokens — for text/icons placed on colored or
      * always-dark backgrounds (badges, accents, video panels, dimmer overlay,
@@ -340,11 +340,11 @@
   --orange: #c8a880;
   --cyan: #82bec8;
   --border-radius: 14px;
-  --card-border: 1px solid rgba(200, 168, 122, 0.15);
-  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-  --bg-gradient-1: rgba(200, 168, 122, 0.05);
-  --bg-gradient-2: rgba(134, 196, 144, 0.04);
-  --bg-gradient-3: rgba(184, 170, 212, 0.04);
+  --card-border: 1px solid rgb(200 168 122 / 0.15);
+  --card-shadow: 0 4px 20px rgb(0 0 0 / 0.35);
+  --bg-gradient-1: rgb(200 168 122 / 0.05);
+  --bg-gradient-2: rgb(134 196 144 / 0.04);
+  --bg-gradient-3: rgb(184 170 212 / 0.04);
   --news-font-scale: 1;
 
   /* ── Night Dimmer ── */
@@ -367,9 +367,9 @@
   --radius-xl: 20px;
 
   /* ── Shadow Scale ── */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.18);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 2px 8px rgb(0 0 0 / 0.18);
+  --shadow-md: 0 4px 20px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 8px 40px rgb(0 0 0 / 0.5);
 
   /* ── Fluid Typography (R1.4) ── */
   --text-xs: clamp(0.65rem, 0.6rem + 0.25vw, 0.75rem);

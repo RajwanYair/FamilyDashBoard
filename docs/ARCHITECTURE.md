@@ -93,6 +93,10 @@ src/
 │   ├── countdown/countdown.ts  # Countdown timers to user-defined events
 │   ├── system-info/system-info.ts # Battery, network, timing, browser info (v7)
 │   └── video-news/             # Live streaming news channels (C14, i24, etc.)
+├── public/                     # Vite static dir — copied verbatim to dist/
+│   ├── _headers                # Cloudflare Pages security headers (CSP, Permissions-Policy)
+│   ├── icon.svg                # PWA icon
+│   └── manifest.webmanifest    # PWA manifest
 ├── styles/
 │   ├── tokens.css              # @layer tokens: design tokens, @layer order declaration
 │   ├── themes.css              # 6 theme overrides + auto-theme hooks

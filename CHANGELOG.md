@@ -7,6 +7,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [Unreleased]
 
+> **7793 tests / 328 suites / 0 failures** · Full check gate + build: 0 errors
+
+- **fix(dx)**: uninstall webhint + HTMLHint VS Code extensions — eliminates 277 false-positive IE compat and inline-style warnings at source instead of suppressing via config
+- **fix(dx)**: delete dead `.hintrc` file (webhint config for removed extension)
+- **fix(dx)**: remove `htmlhint.enable: false` and `webhint.enableTelemetry: "disabled"` workarounds from `.vscode/settings.json` — extensions removed, settings unnecessary
+- **fix(build)**: move `_headers` from workspace root → `src/public/_headers` — Vite copies to `dist/_headers` automatically as static asset (was manually handled before)
+- **fix(css)**: enable Stylelint `color-function-notation: "modern"` rule (was `null`/disabled) — auto-fixed all CSS files from legacy `rgb(R, G, B)` / `hsl(H, S%, L%)` to modern `rgb(R G B)` / `hsl(H S% L%)` notation
+- **fix(a11y)**: convert countdown card from inline `style.display` toggling to `classList.add/remove("is-hidden")` — 13 mutations in `countdown.ts`, 3 inline `style="display:none"` in `index.html` replaced with `class="is-hidden"`
+- **test(countdown)**: update 29 assertions from `style.display` checks to `classList.contains("is-hidden")`; update 3 DOM builder helpers in test file
+- **docs**: update `_headers` path in `security.md`, `ADR-018-csp-coop-coep.md`, `check-csp-wildcards.mjs`, `headers.test.ts`, `permissions-policy.test.ts`
+
 ---
 
 ## [14.34.0] — 2026-05-19

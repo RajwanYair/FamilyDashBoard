@@ -14,7 +14,7 @@
             {
                 "type": "message",
                 "toolNames": ["run_in_terminal"],
-                "message": "Prefer run_task for workspace tasks (Vitest, Playwright, lint, build, coverage). Prefer get_errors for single-file diagnostics (ESLint+Stylelint+webhint+markdownlint+spell). PowerShell only — never bash/Unix. Use ; not && to chain."
+                "message": "Prefer run_task for workspace tasks (Vitest, Playwright, lint, build, coverage). Prefer get_errors for single-file diagnostics (ESLint+Stylelint+markdownlint+spell). PowerShell only — never bash/Unix. Use ; not && to chain."
             },
             {
                 "type": "message",
@@ -40,7 +40,7 @@
                     "multi_replace_string_in_file",
                     "create_file"
                 ],
-                "message": "Post-edit checklist: RTL logical props · CSS custom properties only · cGet→null not undefined · textContent not innerHTML · dialog+showModal for overlays · correct @layer · card data-card-id=registry-id. Run get_errors on changed files to catch ESLint+Stylelint+webhint+spell issues."
+                "message": "Post-edit checklist: RTL logical props · CSS custom properties only · cGet→null not undefined · textContent not innerHTML · dialog+showModal for overlays · correct @layer · card data-card-id=registry-id. Run get_errors on changed files to catch ESLint+Stylelint+spell issues."
             },
             {
                 "type": "message",

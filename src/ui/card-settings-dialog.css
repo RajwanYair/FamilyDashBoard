@@ -46,7 +46,7 @@
   margin: auto;
 }
 .card-settings-dialog::backdrop {
-  background: rgba(6, 11, 20, 0.88);
+  background: rgb(6 11 20 / 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }

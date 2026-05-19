@@ -24,11 +24,6 @@
     // ── Stylelint ──
     "stylelint.validate": ["css"],
     "css.validate": false,
-    // ── HTMLHint — disabled (in unwantedRecommendations) ──
-    "htmlhint.enable": false,
-    // ── webhint — in unwantedRecommendations; uninstall to remove false-positive IE compat warnings.
-    // Browser compat is enforced at build time by Lightning CSS + .browserslistrc targets.
-    "webhint.enableTelemetry": "disabled",
 
     // ── Files ──
     "files.eol": "\n",

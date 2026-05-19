@@ -9,14 +9,14 @@
   gap: 0.3em;
   padding: 0.4em 0.6em;
   background: var(--surface-2, #0d0d0d);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);
   flex-shrink: 0;
 }
 
 .video-news__tab {
   padding: 0.25em 0.65em;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgb(255 255 255 / 0.06);
+  border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 4px;
   color: var(--text-muted, #999);
   font-size: 0.78em;
@@ -30,7 +30,7 @@
 }
 
 .video-news__tab:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgb(255 255 255 / 0.14);
   color: var(--text, #e2e8f0);
 }
 
@@ -63,7 +63,7 @@
   display: none;
   flex-direction: column;
   background: #000;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgb(255 255 255 / 0.06);
   border-radius: 4px;
   overflow: hidden;
   min-height: 0;
@@ -76,7 +76,7 @@
 
 .video-news__tile-label {
   padding: 0.25em 0.6em;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgb(0 0 0 / 0.7);
   color: var(--text-muted, #999);
   font-size: 0.72em;
   font-weight: 600;
@@ -125,7 +125,7 @@
 .card.maximized .video-news__tile-label {
   font-size: calc(0.8em * min(1.5, var(--max-font-scale, 1)));
   color: var(--text, #e2e8f0);
-  background: rgba(0, 0, 0, 0.8);
+  background: rgb(0 0 0 / 0.8);
 }
 
 /* Maximized: scale tab strip fonts with card size */
@@ -184,7 +184,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgb(0 0 0 / 0.8);
   color: var(--text-muted, #999);
   font-size: 0.85rem;
   text-align: center;
@@ -205,14 +205,14 @@
   align-items: center;
   justify-content: center;
   font-size: 4rem;
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(0, 0, 0, 0.4);
+  color: rgb(255 255 255 / 0.8);
+  background: rgb(0 0 0 / 0.4);
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .video-news--play-prompt:hover .video-news__aspect::after {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgb(0 0 0 / 0.6);
 }
 
 /* ── Overlay (RTL caption strip) ─────────────────────────────────────────── */
@@ -227,7 +227,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  background: linear-gradient(transparent, rgb(0 0 0 / 0.7));
   direction: rtl;
 }
 
@@ -257,8 +257,8 @@
   width: 2rem;
   height: 2rem;
   padding: 0;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgb(255 255 255 / 0.12);
+  border: 1px solid rgb(255 255 255 / 0.2);
   border-radius: 4px;
   color: var(--text, #e2e8f0);
   font-size: 0.9rem;
@@ -268,7 +268,7 @@
 
 .video-news__mute-btn:hover,
 .video-news__channel-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgb(255 255 255 / 0.25);
 }
 
 .video-news__mute-btn:focus-visible,

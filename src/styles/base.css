@@ -104,7 +104,7 @@ body::before {
   white-space: nowrap;
   z-index: 2;
   letter-spacing: 1px;
-  box-shadow: -4px 0 12px rgba(248, 113, 113, 0.3);
+  box-shadow: -4px 0 12px rgb(248 113 113 / 0.3);
 }
 .ticker-track {
   flex: 1;
@@ -234,7 +234,7 @@ body::before {
   font-size: 1.05em;
   color: var(--accent-bright);
   font-weight: 600;
-  text-shadow: 0 0 10px rgba(147, 197, 253, 0.3);
+  text-shadow: 0 0 10px rgb(147 197 253 / 0.3);
 }
 .english-date {
   font-size: 0.85em;
@@ -245,7 +245,7 @@ body::before {
   color: var(--warning);
   font-weight: 600;
   margin-top: 1px;
-  text-shadow: 0 0 8px rgba(251, 191, 36, 0.2);
+  text-shadow: 0 0 8px rgb(251 191 36 / 0.2);
 }
 .top-temp {
   font-size: 1.2em;
@@ -258,7 +258,7 @@ body::before {
   flex: 0 0 auto;
   margin: 0 6px;
   line-height: 1;
-  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.3));
+  filter: drop-shadow(0 0 8px rgb(96 165 250 / 0.3));
 }
 
 /* ── prefers-reduced-motion overrides for base.css animations ── */

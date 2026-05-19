@@ -9,7 +9,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const HEADERS = readFileSync(resolve(process.cwd(), "_headers"), "utf-8");
+const HEADERS = readFileSync(resolve(process.cwd(), "src/public/_headers"), "utf-8");
 
 describe("_headers — security baseline ", () => {
   it("declares Origin-Agent-Cluster: ?1", () => {

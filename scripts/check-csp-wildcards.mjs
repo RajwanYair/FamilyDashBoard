@@ -22,7 +22,7 @@
 
 import { readFileSync, existsSync } from "node:fs";
 
-const HEADERS_FILE = "_headers";
+const HEADERS_FILE = "src/public/_headers";
 const SEVERITY = {
   HIGH: "HIGH",
   MEDIUM: "MEDIUM",

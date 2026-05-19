@@ -18,12 +18,15 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import {
   nowMs,
+  today,
   startOfDayMs,
   parsePlainDateMs,
   parsePlainDateTime,
   toISODateString,
   diffDays,
   addDays,
+  fromEpochMs,
+  fromParts,
 } from "../../core/temporal";
 import type { HebcalItem } from "../../types/api";
 import type { DurationParts } from "../../core/utils";
@@ -35,7 +38,7 @@ import type { SemanticPayload } from "../../types/semantic-clipboard";
 export function getCountdownTargetDate(): Date {
   const c = loadConfig();
   let d = c.countdownCardDate || "";
-  if (!d) return new Date(0); // no date configured — epoch signals "past" to tick()
+  if (!d) return fromEpochMs(0); // no date configured — epoch signals "past" to tick()
   const t = c.countdownCardTime || "18:00";
   // advance past recurring dates
   const recurrence = c.countdownCardRecurrence || undefined;
@@ -112,7 +115,7 @@ export function getTimeComponents(targetMs: number): TimeComponents {
 
 /** Returns the number of whole calendar days that have elapsed since `targetMs`. */
 export function getDaysSince(targetMs: number): number {
-  return Math.max(0, diffDays(new Date(targetMs), new Date()));
+  return Math.max(0, diffDays(fromEpochMs(targetMs), today()));
 }
 
 /**
@@ -190,7 +193,7 @@ export function advanceMonthlyDate(dateStr: string): string {
     const nextMonth = d.getMonth() + 1;
     const nextYear = nextMonth > 11 ? d.getFullYear() + 1 : d.getFullYear();
     const wrappedMonth = nextMonth > 11 ? 0 : nextMonth;
-    d = new Date(nextYear, wrappedMonth, parseInt(day, 10));
+    d = fromParts(nextYear, wrappedMonth + 1, parseInt(day, 10));
   }
   return toISODateString(d.getFullYear(), d.getMonth() + 1, d.getDate());
 }
@@ -202,7 +205,7 @@ export function advanceMonthlyDate(dateStr: string): string {
  */
 export function getNextYomTov(
   items: HebcalItem[],
-  now: Date = new Date(),
+  now: Date = today(),
   maxDays = 90,
 ): { title: string; date: string } | null {
   const todayMs = startOfDayMs(now);
@@ -229,7 +232,7 @@ export function getNextCalEventForCountdown(
   icsText: string,
   minDaysAhead = 7,
 ): { title: string; date: string } | null {
-  const minMs = addDays(new Date(), minDaysAhead).getTime();
+  const minMs = addDays(today(), minDaysAhead).getTime();
   const blocks = icsText.split("BEGIN:VEVENT");
   const events: Array<{ title: string; date: string; ms: number }> = [];
   for (const block of blocks.slice(1)) {
@@ -240,9 +243,9 @@ export function getNextCalEventForCountdown(
     const raw = dtMatch[1] ?? "";
     let d: Date;
     if (raw.length === 8) {
-      d = new Date(`${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`);
+      d = parsePlainDateTime(`${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`);
     } else {
-      d = new Date(
+      d = parsePlainDateTime(
         raw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/, "$1-$2-$3T$4:$5:$6$7"),
       );
     }
@@ -296,7 +299,7 @@ function buildCountdownPayload(): SemanticPayload | null {
     globalThis as unknown as { __cdLast?: { targetMs: number; title: string; days: number } }
   ).__cdLast;
   if (!sig) return null;
-  const target = new Date(sig.targetMs);
+  const target = fromEpochMs(sig.targetMs);
   const dateStr = target.toLocaleDateString("he-IL", {
     day: "2-digit",
     month: "long",
@@ -315,7 +318,7 @@ function buildCountdownPayload(): SemanticPayload | null {
       name: sig.title,
       startDate: target.toISOString(),
     },
-    ts: Date.now(),
+    ts: nowMs(),
   };
 }
 
@@ -335,14 +338,14 @@ export function tick(): void {
   const msgEl = els.msg ?? document.getElementById("cd-msg");
   if (!daysEl) return;
   const targetMs = getCountdownTargetDate().getTime();
-  const now = Date.now();
+  const now = nowMs();
 
   if (now >= targetMs) {
     // For one-time (non-recurring) events that have passed, hide the slot.
     const recurrence = loadConfig().countdownCardRecurrence;
     if (!recurrence) {
       const mainSec = els.mainSection ?? document.getElementById("cd-main-section");
-      if (mainSec) mainSec.style.display = "none";
+      if (mainSec) mainSec.classList.add("is-hidden");
       if (_cdInterval !== null) {
         clearInterval(_cdInterval);
         _cdInterval = null;
@@ -357,7 +360,7 @@ export function tick(): void {
   // Ensure the section is visible (it may have been hidden by a previous past event
   // and then re-configured to a future date).
   const mainSecShow = els.mainSection ?? document.getElementById("cd-main-section");
-  if (mainSecShow) mainSecShow.style.display = "";
+  if (mainSecShow) mainSecShow.classList.remove("is-hidden");
 
   const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
   if (titleEl) titleEl.textContent = getCountdownTitle();
@@ -392,16 +395,16 @@ export function tick(): void {
   const progressWrapEl = els.progressWrap ?? document.getElementById("cd-progress-wrap");
   const progressBarEl = els.progressBar ?? document.getElementById("cd-progress-bar");
   if (progressWrapEl && progressBarEl && startDate) {
-    const startMs = new Date(startDate).getTime();
+    const startMs = parsePlainDateTime(startDate).getTime();
     const progress = computeProgress(startMs, targetMs);
     if (progress !== null) {
-      progressWrapEl.style.display = "";
+      progressWrapEl.classList.remove("is-hidden");
       progressBarEl.style.width = `${Math.round(progress * 100)}%`;
     } else {
-      progressWrapEl.style.display = "none";
+      progressWrapEl.classList.add("is-hidden");
     }
   } else if (progressWrapEl) {
-    progressWrapEl.style.display = "none";
+    progressWrapEl.classList.add("is-hidden");
   }
 }
 
@@ -421,12 +424,12 @@ function tickSecondary(
   if (!section) return;
 
   if (!date) {
-    section.style.display = "none";
+    section.classList.add("is-hidden");
     return;
   }
 
-  const targetMs = new Date(`${date}T${time}:00`).getTime();
-  const now = Date.now();
+  const targetMs = parsePlainDateTime(`${date}T${time}:00`).getTime();
+  const now = nowMs();
   const titleEl = document.getElementById(`${prefix}-title`);
   const daysEl = document.getElementById(`${prefix}-days`);
   const hoursEl = document.getElementById(`${prefix}-hours`);
@@ -436,11 +439,11 @@ function tickSecondary(
 
   // Past one-time event — hide the slot entirely instead of showing done state
   if (now >= targetMs) {
-    section.style.display = "none";
+    section.classList.add("is-hidden");
     return;
   }
 
-  section.style.display = "";
+  section.classList.remove("is-hidden");
   if (titleEl) titleEl.textContent = title;
 
   const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
@@ -453,16 +456,16 @@ function tickSecondary(
   const progressWrap = document.getElementById(`${prefix}-progress-wrap`);
   const progressBar = document.getElementById(`${prefix}-progress-bar`);
   if (progressWrap && progressBar && startDate) {
-    const startMs = new Date(startDate).getTime();
+    const startMs = parsePlainDateTime(startDate).getTime();
     const progress = computeProgress(startMs, targetMs);
     if (progress !== null) {
-      progressWrap.style.display = "";
+      progressWrap.classList.remove("is-hidden");
       progressBar.style.width = `${Math.round(progress * 100)}%`;
     } else {
-      progressWrap.style.display = "none";
+      progressWrap.classList.add("is-hidden");
     }
   } else if (progressWrap) {
-    progressWrap.style.display = "none";
+    progressWrap.classList.add("is-hidden");
   }
 }
 
@@ -503,22 +506,22 @@ export function initCountdownCard(): void {
   // Auto-populate slot 2 with next Yom Tov if unset
   const cfg2 = loadConfig();
   if (!cfg2.countdownCard2Date) {
-    const now = new Date();
-    const holKey = `holidays-${now.getFullYear()}-${now.getMonth()}`;
+    const nowDate = today();
+    const holKey = `holidays-${nowDate.getFullYear()}-${nowDate.getMonth()}`;
     const holData = cGetStale<{ items: HebcalItem[] }>(holKey);
     if (holData?.items) {
-      const yomTov = getNextYomTov(holData.items, now);
+      const yomTov = getNextYomTov(holData.items, nowDate);
       if (yomTov) {
         const section2 = document.getElementById("cd2-section");
         const title2 = document.getElementById("cd2-title");
         if (section2 && title2) {
           title2.textContent = yomTov.title;
-          section2.style.display = "";
+          section2.classList.remove("is-hidden");
           const daysEl = document.getElementById("cd2-days");
           const hoursEl = document.getElementById("cd2-hours");
           const minsEl = document.getElementById("cd2-mins");
           const secsEl = document.getElementById("cd2-secs");
-          const targetMs = new Date(`${yomTov.date}T18:00:00`).getTime();
+          const targetMs = parsePlainDateTime(`${yomTov.date}T18:00:00`).getTime();
           const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
           if (daysEl) daysEl.textContent = String(days);
           if (hoursEl) hoursEl.textContent = pad2(hours);
@@ -540,12 +543,12 @@ export function initCountdownCard(): void {
         const title3 = document.getElementById("cd3-title");
         if (section3 && title3) {
           title3.textContent = calEvent.title;
-          section3.style.display = "";
+          section3.classList.remove("is-hidden");
           const daysEl = document.getElementById("cd3-days");
           const hoursEl = document.getElementById("cd3-hours");
           const minsEl = document.getElementById("cd3-mins");
           const secsEl = document.getElementById("cd3-secs");
-          const targetMs = new Date(`${calEvent.date}T18:00:00`).getTime();
+          const targetMs = parsePlainDateTime(`${calEvent.date}T18:00:00`).getTime();
           const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
           if (daysEl) daysEl.textContent = String(days);
           if (hoursEl) hoursEl.textContent = pad2(hours);
