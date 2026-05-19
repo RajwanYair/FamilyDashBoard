@@ -227,3 +227,84 @@ describe("initOtel — live OTLP/JSON exporter", () => {
     expect(body.resourceSpans[0].scopeSpans[0].spans).toHaveLength(1);
   });
 });
+
+// ── asyncSpan ─────────────────────────────────────────────────────────────────
+
+describe("OtelHandle — asyncSpan (S23 addition)", () => {
+  let fetchCalls: Array<{ url: string; init: RequestInit }>;
+  let originalFetch: typeof fetch;
+
+  beforeEach(() => {
+    fetchCalls = [];
+    originalFetch = globalThis.fetch;
+    globalThis.fetch = async (url: string | URL | Request, init?: RequestInit) => {
+      fetchCalls.push({ url: String(url), init: init ?? {} });
+      return new Response(null, { status: 200 });
+    };
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  function makeLiveEnv(endpoint = "https://otel.example.com") {
+    return { ENVIRONMENT: "test", OTEL_ENABLED: "true", OTEL_ENDPOINT: endpoint } as unknown as import("../../../worker/src/types").Env;
+  }
+  function makeDisabledEnv() {
+    return { ENVIRONMENT: "test" } as unknown as import("../../../worker/src/types").Env;
+  }
+
+  it("no-op asyncSpan executes fn and returns result", async () => {
+    const h = initOtel(makeDisabledEnv());
+    const result = await h.asyncSpan("test", async () => 42);
+    expect(result).toBe(42);
+  });
+
+  it("live asyncSpan awaits fn and records span with attributes", async () => {
+    const h = initOtel(makeLiveEnv());
+    const result = await h.asyncSpan("vectorize-shadow", async (s) => {
+      s.setAttribute("agrees", 8);
+      s.setAttribute("upserted", 10);
+      return { agrees: 8, upserted: 10 };
+    });
+    expect(result).toEqual({ agrees: 8, upserted: 10 });
+    await h.flush();
+
+    const body = JSON.parse(fetchCalls[0].init.body as string) as {
+      resourceSpans: Array<{ scopeSpans: Array<{ spans: Array<{ name: string; attributes: Array<{ key: string }> }> }> }>;
+    };
+    const span = body.resourceSpans[0].scopeSpans[0].spans[0];
+    expect(span.name).toBe("vectorize-shadow");
+    expect(span.attributes.map((a) => a.key)).toContain("agrees");
+    expect(span.attributes.map((a) => a.key)).toContain("upserted");
+  });
+
+  it("live asyncSpan still records span when fn rejects", async () => {
+    const h = initOtel(makeLiveEnv());
+    await expect(h.asyncSpan("failing", async () => { throw new Error("async fail"); })).rejects.toThrow("async fail");
+    await h.flush();
+    expect(fetchCalls).toHaveLength(1);
+    const body = JSON.parse(fetchCalls[0].init.body as string) as {
+      resourceSpans: Array<{ scopeSpans: Array<{ spans: unknown[] }> }>;
+    };
+    expect(body.resourceSpans[0].scopeSpans[0].spans).toHaveLength(1);
+  });
+
+  it("asyncSpan span endTimeUnixNano > startTimeUnixNano (async work captured)", async () => {
+    const h = initOtel(makeLiveEnv());
+    await h.asyncSpan("timer-test", async () => {
+      await new Promise((r) => setTimeout(r, 2));
+    });
+    await h.flush();
+
+    const body = JSON.parse(fetchCalls[0].init.body as string) as {
+      resourceSpans: Array<{
+        scopeSpans: Array<{
+          spans: Array<{ startTimeUnixNano: string; endTimeUnixNano: string }>;
+        }>;
+      }>;
+    };
+    const span = body.resourceSpans[0].scopeSpans[0].spans[0];
+    expect(BigInt(span.endTimeUnixNano)).toBeGreaterThan(BigInt(span.startTimeUnixNano));
+  });
+});

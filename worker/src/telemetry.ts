@@ -34,6 +34,8 @@ export interface OtelSpan {
 export interface OtelHandle {
   /** Execute `fn` within a named span, return its result. */
   span<T>(name: string, fn: (span: OtelSpan) => T): T;
+  /** Execute an async `fn` within a named span, properly awaiting it for accurate timing. */
+  asyncSpan<T>(name: string, fn: (span: OtelSpan) => Promise<T>): Promise<T>;
   /** Flush pending spans to the OTLP exporter. No-op when disabled. */
   flush(): Promise<void>;
   /** True only when `env.OTEL_ENABLED === "true"` and OTEL_ENDPOINT is set. */
@@ -97,6 +99,7 @@ const _noopSpan: OtelSpan = {
 const _noopHandle: OtelHandle = {
   enabled: false,
   span: <T>(_name: string, fn: (span: OtelSpan) => T): T => fn(_noopSpan),
+  asyncSpan: <T>(_name: string, fn: (span: OtelSpan) => Promise<T>): Promise<T> => fn(_noopSpan),
   flush: (): Promise<void> => Promise.resolve(),
 };
 
@@ -150,6 +153,15 @@ function _makeLiveHandle(endpoint: string, traceId: string): OtelHandle {
         finish();
       }
       return result!;
+    },
+
+    async asyncSpan<T>(name: string, fn: (span: OtelSpan) => Promise<T>): Promise<T> {
+      const { span, finish } = makeSpan(name);
+      try {
+        return await fn(span);
+      } finally {
+        finish();
+      }
     },
 
     async flush(): Promise<void> {

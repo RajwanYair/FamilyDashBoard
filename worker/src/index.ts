@@ -77,6 +77,7 @@ import { logRequest } from "./middleware/log";
 import { applyCanaryHeader, shouldTagCanary } from "./middleware/canary";
 import { earlyHintsMiddleware } from "./middleware/early-hints";
 import { writeAnalyticsHit, normaliseRoute } from "./utils/analytics";
+import { initOtel } from "./telemetry";
 import type { Env } from "./types";
 
 export type { Env };
@@ -150,7 +151,15 @@ app.get("/api/stocks", (c) => handleStocks(new URL(c.req.url), c.env));
 // ADR-086: Hibernatable WebSocket live stream for stock prices
 app.get("/api/stocks/live", (c) => handleStocksLive(c.req.raw, c.env));
 
-app.get("/api/news/aggregate", earlyHintsMiddleware, (c) => handleNewsAggregate(c.env));
+app.get("/api/news/aggregate", earlyHintsMiddleware, async (c) => {
+  const otel = initOtel(c.env);
+  const res = await otel.asyncSpan("route:news-aggregate", (s) => {
+    s.setAttribute("route", "/api/news/aggregate");
+    return handleNewsAggregate(c.env);
+  });
+  c.executionCtx.waitUntil(otel.flush());
+  return res;
+});
 
 app.get("/api/news/summarise", (c) => handleNewsSummarise(c.env));
 
@@ -202,7 +211,17 @@ app.post("/api/reports", (c) => handleReportsIngest(c.req.raw, c.env));
 app.get("/api/reports/digest", (c) => handleReportsDigest(c.req.raw, c.env));
 
 // ADR-050: R2 asset caching proxy for background images and media assets
-app.get("/api/r2-asset", (c) => handleR2Asset(c.req.raw, c.env));
+app.get("/api/r2-asset", async (c) => {
+  const otel = initOtel(c.env);
+  const res = await otel.asyncSpan("route:r2-asset", (s) => {
+    const urlParam = new URL(c.req.url).searchParams.get("url") ?? "";
+    s.setAttribute("asset.url_len", urlParam.length);
+    s.setAttribute("asset.host", urlParam ? (() => { try { return new URL(urlParam).hostname; } catch { return "invalid"; } })() : "");
+    return handleR2Asset(c.req.raw, c.env);
+  });
+  c.executionCtx.waitUntil(otel.flush());
+  return res;
+});
 
 // ADR-091: Web Push VAPID skeleton (opt-in, gated by VAPID_ENABLED env var)
 app.get("/api/push/key", (c) => handlePushKey(c.env));

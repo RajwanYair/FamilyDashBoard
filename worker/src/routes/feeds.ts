@@ -30,6 +30,7 @@ import {
 } from "../utils/simhash";
 import { vectorizeShadowRun } from "../utils/vectorize-client";
 import { writeVectorizeShadowMetrics } from "../utils/analytics";
+import { initOtel } from "../telemetry";
 import type { Env } from "../types";
 
 export async function handleStocks(url: URL, env: Env): Promise<Response> {
@@ -291,8 +292,17 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
             if (vec) droppedEmbeddings.set(item.link, vec);
           }),
         );
-        const shadowMetrics = await vectorizeShadowRun(env.VECTORIZE_INDEX!, keptEmbeddings, droppedEmbeddings);
+        const otel = initOtel(env);
+        const shadowMetrics = await otel.asyncSpan("vectorize-shadow", async (s) => {
+          const metrics = await vectorizeShadowRun(env.VECTORIZE_INDEX!, keptEmbeddings, droppedEmbeddings);
+          s.setAttribute("agrees", metrics.agrees);
+          s.setAttribute("vectorize_would_drop", metrics.vectorizeWouldDrop);
+          s.setAttribute("vectorize_would_keep", metrics.vectorizeWouldKeep);
+          s.setAttribute("upserted", metrics.upserted);
+          return metrics;
+        });
         writeVectorizeShadowMetrics(env.ANALYTICS, shadowMetrics);
+        void otel.flush();
       } catch {
         // Shadow run errors must never affect the news feed response
       }
