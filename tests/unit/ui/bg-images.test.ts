@@ -11,6 +11,7 @@ import {
   initBgImages,
   rotateBgImage,
   BG_INTERVAL_MS,
+  buildR2AssetUrl,
   _resetForTest,
 } from "@/ui/bg-images";
 

@@ -1,10 +1,10 @@
 # ADR-091 — Web Push VAPID Skeleton for Alert Notifications
 
-**Status**: Accepted (skeleton — gated behind 3+ user requests and VAPID provisioning)  
-**Date**: 2025-07-14  
-**Authors**: FamilyDashBoard maintainers  
-**Supersedes**: —  
-**Superseded by**: —  
+**Status**: Accepted (skeleton — gated behind 3+ user requests and VAPID provisioning)
+**Date**: 2025-07-14
+**Authors**: FamilyDashBoard maintainers
+**Supersedes**: —
+**Superseded by**: —
 **Related**: ADR-025 (AlertsOrchestrator SSE), ADR-089 (AlertsLiveDO WS), ROADMAP D7 / A-Push
 
 ---

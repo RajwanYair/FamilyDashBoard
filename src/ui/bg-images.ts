@@ -1,13 +1,15 @@
 /**
- * FamilyDashBoard v13 — Background Image Rotation
+ * FamilyDashBoard — Background Image Rotation
  *
  * Crossfades between user-configured HTTPS image URLs every 30 minutes.
+ * When the Worker is enabled, images are proxied through R2 for CDN caching
+ * at $0 egress cost (ADR-050 — R2 asset proxy).
  * Config: `bgImages: string[]` — array of HTTPS image URLs.
  */
 
 import { loadConfig } from "../core/config";
 import { diagLog } from "../core/diag";
-import { MS_PER_MIN } from "../core/constants";
+import { MS_PER_MIN, WORKER_BASE_URL, isWorkerEnabled } from "../core/constants";
 
 export const BG_INTERVAL_MS = 30 * MS_PER_MIN; // 30 minutes
 
@@ -25,8 +27,22 @@ export function isValidBgUrl(url: string): boolean {
   }
 }
 
+/**
+ * Returns the R2-proxied URL for a background image when the Worker is enabled.
+ * Falls back to the direct URL when Worker is not available (e.g. `file://`
+ * protocol, WORKER_BASE_URL unset, or the feature is disabled in config).
+ *
+ * ADR-050: R2 asset caching proxy — `GET /api/r2-asset?url=<encoded>`.
+ * The proxy caches the image in R2 at $0 egress cost and serves it from
+ * the Cloudflare edge with `Cache-Control: public, max-age=86400, immutable`.
+ */
+export function buildR2AssetUrl(url: string): string {
+  if (!isWorkerEnabled()) return url;
+  return `${WORKER_BASE_URL}/api/r2-asset?url=${encodeURIComponent(url)}`;
+}
+
 function setLayer(layer: HTMLDivElement, url: string): void {
-  layer.style.backgroundImage = `url(${JSON.stringify(url)})`;
+  layer.style.backgroundImage = `url(${JSON.stringify(buildR2AssetUrl(url))})`;
 }
 
 /** Advance to the next image with a crossfade. Called by interval. */
@@ -39,7 +55,7 @@ export function rotateBgImage(): void {
   const nextUrl = validImages[_currentIdx] ?? validImages[0];
   if (!nextUrl) return;
 
-  // Preload image then crossfade layers
+  // Preload via R2-proxied URL when Worker is enabled; crossfade layers
   const img = new Image();
   img.onload = () => {
     if (!_layerA || !_layerB) return;
@@ -51,7 +67,7 @@ export function rotateBgImage(): void {
     _layerA = _layerB;
     _layerB = tmp;
   };
-  img.src = nextUrl;
+  img.src = buildR2AssetUrl(nextUrl);
 }
 
 /** Initialize background image rotation. No-op when bgImages is empty. */

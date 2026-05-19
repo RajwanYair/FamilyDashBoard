@@ -1,10 +1,10 @@
 # ADR-090 — Vectorize Semantic Dedup Shadow Mode for News Aggregator
 
-**Status**: Accepted  
-**Date**: 2025-07-14  
-**Authors**: FamilyDashBoard maintainers  
-**Supersedes**: —  
-**Superseded by**: —  
+**Status**: Accepted
+**Date**: 2025-07-14
+**Authors**: FamilyDashBoard maintainers
+**Supersedes**: —
+**Superseded by**: —
 **Related**: ADR-052 (R2 asset cache), ADR-030 (Workers AI embeddings), ROADMAP §6.1 SEMANTIC
 
 ---
@@ -27,7 +27,7 @@ from previous news cycles can be queried to identify stories that were already s
 
 The ROADMAP §6.1 SEMANTIC specifies a **30-day shadow run** strategy:
 
-> Run Vectorize in parallel with SimHash. Do NOT change feed output. Measure precision@10.  
+> Run Vectorize in parallel with SimHash. Do NOT change feed output. Measure precision@10.
 > Exit gate: precision@10 ≥ SimHash + 15% before retiring SimHash.
 
 ---
