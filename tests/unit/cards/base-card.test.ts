@@ -41,6 +41,8 @@ import {
   createSkeleton,
   createEmptyState,
   createErrorState,
+  showCardSkeleton,
+  hideCardSkeleton,
 } from "@/cards/base-card";
 import * as idleMod from "@/core/idle";
 import * as fetchMod from "@/core/fetch";
@@ -426,5 +428,32 @@ describe("Base Card — createCardLoader validate callback", () => {
 
     expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok");
     expect(syncMod.recordFailure).toHaveBeenCalledWith(OPTS.id);
+  });
+});
+
+describe("showCardSkeleton / hideCardSkeleton", () => {
+  it("prepends a skeleton to the container and sets aria-busy", () => {
+    const container = document.createElement("div");
+    showCardSkeleton("skel-test-1", container);
+    expect(container.firstElementChild?.className).toBe("card-skeleton");
+    expect(container.getAttribute("aria-busy")).toBe("true");
+  });
+
+  it("is idempotent — calling twice does not add a second skeleton", () => {
+    const container = document.createElement("div");
+    showCardSkeleton("skel-test-2", container);
+    showCardSkeleton("skel-test-2", container);
+    expect(container.querySelectorAll(".card-skeleton").length).toBe(1);
+  });
+
+  it("hideCardSkeleton removes the skeleton element", () => {
+    const container = document.createElement("div");
+    showCardSkeleton("skel-test-3", container);
+    hideCardSkeleton("skel-test-3");
+    expect(container.querySelector(".card-skeleton")).toBeNull();
+  });
+
+  it("hideCardSkeleton is safe to call when no skeleton exists", () => {
+    expect(() => hideCardSkeleton("skel-test-none")).not.toThrow();
   });
 });

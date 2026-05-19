@@ -181,6 +181,32 @@ export function createSkeleton(lines = 3): HTMLElement {
   return el;
 }
 
+const _skeletons = new Map<string, HTMLElement>();
+
+/**
+ * Show a skeleton overlay inside the given container (identified by cardId).
+ * Calling repeatedly is idempotent — only one skeleton per card.
+ */
+export function showCardSkeleton(cardId: string, container: HTMLElement, lines = 3): void {
+  if (_skeletons.has(cardId)) return;
+  const skel = createSkeleton(lines);
+  _skeletons.set(cardId, skel);
+  container.prepend(skel);
+  container.setAttribute("aria-busy", "true");
+}
+
+/**
+ * Remove the skeleton for a card (after data is loaded).
+ */
+export function hideCardSkeleton(cardId: string): void {
+  const skel = _skeletons.get(cardId);
+  if (!skel) return;
+  skel.remove();
+  _skeletons.delete(cardId);
+  const parent = skel.parentElement;
+  if (parent) parent.removeAttribute("aria-busy");
+}
+
 /**
  * Build a standardized empty-state element.
  *
