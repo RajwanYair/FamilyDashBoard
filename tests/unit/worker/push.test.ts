@@ -4,12 +4,13 @@
  * Covers: VAPID key endpoint, subscribe (validation, store), unsubscribe, send (auth gate, 501).
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   handlePushKey,
   handlePushSubscribe,
   handlePushUnsubscribe,
   handlePushSend,
+  buildVapidJwt,
 } from "../../../worker/src/routes/push";
 import type { Env } from "../../../worker/src/types";
 
@@ -248,7 +249,7 @@ describe("handlePushSend", () => {
     expect(res.status).toBe(503);
   });
 
-  it("returns 501 (skeleton) when token is correct and VAPID enabled", async () => {
+  it("returns 501 (vapid_keys_not_provisioned) when token is correct, VAPID enabled, but keys absent", async () => {
     const env = makeEnv({ VAPID_ENABLED: "true", ERROR_REPORTING_TOKEN: "tok" });
     const req = new Request("https://worker.dev/api/push/send", {
       method: "POST",
@@ -261,6 +262,104 @@ describe("handlePushSend", () => {
     const res = await handlePushSend(req, env);
     expect(res.status).toBe(501);
     const body = (await res.json()) as { ok: boolean; error: string };
-    expect(body.error).toBe("not_implemented");
+    expect(body.error).toBe("vapid_keys_not_provisioned");
+  });
+
+  it("returns { ok:true, sent:0, expired:0 } when no subscribers exist", async () => {
+    const env = makeEnv({
+      VAPID_ENABLED: "true",
+      ERROR_REPORTING_TOKEN: "tok",
+      VAPID_PUBLIC_KEY: "BGb8v8XmzCsgabcd1234",
+      VAPID_PRIVATE_KEY: "dGVzdHByaXZhdGVrZXkzMmJ5dGVzYWJjZA",
+      CACHE_KV: {
+        get: vi.fn().mockResolvedValue(null),
+        put: vi.fn().mockResolvedValue(undefined),
+        list: vi.fn().mockResolvedValue({ keys: [], list_complete: true, cacheStatus: null }),
+      },
+    });
+    const req = new Request("https://worker.dev/api/push/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: "Bearer tok" },
+      body: JSON.stringify({ title: "Test" }),
+    });
+    const res = await handlePushSend(req, env);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { ok: boolean; sent: number; expired: number };
+    expect(body.ok).toBe(true);
+    expect(body.sent).toBe(0);
+    expect(body.expired).toBe(0);
+  });
+});
+
+// ── buildVapidJwt ─────────────────────────────────────────────────────────────
+
+describe("buildVapidJwt (S27 VAPID JWT signing)", () => {
+  // Generate a real P-256 key pair for testing
+  let privateKeyB64url: string;
+
+  beforeEach(async () => {
+    const keyPair = await crypto.subtle.generateKey(
+      { name: "ECDSA", namedCurve: "P-256" },
+      true,
+      ["sign", "verify"],
+    );
+    // Export private key as PKCS#8, then extract just the raw scalar (last 32 bytes)
+    const pkcs8 = await crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+    const pkcs8Bytes = new Uint8Array(pkcs8);
+    // The raw 32-byte scalar is the last 32 bytes of the PKCS#8 DER
+    const rawScalar = pkcs8Bytes.slice(pkcs8Bytes.length - 32);
+    privateKeyB64url = btoa(String.fromCharCode(...rawScalar))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns a three-part JWT string (header.payload.signature)", async () => {
+    const jwt = await buildVapidJwt(privateKeyB64url, "https://fcm.googleapis.com/fcm/send/abc");
+    const parts = jwt.split(".");
+    expect(parts).toHaveLength(3);
+    expect(parts[0]).toBeTruthy();
+    expect(parts[1]).toBeTruthy();
+    expect(parts[2]).toBeTruthy();
+  });
+
+  it("JWT header decodes to { typ: 'JWT', alg: 'ES256' }", async () => {
+    const jwt = await buildVapidJwt(privateKeyB64url, "https://fcm.googleapis.com/fcm/send/abc");
+    const [headerB64] = jwt.split(".");
+    const header = JSON.parse(atob((headerB64 ?? "").replace(/-/g, "+").replace(/_/g, "/"))) as unknown;
+    expect(header).toEqual({ typ: "JWT", alg: "ES256" });
+  });
+
+  it("JWT payload aud matches the endpoint origin", async () => {
+    const endpoint = "https://updates.push.services.mozilla.com/push/v1/abc";
+    const jwt = await buildVapidJwt(privateKeyB64url, endpoint);
+    const parts = jwt.split(".");
+    const payload = JSON.parse(
+      atob((parts[1] ?? "").replace(/-/g, "+").replace(/_/g, "/")),
+    ) as { aud: string; exp: number; sub: string };
+    expect(payload.aud).toBe("https://updates.push.services.mozilla.com");
+  });
+
+  it("JWT payload exp is ~12 hours in the future", async () => {
+    const before = Math.floor(Date.now() / 1000);
+    const jwt = await buildVapidJwt(privateKeyB64url, "https://fcm.googleapis.com/abc");
+    const after = Math.floor(Date.now() / 1000);
+    const parts = jwt.split(".");
+    const payload = JSON.parse(
+      atob((parts[1] ?? "").replace(/-/g, "+").replace(/_/g, "/")),
+    ) as { exp: number };
+    expect(payload.exp).toBeGreaterThanOrEqual(before + 43200);
+    expect(payload.exp).toBeLessThanOrEqual(after + 43200);
+  });
+
+  it("produces a URL-safe base64 signature (no +, /, or = chars)", async () => {
+    const jwt = await buildVapidJwt(privateKeyB64url, "https://fcm.googleapis.com/abc");
+    const parts = jwt.split(".");
+    const sig = parts[2] ?? "";
+    expect(sig).not.toMatch(/[+/=]/);
   });
 });
