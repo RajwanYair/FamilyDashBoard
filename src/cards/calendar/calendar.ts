@@ -29,7 +29,7 @@ import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
-import { nowMs, parsePlainDateTime, toISODateString, diffDays, addDays } from "../../core/temporal";
+import { nowMs, today, fromEpochMs, parsePlainDateTime, toISODateString, diffDays, addDays, startOfDayMs } from "../../core/temporal";
 
 // X15: cached snapshot of next event for the semantic-clipboard producer.
 let _nextEventSnapshot: { title: string; startMs: number; isAllDay: boolean } | null = null;
@@ -37,7 +37,7 @@ let _nextEventSnapshot: { title: string; startMs: number; isAllDay: boolean } | 
 function buildCalendarPayload(): SemanticPayload | null {
   const s = _nextEventSnapshot;
   if (!s) return null;
-  const when = new Date(s.startMs);
+  const when = fromEpochMs(s.startMs);
   const dateText = when.toLocaleString("he-IL", {
     weekday: "short",
     day: "2-digit",
@@ -185,7 +185,7 @@ export function getHolidaysByDate(items: HebcalItem[], date: Date): string | nul
  * Returns "" when `date` is today, "מחר" for tomorrow, "עוד N ימים" otherwise.
  * Returns "" for past dates (should not appear in agenda, but defensive).
  */
-export function calDaysUntilLabel(date: Date, now: Date = new Date()): string {
+export function calDaysUntilLabel(date: Date, now: Date = today()): string {
   const d = diffDays(now, date);
   if (d <= 0) return "";
   if (d === 1) return "מחר";
@@ -216,7 +216,7 @@ function formatEventTime(ev: CalendarEvent): string {
 
 /** Build the event row element inside a day tile. */
 function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
-  const now = Date.now();
+  const now = nowMs();
   const msTilStart = ev.start.getTime() - now;
   const isSoon = !ev.allDay && msTilStart > 0 && msTilStart < 60 * 60 * 1000;
 
@@ -277,8 +277,7 @@ function renderCalCountdown(upcoming: CalendarEvent[], now: Date): void {
 function updateTodayEventCount(events: CalendarEvent[]): void {
   const hdrEl = document.getElementById("header-event-count");
   if (!hdrEl) return;
-  const todayMidnight = new Date();
-  todayMidnight.setHours(0, 0, 0, 0);
+  const todayMidnight = fromEpochMs(startOfDayMs());
   const todayEnd = addDays(todayMidnight, 1);
   const count = events.filter((e) => e.start >= todayMidnight && e.start < todayEnd).length;
   hdrEl.textContent = count > 0 ? `${count} 📅` : "";
@@ -291,12 +290,12 @@ function updateTodayEventCount(events: CalendarEvent[]): void {
  */
 export function groupEventsByDay(
   events: readonly CalendarEvent[],
-  now: Date = new Date(),
+  now: Date = today(),
 ): { date: Date; events: CalendarEvent[] }[] {
   const buckets: { date: Date; events: CalendarEvent[] }[] = [];
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayStart = fromEpochMs(startOfDayMs(now));
   for (let i = 0; i < CAL_WEEK_DAYS; i++) {
-    buckets.push({ date: addDays(today, i), events: [] });
+    buckets.push({ date: addDays(todayStart, i), events: [] });
   }
   const firstKey = buckets[0]!.date.getTime();
   const lastKey = addDays(buckets[CAL_WEEK_DAYS - 1]!.date, 1).getTime();
@@ -403,8 +402,8 @@ function renderDayTile(
 }
 
 export function renderCalendar(events: CalendarEvent[]): number {
-  const now = new Date();
-  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const now = today();
+  const todayMidnight = fromEpochMs(startOfDayMs(now));
 
   // read horizon from config (default 21)
   const cfg = loadConfig();
