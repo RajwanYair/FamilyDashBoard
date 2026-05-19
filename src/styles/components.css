@@ -227,6 +227,22 @@
   }
 }
 
+/* ── Freshness Badge ── */
+.freshness-badge {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  padding: 0.1em 0.4em;
+  border-radius: var(--radius-sm, 4px);
+  white-space: nowrap;
+  color: var(--positive);
+}
+.freshness-badge[data-state="aging"] {
+  color: var(--warning);
+}
+.freshness-badge[data-state="stale"] {
+  color: var(--negative);
+}
+
 /* ── Loading Skeleton (see enhanced version below) ── */
 @keyframes shimmer {
   0% {
