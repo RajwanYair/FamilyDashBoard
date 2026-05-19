@@ -11,6 +11,7 @@ import { setSync, syncBurst, recordSuccess, recordFailure } from "../core/sync";
 import { acquireLock, releaseLock } from "../core/fetch";
 import { diagLog } from "../core/diag";
 import { MS_PER_MIN } from "../core/constants";
+import { markFresh } from "../core/freshness";
 
 export interface CardOptions {
   /** Unique card identifier (used for cache key, sync dot, fetch lock). */
@@ -64,6 +65,7 @@ export function createCardLoader<T>(
       setSync(opts.id, "ok");
       syncBurst(opts.id);
       recordSuccess(opts.id);
+      markFresh(opts.id);
     } catch (err) {
       diagLog(`[${opts.id}] Load failed: ${String(err)}`);
       setSync(opts.id, stale ? "ok" : "error");
@@ -126,6 +128,7 @@ export function createAsyncCardLoader<T>(
       setSync(opts.id, "ok");
       syncBurst(opts.id);
       recordSuccess(opts.id);
+      markFresh(opts.id);
     } catch (err) {
       diagLog(`[${opts.id}] Load failed: ${String(err)}`);
       setSync(opts.id, stale !== null ? "ok" : "error");

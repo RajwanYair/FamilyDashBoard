@@ -10,6 +10,7 @@ import { trustedHTML } from "../../core/trusted-types";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import { renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 import "./weather.css";
 import {
@@ -816,6 +817,11 @@ export function initWeatherCard(): void {
   cacheDom();
   registerSemanticProducer("weather", buildWeatherPayload);
   initWeatherCities(); // Apply configured cities from localStorage
+
+  // Mount freshness badge in card header
+  const hd = document.querySelector('[data-card-id="weather"] .card-hd-title');
+  if (hd) renderFreshnessBadge("wx", hd as HTMLElement);
+
   void loadWeather();
   if (_weatherRefreshInterval !== null) clearInterval(_weatherRefreshInterval);
   _weatherRefreshInterval = scheduleCard(loadWeather, INTERVALS.WEATHER);

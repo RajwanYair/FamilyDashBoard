@@ -29,6 +29,7 @@ import type { CurrencyResponse, YahooChartResponse, CoinGeckoResponse } from "..
 import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
 // X15: cached snapshot of headline rates for the semantic-clipboard producer.
@@ -609,6 +610,7 @@ export async function loadCurrency(): Promise<void> {
     setSync("cur", "ok");
     syncBurst("cur");
     recordSuccess("cur");
+    markFresh("cur");
   } catch (err) {
     diagLog(`[currency] Load failed: ${String(err)}`);
     setSync("cur", stale !== null ? "ok" : "error");
@@ -642,6 +644,11 @@ export function initCurrencyCard(): void {
   cacheDom();
   registerSemanticProducer("currency", buildCurrencyPayload);
   applyPairVisibility(); // hide unconfigured pairs on init
+
+  // Mount freshness badge in card header
+  const hd = document.querySelector('[data-card-id="currency"] .card-hd-title, [data-card-id="currency"] .card__hd-title');
+  if (hd) renderFreshnessBadge("cur", hd as HTMLElement);
+
   void loadCurrency();
   scheduleCurrencyRefresh();
   initCalcWidget(); // // F15: Popover API quick-reload button wiring

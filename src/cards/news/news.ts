@@ -28,6 +28,7 @@ import type { NewsItem } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import { renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
 // X15: cached snapshot of top headline for the semantic-clipboard producer.
@@ -1078,6 +1079,11 @@ export function initNewsCard(): void {
   applyNewsFontSize();
   initNewsSearch();
   renderSourceFilterChips();
+
+  // Mount freshness badge in card header
+  const hd = document.querySelector('[data-card-id="news"] .card-hd-title, [data-card-id="news"] .card__hd-title');
+  if (hd) renderFreshnessBadge("news", hd as HTMLElement);
+
   void loadNews();
   if (_newsRefreshInterval !== null) clearInterval(_newsRefreshInterval);
   _newsRefreshInterval = scheduleCard(loadNews, INTERVALS.NEWS);

@@ -35,6 +35,7 @@ import { getLastCurrencyRates } from "../currency/currency";
 import { fetchTASE, isTASETicker } from "./tase-adapter";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
 // X15: cached snapshot of top mover for the semantic-clipboard producer.
@@ -836,6 +837,7 @@ export async function loadAllStocks(): Promise<void> {
       setSync("stocks", "ok");
       syncBurst("stocks");
       recordSuccess("stocks");
+      markFresh("stocks");
     } else {
       setSync("stocks", uncached.length === STOCK_SYMBOLS.length ? "error" : "ok");
       recordFailure("stocks");
@@ -844,6 +846,7 @@ export async function loadAllStocks(): Promise<void> {
     setSync("stocks", "ok");
     syncBurst("stocks");
     recordSuccess("stocks");
+    markFresh("stocks");
   }
 
   releaseLock("stocks");
@@ -1108,6 +1111,11 @@ export function initStocksCard(): void {
   applyHiddenStocks();
   updateMarketBadge();
   updateMarketCountdown();
+
+  // Mount freshness badge in card header
+  const hd = document.querySelector('[data-card-id="stocks"] .card-hd-title, [data-card-id="stocks"] .card__hd-title');
+  if (hd) renderFreshnessBadge("stocks", hd as HTMLElement);
+
   if (_marketBadgeInterval !== null) clearInterval(_marketBadgeInterval);
   if (_marketCountdownInterval !== null) clearInterval(_marketCountdownInterval);
   if (_stocksRefreshInterval !== null) clearTimeout(_stocksRefreshInterval);
