@@ -15,6 +15,8 @@ import {
   recordProviderLatency,
   getProviderLatency,
   getAllProviderLatencies,
+  getProviderSuccessRate,
+  getProviderAvgLatency,
 } from "@/core/provider";
 
 beforeEach(() => {
@@ -217,5 +219,37 @@ describe("recordProviderLatency ", () => {
     recordProviderLatency("c", 50);
     _resetProviderHealth();
     expect(getProviderLatency("c")).toEqual([]);
+  });
+});
+
+describe("getProviderSuccessRate", () => {
+  it("returns 1 for unknown provider", () => {
+    expect(getProviderSuccessRate("new")).toBe(1);
+  });
+
+  it("returns correct rate after mixed results", () => {
+    recordProviderSuccess("mixed");
+    recordProviderSuccess("mixed");
+    recordProviderFailure("mixed");
+    expect(getProviderSuccessRate("mixed")).toBeCloseTo(2 / 3);
+  });
+
+  it("returns 0 when all failures", () => {
+    recordProviderFailure("bad");
+    recordProviderFailure("bad");
+    expect(getProviderSuccessRate("bad")).toBe(0);
+  });
+});
+
+describe("getProviderAvgLatency", () => {
+  it("returns 0 for unknown provider", () => {
+    expect(getProviderAvgLatency("none")).toBe(0);
+  });
+
+  it("returns average of recorded samples", () => {
+    recordProviderLatency("svc", 100);
+    recordProviderLatency("svc", 200);
+    recordProviderLatency("svc", 300);
+    expect(getProviderAvgLatency("svc")).toBe(200);
   });
 });

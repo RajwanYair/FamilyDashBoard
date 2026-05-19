@@ -12,6 +12,8 @@
  *   // { id, successCount, failureCount, lastOkAt, consecutiveFails, status }
  */
 
+import { nowMs } from "./temporal";
+
 export type ProviderStatus = "ok" | "degraded" | "down";
 
 export interface ProviderHealth {
@@ -66,7 +68,7 @@ export function recordProviderSuccess(id: string): void {
   const h = _ensure(id);
   h.successCount++;
   h.consecutiveFails = 0;
-  h.lastOkAt = new Date().toISOString();
+  h.lastOkAt = new Date(nowMs()).toISOString();
   h.status = "ok";
 }
 
@@ -95,6 +97,27 @@ export function getProviderHealth(id: string): ProviderHealth {
  */
 export function getAllProviderHealth(): ProviderHealth[] {
   return Array.from(_health.values()).map((h) => ({ ...h }));
+}
+
+/**
+ * Compute the success rate for a provider (0–1).
+ * Returns 1 if no requests have been made.
+ */
+export function getProviderSuccessRate(id: string): number {
+  const h = _ensure(id);
+  const total = h.successCount + h.failureCount;
+  if (total === 0) return 1;
+  return h.successCount / total;
+}
+
+/**
+ * Compute the average latency (ms) for a provider.
+ * Returns 0 if no samples are recorded.
+ */
+export function getProviderAvgLatency(id: string): number {
+  const samples = _latencyHistory.get(id);
+  if (!samples || samples.length === 0) return 0;
+  return Math.round(samples.reduce((a, b) => a + b, 0) / samples.length);
 }
 
 /**
@@ -174,5 +197,5 @@ export function shouldBackoff(
 ): boolean {
   const delay = getBackoffMs(id, baseMs, maxMs);
   if (delay === 0) return false;
-  return Date.now() - lastAttemptMs < delay;
+  return nowMs() - lastAttemptMs < delay;
 }
