@@ -60,6 +60,7 @@ import {
   setIdleAutoDimMinutes,
 } from "./ui/night-dimmer";
 import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
+import { initProviderDegradationToasts } from "./core/provider-toast";
 import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
 import { initResizers } from "./ui/resizer";
@@ -267,6 +268,7 @@ export function init(): void {
   initTodayPane();
   initConfigPanel();
   initDiagOverlay();
+  initProviderDegradationToasts();
   initScrollShadows();
   // auto-mount registry cards not already in index.html (e.g. video-news)
   mountRegisteredCards();

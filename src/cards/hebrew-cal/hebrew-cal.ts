@@ -889,7 +889,8 @@ export function renderZmanim(times: Record<string, string>): void {
 }
 
 async function loadZmanim(): Promise<void> {
-  const todayStr = toISODateString(today());
+  const d = today();
+  const todayStr = toISODateString(d.getFullYear(), d.getMonth() + 1, d.getDate());
   const key = `zmanim-${todayStr}`;
   const fresh = await cGetAsync<ZmanimResponse>(key, INTERVALS.HALACHA);
   if (fresh) {

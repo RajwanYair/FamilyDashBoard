@@ -7,6 +7,8 @@
  * silent because the corp proxy / hostile network blocked it — instead of
  * watching a perpetual "Loading…" spinner.
  *
+ * Also surfaces a degradation toast when a provider first flips to "degraded".
+ *
  * Design notes:
  *  - One toast per provider per `RATE_LIMIT_MS` window (default: 10 minutes).
  *  - Pure side-effect module — caller (provider-adapter) decides _when_ to
@@ -15,6 +17,9 @@
  */
 
 import { showToast } from "../ui/toast";
+import { nowMs } from "./temporal";
+import { onProviderStatusChange } from "./provider";
+import type { ProviderStatus } from "./provider";
 
 const RATE_LIMIT_MS = 10 * 60 * 1000;
 
@@ -30,7 +35,7 @@ const _lastNotifyAt = new Map<string, number>();
 export function notifyProviderBlocked(
   providerId: string,
   displayName: string,
-  now: number = Date.now(),
+  now: number = nowMs(),
 ): boolean {
   const last = _lastNotifyAt.get(providerId);
   if (last !== undefined && now - last < RATE_LIMIT_MS) {
@@ -40,6 +45,37 @@ export function notifyProviderBlocked(
   // Hebrew RTL message — terse, non-blocking.
   showToast(`⚠️ ${displayName}: חסום ע"י הרשת`, 5000);
   return true;
+}
+
+/**
+ * Notify the user that a provider has degraded. Rate-limited per provider.
+ */
+export function notifyProviderDegraded(
+  providerId: string,
+  now: number = nowMs(),
+): boolean {
+  const key = `${providerId}:degraded`;
+  const last = _lastNotifyAt.get(key);
+  if (last !== undefined && now - last < RATE_LIMIT_MS) {
+    return false;
+  }
+  _lastNotifyAt.set(key, now);
+  showToast(`🟡 ${providerId}: מגיב באיטיות`, 4000);
+  return true;
+}
+
+/**
+ * Wire the automatic degradation toast listener.
+ * Call once during app init.
+ */
+export function initProviderDegradationToasts(): void {
+  onProviderStatusChange((id: string, newStatus: ProviderStatus) => {
+    if (newStatus === "degraded") {
+      notifyProviderDegraded(id);
+    } else if (newStatus === "down") {
+      notifyProviderBlocked(id, id);
+    }
+  });
 }
 
 /**

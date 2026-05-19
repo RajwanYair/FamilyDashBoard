@@ -7,7 +7,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 vi.mock("@/ui/toast", () => ({ showToast: vi.fn() }));
 
 import { showToast } from "@/ui/toast";
-import { notifyProviderBlocked, _resetProviderToast } from "@/core/provider-toast";
+import {
+  notifyProviderBlocked,
+  notifyProviderDegraded,
+  initProviderDegradationToasts,
+  _resetProviderToast,
+} from "@/core/provider-toast";
+import { recordProviderFailure, _resetProviderHealth } from "@/core/provider";
 
 describe("provider-toast ", () => {
   beforeEach(() => {
@@ -54,5 +60,50 @@ describe("provider-toast ", () => {
     const surfaced = notifyProviderBlocked("currency", "Currency", 1_000_000);
     expect(surfaced).toBe(true);
     expect(showToast).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("notifyProviderDegraded", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    _resetProviderToast();
+  });
+
+  it("surfaces a degradation toast on first call", () => {
+    const surfaced = notifyProviderDegraded("weather", 1_000_000);
+    expect(surfaced).toBe(true);
+    expect(showToast).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(showToast).mock.calls[0]?.[0]).toContain("weather");
+  });
+
+  it("rate-limits degradation toasts", () => {
+    notifyProviderDegraded("weather", 1_000_000);
+    const surfaced = notifyProviderDegraded("weather", 1_000_000 + 60_000);
+    expect(surfaced).toBe(false);
+  });
+});
+
+describe("initProviderDegradationToasts", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    _resetProviderToast();
+    _resetProviderHealth();
+  });
+
+  it("fires degradation toast when provider transitions to degraded", () => {
+    initProviderDegradationToasts();
+    recordProviderFailure("api"); // consecutiveFails=1 → degraded
+    expect(showToast).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(showToast).mock.calls[0]?.[0]).toContain("api");
+  });
+
+  it("fires blocked toast when provider transitions to down", () => {
+    initProviderDegradationToasts();
+    recordProviderFailure("api"); // degraded
+    vi.clearAllMocks();
+    recordProviderFailure("api"); // still degraded (consecutiveFails=2)
+    recordProviderFailure("api"); // down (consecutiveFails=3)
+    expect(showToast).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(showToast).mock.calls[0]?.[0]).toContain("חסום");
   });
 });

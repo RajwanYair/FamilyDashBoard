@@ -78,9 +78,13 @@ export function recordProviderSuccess(id: string): void {
  */
 export function recordProviderFailure(id: string): void {
   const h = _ensure(id);
+  const prev = h.status;
   h.failureCount++;
   h.consecutiveFails++;
   h.status = _computeStatus(h.consecutiveFails);
+  if (h.status !== prev && h.status !== "ok") {
+    for (const cb of _statusListeners) cb(id, h.status, prev);
+  }
 }
 
 /**
@@ -120,6 +124,22 @@ export function getProviderAvgLatency(id: string): number {
   return Math.round(samples.reduce((a, b) => a + b, 0) / samples.length);
 }
 
+// ── Status change listeners ──────────────────────────────────
+
+/** Callback invoked when a provider transitions to degraded or down. */
+export type ProviderStatusListener = (
+  id: string,
+  newStatus: ProviderStatus,
+  prevStatus: ProviderStatus,
+) => void;
+
+const _statusListeners: ProviderStatusListener[] = [];
+
+/** Register a listener for provider status degradation transitions. */
+export function onProviderStatusChange(cb: ProviderStatusListener): void {
+  _statusListeners.push(cb);
+}
+
 /**
  * Reset health records. Intended for testing only.
  * @internal
@@ -127,6 +147,7 @@ export function getProviderAvgLatency(id: string): number {
 export function _resetProviderHealth(): void {
   _health.clear();
   _latencyHistory.clear();
+  _statusListeners.length = 0;
 }
 
 // API response time histogram per provider ─────────────────
