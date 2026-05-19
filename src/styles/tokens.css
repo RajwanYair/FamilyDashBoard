@@ -120,6 +120,183 @@
   inherits: true;
   initial-value: rgba(200, 144, 144, 0.18);
 }
+
+/*
+ * @property registrations — semantic contrast + palette colors (S26)
+ *
+ * Enables CSS to animate these tokens across theme switches and
+ * documents their accepted syntax for static analysis / type-checking.
+ * initial-value must be a concrete value (no var() allowed in @property).
+ */
+@property --text-on-accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #000;
+}
+@property --text-on-warn {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #fff;
+}
+@property --text-on-dark {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #fff;
+}
+@property --purple {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #b8aad4;
+}
+@property --pink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #d4a4b4;
+}
+@property --orange {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #c8a880;
+}
+@property --cyan {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #82bec8;
+}
+@property --dimmer-warm-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #8b4513;
+}
+@property --focus-outline-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #c8a87a;
+}
+@property --focus-outline-color-card {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #c8a87a;
+}
+/* Derived color-mix tokens — initial-value is transparent (var() not allowed in @property) */
+@property --accent-subtle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --accent-dim {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --positive-subtle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --negative-subtle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --bg-overlay {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+/*
+ * @property registrations — spacing + radius + focus length tokens (S26)
+ *
+ * Typed as <length> so that CSS can interpolate these values in transitions
+ * and static analysis tools can verify correct usage.
+ */
+@property --space-1 {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 4px;
+}
+@property --space-2 {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 8px;
+}
+@property --space-3 {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 12px;
+}
+@property --space-4 {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 16px;
+}
+@property --space-5 {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 24px;
+}
+@property --space-6 {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 32px;
+}
+@property --space-7 {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 48px;
+}
+@property --space-8 {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 64px;
+}
+@property --radius-sm {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 6px;
+}
+@property --radius-md {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 10px;
+}
+@property --radius-lg {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 14px;
+}
+@property --radius-xl {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 20px;
+}
+@property --focus-outline-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 3px;
+}
+@property --focus-outline-offset {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 2px;
+}
+@property --focus-shadow-spread {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 4px;
+}
+@property --focus-outline-width-input {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 2px;
+}
+@property --focus-outline-offset-btn {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 3px;
+}
+
 :root {
   /* F11: light-dark() token adoption — supports both dark (default) and
      * system light mode when no explicit theme is selected.
