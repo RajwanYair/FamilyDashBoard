@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v14.34.0
+/* FamilyDashBoard ServiceWorker — v14.35.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * Stream SW.4: Migrated from sw.js to sw.ts (TypeScript + WebWorker lib)

@@ -5,10 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
-## [Unreleased]
+## [14.35.0] — 2026-05-19
 
-> **7793 tests / 328 suites / 0 failures** · Full check gate + build: 0 errors
+> **Commit `c2a5195`** · 10-sprint roadmap session: temporal migration, freshness UX, provider health
 
+- **feat(temporal)**: migrate countdown, calendar, and hebrew-cal cards to `src/core/temporal.ts` abstraction — zero raw `new Date()` in P0 cards (S1–S3)
+- **feat(freshness)**: add freshness badge system with relative time + color-coded states (fresh/aging/stale) — `markFresh()` / `renderFreshnessBadge()` (S4)
+- **feat(skeleton)**: add `showCardSkeleton()` / `hideCardSkeleton()` for CLS-zero loading placeholders (S5)
+- **feat(hierarchy)**: add `.metric-tile--primary` / `.metric-tile--secondary` CSS modifiers for 3× info hierarchy (S6)
+- **feat(provider)**: add `getProviderSuccessRate()` / `getProviderAvgLatency()` accessors; migrate provider.ts to temporal (S7)
+- **feat(diag)**: enhance provider scorecard in D-overlay with success rate % and avg latency (S8)
+- **feat(provider)**: add `onProviderStatusChange()` listener pattern; auto-toast on degraded/down transitions (S9)
+- **perf(html)**: add `dns-prefetch` hints for open-meteo, hebcal, yahoo, er-api origins (S10)
+- **fix(hebrew-cal)**: fix `toISODateString()` call signature in `loadZmanim` (type error from Sprint 3 migration)
 - **fix(dx)**: uninstall webhint + HTMLHint VS Code extensions — eliminates 277 false-positive IE compat and inline-style warnings at source instead of suppressing via config
 - **fix(dx)**: delete dead `.hintrc` file (webhint config for removed extension)
 - **fix(dx)**: remove `htmlhint.enable: false` and `webhint.enableTelemetry: "disabled"` workarounds from `.vscode/settings.json` — extensions removed, settings unnecessary
@@ -17,6 +26,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 - **fix(a11y)**: convert countdown card from inline `style.display` toggling to `classList.add/remove("is-hidden")` — 13 mutations in `countdown.ts`, 3 inline `style="display:none"` in `index.html` replaced with `class="is-hidden"`
 - **test(countdown)**: update 29 assertions from `style.display` checks to `classList.contains("is-hidden")`; update 3 DOM builder helpers in test file
 - **docs**: update `_headers` path in `security.md`, `ADR-018-csp-coop-coep.md`, `check-csp-wildcards.mjs`, `headers.test.ts`, `permissions-policy.test.ts`
+- **chore(version)**: bump to 14.35.0; update version strings across 16 files
 
 ---
 
