@@ -518,6 +518,9 @@
         </div>
         <!-- Tab: Advanced -->
         <div class="cfg-section" id="cfg-section-advanced" role="tabpanel" aria-labelledby="cfg-tab-advanced" data-tab="advanced">
+          <!-- Progressive disclosure: collapsible sub-groups (P4) -->
+          <details class="cfg-details" open>
+            <summary class="cfg-details-summary">📍 מיקום Location</summary>
           <div class="cfg-row">
             <span class="cfg-label">🏠 קו רוחב — עיר ביתי</span>
             <input class="cfg-input cfg-num-90" id="cfg-home-lat" type="number" step="0.0001" placeholder="31.7683" >
@@ -530,6 +533,9 @@
             <span class="cfg-label">🏠 שם העיר (ביתי)</span>
             <input class="cfg-input" id="cfg-home-name" type="text" placeholder="ביתי" >
           </div>
+          </details>
+          <details class="cfg-details">
+            <summary class="cfg-details-summary">🔌 רשת Network</summary>
           <!-- Custom CORS proxy for corporate/restricted networks -->
           <div class="cfg-row">
             <span class="cfg-label">🌐 פרוקסי CORS מותאם (proxy?url=)</span>
@@ -545,6 +551,9 @@
               <option value="no-proxy">no-proxy — ישיר בלבד (ללא proxy)</option>
             </select>
           </div>
+          </details>
+          <details class="cfg-details">
+            <summary class="cfg-details-summary">⏳ ספירה לאחור Countdown</summary>
           <!-- F139: Custom countdown chip config -->
           <div class="cfg-row">
             <span class="cfg-label">⏳ אירוע ספירה לאחור — תאריך</span>
@@ -608,6 +617,9 @@
             <span class="cfg-label">⏳ ספירה 3 — הודעת סיום</span>
             <input class="cfg-input" id="cfg-cd3-done-msg" type="text" placeholder="🎉 מזל טוב!" >
           </div>
+          </details>
+          <details class="cfg-details">
+            <summary class="cfg-details-summary">📋 נתונים Data</summary>
           <!-- F107: Settings export/import -->
           <!-- Chores / Tasks editor (reads/writes localStorage dash_chores) -->
           <div class="cfg-row cfg-flex-col-stretch">
@@ -624,6 +636,9 @@
             <span class="cfg-label">⏰ שעת איפוס משימות (0-23)</span>
             <input class="cfg-input cfg-num-70" id="cfg-tasks-reset-hour" type="number" min="0" max="23" step="1" placeholder="6" title="שעה (0-23) לאיפוס יומי של רשימת המשימות. ברירת מחדל: 6 (6:00 בבוקר)">
           </div>
+          </details>
+          <details class="cfg-details">
+            <summary class="cfg-details-summary">💾 ייצוא/ייבוא Export</summary>
           <div class="cfg-row cfg-row-center-wrap">
             <button type="button" class="cfg-btn cfg-fs-082" id="cfg-export-btn" aria-label="ייצוא הגדרות כקובץ JSON" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
             <button type="button" class="cfg-btn cfg-input-themed--sm" id="cfg-import-btn" aria-label="ייבוא הגדרות מקובץ JSON" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
@@ -635,6 +650,7 @@
             <button class="cfg-pill-danger" type="button" id="cfg-reset-all-btn" aria-label="איפוס כל ההגדרות" title="מחיקת כל ההגדרות וטעינה מחדש">⚠️ אפס הכל</button>
           </div>
           <input class="is-hidden" type="file" id="cfg-import-file" accept=".json" aria-label="בחירת קובץ JSON לייבוא הגדרות" title="בחירת קובץ לייבוא">
+          </details>
         </div>
         <!-- Always-visible actions -->
         <div class="cfg-row cfg-row-divider">

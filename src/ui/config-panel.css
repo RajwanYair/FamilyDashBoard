@@ -226,3 +226,29 @@
   background: var(--bg-card-inner);
   color: var(--text-primary);
 }
+
+/* P4: Progressive disclosure — collapsible sub-groups in Advanced tab */
+.cfg-details {
+  grid-column: 1 / -1;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-block: 4px;
+}
+.cfg-details-summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85em;
+  color: var(--accent);
+  padding: 4px 0;
+  list-style: none;
+}
+.cfg-details-summary::before {
+  content: "▶ ";
+  font-size: 0.7em;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+.cfg-details[open] > .cfg-details-summary::before {
+  content: "▼ ";
+}
