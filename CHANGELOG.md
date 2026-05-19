@@ -9,6 +9,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.34.0] — 2026-05-19
+
+> **7801 tests / 328 suites / 0 failures** · Coverage: 97.09/90.54/96.46/98.13
+
+- **fix(security)**: harden `supply-chain.yml` worker npm audit — remove `continue-on-error: true` and `|| true` escape; high-severity vulnerabilities in Hono/Valibot now hard-gate the workflow (QA-13)
+- **fix(lint)**: remove unused `eslint-disable-next-line @typescript-eslint/no-explicit-any` in `tests/unit/worker/health.test.ts`; replaced `as any` cast with type-safe `Partial<typeof env>` delete
+- **docs(roadmap)**: ROADMAP v8.0 deep-rethink audit stamp — security gate regression fixed, test count updated to 7801, ADR count corrected to 92, comparison table refreshed to v14.33.0 row, new QA-13/QA-14/QA-15 items, new open decisions D10 (Vite 9/Rolldown) + D11 (commitlint 21), new risk R13 (IDE extension noise), new open questions 13–15 (S29)
+- **chore(version)**: bump to 14.34.0; update version strings in README, copilot-instructions.md, AGENTS.md, workspace.instructions.md, ARCHITECTURE.md, security.md, sw.ts, and 4 SVG assets
+
+---
+
 ## [14.33.0] — 2025-07-14
 
 > **7766 tests / 326 suites / 0 failures** (commit `473f819`)

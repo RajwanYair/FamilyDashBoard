@@ -83,7 +83,7 @@ is preserved and no visible regression occurs.
 
 The `ALLOWED_ASSET_HOSTS` set in `worker/src/routes/r2-asset.ts` currently includes:
 
-```
+```text
 picsum.photos · fastly.picsum.photos · images.unsplash.com · images.pexels.com
 live.staticflickr.com · upload.wikimedia.org · i.ytimg.com
 openweathermap.org · openmeteo.s3.amazonaws.com · flagcdn.com

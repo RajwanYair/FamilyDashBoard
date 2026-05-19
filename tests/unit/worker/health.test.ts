@@ -65,8 +65,7 @@ describe("/health — base response shape", () => {
 
   it("environment defaults to 'production' when ENVIRONMENT is unset", async () => {
     const env = makeMinimalEnv();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delete (env as any).ENVIRONMENT;
+    delete (env as Partial<typeof env>).ENVIRONMENT;
     const res = await worker.fetch(makeRequest("/health"), env, makeCtx());
     const body = await res.json() as { environment: string };
     expect(body.environment).toBe("production");

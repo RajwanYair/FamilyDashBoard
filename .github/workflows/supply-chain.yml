@@ -98,8 +98,8 @@ jobs:
       - name: Worker npm audit
         run: |
           cd worker
-          npm audit --omit=dev --audit-level=high || true
-        continue-on-error: true
+          npm install --package-lock-only --ignore-scripts --silent
+          npm audit --omit=dev --audit-level=high
 
       # On scheduled weekly runs: open a GitHub Issue if any check above failed
       - name: Create security issue on scheduled failure

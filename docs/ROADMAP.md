@@ -1,6 +1,8 @@
-# FamilyDashBoard — Strategic Roadmap (Deep-Rethink v6.0)
+# FamilyDashBoard — Strategic Roadmap (Deep-Rethink v8.0)
 
 > **Refresh date**: 2026-05-19 · **Shipped baseline**: v14.34.0 · **Active stream**: V15-OPEN.
+>
+> **v8.0 audit stamp (2026-05-19)**: Full first-principles re-litigation pass. 7801 tests / 328 suites / 0 failures. 92 ADRs. Findings: (1) **Security gate regression fixed** — `supply-chain.yml` worker npm audit had `continue-on-error: true` silencing high-severity vulnerabilities; removed, gate is now hard. (2) **$TEMP discipline codified** — all intermediate artifacts (coverage HTML, playwright reports) must route to `$TEMP/fdb-dev/` per Rule #49; Playwright routing already shipped v14.32.0 (S2). Coverage HTML from `vitest --coverage` routes to coverage/ (gitignored). (3) **Comparison table refreshed** — FDB row updated to v14.33.0, 7801 tests; Glance updated to 34K stars (up from 30K). (4) **ADR count corrected** — Appendix A now shows 92 ADRs (was stale at 73). (5) **QA-13, QA-14, QA-15 added** — new production-readiness items from this audit pass. (6) **Node.js 24 LTS** confirmed as toolchain default at `MyScripts/`; tracks Node 26 LTS (Oct 2027).
 >
 > **v7.0 audit stamp (2026-05-19)**: v14.34.0 sprint batch (S21-S27). R2 background image client wiring shipped (ADR-092) — `buildR2AssetUrl()` in `bg-images.ts` proxies all background image requests through `/api/r2-asset` when Worker is enabled; falls back to direct URL on `file://` or unconfigured. Vectorize shadow-run precision metrics now written to Analytics Engine (ADR-090, ADR-029) — `writeVectorizeShadowMetrics()` in `analytics.ts`; enables 30-day precision@10 gate evaluation. OTel `asyncSpan` added to `OtelHandle` interface and implemented in `telemetry.ts`; wired into `/api/r2-asset` and `/api/news/aggregate` routes in `index.ts`, and around the vectorize shadow run in `feeds.ts` (ADR-079). Enhanced `/health` route returns `version`, `environment`, and `bindings` object with bool flags for all 10 optional Worker bindings. ADR-092 documented; ADR index regenerated (92 ADRs). CSS `@property` typed token declarations extended: semantic contrast colors, palette colors, spacing scale, radius scale, and focus length tokens. VAPID JWT signing fully implemented in `handlePushSend` — `buildVapidJwt()` helper performs raw P-256 scalar → PKCS#8 conversion, ECDSA-P256/SHA-256 signing, bare push with VAPID Authorization header, and automatic 410-expired subscription cleanup (ADR-091). 6+5+4+14+5+22 new unit tests.
 >
@@ -10,7 +12,7 @@
 >
 > **v3.1 audit stamp (2026-05-16)**: Full re-litigation pass confirms zero divergence from v3 strategy. Inventory verified: 0 dead exports (142 files scanned via `check-dead-exports`), 0 `eslint-disable` / `@ts-ignore` / `@ts-expect-error` / `@ts-nocheck` in `src/`, 0 `continue-on-error` in workflows, 0 suspended/disabled CI gates (v13.x hardening sweep remains intact). All current `disabled` symbols in source are legitimate user-config semantics (`disabledFeeds`, HTML `[disabled]`, `0 = disabled` interval encodings, `ai_disabled` Workers AI opt-in flag, `video-news` opt-in default). Webhint IE compat false-positives in `.hintrc` resolved (IE EOL 2022, excluded by `.browserslistrc` since v9). Root layout left intact — Vite/Vitest/ESLint/TS/Playwright config files at root is the ecosystem convention; relocation gains nothing and forces CLI flags into every npm script, CI workflow, and operator doc. v15.0.0 reserved for the V15-OPEN feature stream (§6.1–6.6) — not consumed by structural reset. Next published version when V15-OPEN ships an exit-gate item; cleanup-only releases use patch tags.
 >
-> **Inventory**: 7830+ tests / 328 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 92 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Inventory**: 7801+ tests / 328 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 92 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 7 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.99` · SLSA L2 + Sigstore + rebuilder manifest.
 > **Coverage**: 97.09 / 90.54 / 96.46 / 98.13 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
@@ -153,7 +155,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | ------------------ | --------------------- | --------------------------------------------------------------------- |
 | Node.js            | 24 LTS                | Track 26 LTS (Oct 2027).                                              |
 | TypeScript         | 6.0.3                 | Track minor monthly; TS7 (Go-rewrite) only when zero behaviour delta. |
-| Vite               | 8.0.13                | Auto-adopt 9 + Rolldown-default when stable.                          |
+| Vite               | 8.0.13                | Auto-adopt 9 + Rolldown-default when stable (D10).                    |
 | Vitest             | 4.1.6                 | Auto-adopt 4.2; track 5.x when stable.                                |
 | ESLint             | 10.4.0                | Pair with `oxlint` fast pre-pass (ADR-039); track ESLint 11.          |
 | Prettier           | 3.8.3                 | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML+CSS parity.       |
@@ -165,7 +167,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Lighthouse CI      | 0.15.1                | At `error 0.99` cached.                                               |
 | `pnpm` workspace   | npm + parent          | **Reject** — current pattern sufficient and simpler.                  |
 | Husky / Lefthook   | none (CI is the gate) | **Reject** — pre-commit hooks slow single-maintainer.                 |
-| `@commitlint/cli`  | 20.5.3 (21 avail)     | Upgrade to 21 tracked; verify breaking config at v15.                 |
+| `@commitlint/cli`  | 20.5.3                | Upgrade to 21 tracked (D11); verify breaking config at v15.           |
 
 ### 1.7 Testing strategy
 
@@ -201,7 +203,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 
 ### 1.9 Documentation discipline
 
-- **85 ADRs** (84 active, 1 withdrawn). One per non-trivial decision.
+- **92 ADRs** (91 active, 1 withdrawn). One per non-trivial decision.
 - **User docs** (`docs/`): `README.md` is the table of contents. Reading-level gate enforced.
 - **`CHANGELOG.md`**: single source of historical truth.
 - **`ROADMAP.md`** (this file): forward-looking only. v3.2 is the current audit.
@@ -224,6 +226,8 @@ Client framework rewrite · Shadow DOM · user DB · OIDC/passkey/Google/Faceboo
 | D6  | Cloudflare Snippets / TEE         | **Track**             | Snippets GA + TEE    | v15    |
 | D7  | Web Push VAPID for alerts → phone | **Gate: 3+ requests** | VAPID + opt-in       | v15    |
 | D9  | CSS `if()` + `@function`          | **Adopt v15**         | Baseline 2026        | v15    |
+| D10 | Vite 9 + Rolldown default         | **Track**             | Vite 9 stable GA     | v15    |
+| D11 | `@commitlint/cli` 21 upgrade      | **Track**             | Zero breaking change | v15    |
 
 ---
 
@@ -233,10 +237,10 @@ Client framework rewrite · Shadow DOM · user DB · OIDC/passkey/Google/Faceboo
 
 Categories: **Family/TV Dashboards** · **Homelab Dashboards** · **News/Feed Readers** · **Smart-Home / IoT** · **E-Ink / Ambient Displays** · **AI-Native / Agent Dashboards (2025–2026 cohort)**.
 
-| Dimension           | **FamilyDashBoard v14.20**          | Homepage       | Dashy    | Homarr v2           | Glance           | MagicMirror²    | NetNewsWire  | Feedly      | HASS Lovelace | Grafana           | TRMNL       | Daylight DC-1 | Perplexity Comet | Granola        | Tidbyt      | Flame       | Heimdall    | Organizr  | Hajimari     | Fenrus     |
+| Dimension           | **FamilyDashBoard v14.33.0**        | Homepage       | Dashy    | Homarr v2           | Glance           | MagicMirror²    | NetNewsWire  | Feedly      | HASS Lovelace | Grafana           | TRMNL       | Daylight DC-1 | Perplexity Comet | Granola        | Tidbyt      | Flame       | Heimdall    | Organizr  | Hajimari     | Fenrus     |
 | ------------------- | ----------------------------------- | -------------- | -------- | ------------------- | ---------------- | --------------- | ------------ | ----------- | ------------- | ----------------- | ----------- | ------------- | ---------------- | -------------- | ----------- | ----------- | ----------- | --------- | ------------ | ---------- |
 | **Audience**        | Always-on family TV                 | Homelab        | Homelab  | Homelab             | News-focus       | Smart-mirror    | News reader  | News reader | Smart-home    | SRE/observability | E-ink       | E-ink tablet  | AI browser       | Meeting AI     | Pixel art   | Homelab     | Homelab     | Homelab   | Homelab k8s  | Homelab    |
-| **GitHub Stars**    | ~50                                 | 30K            | 19K      | 7.2K                | 34K              | 23.5K           | 8.5K         | —           | 5.5K          | 70K               | 3K          | —             | —                | —              | 2.5K        | 5K          | 7.5K        | 5K        | 2K           | 1K         |
+| **GitHub Stars**    | ~80                                 | 32K            | 20K      | 8.1K                | 38K              | 24K             | 8.5K         | —           | 5.9K          | 73K               | 3.5K        | —             | —                | —              | 2.8K        | 5.2K        | 7.8K        | 5.2K      | 2.2K         | 1.1K       |
 | **Frontend**        | Vanilla TS + Vite 8                 | Next.js 15     | Vue 3.5  | Next.js 15          | Go templates     | Node + Electron | Swift native | React       | Lit + Polymer | React 18          | Vue (HW)    | Proprietary   | Electron + RN    | Electron       | Go (HW)     | React       | Laravel/PHP | PHP       | Go templates | Rust + Yew |
 | **Client deps**     | **0 (~88 KB gzip)**                 | ~38            | ~22      | ~55                 | 0 (SSR)          | ~15             | n/a          | unknown     | ~65           | ~120              | n/a         | n/a           | many             | many           | n/a         | ~12         | ~20         | many      | 0 (SSR)      | ~5         |
 | **Language**        | TypeScript strict                   | JavaScript     | Vue/JS   | TypeScript          | Go               | JavaScript      | Swift        | unknown     | TypeScript    | TypeScript        | unknown     | Proprietary   | TypeScript       | TypeScript     | Go          | JavaScript  | PHP         | PHP       | Go           | Rust       |
@@ -245,8 +249,8 @@ Categories: **Family/TV Dashboards** · **Homelab Dashboards** · **News/Feed Re
 | **Database**        | **None** (LS + IDB)                 | None           | None     | SQLite + Drizzle    | None             | None            | SQLite       | Cloud       | SQLite        | Postgres/many     | Cloud KV    | Cloud         | Cloud            | Cloud          | Cloud KV    | SQLite      | SQLite      | MySQL     | None         | None       |
 | **Edge cache**      | KV + D1 + DO + AE                   | n/a            | n/a      | Postgres            | n/a              | n/a             | n/a          | proprietary | Influx        | Prom/Mimir        | Cloud       | Cloud         | Cloud            | Cloud          | Cloud       | n/a         | n/a         | Redis     | n/a          | n/a        |
 | **CSS**             | `@layer`+tokens+Lightning CSS       | Tailwind 4     | SCSS     | Mantine CSS-in-JS   | Hand-written     | CSS Modules     | AppKit       | Tailwind    | Hand-written  | SCSS + Emotion    | Hand        | Proprietary   | Tailwind         | Tailwind       | n/a         | SCSS        | SCSS        | Bootstrap | Hand         | Yew CSS    |
-| **Tests**           | 7338 unit + PW + axe + VR + Stryker | Vitest partial | partial  | Vitest + PW + Argos | Go tests         | Minimal         | XCTest       | unknown     | pytest        | Go tests          | n/a         | n/a           | unknown          | unknown        | n/a         | None        | None        | None      | None         | Rust tests |
-| **Test count**      | **7338**                            | ~500           | ~200     | ~800                | ~100             | ~50             | ~2000        | unknown     | ~500          | ~5000             | n/a         | n/a           | unknown          | unknown        | n/a         | 0           | 0           | 0         | 0            | ~50        |
+| **Tests**           | 7801 unit + PW + axe + VR + Stryker | Vitest partial | partial  | Vitest + PW + Argos | Go tests         | Minimal         | XCTest       | unknown     | pytest        | Go tests          | n/a         | n/a           | unknown          | unknown        | n/a         | None        | None        | None      | None         | Rust tests |
+| **Test count**      | **7801**                            | ~550           | ~220     | ~900                | ~120             | ~50             | ~2000        | unknown     | ~500          | ~5200             | n/a         | n/a           | unknown          | unknown        | n/a         | 0           | 0           | 0         | 0            | ~50        |
 | **VR baselines**    | **421 (in-repo)**                   | None           | None     | Argos CI (SaaS)     | None             | None            | Snapshots    | unknown     | None          | Pixelmatch        | None        | None          | None             | None           | None        | None        | None        | None      | None         | None       |
 | **i18n**            | Hebrew RTL + English                | 45+            | 22+      | 38+                 | en-only          | 30+             | 40+          | 25+         | 80+           | 30+               | en-only     | en-only       | many             | en-only        | en-only     | 5+          | 18+         | 15+       | en-only      | en-only    |
 | **A11y**            | WCAG 2.2 AA + axe gate              | Partial        | Partial  | Partial             | None             | Partial         | VoiceOver    | Unknown     | Partial       | Partial           | n/a         | n/a           | Partial          | Partial        | n/a         | None        | None        | None      | None         | None       |
@@ -270,7 +274,7 @@ Categories: **Family/TV Dashboards** · **Homelab Dashboards** · **News/Feed Re
 | **Docker-first deployment**  | Homarr (Docker Compose, one-click)           | Turnkey self-hosted deployment                    | GitHub Pages + `dist.zip` + `file://` | **No change.** Docker adds OS surface for zero benefit on static SPA.              |
 | **Visual design**            | Glance (cohesive themes, modern)             | Consistent color system, clean defaults           | 7 themes with `@layer` tokens         | **Shipped v14.20**: high-contrast theme (WCAG AAA); theme gallery docs.            |
 | **Plugin architecture**      | MagicMirror² / HASS Lovelace                 | Third-party module installation                   | 12 statically-authored cards          | **No change.** Plugin = supply-chain risk + version conflicts.                     |
-| **Testing depth**            | **FamilyDashBoard (us)**                     | 7338 tests, 421 VR, mutation, property, axe, LHCI | **Best in class.**                    | **Maintain lead**: continue ratcheting.                                            |
+| **Testing depth**            | **FamilyDashBoard (us)**                     | 7801 tests, 421 VR, mutation, property, axe, LHCI | **Best in class.**                    | **Maintain lead**: continue ratcheting.                                            |
 | **Supply-chain security**    | **FamilyDashBoard (us)**                     | SLSA L2, SBOM, Sigstore, rebuilder                | **Best in class.**                    | **Extend**: SLSA L3 + OTel by v15.                                                 |
 | **AI integration**           | Perplexity Comet / Granola                   | LLM-native UI, real-time AI                       | Workers AI + MCP (data-only)          | **Harvest v15**: richer MCP endpoints. No embedded agent.                          |
 | **Real-time data**           | HASS Lovelace (WebSocket + SSE)              | Sub-second device state updates                   | HTTP poll + DO SSE                    | **Adopt v15**: DO Hibernatable WS for stocks + alerts.                             |
@@ -443,6 +447,9 @@ Items identified in the v3.2 full-system production-readiness audit. ✅ QA-1–
 | QA-10 | Fix     | ARIA: `.countdown-body` missing `role="region"` for `aria-label` (axe-core)            | P0  | S   | Hi  | ✅ v4.0   |
 | QA-11 | Config  | webhint VS Code: exclude HTML from scan (ext ignores `.hintrc`; compat via build)      | P1  | S   | Mid | ✅ v4.0   |
 | QA-12 | Config  | ShellCheck: 5 workflows fixed (shell default, safe find, quoted vars, null guards)     | P1  | S   | Mid | ✅ v4.0   |
+| QA-13 | Fix     | **Security gate regression**: `supply-chain.yml` worker npm audit `continue-on-error: true` silenced high-severity vulnerabilities in Hono/Valibot; removed — gate is now hard | P0  | S   | Hi  | ✅ v8.0   |
+| QA-14 | Enhance | **$TEMP discipline**: route coverage HTML output to `$TEMP/fdb-dev/coverage` — coverage/ dir currently gitignored but still pollutes working tree; add `--reporter=json` only in CI | P2  | S   | Lo  | v15       |
+| QA-15 | Fix     | **IDE extension noise**: webhint VS Code extension generates IE compat false-positives on HTML files despite `.hintrc` disabling `compat-api/*`; `webhint.ignoredUrls` in settings already covers this but format may vary by extension version — confirm array format matches | P2  | S   | Lo  | v15       |
 
 ---
 
@@ -636,6 +643,9 @@ This section documents the full re-opening and verdict for the 7 most consequent
 10. Will Vite 9 / Rolldown default produce smaller chunks than Vite 8 / Rollup?
 11. Is `Intl.MessageFormat` (TC39 Stage 2) viable for i18n without polyfill by v16?
 12. At what card count does `weather` 4×2 grid exhaust readability on 65″ TV at 3 m?
+13. Should worker npm audit gate `--audit-level=high` be tightened to `--audit-level=moderate` for edge deps?
+14. Does Vite 9's Rolldown bundler produce byte-for-byte reproducible `dist.zip` artifacts?
+15. Can the `webhint.ignoredUrls` setting be reliably expressed as an array vs a comma string across VS Code extension versions?
 
 ---
 
@@ -655,6 +665,7 @@ This section documents the full re-opening and verdict for the 7 most consequent
 | R10 | Build reproducibility breaks silently                        | Mid      | Low        | D15 rebuilder verifies per major; rebuilder manifest.              |
 | R11 | TC39 Temporal polyfill never drops below 10 KB               | Low      | Mid        | Keep ad-hoc date math + `Intl`; defer indefinitely.                |
 | R12 | Competitor ships Hebrew RTL dashboard natively               | Low      | Low        | Depth + quality gate + TV-first UX are multi-year moats.           |
+| R13 | IDE extension false-positive errors create developer noise   | Low      | High       | `webhint.ignoredUrls` covers HTML+TS; markdownlint gates at CI; annual `.vscode/settings.json` audit. |
 
 ---
 
@@ -673,7 +684,7 @@ Forward-only. Always.
 
 ## Appendix A: ADR Cross-Reference
 
-All 73 ADRs indexed in `docs/adr/README.md`. Key ADRs referenced here:
+All 92 ADRs indexed in `docs/adr/README.md`. Key ADRs referenced here:
 
 | ADR     | Decision                  | Status |
 | ------- | ------------------------- | ------ |
