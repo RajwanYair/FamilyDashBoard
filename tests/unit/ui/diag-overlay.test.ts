@@ -21,6 +21,7 @@ import { diagLog, clearDiag } from "@/core/diag";
 import {
   recordProviderSuccess,
   recordProviderFailure,
+  recordProviderLatency,
   _resetProviderHealth,
 } from "@/core/provider";
 import * as fetchMod from "@/core/fetch";
@@ -535,6 +536,22 @@ describe("renderProviderHealthHtml ", () => {
     const html = renderProviderHealthHtml();
     // lastOkAt is set on success; should show ok@ timestamp
     expect(html).toContain("ok@");
+  });
+
+  it("shows success rate percentage", () => {
+    recordProviderSuccess("api");
+    recordProviderSuccess("api");
+    recordProviderFailure("api");
+    const html = renderProviderHealthHtml();
+    expect(html).toContain("67%");
+  });
+
+  it("shows avg latency when samples exist", () => {
+    recordProviderSuccess("fast");
+    recordProviderLatency("fast", 100);
+    recordProviderLatency("fast", 200);
+    const html = renderProviderHealthHtml();
+    expect(html).toContain("150ms");
   });
 });
 

@@ -36,7 +36,11 @@ import {
 } from "../core/perf";
 import { idbEstimateSize } from "../core/idb-cache";
 import { formatHardwareProfile, getHardwareTier } from "../core/hardware";
-import { getAllProviderHealth } from "../core/provider";
+import {
+  getAllProviderHealth,
+  getProviderSuccessRate,
+  getProviderAvgLatency,
+} from "../core/provider";
 import { trustedHTML } from "../core/trusted-types";
 
 let overlayEl: HTMLDialogElement | null = null;
@@ -242,13 +246,18 @@ export function renderProviderHealthHtml(): string {
   const providers = getAllProviderHealth();
   if (providers.length === 0) return "";
   const rows = providers
-    .map(
-      (p) =>
+    .map((p) => {
+      const rate = (getProviderSuccessRate(p.id) * 100).toFixed(0);
+      const latency = getProviderAvgLatency(p.id);
+      const latStr = latency > 0 ? ` · ${String(latency)}ms` : "";
+      return (
         `<span>${providerStatusIcon(p.status)} <b>${p.id}</b>: ` +
-        `↑${p.successCount} ↓${p.failureCount}` +
-        `${p.consecutiveFails > 0 ? ` (×${p.consecutiveFails})` : ""}` +
-        `${p.lastOkAt ? ` • ok@${p.lastOkAt.slice(11, 16)}` : ""}</span>`,
-    )
+        `↑${p.successCount} ↓${p.failureCount} (${rate}%)` +
+        `${p.consecutiveFails > 0 ? ` ×${p.consecutiveFails}` : ""}` +
+        `${latStr}` +
+        `${p.lastOkAt ? ` • ok@${p.lastOkAt.slice(11, 16)}` : ""}</span>`
+      );
+    })
     .join("");
   return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">
     🏥 Providers: ${rows}
