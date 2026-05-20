@@ -16,7 +16,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../core/semantic-clipboard";
 import type { CardConfigField } from "../../types/card";
-import { today } from "../../core/temporal";
+import { today, formatTimeHHMM } from "../../core/temporal";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -94,7 +94,7 @@ function renderSynthesis(text: string, source: "fresh" | "cached"): void {
   _synthesisSnapshot = text; // X15: keep snapshot for semantic producer
   if (_elText) _elText.textContent = text;
   if (_elMeta) {
-    const now = today().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+    const now = formatTimeHHMM();
     _elMeta.textContent = source === "cached" ? `עודכן: ${now} (מטמון)` : `עודכן: ${now}`;
   }
 }

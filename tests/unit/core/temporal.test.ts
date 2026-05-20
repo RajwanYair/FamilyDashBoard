@@ -32,6 +32,7 @@ import {
   dayProgressPct,
   yearProgressPct,
   nowISO,
+  formatTimeHHMM,
 } from "@/core/temporal";
 
 // ── nowMs ─────────────────────────────────────────────────────────────────────
@@ -501,5 +502,25 @@ describe("nowISO", () => {
     const parsed = new Date(iso).getTime();
     expect(parsed).toBeGreaterThanOrEqual(before);
     expect(parsed).toBeLessThanOrEqual(after);
+  });
+});
+
+// ── formatTimeHHMM ───────────────────────────────────────────────────────────
+
+describe("formatTimeHHMM", () => {
+  it("formats a known date as HH:MM", () => {
+    const d = new Date(2024, 5, 15, 14, 7, 0); // June 15, 14:07
+    const result = formatTimeHHMM(d);
+    expect(result).toBe("14:07");
+  });
+
+  it("defaults to now and returns HH:MM pattern", () => {
+    const result = formatTimeHHMM();
+    expect(result).toMatch(/^\d{2}:\d{2}$/);
+  });
+
+  it("zero-pads single-digit hours and minutes", () => {
+    const d = new Date(2024, 0, 1, 3, 5, 0); // 03:05
+    expect(formatTimeHHMM(d)).toBe("03:05");
   });
 });

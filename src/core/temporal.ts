@@ -294,6 +294,17 @@ export function nowISO(): string {
   return new Date().toISOString();
 }
 
+/**
+ * Format a Date as "HH:MM" in Hebrew locale (24-hour clock).
+ * Defaults to current time if no argument is provided.
+ *
+ * Temporal: `Temporal.PlainTime.from(instant).toString({ smallestUnit: 'minute' })`
+ */
+export function formatTimeHHMM(date?: Date): string {
+  const d = date ?? new Date();
+  return d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit", hour12: false });
+}
+
 // ── Progress helpers ──────────────────────────────────────────────────────────
 
 /**

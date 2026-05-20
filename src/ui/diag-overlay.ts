@@ -43,7 +43,7 @@ import {
 } from "../core/provider";
 import { trustedHTML } from "../core/trusted-types";
 import { getGovernorStats } from "../core/refresh-governor";
-import { fromISOString } from "../core/temporal";
+import { fromISOString, formatTimeHHMM } from "../core/temporal";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -421,7 +421,7 @@ export function initDiagOverlay(): void {
   if (buildEl) {
     try {
       const ts = fromISOString(__BUILD_TIME__);
-      buildEl.textContent = `Build: ${ts.toLocaleDateString("he-IL")} ${ts.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}`;
+      buildEl.textContent = `Build: ${ts.toLocaleDateString("he-IL")} ${formatTimeHHMM(ts)}`;
     } catch {
       buildEl.textContent = `Build: ${__BUILD_TIME__}`;
     }
