@@ -18,6 +18,7 @@ import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../core/semantic-clipboard";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { today } from "../../core/temporal";
+import { renderFreshnessBadge } from "../../core/freshness";
 
 /** Category labels for motivation quotes. */
 export type MotivationCategory =
@@ -447,6 +448,9 @@ export function initMotivationCard(): void {
   // F7 (v7.3): Start auto-advance timer if configured
   setMotivationInterval(loadConfig().motivationInterval ?? 0);
   diagLog("FDB-041: [motivation] Initialized");
+  // Mount freshness badge in card header
+  const hd = document.querySelector('[data-card-id="motivation"] .card-header');
+  if (hd) renderFreshnessBadge("motivation", hd as HTMLElement);
 }
 
 // Motivation favorites (IDB, ≤50 entries) ─────────────────
