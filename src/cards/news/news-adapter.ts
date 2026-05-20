@@ -13,6 +13,7 @@ import { NEWS_FEEDS, fetchFeed } from "./news";
 import type { NewsFeed } from "./news";
 import { loadConfig } from "../../core/config";
 import { createCachedProviderAdapter } from "../../core/provider-adapter";
+import { parseEpochMs } from "../../core/temporal";
 
 const PROVIDER_ID = "news-rss";
 const CACHE_KEY = "news";
@@ -52,7 +53,7 @@ export function createNewsAdapter(): ProviderAdapter<NewsItem[]> {
         return true;
       });
 
-      unique.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+      unique.sort((a, b) => parseEpochMs(b.pubDate) - parseEpochMs(a.pubDate));
 
       return unique;
     },

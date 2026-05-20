@@ -17,6 +17,7 @@ import { idbGet, idbSet } from "../../core/idb-store";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../core/semantic-clipboard";
 import { setCardSignal } from "../../core/card-signal-protocol";
+import { today } from "../../core/temporal";
 
 /** Category labels for motivation quotes. */
 export type MotivationCategory =
@@ -226,7 +227,7 @@ export const DAY_THEME_MAP: ReadonlyArray<MotivationCategory> = [
  * M2: Returns the recommended quote category for a given date.
  * @param date  Date to evaluate (defaults to today).
  */
-export function getThemeForDay(date: Date = new Date()): MotivationCategory {
+export function getThemeForDay(date: Date = today()): MotivationCategory {
   const dow = date.getDay(); // 0 = Sunday … 6 = Saturday
   return DAY_THEME_MAP[dow] ?? "general";
 }

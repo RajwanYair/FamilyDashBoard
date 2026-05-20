@@ -18,6 +18,7 @@
 import type { WeatherResponse } from "../../types/api";
 import { API } from "../../core/constants";
 import { fetchJSON } from "../../core/fetch";
+import { today } from "../../core/temporal";
 import { diagLog } from "../../core/diag";
 import { cGet, cSet } from "../../core/cache";
 
@@ -142,7 +143,7 @@ export function imsStationToWeatherResponse(station: IMSStation): WeatherRespons
   const gustKmh = msToKmh(windGustMs);
 
   // Build ISO-8601 time strings for hourly (24 repeating slots from obs time)
-  const baseTime = station.time_obs ?? new Date().toISOString();
+  const baseTime = station.time_obs ?? today().toISOString();
   const baseMs = new Date(baseTime).getTime();
   const hourlyTimes = Array.from({ length: 24 }, (_, i) =>
     new Date(baseMs + i * 3_600_000).toISOString().slice(0, 16),
