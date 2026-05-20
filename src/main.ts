@@ -68,6 +68,7 @@ import { initCardQuickToggle } from "./ui/card-quick-toggle";
 import { initResizers } from "./ui/resizer";
 import { showToast } from "./ui/toast";
 import { initOfflineBanner } from "./ui/offline-banner";
+import { toggleFocusMode, isFocusMode } from "./ui/focus-mode";
 import { globalOffline } from "./core/event-bus";
 import { initScrollShadows } from "./ui/scroll";
 import { mountRegisteredCards } from "./core/card-registry";
@@ -411,6 +412,14 @@ export function init(): void {
     "l",
     document.documentElement.lang === "en" ? "Warm night tint" : "גוון חם לדימר לילה",
     () => setWarmTint(!isWarmTint()),
+  );
+  registerKey(
+    "g",
+    document.documentElement.lang === "en" ? "Focus mode" : "מצב מיקוד",
+    () => {
+      toggleFocusMode();
+      showToast(isFocusMode() ? "מצב מיקוד פעיל" : "מצב רגיל", 1500);
+    },
   );
   registerKey(
     "escape",
