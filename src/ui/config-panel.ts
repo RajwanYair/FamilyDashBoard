@@ -394,52 +394,78 @@ function populateForm(): void {
         c.interfaceLanguage === "en" ? "en" : "he",
       ),
     );
+
+    // S55: Group by category with headings
+    const categoryOrder = ["info", "finance", "lifestyle", "system"] as const;
+    const categoryLabels: Record<string, { he: string; en: string }> = {
+      info: { he: "מידע", en: "Information" },
+      finance: { he: "פיננסים", en: "Finance" },
+      lifestyle: { he: "אורח חיים", en: "Lifestyle" },
+      system: { he: "מערכת", en: "System" },
+    };
+    const grouped = new Map<string, typeof entries>();
     for (const entry of entries) {
-      const row = document.createElement("div");
-      row.className = "cfg-row cfg-card-row";
-
-      // Visibility checkbox
-      const lbl = document.createElement("label");
-      lbl.className = "cfg-card-label";
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.className = "cfg-card-cb";
-      cb.dataset["cardId"] = entry.id;
-      cb.checked = !c.hiddenCards.includes(entry.id);
-      const span = document.createElement("span");
-      span.textContent = getLocalizedCardTitle(entry, c.interfaceLanguage, true);
-      lbl.appendChild(cb);
-      lbl.appendChild(span);
-
-      // Size selector
-      const sizeDiv = document.createElement("div");
-      sizeDiv.className = "cfg-card-size-wrap";
-      const sizeLbl = document.createElement("span");
-      sizeLbl.className = "cfg-label";
-      sizeLbl.textContent = t("cardSizeLabel", undefined, c.interfaceLanguage);
-      const sel = document.createElement("select");
-      sel.className = "cfg-input cfg-card-size-sel";
-      sel.dataset["cardId"] = entry.id;
-      sel.style.cssText = "width:70px;font-size:0.75em;padding:1px 3px";
-      for (const [val, lText] of [
-        ["sm", c.interfaceLanguage === "en" ? "Small" : "קטן"],
-        ["md", c.interfaceLanguage === "en" ? "Medium" : "בינוני"],
-        ["lg", c.interfaceLanguage === "en" ? "Large" : "גדול"],
-        ["xl", c.interfaceLanguage === "en" ? "XL" : "ענק"],
-      ] as const) {
-        const opt = document.createElement("option");
-        opt.value = val;
-        opt.textContent = lText;
-        if ((c.cardSizes[entry.id] ?? "md") === val) opt.selected = true;
-        sel.appendChild(opt);
-      }
-      sizeDiv.appendChild(sizeLbl);
-      sizeDiv.appendChild(sel);
-
-      row.appendChild(lbl);
-      row.appendChild(sizeDiv);
-      frag.appendChild(row);
+      const cat = entry.category ?? "system";
+      if (!grouped.has(cat)) grouped.set(cat, []);
+      grouped.get(cat)!.push(entry);
     }
+
+    for (const cat of categoryOrder) {
+      const group = grouped.get(cat);
+      if (!group || group.length === 0) continue;
+      const heading = document.createElement("h4");
+      heading.className = "cfg-card-category-heading";
+      const label = categoryLabels[cat];
+      heading.textContent = c.interfaceLanguage === "en" ? label.en : label.he;
+      frag.appendChild(heading);
+
+      for (const entry of group) {
+        const row = document.createElement("div");
+        row.className = "cfg-row cfg-card-row";
+
+        // Visibility checkbox
+        const lbl = document.createElement("label");
+        lbl.className = "cfg-card-label";
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.className = "cfg-card-cb";
+        cb.dataset["cardId"] = entry.id;
+        cb.checked = !c.hiddenCards.includes(entry.id);
+        const span = document.createElement("span");
+        span.textContent = getLocalizedCardTitle(entry, c.interfaceLanguage, true);
+        lbl.appendChild(cb);
+        lbl.appendChild(span);
+
+        // Size selector
+        const sizeDiv = document.createElement("div");
+        sizeDiv.className = "cfg-card-size-wrap";
+        const sizeLbl = document.createElement("span");
+        sizeLbl.className = "cfg-label";
+        sizeLbl.textContent = t("cardSizeLabel", undefined, c.interfaceLanguage);
+        const sel = document.createElement("select");
+        sel.className = "cfg-input cfg-card-size-sel";
+        sel.dataset["cardId"] = entry.id;
+        sel.style.cssText = "width:70px;font-size:0.75em;padding:1px 3px";
+        for (const [val, lText] of [
+          ["sm", c.interfaceLanguage === "en" ? "Small" : "קטן"],
+          ["md", c.interfaceLanguage === "en" ? "Medium" : "בינוני"],
+          ["lg", c.interfaceLanguage === "en" ? "Large" : "גדול"],
+          ["xl", c.interfaceLanguage === "en" ? "XL" : "ענק"],
+        ] as const) {
+          const opt = document.createElement("option");
+          opt.value = val;
+          opt.textContent = lText;
+          if ((c.cardSizes[entry.id] ?? "md") === val) opt.selected = true;
+          sel.appendChild(opt);
+        }
+        sizeDiv.appendChild(sizeLbl);
+        sizeDiv.appendChild(sel);
+
+        row.appendChild(lbl);
+        row.appendChild(sizeDiv);
+        frag.appendChild(row);
+      }
+    } // end category loop
     cardsList.appendChild(frag);
     // inject per-card configSchema fields
     void injectCardConfigSchemas(cardsList);

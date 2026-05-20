@@ -182,11 +182,16 @@ export interface CardRuntime {
 
 // ── Card registry entry ────────────────────────────────────────────────────
 
+/** Semantic category for grouping cards in the config panel. */
+export type CardCategory = "info" | "finance" | "lifestyle" | "system";
+
 export interface CardRegistryEntry {
   id: string;
   icon: string;
   titleHe: string;
   titleEn: string;
+  /** Semantic category for grouping in the card toggle panel (S55). */
+  category?: CardCategory;
   /**
    * Optional default slot for registry-driven DOM auto-mounting.
    * When set, `mountRegisteredCards()` will create a shell for this card

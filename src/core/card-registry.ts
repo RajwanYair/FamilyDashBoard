@@ -192,6 +192,7 @@ registerCard({
   icon: "📰",
   titleHe: "חדשות",
   titleEn: "News",
+  category: "info",
   load: async (): Promise<FdbCardDefinition> => {
     const [{ newsCard }, { FdbNewsCard }] = await Promise.all([
       import("@/cards/news/news"),
@@ -223,6 +224,7 @@ registerCard({
   icon: "🌤",
   titleHe: "מזג אוויר",
   titleEn: "Weather",
+  category: "info",
   load: async (): Promise<FdbCardDefinition> => {
     const [{ weatherCard }, { FdbWeatherCard }] = await Promise.all([
       import("@/cards/weather/weather"),
@@ -254,6 +256,7 @@ registerCard({
   icon: "✡️",
   titleHe: "לוח עברי",
   titleEn: "Hebrew Calendar",
+  category: "info",
   load: async (): Promise<FdbCardDefinition> => {
     const [{ hebrewCalConfigSchema, destroyHebrewCalCard }, { FdbHebrewCalCard }] =
       await Promise.all([
@@ -295,6 +298,7 @@ registerCard({
   icon: "📅",
   titleHe: "יומן",
   titleEn: "Calendar",
+  category: "info",
   load: async (): Promise<FdbCardDefinition> => {
     const [{ calendarConfigSchema, destroyCalendarCard }, { FdbCalendarCard }] = await Promise.all([
       import("@/cards/calendar/calendar"),
@@ -335,6 +339,7 @@ registerCard({
   icon: "💱",
   titleHe: "מטבעות",
   titleEn: "Currency",
+  category: "finance",
   load: async (): Promise<FdbCardDefinition> => {
     const [{ currencyConfigSchema, destroyCurrencyCard }, { FdbCurrencyCard }] = await Promise.all([
       import("@/cards/currency/currency"),
@@ -375,6 +380,7 @@ registerCard({
   icon: "📈",
   titleHe: "מניות",
   titleEn: "Stocks",
+  category: "finance",
   load: async (): Promise<FdbCardDefinition> => {
     const [{ stocksCard }, { FdbStocksCard }] = await Promise.all([
       import("@/cards/stocks/stocks"),
@@ -406,6 +412,7 @@ registerCard({
   icon: "🚨",
   titleHe: "התראות",
   titleEn: "Alerts",
+  category: "info",
   load: async (): Promise<FdbCardDefinition> => {
     const [{ alertsConfigSchema, destroyAlertsCard }, { FdbAlertsCard }] = await Promise.all([
       import("@/cards/alerts/alerts"),
@@ -446,6 +453,7 @@ registerCard({
   icon: "💡",
   titleHe: "השראה",
   titleEn: "Motivation",
+  category: "lifestyle",
   load: async (): Promise<FdbCardDefinition> => {
     const [{ initMotivationCard, motivationConfigSchema }, { FdbMotivationCard }] =
       await Promise.all([
@@ -476,6 +484,7 @@ registerCard({
   icon: "✅",
   titleHe: "משימות",
   titleEn: "Tasks",
+  category: "lifestyle",
   load: async (): Promise<FdbCardDefinition> => {
     const [{ tasksCard }, { FdbTasksCard }] = await Promise.all([
       import("@/cards/tasks/tasks"),
@@ -507,6 +516,7 @@ registerCard({
   icon: "🖥",
   titleHe: "מצב מערכת",
   titleEn: "System Info",
+  category: "system",
   load: async (): Promise<FdbCardDefinition> => {
     const [{ systemInfoCard }, { FdbSystemInfoCard }] = await Promise.all([
       import("@/cards/system-info/system-info"),
@@ -537,6 +547,7 @@ registerCard({
   icon: "💍",
   titleHe: "ספירה לאחור",
   titleEn: "Countdown",
+  category: "lifestyle",
   load: async (): Promise<CardDefinition> => {
     const { initCountdownCard, countdownConfigSchema } =
       await import("@/cards/countdown/countdown");
@@ -559,6 +570,7 @@ registerCard({
   icon: "📺",
   titleHe: "ערוץ חדשות",
   titleEn: "Video News",
+  category: "lifestyle",
   defaultSlot: { col: 1, order: 5, flexGrow: 25, hidden: true },
   load: async (): Promise<FdbCardDefinition> => {
     const [, { FdbVideoNewsCard }] = await Promise.all([
@@ -618,6 +630,7 @@ registerCard({
   icon: "🤖",
   titleHe: "תקציר AI יומי",
   titleEn: "Daily AI Synthesis",
+  category: "system",
   defaultSlot: { col: 2, order: 99, flexGrow: 10, hidden: true },
   load: async (): Promise<CardDefinition> => {
     const { initAiSynthesisCard, aiSynthesisConfigSchema } =
