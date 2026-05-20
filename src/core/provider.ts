@@ -12,7 +12,7 @@
  *   // { id, successCount, failureCount, lastOkAt, consecutiveFails, status }
  */
 
-import { nowMs } from "./temporal";
+import { nowMs, fromEpochMs } from "./temporal";
 
 export type ProviderStatus = "ok" | "degraded" | "down";
 
@@ -68,7 +68,7 @@ export function recordProviderSuccess(id: string): void {
   const h = _ensure(id);
   h.successCount++;
   h.consecutiveFails = 0;
-  h.lastOkAt = new Date(nowMs()).toISOString();
+  h.lastOkAt = fromEpochMs(nowMs()).toISOString();
   h.status = "ok";
 }
 

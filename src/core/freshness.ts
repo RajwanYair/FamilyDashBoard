@@ -11,7 +11,7 @@
  * A single 30-second interval updates all registered badges.
  */
 
-import { nowMs } from "./temporal";
+import { nowMs, fromEpochMs } from "./temporal";
 import { MS_PER_MIN } from "./constants";
 
 // ── State ──────────────────────────────────────────────────────────────────────
@@ -98,7 +98,7 @@ function updateBadge(cardId: string, el: HTMLElement): void {
   }
   const elapsed = nowMs() - ts;
   el.textContent = formatRelativeTime(elapsed);
-  el.setAttribute("datetime", new Date(ts).toISOString());
+  el.setAttribute("datetime", fromEpochMs(ts).toISOString());
   // Default TTL for badge coloring: 15 min (can be overridden per-card in future)
   el.dataset["state"] = freshnessState(elapsed, 15 * MS_PER_MIN);
 }

@@ -12,6 +12,8 @@
  *   installGlobalErrorHandlers()       — wire window.onerror + unhandledrejection
  */
 
+import { fromEpochMs } from "./temporal";
+
 export interface ErrorEntry {
   ts: number; // epoch ms
   message: string;
@@ -55,7 +57,7 @@ export function getErrorCount(): number {
  * Format a single error entry into a display string.
  */
 export function formatErrorEntry(e: ErrorEntry): string {
-  const t = new Date(e.ts).toISOString().slice(11, 23); // HH:MM:SS.mmm
+  const t = fromEpochMs(e.ts).toISOString().slice(11, 23); // HH:MM:SS.mmm
   const src = e.source ? ` @ ${e.source.split("/").pop() ?? e.source}` : "";
   const line = e.lineno ? `:${e.lineno}` : "";
   return `[${t}]${src}${line} ${e.message}`;

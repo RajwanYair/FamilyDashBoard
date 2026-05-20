@@ -5,6 +5,7 @@
  */
 
 import { DIAG_BUFFER_SIZE, DIAG_DISPLAY_LIMIT } from "./constants";
+import { fromEpochMs } from "./temporal";
 
 export interface DiagEntry {
   ts: number;
@@ -41,7 +42,7 @@ export function clearDiag(): void {
  * Format a diagnostic entry for display.
  */
 export function formatDiagEntry(entry: DiagEntry): string {
-  const d = new Date(entry.ts);
+  const d = fromEpochMs(entry.ts);
   const time = d.toLocaleTimeString("he-IL", {
     hour: "2-digit",
     minute: "2-digit",
