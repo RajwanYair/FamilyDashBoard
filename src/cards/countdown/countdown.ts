@@ -224,6 +224,60 @@ export function getNextYomTov(
 }
 
 /**
+ * Return up to `limit` upcoming holidays (Yom Tov) within `maxDays` days.
+ * Each entry has title + days remaining. Used for the mini-holiday grid.
+ */
+export function getUpcomingHolidays(
+  items: HebcalItem[],
+  now: Date = today(),
+  maxDays = 120,
+  limit = 4,
+): Array<{ title: string; days: number }> {
+  const todayMs = startOfDayMs(now);
+  const cutoff = addDays(now, maxDays).getTime();
+  const upcoming = items
+    .filter((i) => {
+      if (i.category !== "holiday") return false;
+      const d = parsePlainDateMs(i.date);
+      return d >= todayMs && d <= cutoff;
+    })
+    .sort((a, b) => parsePlainDateMs(a.date) - parsePlainDateMs(b.date));
+  return upcoming.slice(0, limit).map((i) => ({
+    title: i.hebrew ?? i.title,
+    days: Math.max(0, diffDays(now, fromEpochMs(parsePlainDateMs(i.date)))),
+  }));
+}
+
+/**
+ * Render the upcoming holidays mini-grid into `#cd-upcoming-holidays`.
+ * Tiles are compact badges showing holiday name + days remaining.
+ */
+export function renderUpcomingHolidays(items: HebcalItem[], now: Date = today()): void {
+  const container = document.getElementById("cd-upcoming-holidays");
+  if (!container) return;
+  const holidays = getUpcomingHolidays(items, now);
+  if (holidays.length === 0) {
+    container.classList.add("is-hidden");
+    return;
+  }
+  container.classList.remove("is-hidden");
+  container.textContent = "";
+  for (const h of holidays) {
+    const tile = document.createElement("div");
+    tile.className = "cd-holiday-tile";
+    const name = document.createElement("span");
+    name.className = "cd-holiday-name";
+    name.textContent = h.title;
+    const badge = document.createElement("span");
+    badge.className = "cd-holiday-days";
+    badge.textContent = h.days === 0 ? "היום!" : `${h.days} ימים`;
+    tile.appendChild(name);
+    tile.appendChild(badge);
+    container.appendChild(tile);
+  }
+}
+
+/**
  * Parse ICS text and find the next calendar event that is
  * at least `minDaysAhead` days in the future (default 7). Returns title + date,
  * or null when none found.
@@ -529,6 +583,8 @@ export function initCountdownCard(): void {
           if (secsEl) secsEl.textContent = pad2(seconds);
         }
       }
+      // S58: Render upcoming holidays mini-grid
+      renderUpcomingHolidays(holData.items, nowDate);
     }
   }
 

@@ -156,6 +156,46 @@
   animation: cd-pulse 1s ease-in-out infinite;
 }
 
+/* ── S58: Upcoming holidays mini-grid ─────────────────── */
+
+.cd-upcoming-holidays {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 4px;
+  width: 100%;
+  margin-block-start: 4px;
+  border-block-start: 1px solid var(--accent-border);
+  padding-block-start: 6px;
+}
+
+.cd-holiday-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: var(--bg-card-inner);
+  border: 1px solid var(--accent-border);
+}
+
+.cd-holiday-name {
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--accent-bright, var(--accent));
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.cd-holiday-days {
+  font-size: 0.66em;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── CSS-only confetti on T-0 ─────────────────────────── */
 @layer components {
   @keyframes cd-confetti-fall-a {

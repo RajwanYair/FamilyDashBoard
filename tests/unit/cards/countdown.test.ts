@@ -25,6 +25,8 @@ import {
   advanceAnnualDate,
   advanceMonthlyDate,
   getNextYomTov,
+  getUpcomingHolidays,
+  renderUpcomingHolidays,
   getNextCalEventForCountdown,
   countdownConfigSchema,
   setConfetti,
@@ -1788,5 +1790,73 @@ describe("Countdown — tick() returns early for recurring event that just passe
     expect(() => tick()).not.toThrow();
     const section = document.getElementById("cd-main-section");
     expect(section?.classList.contains("is-hidden")).toBe(false);
+  });
+});
+
+// ── getUpcomingHolidays + renderUpcomingHolidays (S58) ──────────────────────
+
+describe("Countdown — getUpcomingHolidays (S58)", () => {
+  const now = new Date("2025-03-01T10:00:00");
+
+  it("returns empty array when no holidays match", () => {
+    expect(getUpcomingHolidays([], now)).toEqual([]);
+  });
+
+  it("returns up to limit holidays sorted by date", () => {
+    const items = [
+      { title: "Purim", hebrew: "פורים", date: "2025-03-14", category: "holiday" },
+      { title: "Pesach", hebrew: "פסח", date: "2025-04-13", category: "holiday" },
+      { title: "Shavuot", hebrew: "שבועות", date: "2025-06-02", category: "holiday" },
+      { title: "Lag BaOmer", hebrew: "ל״ג בעומר", date: "2025-05-16", category: "holiday" },
+      { title: "Extra", hebrew: "נוסף", date: "2025-06-20", category: "holiday" },
+    ] as Array<{ title: string; hebrew: string; date: string; category: string }>;
+    const result = getUpcomingHolidays(items as never[], now, 120, 4);
+    expect(result).toHaveLength(4);
+    expect(result[0]!.title).toBe("פורים");
+    expect(result[0]!.days).toBe(13);
+    expect(result[1]!.title).toBe("פסח");
+  });
+
+  it("filters out non-holiday categories", () => {
+    const items = [
+      { title: "Shabbat", hebrew: "שבת", date: "2025-03-08", category: "parashat" },
+      { title: "Purim", hebrew: "פורים", date: "2025-03-14", category: "holiday" },
+    ] as Array<{ title: string; hebrew: string; date: string; category: string }>;
+    const result = getUpcomingHolidays(items as never[], now, 90, 4);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.title).toBe("פורים");
+  });
+});
+
+describe("Countdown — renderUpcomingHolidays (S58)", () => {
+  beforeEach(() => {
+    const container = document.createElement("div");
+    container.id = "cd-upcoming-holidays";
+    container.className = "cd-upcoming-holidays is-hidden";
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    document.getElementById("cd-upcoming-holidays")?.remove();
+  });
+
+  it("renders holiday tiles into the container", () => {
+    const now = new Date("2025-03-01T10:00:00");
+    const items = [
+      { title: "Purim", hebrew: "פורים", date: "2025-03-14", category: "holiday" },
+      { title: "Pesach", hebrew: "פסח", date: "2025-04-13", category: "holiday" },
+    ] as Array<{ title: string; hebrew: string; date: string; category: string }>;
+    renderUpcomingHolidays(items as never[], now);
+    const container = document.getElementById("cd-upcoming-holidays")!;
+    expect(container.classList.contains("is-hidden")).toBe(false);
+    expect(container.children).toHaveLength(2);
+    expect(container.children[0]!.querySelector(".cd-holiday-name")!.textContent).toBe("פורים");
+    expect(container.children[0]!.querySelector(".cd-holiday-days")!.textContent).toContain("ימים");
+  });
+
+  it("hides container when no holidays found", () => {
+    renderUpcomingHolidays([], new Date("2025-03-01T10:00:00"));
+    const container = document.getElementById("cd-upcoming-holidays")!;
+    expect(container.classList.contains("is-hidden")).toBe(true);
   });
 });
