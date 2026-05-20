@@ -30,6 +30,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { renderFreshnessBadge } from "../../core/freshness";
 import { deduplicateBySimHash } from "../../core/simhash";
+import { recordDedupStats } from "../../core/feed-stats";
 import {
   nowMs,
   parseEpochMs,
@@ -851,6 +852,7 @@ async function fetchAllNews(): Promise<NewsItem[]> {
   for (const r of results) {
     if (r.status === "fulfilled") allItems.push(...r.value);
   }
+  const totalFetched = allItems.length;
 
   // Deduplicate by SimHash fingerprinting (P3 Feed Intelligence)
   const cfg = loadConfig();
@@ -860,6 +862,18 @@ async function fetchAllNews(): Promise<NewsItem[]> {
 
   // Recency-weighted ranking (P3 Feed Intelligence)
   unique.sort((a, b) => newsRankScore(b) - newsRankScore(a));
+
+  const renderedCount = Math.min(unique.length, 50);
+
+  // P3: Record dedup stats for diag overlay
+  recordDedupStats({
+    totalFetched,
+    uniqueAfterDedup: unique.length,
+    renderedCount,
+  });
+  diagLog(
+    `FDB-P3-DEDUP: fetched=${totalFetched} unique=${unique.length} deduped=${totalFetched - unique.length} ratio=${unique.length > 0 ? ((1 - unique.length / totalFetched) * 100).toFixed(1) : "0"}%`,
+  );
 
   return unique.slice(0, 50);
 }

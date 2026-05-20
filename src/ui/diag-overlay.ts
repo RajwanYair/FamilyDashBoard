@@ -44,6 +44,7 @@ import {
 import { trustedHTML } from "../core/trusted-types";
 import { getGovernorStats } from "../core/refresh-governor";
 import { fromISOString, formatTimeHHMM } from "../core/temporal";
+import { getDedupStats } from "../core/feed-stats";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -181,6 +182,7 @@ function renderStats(): void {
       renderCardTimingsHtml() +
       renderGovernorStatsHtml() +
       renderErrorTrendHtml() +
+      renderNewsDedupHtml() +
       renderProviderHealthHtml(),
   );
 
@@ -284,6 +286,24 @@ export function renderProviderHealthHtml(): string {
     .join("");
   return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">
     🏥 Providers: ${rows}
+  </div>`;
+}
+
+/**
+ * Render the P3 Feed Intelligence dedup stats as an HTML string.
+ * Returns empty string when no news fetch has occurred yet.
+ */
+export function renderNewsDedupHtml(): string {
+  const stats = getDedupStats();
+  if (!stats) return "";
+  const dedupedCount = stats.totalFetched - stats.uniqueAfterDedup;
+  const dedupRatio =
+    stats.totalFetched > 0
+      ? ((dedupedCount / stats.totalFetched) * 100).toFixed(1)
+      : "0.0";
+  const runTime = stats.lastRunAt.slice(11, 16);
+  return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">
+    📰 News Dedup: <b>${String(stats.uniqueAfterDedup)}/${String(stats.totalFetched)}</b> · deduped <b>${String(dedupedCount)}</b> (${dedupRatio}%) · rendered <b>${String(stats.renderedCount)}</b> · ${runTime}
   </div>`;
 }
 
