@@ -199,6 +199,30 @@
             "group": "test",
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []
+        },
+        {
+            "label": "⏱️ Benchmark: Check Regression",
+            "type": "shell",
+            "command": "npm run check:benchmark",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "⏱️ Benchmark: Update Baseline",
+            "type": "shell",
+            "command": "npm run bench:update",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "⏱️ Benchmark: Report Only",
+            "type": "shell",
+            "command": "npm run bench:report",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
         }
     ]
 }
