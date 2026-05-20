@@ -5,8 +5,9 @@
 import "./header.css";
 import { loadConfig } from "../core/config";
 import { diagLog } from "../core/diag";
-import { MS_PER_DAY, INTERVALS } from "../core/constants";
+import { INTERVALS } from "../core/constants";
 import { getInterfaceLanguage, t } from "../core/i18n";
+import { today, fromParts, diffDays } from "../core/temporal";
 
 // ── DOM cache ──
 let elClock: HTMLElement | null = null;
@@ -28,8 +29,9 @@ function getGreeting(): string {
   const familyName = cfg.familyName || "רגואן";
   const members = cfg.members ?? [];
   const language = getInterfaceLanguage();
-  const h = new Date().getHours();
-  const idx = (new Date().getDate() - 1) % Math.max(members.length, 1);
+  const now = today();
+  const h = now.getHours();
+  const idx = (now.getDate() - 1) % Math.max(members.length, 1);
   const greetPerson = members.length > 0 ? members[idx] : null;
   const suffix = greetPerson
     ? `${greetPerson}!`
@@ -52,8 +54,8 @@ function updateProgress(now: Date): void {
   if (elDayBar) elDayBar.style.width = `${dayPct.toFixed(1)}%`;
 
   // Year progress
-  const startOfYear = new Date(now.getFullYear(), 0, 1);
-  const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
+  const startOfYear = fromParts(now.getFullYear(), 1, 1);
+  const endOfYear = fromParts(now.getFullYear() + 1, 1, 1);
   const yearPct =
     ((now.getTime() - startOfYear.getTime()) / (endOfYear.getTime() - startOfYear.getTime())) * 100;
   if (elYearBar) elYearBar.style.width = `${yearPct.toFixed(1)}%`;
@@ -72,15 +74,15 @@ export function updateBirthdayChip(): void {
     return;
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const todayDate = today();
+  todayDate.setHours(0, 0, 0, 0);
   let nearest: { name: string; daysAway: number } | null = null;
 
   for (const { name, month, day } of birthdays) {
-    const bdayThisYear = new Date(today.getFullYear(), month - 1, day);
+    const bdayThisYear = fromParts(todayDate.getFullYear(), month, day);
     const bday =
-      bdayThisYear >= today ? bdayThisYear : new Date(today.getFullYear() + 1, month - 1, day);
-    const daysAway = Math.round((bday.getTime() - today.getTime()) / MS_PER_DAY);
+      bdayThisYear >= todayDate ? bdayThisYear : fromParts(todayDate.getFullYear() + 1, month, day);
+    const daysAway = diffDays(todayDate, bday);
     if (daysAway <= 14 && (!nearest || daysAway < nearest.daysAway)) {
       nearest = { name, daysAway };
     }
@@ -115,18 +117,19 @@ export function updateCountdownChip(): void {
     return;
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const target = new Date(countdownDate + "T00:00:00");
-  const msAway = target.getTime() - today.getTime();
+  const todayD = today();
+  todayD.setHours(0, 0, 0, 0);
+  const target = fromParts(
+    ...countdownDate.split("-").map(Number) as [number, number, number],
+  );
+  const days = diffDays(todayD, target);
 
-  if (msAway < 0) {
+  if (days < 0) {
     elCountdownChip.textContent = "";
     elCountdownChip.hidden = true;
     return;
   }
 
-  const days = Math.round(msAway / MS_PER_DAY);
   elCountdownChip.textContent =
     days === 0
       ? t("countdownToday", { label: countdownLabel })
@@ -238,7 +241,7 @@ export function formatHebrewDateGematria(date: Date): string {
  * Tick the clock, update greeting and progress bars.
  */
 export function tickClock(): void {
-  const now = new Date();
+  const now = today();
 
   const fmtOpts: Intl.DateTimeFormatOptions = clockShowSeconds
     ? {
