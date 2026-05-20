@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [15.0.0] — 2026-05-20
+
+> **5000+ tests / 328 suites / 0 failures** (commit `8177452`)
+
+- **feat(news)**: recency-weighted ranking algorithm — `newsRankScore()` with breaking boost, category bonus, and time-decay penalty (S16)
+- **feat(temporal)**: migrate news card to `src/core/temporal.ts` — add `parseEpochMs()` helper, zero raw `Date.parse()` in feed processing (S17)
+- **feat(config)**: progressive disclosure in Advanced settings — 4 collapsible `<details>` groups (Location, Network, Countdown, Data) (S18)
+- **feat(ui)**: per-card quick-toggle surface — hide buttons in card headers + floating restore pill (S19)
+- **chore(version)**: bump to 15.0.0; update version strings across 16 files
+
+---
+
 ## [14.35.0] — 2026-05-19
 
 > **Commit `c2a5195`** · 10-sprint roadmap session: temporal migration, freshness UX, provider health

@@ -33,7 +33,9 @@
   font-family: inherit;
   cursor: pointer;
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.3);
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 .card-quick-restore-pill:hover {
   transform: translateX(-50%) scale(1.05);

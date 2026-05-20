@@ -80,6 +80,7 @@ vi.mock("@/ui/diag-overlay", () => ({
 }));
 vi.mock("@/ui/bg-images", () => ({ initBgImages: vi.fn() }));
 vi.mock("@/ui/toast", () => ({ showToast: vi.fn() }));
+vi.mock("@/ui/card-quick-toggle", () => ({ initCardQuickToggle: vi.fn() }));
 vi.mock("@/cards/weather/weather", () => ({ initWeatherCard: vi.fn() }));
 vi.mock("@/cards/motivation/motivation", () => ({
   initMotivationCard: vi.fn(),
