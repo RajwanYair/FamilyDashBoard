@@ -61,6 +61,7 @@ import {
 } from "./ui/night-dimmer";
 import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initProviderDegradationToasts } from "./core/provider-toast";
+import { resetGovernor } from "./core/refresh-governor";
 import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
 import { initCardQuickToggle } from "./ui/card-quick-toggle";
@@ -210,6 +211,7 @@ function getCountdownInit(): Promise<() => void> {
 
 /** Refresh every card individually with 350 ms stagger — never reloads the page. */
 export function refreshAllCardsStaggered(): void {
+  resetGovernor(); // Allow all cards to re-render regardless of cached hash
   const inits: Array<() => void | Promise<void>> = [
     initWeatherCard,
     initNewsCard,

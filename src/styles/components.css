@@ -19,7 +19,7 @@
     border-color var(--duration-normal, 0.3s);
   animation: cardIn var(--duration-slow, 0.6s) ease-out both;
   position: relative;
-  contain: layout style; /* Performance: Paint Containment */
+  contain: layout style paint; /* Performance: isolate card repaints */
   container-type: inline-size; /* Enable @container queries per card */
   container-name: card;
 }
