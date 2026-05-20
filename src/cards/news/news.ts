@@ -30,7 +30,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { renderFreshnessBadge } from "../../core/freshness";
 import { deduplicateBySimHash } from "../../core/simhash";
-import { nowMs, parseEpochMs, startOfDayMs } from "../../core/temporal";
+import { nowMs, parseEpochMs, startOfDayMs, fromDateString, fromEpochMs } from "../../core/temporal";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
 // X15: cached snapshot of top headline for the semantic-clipboard producer.
@@ -150,7 +150,7 @@ export function highlightTitle(el: HTMLAnchorElement, title: string, query: stri
  */
 export function pubTimeLabel(pubDate: string): string {
   if (!pubDate) return "";
-  const d = new Date(pubDate);
+  const d = fromDateString(pubDate);
   if (isNaN(d.getTime())) return "";
   const timeStr = d.toLocaleTimeString("he-IL", {
     hour: "2-digit",
@@ -400,7 +400,7 @@ export async function starArticle(item: NewsItem): Promise<void> {
     title: item.title,
     link: item.link,
     source: item.source,
-    starredAt: new Date(nowMs()).toISOString(),
+    starredAt: fromEpochMs(nowMs()).toISOString(),
   };
   await idbSet<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE, id, entry);
 }
@@ -468,7 +468,7 @@ export async function openStarredDrawer(): Promise<void> {
       const dateSpan = document.createElement("span");
       dateSpan.className = "news-starred-date";
       try {
-        dateSpan.textContent = new Date(parseEpochMs(art.starredAt)).toLocaleString("he-IL", {
+        dateSpan.textContent = fromEpochMs(parseEpochMs(art.starredAt)).toLocaleString("he-IL", {
           timeZone: "Asia/Jerusalem",
           day: "2-digit",
           month: "2-digit",
@@ -941,7 +941,7 @@ export function renderNews(items: NewsItem[]): void {
             ptEl.className = "news-pub-time";
             ptEl.textContent = pubTime;
             ptEl.title = item.pubDate
-              ? new Date(parseEpochMs(item.pubDate)).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })
+              ? fromEpochMs(parseEpochMs(item.pubDate)).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })
               : "";
             timeWrap.appendChild(ptEl);
           }

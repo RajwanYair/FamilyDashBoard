@@ -28,6 +28,7 @@ import type { AlertEvent, AlertsResponse } from "../../types/api";
 import { isAlertEvent } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
+import { fromEpochSec } from "../../core/temporal";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 import { markFresh, renderFreshnessBadge } from "../../core/freshness";
@@ -46,7 +47,7 @@ function buildAlertsPayload(): SemanticPayload | null {
       "@context": "https://schema.org",
       "@type": "SpecialAnnouncement",
       name: "צבע אדום",
-      datePosted: new Date(s.latestTs * 1000).toISOString(),
+      datePosted: fromEpochSec(s.latestTs).toISOString(),
       category: "https://schema.org/CivicEmergencyAnnouncement",
       spatialCoverage: s.areas,
     },
@@ -260,7 +261,7 @@ export function buildAlertItem(
 
   const timeEl = document.createElement("span");
   timeEl.className = "alert-time";
-  const d = new Date(firstAlert.time * 1000);
+  const d = fromEpochSec(firstAlert.time);
   timeEl.textContent = d.toLocaleTimeString("he-IL", {
     hour: "2-digit",
     minute: "2-digit",

@@ -30,6 +30,7 @@ import {
   addMonths,
   addYears,
   fromParts,
+  fromEpochMs,
 } from "../../core/temporal";
 
 export interface ChoreItem {
@@ -238,7 +239,7 @@ export function isDueThisWeek(dueDateStr: string): boolean {
 export function formatTaskDueDate(dueDateStr: string): string {
   const ms = parsePlainDateMs(dueDateStr);
   if (isNaN(ms)) return dueDateStr;
-  return new Date(ms).toLocaleDateString("he-IL", { month: "short", day: "numeric" });
+  return fromEpochMs(ms).toLocaleDateString("he-IL", { month: "short", day: "numeric" });
 }
 
 /**
@@ -267,8 +268,8 @@ export function advanceRecurringDueDate(item: ChoreItem, now: Date = today()): s
   if (!dueDate) return null;
   const baseMs = parsePlainDateMs(dueDate);
   if (isNaN(baseMs)) return null;
-  const base = new Date(baseMs);
-  const todayStart = new Date(startOfDayMs(now));
+  const base = fromEpochMs(baseMs);
+  const todayStart = fromEpochMs(startOfDayMs(now));
   const from = base < todayStart ? todayStart : base;
   let next: Date;
   switch (item.recurrence) {
