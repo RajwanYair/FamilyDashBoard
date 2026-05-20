@@ -29,7 +29,16 @@ import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
-import { nowMs, today, fromEpochMs, parsePlainDateTime, toISODateString, diffDays, addDays, startOfDayMs } from "../../core/temporal";
+import {
+  nowMs,
+  today,
+  fromEpochMs,
+  parsePlainDateTime,
+  toISODateString,
+  diffDays,
+  addDays,
+  startOfDayMs,
+} from "../../core/temporal";
 import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 
 // X15: cached snapshot of next event for the semantic-clipboard producer.

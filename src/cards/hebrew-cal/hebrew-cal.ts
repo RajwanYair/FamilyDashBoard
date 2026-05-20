@@ -148,9 +148,7 @@ export function nextHebrewYearGregorianApprox(date: Date = today()): number {
  * The result is stored under a dedicated 30-day key to avoid evicting the
  * current-year entry. Safe to call multiple times — skips if already cached.
  */
-export async function prewarmNextYearHolidays(
-  dateFn: () => Date = () => today(),
-): Promise<void> {
+export async function prewarmNextYearHolidays(dateFn: () => Date = () => today()): Promise<void> {
   const nextYear = nextHebrewYearGregorianApprox(dateFn());
   const key = `holidays-prewarm-${nextYear}`;
   const existing = await cGetAsync<HebcalResponse>(key, MS_PER_DAY * 30);

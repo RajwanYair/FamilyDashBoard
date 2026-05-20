@@ -1116,7 +1116,9 @@ export function initStocksCard(): void {
   updateMarketCountdown();
 
   // Mount freshness badge in card header
-  const hd = document.querySelector('[data-card-id="stocks"] .card-hd-title, [data-card-id="stocks"] .card__hd-title');
+  const hd = document.querySelector(
+    '[data-card-id="stocks"] .card-hd-title, [data-card-id="stocks"] .card__hd-title',
+  );
   if (hd) renderFreshnessBadge("stocks", hd as HTMLElement);
 
   if (_marketBadgeInterval !== null) clearInterval(_marketBadgeInterval);

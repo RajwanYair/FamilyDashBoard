@@ -146,7 +146,9 @@ export function imsStationToWeatherResponse(station: IMSStation): WeatherRespons
   const baseTime = station.time_obs ?? fromEpochMs(nowMs()).toISOString();
   const baseMs = fromISOString(baseTime).getTime();
   const hourlyTimes = Array.from({ length: 24 }, (_, i) =>
-    fromEpochMs(baseMs + i * 3_600_000).toISOString().slice(0, 16),
+    fromEpochMs(baseMs + i * 3_600_000)
+      .toISOString()
+      .slice(0, 16),
   );
 
   // Daily: single entry using TDmax/TDmin if available; fall back to ±3°C estimate

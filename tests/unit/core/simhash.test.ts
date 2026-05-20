@@ -3,7 +3,12 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { simHash, hammingDistance, isNearDuplicate, deduplicateBySimHash } from "../../../src/core/simhash";
+import {
+  simHash,
+  hammingDistance,
+  isNearDuplicate,
+  deduplicateBySimHash,
+} from "../../../src/core/simhash";
 
 describe("simHash", () => {
   it("returns 0n for empty string", () => {

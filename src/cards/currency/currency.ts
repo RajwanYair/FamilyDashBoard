@@ -31,7 +31,14 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
-import { today, toISODateString, addDays, parsePlainDateMs, fromEpochMs, fromDateString } from "../../core/temporal";
+import {
+  today,
+  toISODateString,
+  addDays,
+  parsePlainDateMs,
+  fromEpochMs,
+  fromDateString,
+} from "../../core/temporal";
 
 // X15: cached snapshot of headline rates for the semantic-clipboard producer.
 let _ratesSnapshot: { usdIls: number; eurIls: number } | null = null;
@@ -142,11 +149,12 @@ export function getCurrencyTrend(
   if (!newRate || newRate === 0) return null;
   const newVal = 1 / newRate;
 
-  const cutoffDate = addDays(
-    fromEpochMs(parsePlainDateMs(newest.date)),
-    -days,
+  const cutoffDate = addDays(fromEpochMs(parsePlainDateMs(newest.date)), -days);
+  const cutoff = toISODateString(
+    cutoffDate.getFullYear(),
+    cutoffDate.getMonth() + 1,
+    cutoffDate.getDate(),
   );
-  const cutoff = toISODateString(cutoffDate.getFullYear(), cutoffDate.getMonth() + 1, cutoffDate.getDate());
 
   // Find the most recent entry that is at or before the cutoff
   let ref: CurHistoryEntry | undefined;
@@ -647,7 +655,9 @@ export function initCurrencyCard(): void {
   applyPairVisibility(); // hide unconfigured pairs on init
 
   // Mount freshness badge in card header
-  const hd = document.querySelector('[data-card-id="currency"] .card-hd-title, [data-card-id="currency"] .card__hd-title');
+  const hd = document.querySelector(
+    '[data-card-id="currency"] .card-hd-title, [data-card-id="currency"] .card__hd-title',
+  );
   if (hd) renderFreshnessBadge("cur", hd as HTMLElement);
 
   void loadCurrency();

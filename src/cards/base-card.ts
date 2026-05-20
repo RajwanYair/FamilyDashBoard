@@ -56,9 +56,7 @@ export function createCardLoader<T>(
     if (stale) {
       renderData(stale);
     } else if (_firstLoad) {
-      const container = document.querySelector<HTMLElement>(
-        `[data-card-id="${opts.id}"]`,
-      );
+      const container = document.querySelector<HTMLElement>(`[data-card-id="${opts.id}"]`);
       if (container) showCardSkeleton(opts.id, container);
     }
 
@@ -138,9 +136,7 @@ export function createAsyncCardLoader<T>(
       renderData(stale);
     } else if (_firstLoad) {
       // No data at all — show skeleton shimmer
-      const container = document.querySelector<HTMLElement>(
-        `[data-card-id="${opts.id}"]`,
-      );
+      const container = document.querySelector<HTMLElement>(`[data-card-id="${opts.id}"]`);
       if (container) showCardSkeleton(opts.id, container);
     }
 

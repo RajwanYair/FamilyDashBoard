@@ -50,10 +50,7 @@ export function notifyProviderBlocked(
 /**
  * Notify the user that a provider has degraded. Rate-limited per provider.
  */
-export function notifyProviderDegraded(
-  providerId: string,
-  now: number = nowMs(),
-): boolean {
+export function notifyProviderDegraded(providerId: string, now: number = nowMs()): boolean {
   const key = `${providerId}:degraded`;
   const last = _lastNotifyAt.get(key);
   if (last !== undefined && now - last < RATE_LIMIT_MS) {

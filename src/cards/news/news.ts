@@ -30,7 +30,13 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { renderFreshnessBadge } from "../../core/freshness";
 import { deduplicateBySimHash } from "../../core/simhash";
-import { nowMs, parseEpochMs, startOfDayMs, fromDateString, fromEpochMs } from "../../core/temporal";
+import {
+  nowMs,
+  parseEpochMs,
+  startOfDayMs,
+  fromDateString,
+  fromEpochMs,
+} from "../../core/temporal";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
 // X15: cached snapshot of top headline for the semantic-clipboard producer.
@@ -293,7 +299,9 @@ function loadVisited(): void {
         if (e.ts >= cutoff) _visited.add(e.id);
       }
     })
-    .catch(() => {/* IDB unavailable — session fallback is fine */});
+    .catch(() => {
+      /* IDB unavailable — session fallback is fine */
+    });
 }
 
 export function markVisited(key: string): void {
@@ -304,8 +312,12 @@ export function markVisited(key: string): void {
     /* quota */
   }
   // Persist to IDB for cross-session retention
-  idbSet<{ id: string; ts: number }>(IDB_READ_DB, IDB_READ_STORE, key, { id: key, ts: Date.now() })
-    .catch(() => {/* best-effort */});
+  idbSet<{ id: string; ts: number }>(IDB_READ_DB, IDB_READ_STORE, key, {
+    id: key,
+    ts: Date.now(),
+  }).catch(() => {
+    /* best-effort */
+  });
 }
 
 export function isVisited(key: string): boolean {
@@ -773,7 +785,11 @@ function getActiveFeeds(): NewsFeed[] {
  *
  * Result is a number suitable for descending sort (higher = more relevant).
  */
-export function newsRankScore(item: { title: string; pubDate: string; category?: string | undefined }): number {
+export function newsRankScore(item: {
+  title: string;
+  pubDate: string;
+  category?: string | undefined;
+}): number {
   const now = nowMs();
   const pubMs = item.pubDate ? parseEpochMs(item.pubDate) : 0;
   const validPub = !isNaN(pubMs) && pubMs > 0 ? pubMs : 0;
@@ -957,7 +973,9 @@ export function renderNews(items: NewsItem[]): void {
             ptEl.className = "news-pub-time";
             ptEl.textContent = pubTime;
             ptEl.title = item.pubDate
-              ? fromEpochMs(parseEpochMs(item.pubDate)).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })
+              ? fromEpochMs(parseEpochMs(item.pubDate)).toLocaleString("he-IL", {
+                  timeZone: "Asia/Jerusalem",
+                })
               : "";
             timeWrap.appendChild(ptEl);
           }
@@ -1134,7 +1152,9 @@ export function initNewsCard(): void {
   renderSourceFilterChips();
 
   // Mount freshness badge in card header
-  const hd = document.querySelector('[data-card-id="news"] .card-hd-title, [data-card-id="news"] .card__hd-title');
+  const hd = document.querySelector(
+    '[data-card-id="news"] .card-hd-title, [data-card-id="news"] .card__hd-title',
+  );
   if (hd) renderFreshnessBadge("news", hd as HTMLElement);
 
   void loadNews();

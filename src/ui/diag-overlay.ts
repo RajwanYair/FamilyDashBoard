@@ -241,7 +241,8 @@ function renderGovernorStatsHtml(): string {
   const rows = stats
     .sort((a, b) => b.skips - a.skips)
     .map((s) => {
-      const skipPct = s.renders + s.skips > 0 ? ((s.skips / (s.renders + s.skips)) * 100).toFixed(0) : "0";
+      const skipPct =
+        s.renders + s.skips > 0 ? ((s.skips / (s.renders + s.skips)) * 100).toFixed(0) : "0";
       return `<span>${s.cardId}: ${s.renders}↑ ${s.skips}⏭ (${skipPct}%)</span>`;
     })
     .join("");
