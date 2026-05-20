@@ -29,6 +29,8 @@ import {
   isToday,
   isTomorrow,
   isYesterday,
+  dayProgressPct,
+  yearProgressPct,
 } from "@/core/temporal";
 
 // ── nowMs ─────────────────────────────────────────────────────────────────────
@@ -434,5 +436,51 @@ describe("isYesterday", () => {
     const d = new Date();
     d.setDate(d.getDate() - 2);
     expect(isYesterday(d)).toBe(false);
+  });
+});
+
+// ── dayProgressPct ────────────────────────────────────────────────────────────
+
+describe("dayProgressPct", () => {
+  it("returns 0 at midnight", () => {
+    const midnight = new Date(2024, 5, 15, 0, 0, 0);
+    expect(dayProgressPct(midnight)).toBe(0);
+  });
+
+  it("returns 50 at noon", () => {
+    const noon = new Date(2024, 5, 15, 12, 0, 0);
+    expect(dayProgressPct(noon)).toBe(50);
+  });
+
+  it("returns ~100 at 23:59", () => {
+    const lateNight = new Date(2024, 5, 15, 23, 59, 0);
+    expect(dayProgressPct(lateNight)).toBeCloseTo(99.93, 1);
+  });
+
+  it("returns a value between 0 and 100 for now", () => {
+    const pct = dayProgressPct();
+    expect(pct).toBeGreaterThanOrEqual(0);
+    expect(pct).toBeLessThanOrEqual(100);
+  });
+});
+
+// ── yearProgressPct ───────────────────────────────────────────────────────────
+
+describe("yearProgressPct", () => {
+  it("returns ~0 on Jan 1 midnight", () => {
+    const jan1 = new Date(2024, 0, 1, 0, 0, 0);
+    expect(yearProgressPct(jan1)).toBeCloseTo(0, 0);
+  });
+
+  it("returns ~50 around July 2 for a leap year", () => {
+    // 2024 is a leap year (366 days); midpoint ≈ day 183 = Jul 1
+    const mid = new Date(2024, 6, 1, 12, 0, 0);
+    expect(yearProgressPct(mid)).toBeCloseTo(50, 0);
+  });
+
+  it("returns a value between 0 and 100 for now", () => {
+    const pct = yearProgressPct();
+    expect(pct).toBeGreaterThanOrEqual(0);
+    expect(pct).toBeLessThanOrEqual(100);
   });
 });

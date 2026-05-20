@@ -7,7 +7,7 @@ import { loadConfig } from "../core/config";
 import { diagLog } from "../core/diag";
 import { INTERVALS } from "../core/constants";
 import { getInterfaceLanguage, t } from "../core/i18n";
-import { today, fromParts, diffDays } from "../core/temporal";
+import { today, fromParts, diffDays, dayProgressPct, yearProgressPct } from "../core/temporal";
 
 // ── DOM cache ──
 let elClock: HTMLElement | null = null;
@@ -49,16 +49,8 @@ function getGreeting(): string {
  * Update day/year progress bars.
  */
 function updateProgress(now: Date): void {
-  // Day progress (minutes elapsed / 1440)
-  const dayPct = ((now.getHours() * 60 + now.getMinutes()) / 1440) * 100;
-  if (elDayBar) elDayBar.style.width = `${dayPct.toFixed(1)}%`;
-
-  // Year progress
-  const startOfYear = fromParts(now.getFullYear(), 1, 1);
-  const endOfYear = fromParts(now.getFullYear() + 1, 1, 1);
-  const yearPct =
-    ((now.getTime() - startOfYear.getTime()) / (endOfYear.getTime() - startOfYear.getTime())) * 100;
-  if (elYearBar) elYearBar.style.width = `${yearPct.toFixed(1)}%`;
+  if (elDayBar) elDayBar.style.width = `${dayProgressPct(now).toFixed(1)}%`;
+  if (elYearBar) elYearBar.style.width = `${yearProgressPct(now).toFixed(1)}%`;
 }
 
 /**

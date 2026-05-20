@@ -282,3 +282,28 @@ export function addMs(d: Date, ms: number): Date {
 export function fromDateString(str: string): Date {
   return new Date(str);
 }
+
+// ── Progress helpers ──────────────────────────────────────────────────────────
+
+/**
+ * Percentage of the current day elapsed (0–100), based on local time.
+ * `(hours × 60 + minutes) / 1440 × 100`
+ *
+ * Temporal: `Temporal.Now.plainTimeISO()` arithmetic
+ */
+export function dayProgressPct(now?: Date): number {
+  const d = now ?? new Date();
+  return ((d.getHours() * 60 + d.getMinutes()) / 1440) * 100;
+}
+
+/**
+ * Percentage of the current calendar year elapsed (0–100).
+ *
+ * Temporal: `Temporal.Now.plainDateISO().dayOfYear / daysInYear × 100`
+ */
+export function yearProgressPct(now?: Date): number {
+  const d = now ?? new Date();
+  const startOfYear = new Date(d.getFullYear(), 0, 1);
+  const endOfYear = new Date(d.getFullYear() + 1, 0, 1);
+  return ((d.getTime() - startOfYear.getTime()) / (endOfYear.getTime() - startOfYear.getTime())) * 100;
+}
