@@ -26,6 +26,8 @@ function fnv1a32(str: string): number {
 
 const _lastHash = new Map<string, number>();
 const _lastRenderMs = new Map<string, number>();
+const _renderCount = new Map<string, number>();
+const _skipCount = new Map<string, number>();
 
 // Minimum interval (ms) between renders of the same card, even if content changed.
 // Prevents rapid-fire repaints on flapping data (e.g. flaky API alternating payloads).
@@ -44,11 +46,17 @@ const MIN_RENDER_INTERVAL_MS = 2000;
 export function shouldSkipRender(cardId: string, payload: unknown): boolean {
   const hash = fnv1a32(JSON.stringify(payload));
   const prevHash = _lastHash.get(cardId);
-  if (prevHash === hash) return true;
+  if (prevHash === hash) {
+    _skipCount.set(cardId, (_skipCount.get(cardId) ?? 0) + 1);
+    return true;
+  }
 
   const now = Date.now();
   const lastRender = _lastRenderMs.get(cardId);
-  if (lastRender !== undefined && now - lastRender < MIN_RENDER_INTERVAL_MS) return true;
+  if (lastRender !== undefined && now - lastRender < MIN_RENDER_INTERVAL_MS) {
+    _skipCount.set(cardId, (_skipCount.get(cardId) ?? 0) + 1);
+    return true;
+  }
 
   return false;
 }
@@ -60,6 +68,7 @@ export function shouldSkipRender(cardId: string, payload: unknown): boolean {
 export function markRendered(cardId: string, payload: unknown): void {
   _lastHash.set(cardId, fnv1a32(JSON.stringify(payload)));
   _lastRenderMs.set(cardId, Date.now());
+  _renderCount.set(cardId, (_renderCount.get(cardId) ?? 0) + 1);
 }
 
 /**
@@ -75,6 +84,25 @@ export function invalidateGovernor(cardId: string): void {
 export function resetGovernor(): void {
   _lastHash.clear();
   _lastRenderMs.clear();
+  _renderCount.clear();
+  _skipCount.clear();
+}
+
+/** Per-card render/skip statistics for the diagnostics overlay. */
+export interface GovernorStats {
+  cardId: string;
+  renders: number;
+  skips: number;
+}
+
+/** Return render/skip counts for all tracked cards. */
+export function getGovernorStats(): GovernorStats[] {
+  const ids = new Set([..._renderCount.keys(), ..._skipCount.keys()]);
+  return [...ids].map((cardId) => ({
+    cardId,
+    renders: _renderCount.get(cardId) ?? 0,
+    skips: _skipCount.get(cardId) ?? 0,
+  }));
 }
 
 // ── Test helpers ─────────────────────────────────────────────────────────────

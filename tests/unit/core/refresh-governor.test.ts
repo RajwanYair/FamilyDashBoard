@@ -8,6 +8,7 @@ import {
   markRendered,
   invalidateGovernor,
   resetGovernor,
+  getGovernorStats,
   _resetForTest,
   _fnv1a32ForTest,
 } from "@/core/refresh-governor";
@@ -112,6 +113,37 @@ describe("refresh-governor", () => {
     it("handles empty string", () => {
       const h = _fnv1a32ForTest("");
       expect(h).toBe(2166136261); // FNV offset basis
+    });
+  });
+
+  describe("getGovernorStats", () => {
+    it("returns empty array when no cards tracked", () => {
+      expect(getGovernorStats()).toEqual([]);
+    });
+
+    it("tracks render count per card", () => {
+      markRendered("weather", { temp: 25 });
+      markRendered("weather", { temp: 26 });
+      const stats = getGovernorStats();
+      const wx = stats.find((s) => s.cardId === "weather");
+      expect(wx).toEqual({ cardId: "weather", renders: 2, skips: 0 });
+    });
+
+    it("tracks skip count when content is identical", () => {
+      const payload = { temp: 25 };
+      markRendered("stocks", payload);
+      shouldSkipRender("stocks", payload); // identical → skip
+      shouldSkipRender("stocks", payload); // identical → skip
+      const stats = getGovernorStats();
+      const stk = stats.find((s) => s.cardId === "stocks");
+      expect(stk).toEqual({ cardId: "stocks", renders: 1, skips: 2 });
+    });
+
+    it("resets stats on resetGovernor", () => {
+      markRendered("news", { items: [] });
+      shouldSkipRender("news", { items: [] });
+      resetGovernor();
+      expect(getGovernorStats()).toEqual([]);
     });
   });
 });

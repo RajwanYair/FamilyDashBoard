@@ -42,6 +42,7 @@ import {
   getProviderAvgLatency,
 } from "../core/provider";
 import { trustedHTML } from "../core/trusted-types";
+import { getGovernorStats } from "../core/refresh-governor";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -177,6 +178,7 @@ function renderStats(): void {
       vitalsHtml +
       hwHtml +
       renderCardTimingsHtml() +
+      renderGovernorStatsHtml() +
       renderErrorTrendHtml() +
       renderProviderHealthHtml(),
   );
@@ -226,6 +228,25 @@ function renderErrorTrendHtml(): string {
   return `<div style="margin-top:6px;font-size:0.75em">
     <b>📉 Error Rate Trend</b> (err/min)
     <div style="display:flex;gap:2px;align-items:end;height:28px;margin-top:3px">${bars}</div>
+  </div>`;
+}
+
+// ── Governor render stats ──
+
+function renderGovernorStatsHtml(): string {
+  const stats = getGovernorStats();
+  if (stats.length === 0) return "";
+  const totalRenders = stats.reduce((s, c) => s + c.renders, 0);
+  const totalSkips = stats.reduce((s, c) => s + c.skips, 0);
+  const rows = stats
+    .sort((a, b) => b.skips - a.skips)
+    .map((s) => {
+      const skipPct = s.renders + s.skips > 0 ? ((s.skips / (s.renders + s.skips)) * 100).toFixed(0) : "0";
+      return `<span>${s.cardId}: ${s.renders}↑ ${s.skips}⏭ (${skipPct}%)</span>`;
+    })
+    .join("");
+  return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">
+    🎛️ Governor: ${totalRenders} renders · ${totalSkips} skipped ${rows}
   </div>`;
 }
 
