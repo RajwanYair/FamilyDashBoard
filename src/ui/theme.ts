@@ -9,6 +9,7 @@
 
 import { diagLog } from "../core/diag";
 import { LS_THEME, THEMES, type ThemeName } from "../core/constants";
+import { today } from "../core/temporal";
 export type { ThemeName } from "../core/constants";
 export { THEMES } from "../core/constants";
 
@@ -112,7 +113,7 @@ export function initTheme(): void {
  */
 export function checkAutoTheme(enabled: boolean, dayTheme: ThemeName): void {
   if (!enabled) return;
-  const h = new Date().getHours();
+  const h = today().getHours();
   const isNight = h >= 20 || h < 7;
   const target: ThemeName = isNight ? "black" : dayTheme;
   if (!document.body.classList.contains(`theme-${target}`)) {

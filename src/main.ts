@@ -32,6 +32,7 @@ import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
 import { ECFG_PREFIX } from "./core/config-crypto";
 import { applyInterfaceLanguage, t } from "./core/i18n";
 import { MS_PER_MIN } from "./core/constants";
+import { today, nowMs } from "./core/temporal";
 import { state } from "./core/state";
 
 // ── UI ──
@@ -185,7 +186,7 @@ export function applyCardLayout(layout: [string[], string[], string[]] | null): 
  * Months (0-based): spring=2–4, summer=5–7, autumn=8–10, winter=11/0/1.
  */
 export function applySeasonClass(): void {
-  const m = new Date().getMonth();
+  const m = today().getMonth();
   const cls =
     m >= 2 && m <= 4
       ? "season-spring"
@@ -383,12 +384,12 @@ export function init(): void {
     if (e.ctrlKey && e.shiftKey && e.key === "E") {
       e.preventDefault();
       const entries = getDiagEntries(500);
-      const json = JSON.stringify({ exported: new Date().toISOString(), entries }, null, 2);
+      const json = JSON.stringify({ exported: today().toISOString(), entries }, null, 2);
       const blob = new Blob([json], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `fdb-diag-${Date.now()}.json`;
+      a.download = `fdb-diag-${nowMs()}.json`;
       a.click();
       URL.revokeObjectURL(url);
     }
