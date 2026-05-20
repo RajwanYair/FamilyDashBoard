@@ -295,3 +295,10 @@
     border: 1px solid var(--negative);
   }
 }
+
+/* ── prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .stk-sparkbar-fill {
+    transition: none;
+  }
+}

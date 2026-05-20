@@ -551,6 +551,13 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   padding: 0;
   align-self: start;
 }
+
+/* ── prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .news-breaking-badge {
+    animation: none;
+  }
+}
 .news-starred-remove:hover {
   color: var(--danger, #e55);
 }

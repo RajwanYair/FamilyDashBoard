@@ -274,3 +274,14 @@
     }
   }
 }
+
+/* ── prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .cd-num.cd-urgent-pulse {
+    animation: none;
+  }
+
+  .cd-progress-bar {
+    transition: none;
+  }
+}
