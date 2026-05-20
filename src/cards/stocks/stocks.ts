@@ -37,6 +37,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
+import { today } from "../../core/temporal";
 
 // X15: cached snapshot of top mover for the semantic-clipboard producer.
 let _topMoverSnapshot: { sym: string; pct: number; dir: "up" | "down" } | null = null;
@@ -169,7 +170,7 @@ export function marketStatusLabel(): string {
 }
 
 export function isMarketOpen(): boolean {
-  const now = new Date();
+  const now = today();
   const nyHour = parseInt(
     now.toLocaleTimeString("en-US", {
       hour: "2-digit",
@@ -193,7 +194,7 @@ function getStockTTL(): number {
 export type MarketStatus = "pre" | "open" | "after" | "closed";
 
 export function getMarketStatus(): MarketStatus {
-  const now = new Date();
+  const now = today();
   // Get day-of-week in New York to handle weekends
   const nyDate = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const day = nyDate.getDay();
@@ -216,7 +217,7 @@ export function getMarketStatus(): MarketStatus {
 }
 
 export function getMinutesToNextTransition(): number {
-  const now = new Date();
+  const now = today();
   const nyDate = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const day = nyDate.getDay();
 
@@ -591,7 +592,7 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
 
   const timeEl = blk.querySelector(".stk-time");
   if (timeEl) {
-    timeEl.textContent = new Date().toLocaleTimeString("he-IL", {
+    timeEl.textContent = today().toLocaleTimeString("he-IL", {
       hour: "2-digit",
       minute: "2-digit",
       timeZone: "Asia/Jerusalem",

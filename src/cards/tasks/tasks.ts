@@ -21,6 +21,16 @@ import type { CardDefinition, CardConfigField } from "../../types/card";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../core/semantic-clipboard";
 import { setCardSignal } from "../../core/card-signal-protocol";
+import {
+  today,
+  startOfDayMs,
+  parsePlainDateMs,
+  toISODateString,
+  addDays,
+  addMonths,
+  addYears,
+  fromParts,
+} from "../../core/temporal";
 
 export interface ChoreItem {
   person: string;
@@ -67,10 +77,10 @@ function saveDoneMap(map: Record<string, boolean>): void {
 /** Check if the stored done-state needs a daily reset. */
 function checkDailyReset(): void {
   const lastReset = localStorage.getItem(LS_TASKS_RESET);
-  const today = new Date();
-  const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+  const now = today();
+  const resetKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
   const resetHour = loadConfig().tasksResetHour ?? DEFAULT_RESET_HOUR;
-  if (lastReset !== resetKey && today.getHours() >= resetHour) {
+  if (lastReset !== resetKey && now.getHours() >= resetHour) {
     localStorage.removeItem(LS_TASKS_DONE);
     try {
       localStorage.setItem(LS_TASKS_RESET, resetKey);
@@ -88,7 +98,7 @@ function checkDailyReset(): void {
  */
 export function recurrenceResetKey(
   recurrence: ChoreItem["recurrence"],
-  now: Date = new Date(),
+  now: Date = today(),
 ): string {
   const y = now.getFullYear();
   const m = String(now.getMonth() + 1).padStart(2, "0");
@@ -97,7 +107,7 @@ export function recurrenceResetKey(
   if (recurrence === "monthly") return `${y}-${m}`;
   if (recurrence === "weekly") {
     // ISO week: day 4 (Thursday) of the week sets the year
-    const jan1 = new Date(y, 0, 1);
+    const jan1 = fromParts(y, 1, 1);
     const week = Math.ceil(((now.getTime() - jan1.getTime()) / 86_400_000 + jan1.getDay() + 1) / 7);
     return `${y}-W${String(week).padStart(2, "0")}`;
   }
@@ -113,7 +123,7 @@ export function checkRecurringReset(item: ChoreItem): void {
   const fp = fingerprint(item);
   const lsKey = `tasks-reset::${fp}`;
   const resetHour = loadConfig().tasksResetHour ?? DEFAULT_RESET_HOUR;
-  const now = new Date();
+  const now = today();
   if (now.getHours() < resetHour) return; // not yet reset time
   const currentKey = recurrenceResetKey(item.recurrence, now);
   const lastKey = localStorage.getItem(lsKey);
@@ -195,18 +205,17 @@ export function parseTaskDueDate(chore: string): { dueDate: string | null; clean
  * Returns true when `dueDateStr` is before today (task is overdue).
  */
 export function isOverdue(dueDateStr: string): boolean {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const d = new Date(dueDateStr + "T00:00:00");
-  return !isNaN(d.getTime()) && d < today;
+  const todayMs = startOfDayMs();
+  const dMs = parsePlainDateMs(dueDateStr);
+  return !isNaN(dMs) && dMs < todayMs;
 }
 
 /**
  * Returns true when `dueDateStr` is exactly today.
  */
 export function isDueToday(dueDateStr: string): boolean {
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const now = today();
+  const todayStr = toISODateString(now.getFullYear(), now.getMonth() + 1, now.getDate());
   return dueDateStr === todayStr;
 }
 
@@ -215,11 +224,10 @@ export function isDueToday(dueDateStr: string): boolean {
  * (not today, not overdue — strictly future within 7 days).
  */
 export function isDueThisWeek(dueDateStr: string): boolean {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const d = new Date(dueDateStr + "T00:00:00");
-  if (isNaN(d.getTime())) return false;
-  const diff = d.getTime() - today.getTime();
+  const todayMs = startOfDayMs();
+  const dMs = parsePlainDateMs(dueDateStr);
+  if (isNaN(dMs)) return false;
+  const diff = dMs - todayMs;
   // diff > 0 means strictly in future; 7 * 86400000 = 1 week
   return diff > 0 && diff <= 7 * 86_400_000;
 }
@@ -228,9 +236,9 @@ export function isDueThisWeek(dueDateStr: string): boolean {
  * Format a `YYYY-MM-DD` due-date string to a short Hebrew-locale string.
  */
 export function formatTaskDueDate(dueDateStr: string): string {
-  const d = new Date(dueDateStr + "T00:00:00");
-  if (isNaN(d.getTime())) return dueDateStr;
-  return d.toLocaleDateString("he-IL", { month: "short", day: "numeric" });
+  const ms = parsePlainDateMs(dueDateStr);
+  if (isNaN(ms)) return dueDateStr;
+  return new Date(ms).toLocaleDateString("he-IL", { month: "short", day: "numeric" });
 }
 
 /**
@@ -253,40 +261,33 @@ export function countOverdueTasks(chores: ChoreItem[]): number {
  * Advances from max(existing due date, today) so the result is always ≥ tomorrow.
  * Returns the new YYYY-MM-DD string, or null if the item has no recurrence / no due date.
  */
-export function advanceRecurringDueDate(item: ChoreItem, now: Date = new Date()): string | null {
+export function advanceRecurringDueDate(item: ChoreItem, now: Date = today()): string | null {
   if (!item.recurrence) return null;
   const { dueDate } = parseTaskDueDate(item.chore);
   if (!dueDate) return null;
-  const base = new Date(dueDate + "T00:00:00");
-  if (isNaN(base.getTime())) return null;
-  const today = new Date(now);
-  today.setHours(0, 0, 0, 0);
-  const from = base < today ? today : base;
+  const baseMs = parsePlainDateMs(dueDate);
+  if (isNaN(baseMs)) return null;
+  const base = new Date(baseMs);
+  const todayStart = new Date(startOfDayMs(now));
+  const from = base < todayStart ? todayStart : base;
   let next: Date;
   switch (item.recurrence) {
     case "daily":
-      next = new Date(from.getTime() + 86_400_000);
+      next = addDays(from, 1);
       break;
     case "weekly":
-      next = new Date(from.getTime() + 7 * 86_400_000);
+      next = addDays(from, 7);
       break;
-    case "monthly": {
-      next = new Date(from);
-      next.setMonth(next.getMonth() + 1);
+    case "monthly":
+      next = addMonths(from, 1);
       break;
-    }
-    case "yearly": {
-      next = new Date(from);
-      next.setFullYear(next.getFullYear() + 1);
+    case "yearly":
+      next = addYears(from, 1);
       break;
-    }
     default:
       return null;
   }
-  const y = next.getFullYear();
-  const m = String(next.getMonth() + 1).padStart(2, "0");
-  const d = String(next.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
+  return toISODateString(next.getFullYear(), next.getMonth() + 1, next.getDate());
 }
 
 /**

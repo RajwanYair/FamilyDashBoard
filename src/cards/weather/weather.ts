@@ -39,6 +39,7 @@ import { effect } from "../../core/signals";
 import { tempUnit as tempUnitSignal } from "../../core/app-signals";
 import { computeMoonPhase as _sharedMoonPhase } from "../../core/utils";
 import type { CardConfigField, CardDefinition } from "../../types/card";
+import { today, parsePlainDateMs } from "../../core/temporal";
 
 // ── City state ──
 let _activeLat = 31.7683;
@@ -406,7 +407,7 @@ export function humidityLabel(rh: number): string {
  * Returns a tuple of [emoji, Hebrew name].
  * Delegates to the shared computeMoonPhase in utils.ts.
  */
-export function moonPhase(date: Date = new Date()): [string, string] {
+export function moonPhase(date: Date = today()): [string, string] {
   const { emoji, label } = _sharedMoonPhase(date);
   return [emoji, label];
 }
@@ -415,7 +416,7 @@ export function moonPhase(date: Date = new Date()): [string, string] {
  * Return moon phase data plus the card ID to cross-link to.
  * The weather card moon tile should navigate to `crossLinkTarget` when clicked.
  */
-export function getMoonPhaseSummary(date: Date = new Date()): {
+export function getMoonPhaseSummary(date: Date = today()): {
   emoji: string;
   label: string;
   crossLinkTarget: string;
@@ -505,7 +506,7 @@ export function renderHourlyStrip(d: WeatherResponse): void {
   if (!time.length) return;
 
   // Find current or next hour index
-  const nowHour = new Date().toISOString().slice(0, 13); // "2024-01-01T14"
+  const nowHour = today().toISOString().slice(0, 13); // "2024-01-01T14"
   let startIdx = time.findIndex((t) => t.slice(0, 13) >= nowHour);
   if (startIdx === -1) startIdx = 0;
 
@@ -707,7 +708,7 @@ export function renderWeather(d: WeatherResponse): void {
       const fDay = fDays[i - 1];
       const dateStr = d.daily.time[i];
       if (fDay && dateStr) {
-        const dn = new Date(dateStr).toLocaleDateString("he-IL", {
+        const dn = new Date(parsePlainDateMs(dateStr)).toLocaleDateString("he-IL", {
           weekday: "short",
         });
         const mx = Math.round(d.daily.temperature_2m_max[i] ?? 0);

@@ -31,6 +31,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
+import { today, toISODateString, addDays, parsePlainDateMs } from "../../core/temporal";
 
 // X15: cached snapshot of headline rates for the semantic-clipboard producer.
 let _ratesSnapshot: { usdIls: number; eurIls: number } | null = null;
@@ -81,11 +82,12 @@ export function loadCurrencyHistory(): CurHistoryEntry[] {
 
 /** Store today's rates snapshot into the 30-day rolling history. */
 export function storeCurrencyHistory(rates: Record<string, number>): void {
-  const today = new Date().toISOString().slice(0, 10);
+  const now = today();
+  const todayStr = toISODateString(now.getFullYear(), now.getMonth() + 1, now.getDate());
   let history = loadCurrencyHistory();
   // Replace today's entry if already present, or append
-  history = history.filter((e) => e.date !== today);
-  history.push({ date: today, rates });
+  history = history.filter((e) => e.date !== todayStr);
+  history.push({ date: todayStr, rates });
   // Keep only the last 30 entries
   if (history.length > CUR_HISTORY_MAX_DAYS) {
     history = history.slice(-CUR_HISTORY_MAX_DAYS);
@@ -140,12 +142,11 @@ export function getCurrencyTrend(
   if (!newRate || newRate === 0) return null;
   const newVal = 1 / newRate;
 
-  const cutoffParts = newest.date.split("-");
-  const cutoffBase = new Date(
-    Date.UTC(Number(cutoffParts[0]), Number(cutoffParts[1]) - 1, Number(cutoffParts[2])),
+  const cutoffDate = addDays(
+    new Date(parsePlainDateMs(newest.date)),
+    -days,
   );
-  cutoffBase.setUTCDate(cutoffBase.getUTCDate() - days);
-  const cutoff = `${cutoffBase.getUTCFullYear()}-${String(cutoffBase.getUTCMonth() + 1).padStart(2, "0")}-${String(cutoffBase.getUTCDate()).padStart(2, "0")}`;
+  const cutoff = toISODateString(cutoffDate.getFullYear(), cutoffDate.getMonth() + 1, cutoffDate.getDate());
 
   // Find the most recent entry that is at or before the cutoff
   let ref: CurHistoryEntry | undefined;
@@ -541,7 +542,7 @@ export function renderCurrency(rates: Record<string, number>): void {
   }
 
   _prevRates = { ...rates };
-  _lastFetchTime = new Date();
+  _lastFetchTime = today();
 
   // Update last-fetch timestamp chip
   if (curEls.lastFetch) {
@@ -572,10 +573,10 @@ export function renderCurrency(rates: Record<string, number>): void {
 /** Returns cache TTL for exchange rates: shorter when US markets are active. */
 function getCurrencyTTL(): number {
   // Mirror isMarketOpen() from stocks.ts — forex rates move with NYSE hours.
-  const nyDate = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const nyDate = new Date(today().toLocaleString("en-US", { timeZone: "America/New_York" }));
   const day = nyDate.getDay();
   if (day === 0 || day === 6) return INTERVALS.CURRENCY;
-  const nyTimeStr = new Date().toLocaleTimeString("en-US", {
+  const nyTimeStr = today().toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
