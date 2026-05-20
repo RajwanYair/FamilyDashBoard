@@ -623,6 +623,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  opacity: 0.75; /* P1: reduce secondary visual weight */
 }
 .stk-vals {
   display: flex;
@@ -650,6 +651,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   font-size: 0.58em;
   color: var(--text-muted);
   white-space: nowrap;
+  opacity: 0.6; /* P1: timestamps are tertiary information */
 }
 .stk-logo {
   width: 18px;
@@ -906,6 +908,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
 .wx-desc {
   font-size: 0.72em;
   color: var(--text-secondary);
+  opacity: 0.75; /* P1: reduce secondary visual weight */
 }
 .wx-details {
   flex: 1 1 50%;
@@ -946,6 +949,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   color: var(--text-muted);
   font-size: 0.8em;
   margin-bottom: 1px;
+  opacity: 0.75; /* P1: reduce secondary visual weight */
 }
 .wx-detail-val {
   color: var(--text-primary);
