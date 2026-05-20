@@ -1086,6 +1086,8 @@ export function switchCfgTab(tab: string): void {
     const isActive = btn.dataset["tab"] === tab;
     btn.classList.toggle("active", isActive);
     btn.setAttribute("aria-selected", isActive ? "true" : "false");
+    // WAI-ARIA roving tabindex: only active tab is in tab order
+    btn.setAttribute("tabindex", isActive ? "0" : "-1");
   });
 }
 
