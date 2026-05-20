@@ -37,7 +37,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
-import { today } from "../../core/temporal";
+import { today, fromDateString } from "../../core/temporal";
 
 // X15: cached snapshot of top mover for the semantic-clipboard producer.
 let _topMoverSnapshot: { sym: string; pct: number; dir: "up" | "down" } | null = null;
@@ -196,7 +196,7 @@ export type MarketStatus = "pre" | "open" | "after" | "closed";
 export function getMarketStatus(): MarketStatus {
   const now = today();
   // Get day-of-week in New York to handle weekends
-  const nyDate = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const nyDate = fromDateString(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const day = nyDate.getDay();
   if (day === 0 || day === 6) return "closed";
 
@@ -218,7 +218,7 @@ export function getMarketStatus(): MarketStatus {
 
 export function getMinutesToNextTransition(): number {
   const now = today();
-  const nyDate = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const nyDate = fromDateString(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const day = nyDate.getDay();
 
   const nyTimeStr = now.toLocaleTimeString("en-US", {

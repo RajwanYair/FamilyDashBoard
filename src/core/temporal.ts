@@ -271,3 +271,14 @@ export function fromEpochSec(sec: number): Date {
 export function addMs(d: Date, ms: number): Date {
   return new Date(d.getTime() + ms);
 }
+
+/**
+ * Parse a date string (any format accepted by `Date` constructor) into a Date.
+ * Use for non-ISO strings such as locale-formatted timezone conversions.
+ * Eliminates remaining `new Date(someString)` call-sites.
+ *
+ * Temporal: `Temporal.PlainDateTime.from(str)` or `Temporal.Instant.from(str)`
+ */
+export function fromDateString(str: string): Date {
+  return new Date(str);
+}

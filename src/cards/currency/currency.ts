@@ -31,7 +31,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
-import { today, toISODateString, addDays, parsePlainDateMs } from "../../core/temporal";
+import { today, toISODateString, addDays, parsePlainDateMs, fromEpochMs, fromDateString } from "../../core/temporal";
 
 // X15: cached snapshot of headline rates for the semantic-clipboard producer.
 let _ratesSnapshot: { usdIls: number; eurIls: number } | null = null;
@@ -143,7 +143,7 @@ export function getCurrencyTrend(
   const newVal = 1 / newRate;
 
   const cutoffDate = addDays(
-    new Date(parsePlainDateMs(newest.date)),
+    fromEpochMs(parsePlainDateMs(newest.date)),
     -days,
   );
   const cutoff = toISODateString(cutoffDate.getFullYear(), cutoffDate.getMonth() + 1, cutoffDate.getDate());
@@ -573,7 +573,7 @@ export function renderCurrency(rates: Record<string, number>): void {
 /** Returns cache TTL for exchange rates: shorter when US markets are active. */
 function getCurrencyTTL(): number {
   // Mirror isMarketOpen() from stocks.ts — forex rates move with NYSE hours.
-  const nyDate = new Date(today().toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const nyDate = fromDateString(today().toLocaleString("en-US", { timeZone: "America/New_York" }));
   const day = nyDate.getDay();
   if (day === 0 || day === 6) return INTERVALS.CURRENCY;
   const nyTimeStr = today().toLocaleTimeString("en-US", {
