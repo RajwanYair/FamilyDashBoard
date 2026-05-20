@@ -1,0 +1,40 @@
+/* P4-S19: Per-card quick-toggle surface */
+
+.card-quick-hide-btn {
+  all: unset;
+  cursor: pointer;
+  font-size: 0.72em;
+  opacity: 0;
+  transition: opacity 0.2s;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.card-header:hover .card-quick-hide-btn,
+.card-quick-hide-btn:focus-visible {
+  opacity: 0.7;
+}
+.card-quick-hide-btn:hover {
+  opacity: 1;
+  background: var(--bg-card-inner);
+}
+
+.card-quick-restore-pill {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9000;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.82em;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.3);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.card-quick-restore-pill:hover {
+  transform: translateX(-50%) scale(1.05);
+}

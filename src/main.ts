@@ -63,6 +63,7 @@ import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initProviderDegradationToasts } from "./core/provider-toast";
 import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
+import { initCardQuickToggle } from "./ui/card-quick-toggle";
 import { initResizers } from "./ui/resizer";
 import { showToast } from "./ui/toast";
 import { initOfflineBanner } from "./ui/offline-banner";
@@ -274,6 +275,7 @@ export function init(): void {
   mountRegisteredCards();
   // Per-card settings gear buttons (lazy async — fires after card shells are in DOM)
   void initCardSettingsButtons();
+  initCardQuickToggle();
 
   // Add aria-label to icon-only collapse buttons
   document.querySelectorAll<HTMLButtonElement>(".card-collapse-btn").forEach((btn) => {
