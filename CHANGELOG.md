@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [15.1.0] — 2026-05-20
+
+> **57 governor/base-card tests / 0 failures** (commit `166ce48`)
+
+- **feat(temporal)**: complete Temporal unification — migrate tasks, stocks, currency, weather, calendar, alerts, hebrew-cal, countdown, and system-info cards to `src/core/temporal.ts` helpers (S21-S25)
+- **feat(core)**: refresh-rate governor module — FNV-1a hash + MIN_RENDER_INTERVAL throttle prevents unnecessary DOM repaints (S26)
+- **feat(core)**: wire governor into base-card loaders — `shouldSkipRender`/`markRendered` wrap all `createCardLoader`/`createAsyncCardLoader` render paths (S27)
+- **feat(ui)**: freshness badges on calendar, alerts, and hebrew-cal cards (S27)
+- **feat(ui)**: governor render/skip metrics in diagnostics overlay (D key) — per-card stats table (S28)
+- **perf(css)**: upgrade card containment to `contain: layout style paint` for isolated repaints (S29)
+- **feat(core)**: `resetGovernor()` on manual refresh (R key) — ensures user-triggered reload bypasses hash check (S29)
+
+---
+
 ## [15.0.0] — 2026-05-20
 
 > **5000+ tests / 328 suites / 0 failures** (commit `8177452`)
