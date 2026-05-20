@@ -413,6 +413,8 @@ export function renderStocksShell(): void {
     const img = document.createElement("img");
     img.src = logoSrc;
     img.alt = "";
+    img.width = 18; /* P5: explicit dims prevent CLS */
+    img.height = 18;
     img.loading = "lazy";
     img.addEventListener("error", () => {
       img.style.display = "none";

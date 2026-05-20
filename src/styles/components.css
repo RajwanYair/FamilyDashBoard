@@ -1421,6 +1421,7 @@ select.cfg-input {
   overflow-y: auto;
   padding: 0.5em 0.75em;
   min-height: 0;
+  contain: layout; /* P5: prevent card-body reflow from causing cross-card CLS */
 }
 
 .card__footer {
