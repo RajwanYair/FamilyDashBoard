@@ -28,8 +28,3 @@ export function recordDedupStats(stats: Omit<DedupStats, "lastRunAt">): void {
 export function getDedupStats(): DedupStats | null {
   return _stats;
 }
-
-/** Reset dedup stats (used in tests). */
-export function _resetDedupStats(): void {
-  _stats = null;
-}

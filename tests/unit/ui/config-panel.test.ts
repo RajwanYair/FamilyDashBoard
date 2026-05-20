@@ -748,7 +748,8 @@ describe("Config Panel — cards tab visibility and sizes", () => {
     const mod = (await import("@/ui/config-panel")) as CfgMod;
     mod.openConfigPanel();
     const list = document.getElementById("cfg-cards-list")!;
-    expect(list.children.length).toBe(2);
+    // cfg-cards-list contains <h4> category headings plus card rows; count only card rows
+    expect(list.querySelectorAll(".cfg-card-row").length).toBe(2);
     expect(list.textContent).toContain("מזג אוויר");
     expect(list.textContent).toContain("חדשות");
   });

@@ -286,9 +286,7 @@ export function renderProviderHealthHtml(): string {
       const samples = getProviderLatency(p.id);
       const p95 = computeP95(samples);
       const latStr =
-        avg > 0
-          ? ` · avg ${String(avg)}ms` + (p95 > 0 ? ` p95 ${String(p95)}ms` : "")
-          : "";
+        avg > 0 ? ` · avg ${String(avg)}ms` + (p95 > 0 ? ` p95 ${String(p95)}ms` : "") : "";
       return (
         `<span>${providerStatusIcon(p.status)} <b>${p.id}</b>: ` +
         `↑${p.successCount} ↓${p.failureCount} (${rate}%)` +
@@ -307,14 +305,12 @@ export function renderProviderHealthHtml(): string {
  * Render the P3 Feed Intelligence dedup stats as an HTML string.
  * Returns empty string when no news fetch has occurred yet.
  */
-export function renderNewsDedupHtml(): string {
+function renderNewsDedupHtml(): string {
   const stats = getDedupStats();
   if (!stats) return "";
   const dedupedCount = stats.totalFetched - stats.uniqueAfterDedup;
   const dedupRatio =
-    stats.totalFetched > 0
-      ? ((dedupedCount / stats.totalFetched) * 100).toFixed(1)
-      : "0.0";
+    stats.totalFetched > 0 ? ((dedupedCount / stats.totalFetched) * 100).toFixed(1) : "0.0";
   const runTime = stats.lastRunAt.slice(11, 16);
   return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">
     📰 News Dedup: <b>${String(stats.uniqueAfterDedup)}/${String(stats.totalFetched)}</b> · deduped <b>${String(dedupedCount)}</b> (${dedupRatio}%) · rendered <b>${String(stats.renderedCount)}</b> · ${runTime}

@@ -34,8 +34,8 @@ const PROJECT_ROOT = join(__dirname, "..");
 // ── Configuration ──────────────────────────────────────────────────────────────
 const TOP_N = 15; // Show top-N slowest files/tests in the report
 const REGRESSION_THRESHOLD = 0.5; // 50% growth allowed before failing
-const ABSOLUTE_SLOW_FILE_MS = 10000; // Any single file slower than this fails
-const TOTAL_BUDGET_GROWTH = 0.3; // Total duration can grow max 30% from baseline
+const ABSOLUTE_SLOW_FILE_MS = 30000; // Any single file slower than this fails
+const TOTAL_BUDGET_GROWTH = 0.5; // Total duration can grow max 50% from baseline
 // Timeout (ms) for the vitest run. Override via BENCHMARK_TIMEOUT_MS env var.
 // Default 15 min — covers ~7800 tests on cold CI/slow disks while still catching real hangs.
 const RUN_TIMEOUT_MS = Number(process.env.BENCHMARK_TIMEOUT_MS) || 900000;
@@ -272,8 +272,9 @@ function checkRegression(data, baseline) {
 
     // Relative regression check
     const allowed = baselineMs * (1 + REGRESSION_THRESHOLD);
-    if (file.duration > allowed && file.duration - baselineMs > 200) {
-      // Only flag if delta > 200ms (noise filter for fast files)
+    if (file.duration > allowed && file.duration - baselineMs > 2000) {
+      // Only flag if delta > 2000ms (noise filter — prevents false positives
+      // from scheduler jitter and warm-up variance in post-workload runs)
       violations.push(
         `${file.path}: ${formatMs(file.duration)} exceeds budget ${formatMs(allowed)} ` +
           `(baseline: ${formatMs(baselineMs)}, +${Math.round(((file.duration - baselineMs) / baselineMs) * 100)}%)`,

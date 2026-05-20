@@ -11,16 +11,16 @@
 
 FamilyDashBoard competes in the **ambient family information display** category — alongside MagicMirror², Glance, Homepage, Homarr, Home Assistant Lovelace, Dakboard, TRMNL, e-ink frames, and self-hosted dashboards. Our durable differentiators:
 
-| Differentiator                | Strength vs field                                                                                |
-| ----------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Zero runtime dependencies** | Only entrant with 0 client npm deps AND full offline-first PWA                                   |
-| **Hebrew RTL native**         | Only ambient dashboard with native Hebrew + Jewish calendar + Shabbat-aware UI                   |
-| **TV-first density**          | Optimized for 1920×1080 always-on at 3 m reading distance                                        |
-| **Privacy by architecture**   | No auth, no accounts, no server-side user data — local-first localStorage + IDB                  |
-| **Edge-augmented, not bound** | Cloudflare Worker optional; dashboard renders, refreshes, and self-heals fully without it        |
-| **In-house reactivity**       | ~1 KB signals engine aligned to TC39 Stage 3 — swap-ready when native lands                      |
-| **27 production gates**       | `npm run check` is the canonical bar; lint + test alone are insufficient                         |
-| **Reproducible artifacts**    | `check:reproducible` + `check:sigstore` provide supply-chain guarantees most peers do not        |
+| Differentiator                | Strength vs field                                                                         |
+| ----------------------------- | ----------------------------------------------------------------------------------------- |
+| **Zero runtime dependencies** | Only entrant with 0 client npm deps AND full offline-first PWA                            |
+| **Hebrew RTL native**         | Only ambient dashboard with native Hebrew + Jewish calendar + Shabbat-aware UI            |
+| **TV-first density**          | Optimized for 1920×1080 always-on at 3 m reading distance                                 |
+| **Privacy by architecture**   | No auth, no accounts, no server-side user data — local-first localStorage + IDB           |
+| **Edge-augmented, not bound** | Cloudflare Worker optional; dashboard renders, refreshes, and self-heals fully without it |
+| **In-house reactivity**       | ~1 KB signals engine aligned to TC39 Stage 3 — swap-ready when native lands               |
+| **27 production gates**       | `npm run check` is the canonical bar; lint + test alone are insufficient                  |
+| **Reproducible artifacts**    | `check:reproducible` + `check:sigstore` provide supply-chain guarantees most peers do not |
 
 This roadmap pushes every layer to **best-in-class** across reliability, maintainability, information clarity, accessibility, and supply-chain integrity. Complexity is added only where it eliminates a real failure mode.
 
@@ -30,7 +30,7 @@ This roadmap pushes every layer to **best-in-class** across reliability, maintai
 2. **Zero tolerated quality drift.** Stale counts, dead code, suppressed rules, or disabled checks are release blockers
 3. **Generated output ≠ product structure.** Intermediates → `$TEMP`, artifacts → ignored dirs
 4. **Forward-only roadmap.** Shipped items move to changelog or ADR within the same PR
-5. **Harvest practice over imitate stack.** We copy *methods*, not framework choices
+5. **Harvest practice over imitate stack.** We copy _methods_, not framework choices
 
 ---
 
@@ -40,45 +40,45 @@ Every major decision was reconsidered from first principles for v11. Columns: cu
 
 ### 1.1 Product & Scope
 
-| Decision                                          | Verdict      | Rationale                                                                             |
-| ------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------- |
-| Always-on family dashboard for large displays     | **Keep**     | TV-first constraint produces correct typography, density, reliability bar             |
-| Static PWA + optional edge worker                 | **Keep**     | Best offline resilience, zero auth, minimal ops surface                               |
-| Single household, no accounts                     | **Keep**     | Removes privacy/security/support complexity entirely (see ADR-002, ADR-005)           |
-| Keyboard-first + remote-friendly + touch-capable  | **Keep**     | Correct for TV + secondary tablet                                                     |
-| 12-card curated set, no plugin marketplace        | **Keep**     | Quality bar > extensibility. Power users fork                                         |
-| File:// + GitHub Pages dual-target build          | **Keep**     | One artifact runs from a USB stick or from CDN — eliminates a whole class of failures |
+| Decision                                         | Verdict  | Rationale                                                                             |
+| ------------------------------------------------ | -------- | ------------------------------------------------------------------------------------- |
+| Always-on family dashboard for large displays    | **Keep** | TV-first constraint produces correct typography, density, reliability bar             |
+| Static PWA + optional edge worker                | **Keep** | Best offline resilience, zero auth, minimal ops surface                               |
+| Single household, no accounts                    | **Keep** | Removes privacy/security/support complexity entirely (see ADR-002, ADR-005)           |
+| Keyboard-first + remote-friendly + touch-capable | **Keep** | Correct for TV + secondary tablet                                                     |
+| 12-card curated set, no plugin marketplace       | **Keep** | Quality bar > extensibility. Power users fork                                         |
+| File:// + GitHub Pages dual-target build         | **Keep** | One artifact runs from a USB stick or from CDN — eliminates a whole class of failures |
 
 ### 1.2 Frontend Stack
 
-| Area              | Current                                                  | Verdict     | Forward action                                                                              |
-| ----------------- | -------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------- |
-| Language          | TypeScript 6 strict + `strictFunctionTypes`              | **Keep**    | Adopt TS 7 only when emit is byte-stable                                                    |
-| UI framework      | Vanilla DOM + card class hierarchy + custom elements     | **Keep**    | Frameworks add no value for 12 stable cards; improve view-model separation incrementally    |
-| CSS architecture  | `@layer` cascade governance (ADR-008)                    | **Keep**    | Expand container queries; enforce `light-dark()` for new themes                             |
-| Reactivity        | In-house signals (~200 LOC, ADR aligned)                 | **Keep**    | Track TC39 Stage 3; swap when native — keep adapter layer thin                              |
-| State             | Signals + localStorage + IDB + SW                        | **Keep**    | Four-tier (memory → LS → IDB → SW) is architecturally correct                               |
-| Date/time         | Mostly `Intl` + Temporal polyfill                        | **Improve** | Finish temporal unification; grep for `new Date(` in cards must return 0                    |
-| Build             | Vite 8 + Rollup, dual `--base` targets                   | **Keep**    | IIFE for `file://`, ESM for hosted; correct                                                 |
-| CSS processing    | LightningCSS via Vite                                    | **Keep**    | Fastest correct transform; targets aligned with `.browserslistrc`                           |
-| Service Worker    | Hand-crafted, versioned, `SKIP_WAITING` message contract | **Keep**    | Full cache control without Workbox bloat                                                    |
-| Icons & manifest  | `src/public/` (Vite static dir)                          | **Keep**    | Unfingerprinted, stable URLs                                                                |
-| Type packaging    | Per-feature `types/` modules + central `api.ts`          | **Keep**    | Domain types co-located; cross-cutting in `types/`                                          |
+| Area             | Current                                                  | Verdict     | Forward action                                                                           |
+| ---------------- | -------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------- |
+| Language         | TypeScript 6 strict + `strictFunctionTypes`              | **Keep**    | Adopt TS 7 only when emit is byte-stable                                                 |
+| UI framework     | Vanilla DOM + card class hierarchy + custom elements     | **Keep**    | Frameworks add no value for 12 stable cards; improve view-model separation incrementally |
+| CSS architecture | `@layer` cascade governance (ADR-008)                    | **Keep**    | Expand container queries; enforce `light-dark()` for new themes                          |
+| Reactivity       | In-house signals (~200 LOC, ADR aligned)                 | **Keep**    | Track TC39 Stage 3; swap when native — keep adapter layer thin                           |
+| State            | Signals + localStorage + IDB + SW                        | **Keep**    | Four-tier (memory → LS → IDB → SW) is architecturally correct                            |
+| Date/time        | Mostly `Intl` + Temporal polyfill                        | **Improve** | Finish temporal unification; grep for `new Date(` in cards must return 0                 |
+| Build            | Vite 8 + Rollup, dual `--base` targets                   | **Keep**    | IIFE for `file://`, ESM for hosted; correct                                              |
+| CSS processing   | LightningCSS via Vite                                    | **Keep**    | Fastest correct transform; targets aligned with `.browserslistrc`                        |
+| Service Worker   | Hand-crafted, versioned, `SKIP_WAITING` message contract | **Keep**    | Full cache control without Workbox bloat                                                 |
+| Icons & manifest | `src/public/` (Vite static dir)                          | **Keep**    | Unfingerprinted, stable URLs                                                             |
+| Type packaging   | Per-feature `types/` modules + central `api.ts`          | **Keep**    | Domain types co-located; cross-cutting in `types/`                                       |
 
 ### 1.3 Backend / Infrastructure
 
-| Area              | Current                                          | Verdict  | Forward action                                                     |
-| ----------------- | ------------------------------------------------ | -------- | ------------------------------------------------------------------ |
-| Edge runtime      | Cloudflare Worker (Hono + Valibot)               | **Keep** | Annual vendor-neutrality drill (`check:vendor`) already gates this |
-| Realtime          | Durable Objects (stocks, alerts, rate-limiter)   | **Keep** | Finish WebSocket upgrade for stocks; tighten alerts orchestrator   |
-| API proxy         | Worker routes → upstream APIs                    | **Keep** | Centralizes CORS; keeps API keys server-side                       |
-| Telemetry         | Analytics Engine (operational metrics only)      | **Keep** | No user tracking; latency, cache-hit, error rates                  |
-| Database (server) | None                                             | **Keep** | No server-side user state by design                                |
-| Database (client) | localStorage + IndexedDB (LRU, ≤50 MB)           | **Keep** | Privacy-preserving; works offline                                  |
-| CDN/hosting       | GitHub Pages                                     | **Keep** | Zero-cost, deterministic, correct for static PWA                   |
-| Secrets           | Cloudflare Worker env bindings                   | **Keep** | API keys never reach client                                        |
-| OpenAPI           | `worker/openapi.yaml` with TTL annotations       | **Keep** | `check:openapi-ttl` enforces freshness                             |
-| Worker tests      | Vitest + Miniflare (`worker/`)                   | **Keep** | Real DO + KV simulation                                            |
+| Area              | Current                                        | Verdict  | Forward action                                                     |
+| ----------------- | ---------------------------------------------- | -------- | ------------------------------------------------------------------ |
+| Edge runtime      | Cloudflare Worker (Hono + Valibot)             | **Keep** | Annual vendor-neutrality drill (`check:vendor`) already gates this |
+| Realtime          | Durable Objects (stocks, alerts, rate-limiter) | **Keep** | Finish WebSocket upgrade for stocks; tighten alerts orchestrator   |
+| API proxy         | Worker routes → upstream APIs                  | **Keep** | Centralizes CORS; keeps API keys server-side                       |
+| Telemetry         | Analytics Engine (operational metrics only)    | **Keep** | No user tracking; latency, cache-hit, error rates                  |
+| Database (server) | None                                           | **Keep** | No server-side user state by design                                |
+| Database (client) | localStorage + IndexedDB (LRU, ≤50 MB)         | **Keep** | Privacy-preserving; works offline                                  |
+| CDN/hosting       | GitHub Pages                                   | **Keep** | Zero-cost, deterministic, correct for static PWA                   |
+| Secrets           | Cloudflare Worker env bindings                 | **Keep** | API keys never reach client                                        |
+| OpenAPI           | `worker/openapi.yaml` with TTL annotations     | **Keep** | `check:openapi-ttl` enforces freshness                             |
+| Worker tests      | Vitest + Miniflare (`worker/`)                 | **Keep** | Real DO + KV simulation                                            |
 
 ### 1.4 Testing & Quality
 
@@ -164,29 +164,29 @@ Every major decision was reconsidered from first principles for v11. Columns: cu
 
 ### 2.1 Full Comparison Matrix
 
-| Dimension                 | FamilyDashBoard                 | Glance    | MagicMirror²   | Homepage    | Homarr      | Dakboard | HA Lovelace | Grafana      | TRMNL    |
-| ------------------------- | ------------------------------- | --------- | -------------- | ----------- | ----------- | -------- | ----------- | ------------ | -------- |
-| **Runtime deps (client)** | **0**                           | ~5 (Go)   | ~40 (Node)     | ~30 (Go)    | ~80 (TS)    | SaaS     | ~200 (Py)   | ~150 (Go)    | SaaS     |
-| **Offline capability**    | **Full PWA**                    | None      | Partial        | None        | None        | None     | None        | None         | Firmware |
-| **Auth required**         | **No**                          | No        | No             | Optional    | Yes         | Yes      | Yes         | Yes          | Yes      |
-| **Server required**       | **No**                          | Yes       | Yes            | Yes         | Yes         | Cloud    | Yes         | Yes          | Cloud    |
-| **TV/ambient optimized**  | **Yes**                         | Partial   | Yes            | No          | No          | Yes      | Partial     | No           | Yes      |
-| **RTL / Hebrew native**   | **Yes**                         | No        | Community      | No          | No          | No       | Community   | No           | No       |
-| **Cards / widgets**       | 12 curated                      | ~30       | ~200 community | ~100        | ~150        | ~20      | 1000+       | Plugin model | ~15      |
-| **Card configurability**  | Medium                          | Low       | High           | Medium      | High        | Low      | Very High   | Very High    | Low      |
-| **Information density**   | High                            | Very High | Medium         | Medium      | Medium      | Low      | Variable    | Very High    | Very Low |
-| **Release automation**    | **Full CI/CD**                  | Manual    | npm publish    | GoReleaser  | Docker      | SaaS     | pip/Docker  | GoReleaser   | SaaS     |
-| **Test depth**            | **U+E2E+VR+Mut+Bench**          | Minimal   | Minimal        | Good        | Good        | Unknown  | Excellent   | Excellent    | Unknown  |
-| **Custom check gates**    | **27**                          | 0         | ~3             | ~5          | ~8          | 0        | ~15         | ~20          | 0        |
-| **Reproducible builds**   | **Yes**                         | No        | No             | No          | No          | N/A      | No          | No           | N/A      |
-| **Sigstore attestation**  | **Yes**                         | No        | No             | No          | No          | N/A      | No          | No           | N/A      |
-| **CSP / Trusted Types**   | **Strict + TT**                 | None      | None           | Basic       | Basic       | Unknown  | Basic       | Basic        | N/A      |
-| **A11y posture**          | WCAG 2.2 AA target              | Unknown   | Community      | Unknown     | Unknown     | Unknown  | Partial     | Partial      | N/A      |
-| **i18n model**            | RTL+Hebrew first                | en-only   | i18n plugin    | en-only     | i18n plugin | en-only  | i18n plugin | en-only      | en-only  |
-| **Privacy posture**       | **Maximal**                     | Good      | Good           | Good        | Medium      | Poor     | Good        | Medium       | Poor     |
-| **Bundle size (client)**  | **~180 KB gz**                  | N/A       | ~500 KB        | N/A         | ~2 MB       | N/A      | N/A         | N/A          | N/A      |
-| **Setup**                 | `git clone` + open              | Docker    | npm + config   | Docker      | Docker      | Sign up  | OS install  | Docker       | Buy HW   |
-| **Observability**         | Diag overlay + Analytics Engine | None      | None           | Logs only   | Basic       | None     | Excellent   | Excellent    | None     |
+| Dimension                 | FamilyDashBoard                 | Glance    | MagicMirror²   | Homepage   | Homarr      | Dakboard | HA Lovelace | Grafana      | TRMNL    |
+| ------------------------- | ------------------------------- | --------- | -------------- | ---------- | ----------- | -------- | ----------- | ------------ | -------- |
+| **Runtime deps (client)** | **0**                           | ~5 (Go)   | ~40 (Node)     | ~30 (Go)   | ~80 (TS)    | SaaS     | ~200 (Py)   | ~150 (Go)    | SaaS     |
+| **Offline capability**    | **Full PWA**                    | None      | Partial        | None       | None        | None     | None        | None         | Firmware |
+| **Auth required**         | **No**                          | No        | No             | Optional   | Yes         | Yes      | Yes         | Yes          | Yes      |
+| **Server required**       | **No**                          | Yes       | Yes            | Yes        | Yes         | Cloud    | Yes         | Yes          | Cloud    |
+| **TV/ambient optimized**  | **Yes**                         | Partial   | Yes            | No         | No          | Yes      | Partial     | No           | Yes      |
+| **RTL / Hebrew native**   | **Yes**                         | No        | Community      | No         | No          | No       | Community   | No           | No       |
+| **Cards / widgets**       | 12 curated                      | ~30       | ~200 community | ~100       | ~150        | ~20      | 1000+       | Plugin model | ~15      |
+| **Card configurability**  | Medium                          | Low       | High           | Medium     | High        | Low      | Very High   | Very High    | Low      |
+| **Information density**   | High                            | Very High | Medium         | Medium     | Medium      | Low      | Variable    | Very High    | Very Low |
+| **Release automation**    | **Full CI/CD**                  | Manual    | npm publish    | GoReleaser | Docker      | SaaS     | pip/Docker  | GoReleaser   | SaaS     |
+| **Test depth**            | **U+E2E+VR+Mut+Bench**          | Minimal   | Minimal        | Good       | Good        | Unknown  | Excellent   | Excellent    | Unknown  |
+| **Custom check gates**    | **27**                          | 0         | ~3             | ~5         | ~8          | 0        | ~15         | ~20          | 0        |
+| **Reproducible builds**   | **Yes**                         | No        | No             | No         | No          | N/A      | No          | No           | N/A      |
+| **Sigstore attestation**  | **Yes**                         | No        | No             | No         | No          | N/A      | No          | No           | N/A      |
+| **CSP / Trusted Types**   | **Strict + TT**                 | None      | None           | Basic      | Basic       | Unknown  | Basic       | Basic        | N/A      |
+| **A11y posture**          | WCAG 2.2 AA target              | Unknown   | Community      | Unknown    | Unknown     | Unknown  | Partial     | Partial      | N/A      |
+| **i18n model**            | RTL+Hebrew first                | en-only   | i18n plugin    | en-only    | i18n plugin | en-only  | i18n plugin | en-only      | en-only  |
+| **Privacy posture**       | **Maximal**                     | Good      | Good           | Good       | Medium      | Poor     | Good        | Medium       | Poor     |
+| **Bundle size (client)**  | **~180 KB gz**                  | N/A       | ~500 KB        | N/A        | ~2 MB       | N/A      | N/A         | N/A          | N/A      |
+| **Setup**                 | `git clone` + open              | Docker    | npm + config   | Docker     | Docker      | Sign up  | OS install  | Docker       | Buy HW   |
+| **Observability**         | Diag overlay + Analytics Engine | None      | None           | Logs only  | Basic       | None     | Excellent   | Excellent    | None     |
 
 ### 2.2 Harvested Methods (executable list)
 
