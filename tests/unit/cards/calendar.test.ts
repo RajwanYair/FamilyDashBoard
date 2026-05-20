@@ -18,6 +18,7 @@ import {
   findConflicts,
   calendarConfigSchema,
   destroyCalendarCard,
+  proximityLabel,
 } from "@/cards/calendar/calendar";
 import { cSet, cClear } from "@/core/cache";
 import * as fetchCore from "@/core/fetch";
@@ -3491,5 +3492,29 @@ describe("Calendar — renderCalendar with holidays", () => {
     const hdr = document.getElementById("header-event-count");
     expect(hdr?.style.display).toBe("");
     expect(hdr?.textContent).toContain("📅");
+  });
+});
+
+// ── proximityLabel (S52) ─────────────────────────────────────────────────────
+describe("proximityLabel", () => {
+  it("returns 'עכשיו' for msTilStart <= 0", () => {
+    expect(proximityLabel(0)).toBe("עכשיו");
+    expect(proximityLabel(-5000)).toBe("עכשיו");
+  });
+
+  it("returns 'עוד דקה' for <= 60 seconds", () => {
+    expect(proximityLabel(30_000)).toBe("עוד דקה");
+    expect(proximityLabel(60_000)).toBe("עוד דקה");
+  });
+
+  it("returns 'עוד N דק׳' for 2-60 minutes", () => {
+    expect(proximityLabel(5 * 60_000)).toBe("עוד 5 דק׳");
+    expect(proximityLabel(30 * 60_000)).toBe("עוד 30 דק׳");
+    expect(proximityLabel(59 * 60_000 + 30_000)).toBe("עוד 60 דק׳");
+  });
+
+  it("returns empty string for > 60 minutes", () => {
+    expect(proximityLabel(61 * 60_000)).toBe("");
+    expect(proximityLabel(120 * 60_000)).toBe("");
   });
 });

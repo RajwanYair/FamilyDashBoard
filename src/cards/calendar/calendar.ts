@@ -224,10 +224,23 @@ function formatEventTime(ev: CalendarEvent): string {
   return startStr;
 }
 
+/**
+ * Return a proximity badge label for events starting within the next hour.
+ * Returns "" if the event is not imminent.
+ */
+export function proximityLabel(msTilStart: number): string {
+  if (msTilStart <= 0) return "עכשיו";
+  const mins = Math.ceil(msTilStart / 60_000);
+  if (mins <= 1) return "עוד דקה";
+  if (mins <= 60) return `עוד ${mins} דק׳`;
+  return "";
+}
+
 /** Build the event row element inside a day tile. */
 function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
   const now = nowMs();
   const msTilStart = ev.start.getTime() - now;
+  const isNow = !ev.allDay && msTilStart <= 0 && ev.end.getTime() > now;
   const isSoon = !ev.allDay && msTilStart > 0 && msTilStart < 60 * 60 * 1000;
 
   const row = document.createElement("div");
@@ -236,13 +249,21 @@ function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
   row.className =
     "cal-event" +
     (isConflict ? " has-conflict" : "") +
-    (isSoon ? " event-soon" : "") +
+    (isSoon || isNow ? " event-soon" : "") +
     ` cal-src-${srcIdx}`;
   if (ev.icsIndex) row.dataset["ics"] = String(ev.icsIndex);
 
   const timeEl = document.createElement("div");
   timeEl.className = "cal-event-time";
   timeEl.textContent = formatEventTime(ev);
+
+  // Proximity badge for imminent events (S52)
+  if (isSoon || isNow) {
+    const badge = document.createElement("span");
+    badge.className = "cal-proximity-badge";
+    badge.textContent = proximityLabel(msTilStart);
+    timeEl.appendChild(badge);
+  }
 
   const titleEl = document.createElement("div");
   titleEl.className = "cal-event-body";

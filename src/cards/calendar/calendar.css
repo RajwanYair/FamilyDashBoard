@@ -198,6 +198,19 @@
   font-weight: 700;
 }
 
+/* S52: proximity badge */
+.cal-proximity-badge {
+  display: inline-block;
+  margin-inline-start: 0.4em;
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  font-size: 0.75em;
+  font-weight: 600;
+  background: rgb(251 191 36 / 0.25);
+  color: #fbbf24;
+  white-space: nowrap;
+}
+
 /* Maximized: larger fonts + taller tiles */
 @container card (min-width: 900px) {
   .cal-week-grid {
