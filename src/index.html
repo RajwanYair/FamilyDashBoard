@@ -47,6 +47,9 @@
          first API call. Limited to the single hot origin; lighthouse caps preconnects ≤ 4. -->
     <link rel="preconnect" href="https://fdb.rajwanyair.workers.dev" crossorigin>
     <link rel="dns-prefetch" href="https://fdb.rajwanyair.workers.dev">
+    <!-- S62: preconnect for hot fallback origins (worker-down path); Lighthouse caps ≤ 4 -->
+    <link rel="preconnect" href="https://api.open-meteo.com" crossorigin>
+    <link rel="preconnect" href="https://www.hebcal.com" crossorigin>
     <!-- dns-prefetch for all API origins + proxy fallback chain (P5 perf) -->
     <link rel="dns-prefetch" href="https://api.open-meteo.com">
     <link rel="dns-prefetch" href="https://www.hebcal.com">
