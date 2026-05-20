@@ -40,6 +40,7 @@ import {
   getAllProviderHealth,
   getProviderSuccessRate,
   getProviderAvgLatency,
+  getProviderLatency,
 } from "../core/provider";
 import { trustedHTML } from "../core/trusted-types";
 import { getGovernorStats } from "../core/refresh-governor";
@@ -48,6 +49,14 @@ import { getDedupStats } from "../core/feed-stats";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
+
+/** Compute the 95th-percentile value from a latency samples array. Returns 0 if empty. */
+function computeP95(samples: readonly number[]): number {
+  if (samples.length === 0) return 0;
+  const sorted = [...samples].sort((a, b) => a - b);
+  const idx = Math.ceil(sorted.length * 0.95) - 1;
+  return Math.round(sorted[Math.max(0, idx)] ?? 0);
+}
 
 function overlay(): HTMLDialogElement | null {
   if (!overlayEl?.isConnected)
@@ -273,8 +282,13 @@ export function renderProviderHealthHtml(): string {
   const rows = providers
     .map((p) => {
       const rate = (getProviderSuccessRate(p.id) * 100).toFixed(0);
-      const latency = getProviderAvgLatency(p.id);
-      const latStr = latency > 0 ? ` · ${String(latency)}ms` : "";
+      const avg = getProviderAvgLatency(p.id);
+      const samples = getProviderLatency(p.id);
+      const p95 = computeP95(samples);
+      const latStr =
+        avg > 0
+          ? ` · avg ${String(avg)}ms` + (p95 > 0 ? ` p95 ${String(p95)}ms` : "")
+          : "";
       return (
         `<span>${providerStatusIcon(p.status)} <b>${p.id}</b>: ` +
         `↑${p.successCount} ↓${p.failureCount} (${rate}%)` +
