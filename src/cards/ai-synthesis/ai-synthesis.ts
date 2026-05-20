@@ -16,7 +16,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../core/semantic-clipboard";
 import type { CardConfigField } from "../../types/card";
-import { today, formatTimeHHMM } from "../../core/temporal";
+import { formatTimeHHMM } from "../../core/temporal";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 

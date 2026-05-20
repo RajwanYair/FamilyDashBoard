@@ -55,7 +55,9 @@ Key decisions:
 - `connect-src` restricted to `'self'` + the worker base URL only (previously `https:` = all HTTPS)
 - `script-src 'self'` — no inline scripts, no eval, no external scripts ever
 - `style-src 'unsafe-inline'` required because of the inline `style=""` attributes used in
-  progressive enhancement (e.g., card sizing, dimmer opacity). TODO: remove inline styles in v12.
+  progressive enhancement (e.g., card sizing, dimmer opacity). As of v15.5.0, all static
+  inline styles have been removed from HTML; remaining dynamic `.style.*` calls are JS-only
+  and do not require `style-src 'unsafe-inline'` relaxation beyond `script-src 'self'`.
 - `media-src 'none'` until the video-news card ships (v11.1); will be updated per ADR-019
 - `frame-src` restricted to calendar.google.com only (used by the optional embedded calendar view)
 - The Vite build plugin `removeCrossOrigin` already strips this meta for local `file://` builds
@@ -81,7 +83,8 @@ COOP requires an HTTP response header. GitHub Pages does not support custom head
 - If the project migrates to Cloudflare Pages, add `COOP: same-origin` and `COEP: require-corp`
   via a `_headers` file (Cloudflare Pages format)
 - The `_headers` file at `src/public/_headers` documents the intended values for any CDN/proxy deployment
-- For now, `COEP` and `COOP` are noted as TODO for the Pages migration consideration in v12
+- For now, `COEP` and `COOP` are deferred pending Cloudflare Pages migration (not
+  applicable to GitHub Pages which does not support custom response headers)
 
 ### `_headers` file (`src/public/_headers`)
 

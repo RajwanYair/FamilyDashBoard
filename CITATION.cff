@@ -20,5 +20,5 @@ keywords:
   - zero-dependencies
   - cloudflare-workers
 license: MIT
-version: 14.29.1
-date-released: "2026-05-18"
+version: 15.5.0
+date-released: "2026-05-20"

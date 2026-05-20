@@ -2229,6 +2229,10 @@ body.slideshow-fade::after {
   color: var(--text-muted);
   font-size: 0.9em;
 }
+.tour-hint {
+  margin-block-start: 0.5em;
+  opacity: 0.8;
+}
 .tour-keys {
   display: grid;
   grid-template-columns: auto 1fr;

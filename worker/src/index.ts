@@ -133,7 +133,7 @@ app.get("/health", earlyHintsMiddleware, (c) => {
     ok: true,
     status: "healthy",
     ts: Date.now(),
-    version: "14.35.0",
+    version: "15.5.0",
     environment: env.ENVIRONMENT ?? "production",
     bindings: {
       cache_kv: true, // always required

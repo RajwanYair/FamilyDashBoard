@@ -192,9 +192,8 @@ describe("telemetry — OTEL4: span callback can invoke setAttribute and setStat
 // ── OTEL5: initOtel with OTEL_ENABLED="true" still returns a valid handle ────
 
 describe("telemetry — OTEL5: initOtel with OTEL_ENABLED='true' returns handle", () => {
-  it("returns a handle with enabled=false (v15 TODO path)", () => {
-    // Even with OTEL_ENABLED="true" the v14 no-op returns the noop handle.
-    // This test covers the second return branch in initOtel (line after TODO).
+  it("returns a live handle when OTEL_ENABLED='true' and endpoint is set", () => {
+    // With OTEL_ENABLED="true" and OTEL_ENDPOINT set, initOtel returns a live handle.
     const env = makeEnv({ OTEL_ENABLED: "true" });
     const handle = initOtel(env);
     // The no-op implementation returns the same noop handle regardless

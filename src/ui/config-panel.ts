@@ -416,6 +416,7 @@ function populateForm(): void {
       const heading = document.createElement("h4");
       heading.className = "cfg-card-category-heading";
       const label = categoryLabels[cat];
+      if (!label) continue;
       heading.textContent = c.interfaceLanguage === "en" ? label.en : label.he;
       frag.appendChild(heading);
 
