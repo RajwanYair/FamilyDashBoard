@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [15.2.0] — 2026-05-20
+
+> **7857 tests / 331 suites / 0 failures** (commit `925887f`)
+
+- **feat(temporal)**: add `fromISOString`/`fromEpochSec`/`addMs` helpers + migrate weather sunrise/sunset (S31)
+- **feat(temporal)**: migrate ims-adapter.ts from raw Date to temporal helpers (S32)
+- **feat(temporal)**: add `fromDateString` + migrate currency/stocks timezone patterns (S33)
+- **feat(temporal)**: migrate news/alerts/tasks — P0 complete (0 raw Date in cards) (S34)
+- **perf**: `fetchpriority="high"` on main script + `loading="lazy"` on news favicons (S35)
+- **perf(sw)**: split precache manifest — critical shell vs lazy card chunks (S36)
+- **fix(a11y)**: WAI-ARIA roving tabindex on config panel tabs (S37)
+- **feat(news)**: persist read state in IDB with 7-day retention (S38)
+- **feat(freshness)**: add freshness badge to motivation card — all data cards now covered (S39)
+
+---
+
 ## [15.1.0] — 2026-05-20
 
 > **57 governor/base-card tests / 0 failures** (commit `166ce48`)

@@ -1,4 +1,4 @@
-# 🔒 Security Model — FamilyDashBoard v15.1.0
+# 🔒 Security Model — FamilyDashBoard v15.2.0
 
 ![Security Model](../.github/assets/security.svg)
 
