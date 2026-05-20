@@ -631,6 +631,7 @@ export function renderSourceFilterChips(): void {
       img.alt = "";
       img.width = 14;
       img.height = 14;
+      img.loading = "lazy";
       img.style.cssText = "margin-inline-end:3px;vertical-align:middle;border-radius:2px";
       chip.appendChild(img);
     }
