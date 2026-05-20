@@ -398,6 +398,7 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   background: color-mix(in srgb, var(--danger, #f87171) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--danger, #f87171) 40%, transparent);
   animation: newsBreakingPulse 2s ease-in-out infinite;
+  will-change: opacity;
 }
 @keyframes newsBreakingPulse {
   0%,

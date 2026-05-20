@@ -126,6 +126,7 @@
   background: linear-gradient(90deg, var(--accent), var(--positive, #34d399));
   border-radius: 3px;
   transition: width 1s linear;
+  will-change: width;
   width: 0%;
 }
 
@@ -154,6 +155,7 @@
 .cd-num.cd-urgent-pulse {
   color: var(--danger, #f87171) !important;
   animation: cd-pulse 1s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 /* ── S58: Upcoming holidays mini-grid ─────────────────── */

@@ -46,6 +46,7 @@
   background: var(--accent);
   min-width: 3px;
   transition: width 0.4s ease;
+  will-change: width;
 }
 
 /* Feature 51: Portfolio total value row */
