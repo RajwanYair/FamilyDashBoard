@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [15.5.0] — 2026-05-20
+
+> **7869 tests / 332 suites / 0 failures** (commit `74da0fd`)
+
+- **refactor(ui)**: migrate `night-dimmer.ts` to temporal helpers — `today()`, `nowMs()` (S67)
+- **refactor(ui)**: migrate `status-bar.ts` to temporal helpers — `fromEpochMs()`, `nowMs()` (S68)
+- **refactor(core)**: migrate `config.ts`, `snapshot.ts`, `perf.ts` to temporal helpers (S69)
+- **refactor(core)**: migrate `diag.ts`, `error-tracker.ts`, `freshness.ts`, `provider.ts` to temporal helpers (S70)
+- **refactor**: P0 exit — eliminate all raw `new Date()` outside `temporal.ts`; migrate `diag-overlay.ts`, `utils.ts`, `types/api.ts` (S71)
+- **feat(temporal)**: add `nowISO()` helper; replace `today().toISOString()` across 7 files (S72)
+- **feat(temporal)**: add `formatTimeHHMM()` helper; migrate 3 call sites (S73)
+- **perf(css)**: add `will-change` hints to infinite animations and progress bars (S74)
+- **perf(a11y)**: add `prefers-reduced-motion` overrides for countdown, news, and stock card animations (S75)
+- **perf**: add `fetchpriority=low` to decorative lazy images in news and stocks (S76)
+
+---
+
 ## [15.4.0] — 2026-05-20
 
 > **7864 tests / 332 suites / 0 failures** (commit `c96bbbf`)
