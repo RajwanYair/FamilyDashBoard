@@ -23,6 +23,7 @@ import { applyFontScale } from "./screen-mode";
 import { setDimLevel, updateDimIndicator, setWarmTint } from "./night-dimmer";
 import { applyTickerSpeed } from "./ticker";
 import { applyConfigAnimLevel } from "../core/anim-level";
+import { openDiagOverlay } from "./diag-overlay";
 import { resetLayout } from "./layout-drag";
 import {
   LS_DIM_START,
@@ -1255,6 +1256,12 @@ export function initConfigPanel(): void {
       const tab = btn.dataset["tab"];
       if (tab) switchCfgTab(tab);
     });
+  });
+
+  // Diagnostics tab: open full diag overlay
+  document.getElementById("cfg-open-diag-btn")?.addEventListener("click", () => {
+    closeConfigPanel();
+    openDiagOverlay();
   });
 
   // Font size slider live preview

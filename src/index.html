@@ -218,6 +218,7 @@
           <button type="button" id="cfg-tab-alerts-tab" class="cfg-tab" data-tab="alerts-tab" role="tab" aria-selected="false" aria-controls="cfg-section-alerts-tab" tabindex="-1" title="הגדרות התראות: צבע אדום, התראות מחירי מניה">🚨 התראות Alerts</button>
           <button type="button" id="cfg-tab-cards" class="cfg-tab" data-tab="cards" role="tab" aria-selected="false" aria-controls="cfg-section-cards" tabindex="-1" title="הצג/הסתר כרטיסיות ✓ — קביעת גודל כרטיסיה">🃏 כרטיסיות Cards</button>
           <button type="button" id="cfg-tab-advanced" class="cfg-tab" data-tab="advanced" role="tab" aria-selected="false" aria-controls="cfg-section-advanced" tabindex="-1" title="הגדרות מתקדמות: קואורדינטות, משימות, ייצוא/ייבוא">⚙️ מתקדם Advanced</button>
+          <button type="button" id="cfg-tab-diagnostics" class="cfg-tab" data-tab="diagnostics" role="tab" aria-selected="false" aria-controls="cfg-section-diagnostics" tabindex="-1" title="אבחון רשת ומצב ספקים — Diagnostics">📊 אבחון Diag</button>
         </div>
         <!-- Tab: Display -->
         <div class="cfg-section active" id="cfg-section-display" role="tabpanel" aria-labelledby="cfg-tab-display" data-tab="display">
@@ -549,24 +550,6 @@
           </div>
           </details>
           <details class="cfg-details">
-            <summary class="cfg-details-summary">🔌 רשת Network</summary>
-          <!-- Custom CORS proxy for corporate/restricted networks -->
-          <div class="cfg-row">
-            <span class="cfg-label">🌐 פרוקסי CORS מותאם (proxy?url=)</span>
-            <input class="cfg-input cfg-ltr-08" id="cfg-custom-proxy" type="url" placeholder="https://my-proxy/?url=" >
-          </div>
-          <!-- Network mode selector (worker / proxy fetch path) -->
-          <div class="cfg-row">
-            <span class="cfg-label">🔌 מצב רשת (Worker / Proxy)</span>
-            <select class="cfg-input cfg-select cfg-ltr" id="cfg-network-mode" aria-label="מצב רשת" title="מצב רשת (Worker / Proxy)">
-              <option value="auto">auto — ברירת מחדל (Worker + Proxy fallback)</option>
-              <option value="worker-only">worker-only — Worker בלבד (ללא proxy)</option>
-              <option value="no-worker">no-worker — ישיר / Proxy בלבד (ללא Worker)</option>
-              <option value="no-proxy">no-proxy — ישיר בלבד (ללא proxy)</option>
-            </select>
-          </div>
-          </details>
-          <details class="cfg-details">
             <summary class="cfg-details-summary">⏳ ספירה לאחור Countdown</summary>
           <!-- F139: Custom countdown chip config -->
           <div class="cfg-row">
@@ -664,6 +647,30 @@
             <button class="cfg-pill-danger" type="button" id="cfg-reset-all-btn" aria-label="איפוס כל ההגדרות" title="מחיקת כל ההגדרות וטעינה מחדש">⚠️ אפס הכל</button>
           </div>
           <input class="is-hidden" type="file" id="cfg-import-file" accept=".json" aria-label="בחירת קובץ JSON לייבוא הגדרות" title="בחירת קובץ לייבוא">
+          </details>
+        </div>
+        <!-- Tab: Diagnostics (P4 Progressive Disclosure) -->
+        <div class="cfg-section" id="cfg-section-diagnostics" role="tabpanel" aria-labelledby="cfg-tab-diagnostics" data-tab="diagnostics">
+          <!-- Quick-open diag overlay -->
+          <div class="cfg-row cfg-row-center-wrap">
+            <button type="button" class="cfg-btn" id="cfg-open-diag-btn" aria-label="פתח חלון אבחון מלא" title="פתח את חלון האבחון המלא (D)">🛠️ פתח אבחון מלא</button>
+          </div>
+          <!-- Network settings (P4: grouped by function) -->
+          <details class="cfg-details" open>
+            <summary class="cfg-details-summary">🌐 רשת Network</summary>
+            <div class="cfg-row">
+              <span class="cfg-label">🌐 פרוקסי CORS מותאם (proxy?url=)</span>
+              <input class="cfg-input cfg-ltr-08" id="cfg-custom-proxy" type="url" placeholder="https://my-proxy/?url=" >
+            </div>
+            <div class="cfg-row">
+              <span class="cfg-label">🔌 מצב רשת (Worker / Proxy)</span>
+              <select class="cfg-input cfg-select cfg-ltr" id="cfg-network-mode" aria-label="מצב רשת" title="מצב רשת (Worker / Proxy)">
+                <option value="auto">auto — ברירת מחדל (Worker + Proxy fallback)</option>
+                <option value="worker-only">worker-only — Worker בלבד (ללא proxy)</option>
+                <option value="no-worker">no-worker — ישיר / Proxy בלבד (ללא Worker)</option>
+                <option value="no-proxy">no-proxy — ישיר בלבד (ללא proxy)</option>
+              </select>
+            </div>
           </details>
         </div>
         <!-- Always-visible actions -->
