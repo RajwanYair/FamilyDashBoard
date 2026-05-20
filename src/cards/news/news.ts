@@ -278,12 +278,22 @@ export function sanitizeNewsTitle(title: string, maxLen = 120): string {
 }
 
 function loadVisited(): void {
+  // Load from IDB (async); in-memory set available immediately from session cache
   try {
     const s = sessionStorage.getItem(LS_NEWS_VISITED) ?? "[]";
     _visited = new Set(JSON.parse(s) as string[]);
   } catch {
     _visited = new Set();
   }
+  // Async IDB hydration — merges persisted read state into memory
+  idbGetAll<{ id: string; ts: number }>(IDB_READ_DB, IDB_READ_STORE)
+    .then((entries) => {
+      const cutoff = Date.now() - 7 * 24 * 60 * 60_000; // 7-day retention
+      for (const e of entries) {
+        if (e.ts >= cutoff) _visited.add(e.id);
+      }
+    })
+    .catch(() => {/* IDB unavailable — session fallback is fine */});
 }
 
 export function markVisited(key: string): void {
@@ -293,6 +303,9 @@ export function markVisited(key: string): void {
   } catch {
     /* quota */
   }
+  // Persist to IDB for cross-session retention
+  idbSet<{ id: string; ts: number }>(IDB_READ_DB, IDB_READ_STORE, key, { id: key, ts: Date.now() })
+    .catch(() => {/* best-effort */});
 }
 
 export function isVisited(key: string): boolean {
@@ -377,6 +390,8 @@ export function clearAllBookmarks(): void {
 
 const IDB_NEWS_DB = "fdb-news";
 const IDB_STARRED_STORE = "starred";
+const IDB_READ_DB = "fdb-news-read";
+const IDB_READ_STORE = "read";
 
 /** A saved read-later article. */
 export interface StarredArticle {
