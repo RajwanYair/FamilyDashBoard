@@ -20,6 +20,7 @@ import { API } from "../../core/constants";
 import { fetchJSON } from "../../core/fetch";
 import { diagLog } from "../../core/diag";
 import { cGet, cSet } from "../../core/cache";
+import { nowMs, fromEpochMs, fromISOString } from "../../core/temporal";
 
 const PROVIDER_ID = "ims";
 const CACHE_KEY_PREFIX = "ims:";
@@ -142,16 +143,16 @@ export function imsStationToWeatherResponse(station: IMSStation): WeatherRespons
   const gustKmh = msToKmh(windGustMs);
 
   // Build ISO-8601 time strings for hourly (24 repeating slots from obs time)
-  const baseTime = station.time_obs ?? new Date().toISOString();
-  const baseMs = new Date(baseTime).getTime();
+  const baseTime = station.time_obs ?? fromEpochMs(nowMs()).toISOString();
+  const baseMs = fromISOString(baseTime).getTime();
   const hourlyTimes = Array.from({ length: 24 }, (_, i) =>
-    new Date(baseMs + i * 3_600_000).toISOString().slice(0, 16),
+    fromEpochMs(baseMs + i * 3_600_000).toISOString().slice(0, 16),
   );
 
   // Daily: single entry using TDmax/TDmin if available; fall back to ±3°C estimate
   const tdMax = typeof station.TDmax === "number" ? station.TDmax : tempC + 3;
   const tdMin = typeof station.TDmin === "number" ? station.TDmin : tempC - 3;
-  const todayStr = new Date(baseMs).toISOString().slice(0, 10);
+  const todayStr = fromEpochMs(baseMs).toISOString().slice(0, 10);
 
   return {
     current: {
