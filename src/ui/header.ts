@@ -111,9 +111,7 @@ export function updateCountdownChip(): void {
 
   const todayD = today();
   todayD.setHours(0, 0, 0, 0);
-  const target = fromParts(
-    ...countdownDate.split("-").map(Number) as [number, number, number],
-  );
+  const target = fromParts(...(countdownDate.split("-").map(Number) as [number, number, number]));
   const days = diffDays(todayD, target);
 
   if (days < 0) {

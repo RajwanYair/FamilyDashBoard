@@ -42,7 +42,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 - ⚡ **perf(hints)**: dns-prefetch for all API origins + proxy fallback chain — sefaria, boi, exchangerate-api, frankfurter, allorigins, codetabs, corsproxy (S42)
 - 🎨 **style(hierarchy)**: P1 primary metric 3× emphasis — wx-temp-main 2.2em, cur-rate 1.5em, stk-price 1.15em (S43)
 - 🎨 **style(hierarchy)**: P1 reduce secondary visual weight — opacity: 0.75 on wx-desc, wx-detail-label, stk-desc; opacity: 0.6 on stk-time (S48)
-- ⚡ **perf(cls)**: P5 explicit img dimensions on stock logo, contain: layout on card__body (S49)
+- ⚡ **perf(cls)**: P5 explicit img dimensions on stock logo, contain: layout on card\_\_body (S49)
 - 🎨 **style**: prettier format fixes across 11 files
 
 ---

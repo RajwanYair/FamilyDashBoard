@@ -327,5 +327,7 @@ export function yearProgressPct(now?: Date): number {
   const d = now ?? new Date();
   const startOfYear = new Date(d.getFullYear(), 0, 1);
   const endOfYear = new Date(d.getFullYear() + 1, 0, 1);
-  return ((d.getTime() - startOfYear.getTime()) / (endOfYear.getTime() - startOfYear.getTime())) * 100;
+  return (
+    ((d.getTime() - startOfYear.getTime()) / (endOfYear.getTime() - startOfYear.getTime())) * 100
+  );
 }

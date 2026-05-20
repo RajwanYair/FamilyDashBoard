@@ -416,14 +416,10 @@ export function init(): void {
     document.documentElement.lang === "en" ? "Warm night tint" : "גוון חם לדימר לילה",
     () => setWarmTint(!isWarmTint()),
   );
-  registerKey(
-    "g",
-    document.documentElement.lang === "en" ? "Focus mode" : "מצב מיקוד",
-    () => {
-      toggleFocusMode();
-      showToast(isFocusMode() ? "מצב מיקוד פעיל" : "מצב רגיל", 1500);
-    },
-  );
+  registerKey("g", document.documentElement.lang === "en" ? "Focus mode" : "מצב מיקוד", () => {
+    toggleFocusMode();
+    showToast(isFocusMode() ? "מצב מיקוד פעיל" : "מצב רגיל", 1500);
+  });
   registerKey(
     "escape",
     document.documentElement.lang === "en" ? "Close overlays" : "סגור כל חלון",

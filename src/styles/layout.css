@@ -241,7 +241,8 @@
   }
 
   /* S53: Focus mode — hide non-primary cards */
-  body.focus-mode .card:not([data-card-id="weather"]):not([data-card-id="news"]):not([data-card-id="alerts"]) {
+  body.focus-mode
+    .card:not([data-card-id="weather"]):not([data-card-id="news"]):not([data-card-id="alerts"]) {
     display: none;
   }
 } /* end @layer layout */

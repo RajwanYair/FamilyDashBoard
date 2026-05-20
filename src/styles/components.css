@@ -14,8 +14,7 @@
   border: var(--card-border);
   box-shadow:
     var(--shadow-md, var(--card-shadow)),
-    /* Inner top highlight — polished wood sheen */
-    inset 0 1px 0 rgb(200 160 100 / 0.08);
+    /* Inner top highlight — polished wood sheen */ inset 0 1px 0 rgb(200 160 100 / 0.08);
   transition:
     box-shadow var(--duration-normal, 0.3s) ease,
     transform var(--duration-normal, 0.3s) ease,

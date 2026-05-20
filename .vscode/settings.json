@@ -24,6 +24,46 @@
     // ── Stylelint ──
     "stylelint.validate": ["css"],
     "css.validate": false,
+    "less.validate": false,
+    "scss.validate": false,
+    // ── Baseline Lens — align with .browserslistrc, not full caniuse ──
+    // Project supports modern evergreen only (see .browserslistrc). IE/legacy
+    // warnings are false positives for our targets.
+    "baseline-lens.support": "newly",
+    "baseline-lens.browserslist": true,
+    "baseline-lens.showInlineHints": false,
+    "baseline-lens.ignoredFeatures": [
+        "view-transition-name",
+        "@view-transition",
+        "scrollbar-width",
+        "backdrop-filter",
+        "user-select",
+        "focus-visible",
+        "accent-color",
+        "all",
+        "min",
+        "max",
+        "clamp",
+        "inset",
+        "gap",
+        "grid-column",
+        "grid-row",
+        "margin-block",
+        "margin-inline",
+        "padding-block",
+        "padding-inline",
+        "border-block-end",
+        "border-block-start",
+        "border-inline",
+        "outline-offset",
+        "has",
+        "layer",
+        "filter",
+        "@property",
+        "@scope",
+        "@container",
+        "light-dark"
+    ],
 
     // ── Files ──
     "files.eol": "\n",

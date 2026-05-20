@@ -39,7 +39,15 @@ import { effect } from "../../core/signals";
 import { tempUnit as tempUnitSignal } from "../../core/app-signals";
 import { computeMoonPhase as _sharedMoonPhase } from "../../core/utils";
 import type { CardConfigField, CardDefinition } from "../../types/card";
-import { today, parsePlainDateMs, fromISOString, fromEpochMs, addMs, nowISO, formatTimeHHMM } from "../../core/temporal";
+import {
+  today,
+  parsePlainDateMs,
+  fromISOString,
+  fromEpochMs,
+  addMs,
+  nowISO,
+  formatTimeHHMM,
+} from "../../core/temporal";
 
 // ── City state ──
 let _activeLat = 31.7683;
@@ -813,10 +821,7 @@ export function renderWeather(d: WeatherResponse): void {
     const setIso = d.daily.sunset[0] ?? "";
     const riseDate = fromISOString(riseIso);
     const setDate = fromISOString(setIso);
-    const fmtTime = (dt: Date): string =>
-      isNaN(dt.getTime())
-        ? "--:--"
-        : formatTimeHHMM(dt);
+    const fmtTime = (dt: Date): string => (isNaN(dt.getTime()) ? "--:--" : formatTimeHHMM(dt));
     const { eveningStart } = computeGoldenHour(riseIso, setIso);
     const [moonEmoji] = moonPhase();
     const riseStr = fmtTime(riseDate);

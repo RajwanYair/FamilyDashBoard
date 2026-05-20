@@ -791,9 +791,7 @@ function getActiveFeeds(): NewsFeed[] {
  * Result is a number suitable for descending sort (higher = more relevant).
  */
 /** Lookup map for source → priority tier. Built once from NEWS_FEEDS. */
-const _srcPriorityMap: Map<string, 1 | 2 | 3> = new Map(
-  NEWS_FEEDS.map((f) => [f.src, f.priority]),
-);
+const _srcPriorityMap: Map<string, 1 | 2 | 3> = new Map(NEWS_FEEDS.map((f) => [f.src, f.priority]));
 
 /**
  * Return the priority tier for a given source name.
@@ -914,11 +912,15 @@ export function renderNews(items: NewsItem[]): void {
   const frag = document.createDocumentFragment();
   const passes = _bkmMode ? [false] : [false, true];
   for (const isClone of passes) {
+    let itemIdx = 0;
     for (const item of displayItems) {
       const div = document.createElement("div");
       const key0 = getBookmarkKey(item.title);
       const visitedCls = !isClone && _visited.has(key0) ? " visited" : "";
-      div.className = "rss-item" + (isClone ? " clone" : "") + visitedCls;
+      // P1 Info Hierarchy — first top headline is the featured (primary) item
+      const featuredCls = !isClone && itemIdx === 0 ? " rss-item--featured" : "";
+      div.className = "rss-item" + (isClone ? " clone" : "") + visitedCls + featuredCls;
+      itemIdx++;
       if (isClone) {
         div.setAttribute("aria-hidden", "true");
       } else {

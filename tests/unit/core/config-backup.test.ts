@@ -38,10 +38,7 @@ describe("Config Auto-Backup (S60)", () => {
     (idbCache as unknown as { _resetStore: () => void })._resetStore();
     stopConfigAutoBackup();
     // Set up localStorage with a config
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ theme: "blue", configVersion: 15 }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ theme: "blue", configVersion: 15 }));
   });
 
   afterEach(() => {

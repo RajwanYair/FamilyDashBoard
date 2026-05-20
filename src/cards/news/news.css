@@ -308,6 +308,20 @@
   cursor: pointer;
   font-size: calc(0.88em * var(--news-font-scale, 1));
 }
+/* P1 Info Hierarchy — top headline is the featured (primary) metric */
+.rss-item--featured {
+  padding-block: 6px;
+  border-inline-start: 3px solid var(--accent);
+}
+.rss-item--featured .rss-title {
+  font-size: calc(1.12em * var(--news-font-scale, 1));
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.rss-item--featured .rss-source {
+  font-size: 0.66em;
+  color: var(--accent-light, var(--accent));
+}
 
 /* F147: News bookmarks */
 .news-bkm {

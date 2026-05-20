@@ -47,8 +47,8 @@
 }
 .card-settings-dialog::backdrop {
   background: rgb(6 11 20 / 0.88);
-  backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
 
 /* Header */

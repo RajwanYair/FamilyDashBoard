@@ -1,6 +1,26 @@
 /* ── Currency Card Styles ── */
 
 @layer components {
+  /* P1 Info Hierarchy — primary currency pair is visually dominant (≥3× secondary) */
+  .cur-item--primary {
+    order: -1;
+    background: var(--bg-card-inner, rgb(255 255 255 / 0.06));
+    border: 1px solid var(--accent-border, rgb(255 255 255 / 0.12));
+    border-radius: var(--radius-md, 8px);
+  }
+  .cur-item--primary .cur-rate {
+    font-size: 2.0em;
+    color: var(--accent);
+  }
+  .cur-item--primary .cur-flag {
+    font-size: 1.4em;
+  }
+  .cur-item--primary .cur-pair {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
   /* F38: Currency sparkline */
   .cur-spark {
     width: 60px;
@@ -64,6 +84,9 @@
   }
   .cur-rate {
     font-size: 1.8em;
+  }
+  .cur-item--primary .cur-rate {
+    font-size: 2.4em;
   }
   .cur-chg {
     font-size: 0.85em;

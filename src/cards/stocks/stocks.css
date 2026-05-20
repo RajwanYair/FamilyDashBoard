@@ -62,6 +62,12 @@
   background: var(--bg-card-inner);
   gap: 4px;
 }
+/* P1 Info Hierarchy — portfolio total is the primary stock metric */
+.stk-total-row:not(.is-hidden) #stk-total-val {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: var(--accent);
+}
 .stk-total-label {
   color: var(--text-muted);
   white-space: nowrap;
@@ -255,6 +261,9 @@
   .stk-total-row {
     font-size: 0.8em;
     padding: 5px 12px;
+  }
+  .stk-total-row:not(.is-hidden) #stk-total-val {
+    font-size: 1.8em;
   }
 }
 
