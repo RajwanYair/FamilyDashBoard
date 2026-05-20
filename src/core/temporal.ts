@@ -241,3 +241,33 @@ export function fromParts(year: number, month: number, day: number): Date {
 export function parseEpochMs(str: string): number {
   return new Date(str).getTime();
 }
+
+/**
+ * Parse an ISO date-time string (e.g. `"2026-05-20T06:30:00+03:00"`) into a Date.
+ * Eliminates `new Date(isoString)` call-sites throughout card code.
+ *
+ * Temporal: `Temporal.Instant.from(iso).toZonedDateTimeISO(timeZoneId)`
+ */
+export function fromISOString(iso: string): Date {
+  return new Date(iso);
+}
+
+/**
+ * Create a Date from Unix epoch-seconds (integer seconds since 1970-01-01T00:00:00Z).
+ * Eliminates `new Date(ts * 1000)` call-sites.
+ *
+ * Temporal: `Temporal.Instant.fromEpochSeconds(sec).toZonedDateTimeISO(timeZoneId)`
+ */
+export function fromEpochSec(sec: number): Date {
+  return new Date(sec * 1000);
+}
+
+/**
+ * Add or subtract milliseconds from a Date, returning a new Date.
+ * Eliminates `new Date(d.getTime() + offset)` call-sites.
+ *
+ * Temporal: `instant.add({ milliseconds: ms })`
+ */
+export function addMs(d: Date, ms: number): Date {
+  return new Date(d.getTime() + ms);
+}

@@ -39,7 +39,7 @@ import { effect } from "../../core/signals";
 import { tempUnit as tempUnitSignal } from "../../core/app-signals";
 import { computeMoonPhase as _sharedMoonPhase } from "../../core/utils";
 import type { CardConfigField, CardDefinition } from "../../types/card";
-import { today, parsePlainDateMs } from "../../core/temporal";
+import { today, parsePlainDateMs, fromISOString, fromEpochMs, addMs } from "../../core/temporal";
 
 // ── City state ──
 let _activeLat = 31.7683;
@@ -473,12 +473,12 @@ export function computeGoldenHour(
   const fmt = (d: Date): string =>
     d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit", hour12: false });
 
-  const rise = new Date(sunriseIso);
-  const set = new Date(sunsetIso);
+  const rise = fromISOString(sunriseIso);
+  const set = fromISOString(sunsetIso);
 
-  const morningEnd = isNaN(rise.getTime()) ? "--:--" : fmt(new Date(rise.getTime() + 60 * 60_000));
+  const morningEnd = isNaN(rise.getTime()) ? "--:--" : fmt(addMs(rise, 60 * 60_000));
 
-  const eveningStart = isNaN(set.getTime()) ? "--:--" : fmt(new Date(set.getTime() - 60 * 60_000));
+  const eveningStart = isNaN(set.getTime()) ? "--:--" : fmt(addMs(set, -60 * 60_000));
 
   return { morningEnd, eveningStart };
 }
@@ -708,7 +708,7 @@ export function renderWeather(d: WeatherResponse): void {
       const fDay = fDays[i - 1];
       const dateStr = d.daily.time[i];
       if (fDay && dateStr) {
-        const dn = new Date(parsePlainDateMs(dateStr)).toLocaleDateString("he-IL", {
+        const dn = fromEpochMs(parsePlainDateMs(dateStr)).toLocaleDateString("he-IL", {
           weekday: "short",
         });
         const mx = Math.round(d.daily.temperature_2m_max[i] ?? 0);
@@ -760,8 +760,8 @@ export function renderWeather(d: WeatherResponse): void {
   if (d.daily && el.wxRise) {
     const riseIso = d.daily.sunrise[0] ?? "";
     const setIso = d.daily.sunset[0] ?? "";
-    const riseDate = new Date(riseIso);
-    const setDate = new Date(setIso);
+    const riseDate = fromISOString(riseIso);
+    const setDate = fromISOString(setIso);
     const fmtTime = (dt: Date): string =>
       isNaN(dt.getTime())
         ? "--:--"
