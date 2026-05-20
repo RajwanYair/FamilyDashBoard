@@ -65,27 +65,31 @@ function buildNewsPayload(): SemanticPayload | null {
 export interface NewsFeed {
   url: string;
   src: string;
+  /** Source trust/priority tier: 1 = premium (major outlets), 2 = standard, 3 = niche. */
+  priority: 1 | 2 | 3;
 }
 
 export const NEWS_FEEDS: NewsFeed[] = [
-  { url: "https://www.kan.org.il/podcast/2578/", src: "כאן חדשות" },
-  { url: "https://www.rotter.net/scoopscache.xml", src: "רוטר סקופים" },
+  { url: "https://www.kan.org.il/podcast/2578/", src: "כאן חדשות", priority: 1 },
+  { url: "https://www.rotter.net/scoopscache.xml", src: "רוטר סקופים", priority: 2 },
   {
     url: "https://www.globes.co.il/webservice/rss/rssfeeder.asmx/FeederNode?iID=585",
     src: "גלובס",
+    priority: 1,
   },
   {
     url: "https://www.calcalist.co.il/GeneralRSS/0,16335,L-8,00.xml",
     src: "כלכליסט",
+    priority: 1,
   },
-  { url: "https://www.makorrishon.co.il/feed/", src: "מקור ראשון" },
-  { url: "https://www.kikar.co.il/rss", src: "כיכר השבת" },
-  { url: "https://www.ice.co.il/rss/all", src: "ICE" },
-  { url: "https://www.geektime.co.il/feed/", src: "גיקטיים" },
-  { url: "https://www.now14.co.il/feed/", src: "ערוץ 14" },
-  { url: "https://www.inn.co.il/Rss.aspx", src: "ערוץ 7" },
-  { url: "https://www.srugim.co.il/feed", src: "סרוגים" },
-  { url: "https://www.bhol.co.il/rss", src: "בחדרי חרדים" },
+  { url: "https://www.makorrishon.co.il/feed/", src: "מקור ראשון", priority: 2 },
+  { url: "https://www.kikar.co.il/rss", src: "כיכר השבת", priority: 3 },
+  { url: "https://www.ice.co.il/rss/all", src: "ICE", priority: 2 },
+  { url: "https://www.geektime.co.il/feed/", src: "גיקטיים", priority: 3 },
+  { url: "https://www.now14.co.il/feed/", src: "ערוץ 14", priority: 2 },
+  { url: "https://www.inn.co.il/Rss.aspx", src: "ערוץ 7", priority: 2 },
+  { url: "https://www.srugim.co.il/feed", src: "סרוגים", priority: 3 },
+  { url: "https://www.bhol.co.il/rss", src: "בחדרי חרדים", priority: 3 },
 ];
 
 // ── DOM cache ──
@@ -785,9 +789,23 @@ function getActiveFeeds(): NewsFeed[] {
  *
  * Result is a number suitable for descending sort (higher = more relevant).
  */
+/** Lookup map for source → priority tier. Built once from NEWS_FEEDS. */
+const _srcPriorityMap: Map<string, 1 | 2 | 3> = new Map(
+  NEWS_FEEDS.map((f) => [f.src, f.priority]),
+);
+
+/**
+ * Return the priority tier for a given source name.
+ * Defaults to 2 (standard) for unknown sources.
+ */
+export function getSourcePriority(source: string): 1 | 2 | 3 {
+  return _srcPriorityMap.get(source) ?? 2;
+}
+
 export function newsRankScore(item: {
   title: string;
   pubDate: string;
+  source?: string | undefined;
   category?: string | undefined;
 }): number {
   const now = nowMs();
@@ -805,6 +823,13 @@ export function newsRankScore(item: {
   // Category-detected bonus (+15 min equivalent)
   if (item.category) {
     score += 15;
+  }
+
+  // Source priority tier bonus/penalty (P3 Feed Intelligence)
+  if (item.source) {
+    const tier = getSourcePriority(item.source);
+    if (tier === 1) score += 20;
+    else if (tier === 3) score -= 10;
   }
 
   // Decay penalty for old items (>6 hours): lose 5 min per hour past 6h

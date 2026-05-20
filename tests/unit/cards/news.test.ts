@@ -50,6 +50,7 @@ import {
   getShadowVectorizeLog,
   newsConfigSchema,
   newsRankScore,
+  getSourcePriority,
 } from "@/cards/news/news";
 import { _idbClearFallback, idbGetAll } from "@/core/idb-store";
 import { getSemanticPayload } from "@/core/semantic-clipboard";
@@ -2798,5 +2799,49 @@ describe("newsRankScore", () => {
 
   it("returns 0 for items with invalid pubDate", () => {
     expect(newsRankScore({ title: "bad", pubDate: "not-a-date" })).toBe(0);
+  });
+
+  it("tier-1 source scores higher than tier-2 at same time", () => {
+    const pubDate = new Date(Date.now() - 300_000).toISOString();
+    const tier1 = { title: "headline", pubDate, source: "כאן חדשות" };
+    const tier2 = { title: "headline", pubDate, source: "רוטר סקופים" };
+    expect(newsRankScore(tier1)).toBeGreaterThan(newsRankScore(tier2));
+  });
+
+  it("tier-2 source scores higher than tier-3 at same time", () => {
+    const pubDate = new Date(Date.now() - 300_000).toISOString();
+    const tier2 = { title: "headline", pubDate, source: "רוטר סקופים" };
+    const tier3 = { title: "headline", pubDate, source: "גיקטיים" };
+    expect(newsRankScore(tier2)).toBeGreaterThan(newsRankScore(tier3));
+  });
+
+  it("unknown source defaults to tier 2 (no bonus/penalty)", () => {
+    const pubDate = new Date(Date.now() - 300_000).toISOString();
+    const unknown = { title: "headline", pubDate, source: "UnknownFeed" };
+    const tier2 = { title: "headline", pubDate, source: "רוטר סקופים" };
+    expect(newsRankScore(unknown)).toBe(newsRankScore(tier2));
+  });
+});
+
+// ── getSourcePriority ──────────────────────────────────────────────────────────
+describe("getSourcePriority", () => {
+  it("returns 1 for premium sources", () => {
+    expect(getSourcePriority("כאן חדשות")).toBe(1);
+    expect(getSourcePriority("גלובס")).toBe(1);
+    expect(getSourcePriority("כלכליסט")).toBe(1);
+  });
+
+  it("returns 2 for standard sources", () => {
+    expect(getSourcePriority("רוטר סקופים")).toBe(2);
+    expect(getSourcePriority("מקור ראשון")).toBe(2);
+  });
+
+  it("returns 3 for niche sources", () => {
+    expect(getSourcePriority("כיכר השבת")).toBe(3);
+    expect(getSourcePriority("גיקטיים")).toBe(3);
+  });
+
+  it("defaults to 2 for unknown sources", () => {
+    expect(getSourcePriority("NonExistentSource")).toBe(2);
   });
 });
