@@ -137,6 +137,16 @@
   display: none;
 }
 
+/* S57: Daily text summary */
+.wx-daily-summary {
+  font-size: 0.72em;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 3px 8px;
+  margin-top: 4px;
+  font-style: italic;
+}
+
 /* F148: Weather weekly summary */
 #wx-week-summary {
   font-size: 0.7em;

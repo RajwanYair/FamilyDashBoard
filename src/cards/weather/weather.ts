@@ -190,6 +190,7 @@ const el = {
   wxCloud: null as HTMLElement | null,
   wxAqi: null as HTMLElement | null,
   wxNowcast: null as HTMLElement | null,
+  wxDailySummary: null as HTMLElement | null,
   wxWindTile: null as HTMLElement | null,
   wxRiseTile: null as HTMLElement | null,
   wxTempSpark: null as SVGElement | null,
@@ -225,6 +226,7 @@ export function cacheDom(): void {
   el.wxCloud = document.getElementById("wx-cloud");
   el.wxAqi = document.getElementById("wx-aqi");
   el.wxNowcast = document.getElementById("wx-nowcast");
+  el.wxDailySummary = document.getElementById("wx-daily-summary");
   el.wxWindTile = (el.wxWind?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxRiseTile = (el.wxRise?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxTempSpark = document.getElementById("wx-temp-spark") as SVGElement | null;
@@ -443,6 +445,46 @@ export function precipSummaryLabel(pp: number): string {
   if (pp >= 40) return "ייתכן גשם";
   if (pp >= 10) return "סיכוי נמוך";
   return "אין גשם";
+}
+
+/**
+ * S57: Generate a one-line Hebrew daily weather summary sentence.
+ *
+ * Example: "היום: חם (32°), רוח מתונה מערבית, אין גשם"
+ *
+ * @param tempC     Current temperature in Celsius.
+ * @param windKmh   Wind speed in km/h.
+ * @param wxCode    WMO weather code for sky condition.
+ * @param precipPct Precipitation probability (0-100).
+ */
+export function dailySummaryText(
+  tempC: number,
+  windKmh: number,
+  wxCode: number,
+  precipPct: number,
+): string {
+  // Temperature feel
+  let tempFeel: string;
+  if (tempC >= 35) tempFeel = "חם מאוד";
+  else if (tempC >= 28) tempFeel = "חם";
+  else if (tempC >= 20) tempFeel = "נעים";
+  else if (tempC >= 12) tempFeel = "קריר";
+  else tempFeel = "קר";
+
+  // Wind intensity
+  let windLabel: string;
+  if (windKmh >= 50) windLabel = "רוח חזקה";
+  else if (windKmh >= 25) windLabel = "רוח מתונה";
+  else if (windKmh >= 10) windLabel = "רוח קלה";
+  else windLabel = "רוח שקטה";
+
+  // Sky from WX_CODES
+  const sky = WX_CODES[wxCode] ?? "שמיים בהירים";
+
+  // Rain
+  const rain = precipSummaryLabel(precipPct);
+
+  return `היום: ${tempFeel} (${Math.round(tempC)}°), ${sky}, ${windLabel}, ${rain}`;
 }
 
 /**
@@ -699,6 +741,16 @@ export function renderWeather(d: WeatherResponse): void {
   if (el.wxCloud) {
     const cc = cur.cloud_cover ?? 0;
     el.wxCloud.textContent = formatCloudCover(cc);
+  }
+
+  // S57: Daily text summary
+  if (el.wxDailySummary) {
+    el.wxDailySummary.textContent = dailySummaryText(
+      cur.temperature_2m,
+      cur.wind_speed_10m,
+      cur.weather_code,
+      pp,
+    );
   }
 
   // Daily forecast (W2 Extended to 10 days)

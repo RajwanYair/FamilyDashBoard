@@ -31,6 +31,7 @@ import {
   computeGoldenHour,
   getMoonPhaseSummary,
   scrollToLinkedCard,
+  dailySummaryText,
 } from "@/cards/weather/weather";
 import type { WeatherResponse } from "@/types/api";
 
@@ -2930,5 +2931,37 @@ describe("Weather — initWeatherCard restores rain chart mode from localStorage
     localStorage.setItem("dash_wx_chart_mode", "rain");
     initWeatherCard();
     expect(document.getElementById("wx-hourly")?.classList.contains("wx-chart-rain")).toBe(true);
+  });
+});
+
+// ── dailySummaryText (S57) ───────────────────────────────────────────────────
+
+describe("Weather — dailySummaryText", () => {
+  it("returns Hebrew sentence with temp feel, sky, wind, rain", () => {
+    const result = dailySummaryText(32, 30, 0, 5);
+    expect(result).toContain("חם");
+    expect(result).toContain("שמיים בהירים");
+    expect(result).toContain("רוח מתונה");
+    expect(result).toContain("אין גשם");
+    expect(result).toContain("32°");
+  });
+
+  it("handles cold and rainy conditions", () => {
+    const result = dailySummaryText(8, 55, 65, 80);
+    expect(result).toContain("קר");
+    expect(result).toContain("גשם כבד");
+    expect(result).toContain("רוח חזקה");
+    expect(result).toContain("כנראה גשם");
+  });
+
+  it("handles mild conditions", () => {
+    const result = dailySummaryText(22, 5, 2, 0);
+    expect(result).toContain("נעים");
+    expect(result).toContain("רוח שקטה");
+  });
+
+  it("rounds temperature", () => {
+    const result = dailySummaryText(25.7, 10, 0, 0);
+    expect(result).toContain("26°");
   });
 });
