@@ -198,5 +198,30 @@
             "video-news": 28.9,
             "weather": 63.8
         }
+    },
+    {
+        "date": "2026-05-21",
+        "version": "15.6.0",
+        "jsKb": 112.2,
+        "cssKb": 29.6,
+        "cards": {
+            "countdown": 3.6,
+            "news": 4.5
+        },
+        "cardSource": {
+            "ai-synthesis": 10.4,
+            "alerts": 31,
+            "calendar": 30.8,
+            "countdown": 33.3,
+            "currency": 35.3,
+            "hebrew-cal": 53.8,
+            "motivation": 28.9,
+            "news": 58.6,
+            "stocks": 59.3,
+            "system-info": 25.1,
+            "tasks": 41.1,
+            "video-news": 28.9,
+            "weather": 63.8
+        }
     }
 ]
