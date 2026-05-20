@@ -35,11 +35,25 @@ const assetEntries = existsSync(assetsDir)
 // Root shell files always precached.
 const shellFiles = ["./index.html", "./manifest.webmanifest", "./sw.js", "./icon.svg"];
 
+// Card chunks are lazy-cached on first use rather than precached at install.
+// This reduces install time and bandwidth on cold start (Roadmap perf stream).
+const lazyChunkPattern = /cards[-.]|cards-v7[-.]|card-infra[-.]|video-news[-.]|countdown[-.]/;
+const criticalAssets = assetEntries.filter((f) => !lazyChunkPattern.test(f));
+const lazyAssets = assetEntries.filter((f) => lazyChunkPattern.test(f));
+
 // Deduplicate (safety guard).
-const manifest = [...new Set([...shellFiles, ...assetEntries])];
+const manifest = [...new Set([...shellFiles, ...criticalAssets])];
 
 const outPath = join(distDir, "sw-precache-manifest.json");
 writeFileSync(outPath, JSON.stringify(manifest, null, 2) + "\n", "utf-8");
 
-console.log(`✅  sw-precache-manifest.json written — ${manifest.length} entries`);
+// Also write lazy manifest for runtime use (optional SW enhancement).
+const lazyOutPath = join(distDir, "sw-lazy-manifest.json");
+writeFileSync(lazyOutPath, JSON.stringify(lazyAssets, null, 2) + "\n", "utf-8");
+
+console.log(`✅  sw-precache-manifest.json written — ${manifest.length} critical entries`);
 manifest.forEach((u) => console.log(`   ${u}`));
+if (lazyAssets.length > 0) {
+  console.log(`📦  sw-lazy-manifest.json written — ${lazyAssets.length} lazy-cached entries`);
+  lazyAssets.forEach((u) => console.log(`   ${u}`));
+}
