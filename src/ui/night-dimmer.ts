@@ -5,6 +5,7 @@
 import "./night-dimmer.css";
 import { diagLog } from "../core/diag";
 import { LS_DIM_START, LS_DIM_END, MS_PER_MIN } from "../core/constants";
+import { today } from "../core/temporal";
 
 let dimEl: HTMLElement | null = null;
 let dimLevel = 55; // default opacity percentage
@@ -76,7 +77,7 @@ export function updateDimIndicator(): void {
  * Auto-dim check: activate between start and end hours.
  */
 export function autoDimCheck(startHour: number, endHour: number): void {
-  const h = new Date().getHours();
+  const h = today().getHours();
   const shouldDim =
     startHour > endHour
       ? h >= startHour || h < endHour // e.g. 23:00 → 06:00
@@ -104,8 +105,8 @@ export function autoDimCheck(startHour: number, endHour: number): void {
  */
 export function autoDimCheckWeekday(startHour: number, endHour: number, weekdays?: number[]): void {
   if (weekdays && weekdays.length > 0) {
-    const today = new Date().getDay();
-    if (!weekdays.includes(today)) {
+    const dow = today().getDay();
+    if (!weekdays.includes(dow)) {
       // Not a scheduled day — ensure dimmer is off
       if (dimActive) {
         dimActive = false;
