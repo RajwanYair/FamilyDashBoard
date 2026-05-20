@@ -62,6 +62,7 @@ import {
 import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initProviderDegradationToasts } from "./core/provider-toast";
 import { resetGovernor } from "./core/refresh-governor";
+import { updateFreshnessClasses } from "./core/sync";
 import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
 import { initCardQuickToggle } from "./ui/card-quick-toggle";
@@ -527,6 +528,9 @@ export function init(): void {
   } else {
     setTimeout(_autoThemeSetup, 300);
   }
+
+  // S59: Update card freshness indicators every 60 seconds
+  setInterval(updateFreshnessClasses, MS_PER_MIN);
 
   // Wire notification bell (replaces inline onclick="requestNotifPermission()")
   document.getElementById("notif-bell")?.addEventListener("click", () => {

@@ -3,13 +3,20 @@
  *
  * Sync dots show green (ok), yellow (loading), or red (error) per pane.
  * Health tracking uses exponential backoff for failed fetches.
+ * S59: Freshness tracking — last-fetch timestamps + stale/aging/fresh states.
  */
 
 import { diagLog } from "./diag";
 
 export type SyncState = "ok" | "loading" | "error";
+export type FreshnessLevel = "fresh" | "aging" | "stale";
 
 const syncDots = new Map<string, HTMLElement>();
+const _lastOkTime = new Map<string, number>();
+
+/** Freshness thresholds in milliseconds. */
+const FRESH_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
+const AGING_LIMIT_MS = 30 * 60 * 1000; // 30 minutes
 
 /**
  * Register a sync dot element. Sets role="status" for accessibility.
@@ -27,6 +34,8 @@ export function setSync(name: string, state: SyncState): void {
   if (!dot) return;
   dot.className = "sync-dot";
   if (state !== "ok") dot.classList.add(state);
+  // S59: Record last successful fetch time for freshness tracking
+  if (state === "ok") _lastOkTime.set(name, Date.now());
   const labels: Record<SyncState, string> = {
     ok: "סנכרון תקין",
     loading: "טוען...",
@@ -162,4 +171,44 @@ export function getFailedPanes(): Array<{ key: string; delay: number }> {
  */
 export function clearSyncDots(): void {
   syncDots.clear();
+  _lastOkTime.clear();
+}
+
+// ── S59: Freshness tracking ──────────────────────────────────────────────────
+
+/**
+ * Determine the freshness level of a card's data based on time since last successful fetch.
+ * Returns "fresh" (< 5 min), "aging" (5–30 min), "stale" (> 30 min), or null if never fetched.
+ */
+export function getFreshness(name: string): FreshnessLevel | null {
+  const lastOk = _lastOkTime.get(name);
+  if (lastOk === undefined) return null;
+  const elapsed = Date.now() - lastOk;
+  if (elapsed < FRESH_LIMIT_MS) return "fresh";
+  if (elapsed < AGING_LIMIT_MS) return "aging";
+  return "stale";
+}
+
+/**
+ * Get the milliseconds since last successful fetch for a card, or null if never fetched.
+ */
+export function getLastOkAge(name: string): number | null {
+  const lastOk = _lastOkTime.get(name);
+  if (lastOk === undefined) return null;
+  return Date.now() - lastOk;
+}
+
+/**
+ * Apply freshness CSS class to the card element based on data age.
+ * Call periodically (e.g. every 60s) to update stale indicators.
+ */
+export function updateFreshnessClasses(): void {
+  for (const [name] of syncDots) {
+    const cardDomId = SYNC_TO_CARD_ID[name] ?? name;
+    const card = document.querySelector<HTMLElement>(`[data-card-id="${cardDomId}"]`);
+    if (!card) continue;
+    const level = getFreshness(name);
+    card.classList.remove("card--fresh", "card--aging", "card--stale");
+    if (level) card.classList.add(`card--${level}`);
+  }
 }

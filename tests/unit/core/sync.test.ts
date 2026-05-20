@@ -2,7 +2,7 @@
  * Tests for src/core/sync.ts — Sync Indicators & Health Tracking
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   setSync,
   registerSyncDot,
@@ -13,6 +13,9 @@ import {
   syncBurst,
   updateCardMiniInfo,
   clearSyncDots,
+  getFreshness,
+  getLastOkAge,
+  updateFreshnessClasses,
 } from "@/core/sync";
 
 describe("Sync Indicators", () => {
@@ -388,5 +391,97 @@ describe("buildMiniText countdown — empty title branch", () => {
       <span id="mini-countdown"></span>`;
     updateCardMiniInfo("countdown");
     expect(document.getElementById("mini-countdown")!.textContent).toBe("");
+  });
+});
+
+// ── S59: Freshness tracking ──────────────────────────────────────────────────
+
+describe("Sync — getFreshness (S59)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    clearSyncDots();
+    document.body.innerHTML = '<div id="dot-wx"></div>';
+    registerSyncDot("wx", document.getElementById("dot-wx")!);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("returns null when card has never been fetched", () => {
+    expect(getFreshness("wx")).toBeNull();
+  });
+
+  it("returns 'fresh' immediately after setSync ok", () => {
+    setSync("wx", "ok");
+    expect(getFreshness("wx")).toBe("fresh");
+  });
+
+  it("returns 'aging' after 6 minutes", () => {
+    setSync("wx", "ok");
+    vi.advanceTimersByTime(6 * 60 * 1000);
+    expect(getFreshness("wx")).toBe("aging");
+  });
+
+  it("returns 'stale' after 31 minutes", () => {
+    setSync("wx", "ok");
+    vi.advanceTimersByTime(31 * 60 * 1000);
+    expect(getFreshness("wx")).toBe("stale");
+  });
+});
+
+describe("Sync — getLastOkAge (S59)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    clearSyncDots();
+    document.body.innerHTML = '<div id="dot-wx"></div>';
+    registerSyncDot("wx", document.getElementById("dot-wx")!);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("returns null for unknown card", () => {
+    expect(getLastOkAge("unknown")).toBeNull();
+  });
+
+  it("returns elapsed ms after setSync ok", () => {
+    setSync("wx", "ok");
+    vi.advanceTimersByTime(5000);
+    const age = getLastOkAge("wx");
+    expect(age).toBeGreaterThanOrEqual(5000);
+  });
+});
+
+describe("Sync — updateFreshnessClasses (S59)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    clearSyncDots();
+    document.body.innerHTML = `
+      <div class="card" data-card-id="weather">
+        <div id="dot-wx"></div>
+      </div>`;
+    registerSyncDot("wx", document.getElementById("dot-wx")!);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("adds card--fresh class after ok fetch", () => {
+    setSync("wx", "ok");
+    updateFreshnessClasses();
+    const card = document.querySelector('[data-card-id="weather"]')!;
+    expect(card.classList.contains("card--fresh")).toBe(true);
+  });
+
+  it("adds card--stale class after long time", () => {
+    setSync("wx", "ok");
+    vi.advanceTimersByTime(35 * 60 * 1000);
+    updateFreshnessClasses();
+    const card = document.querySelector('[data-card-id="weather"]')!;
+    expect(card.classList.contains("card--stale")).toBe(true);
+    expect(card.classList.contains("card--fresh")).toBe(false);
   });
 });

@@ -243,6 +243,17 @@
   color: var(--negative);
 }
 
+/* S59: Card-level freshness indicators (border-top glow) */
+.card--fresh {
+  border-top: 2px solid var(--positive);
+}
+.card--aging {
+  border-top: 2px solid var(--warning);
+}
+.card--stale {
+  border-top: 2px solid var(--negative);
+}
+
 /* ── Loading Skeleton (see enhanced version below) ── */
 @keyframes shimmer {
   0% {
