@@ -416,6 +416,7 @@ export function renderStocksShell(): void {
     img.width = 18; /* P5: explicit dims prevent CLS */
     img.height = 18;
     img.loading = "lazy";
+    img.fetchPriority = "low";
     img.addEventListener("error", () => {
       img.style.display = "none";
     });
