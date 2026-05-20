@@ -5,6 +5,8 @@
  * All functions are exported for direct import and unit testing.
  */
 
+import { today } from "./temporal";
+
 // ── debounce ─────────────────────────────────────────────────────────────────
 
 /**
@@ -114,7 +116,7 @@ const SYNODIC_MS = SYNODIC_DAYS * 86_400_000;
  * Returns emoji + Hebrew label based on synodic month algorithm.
  * Uses 8 phase bins, each 0.125 wide, centered on the phase midpoints.
  */
-export function computeMoonPhase(date: Date = new Date()): MoonPhaseResult {
+export function computeMoonPhase(date: Date = today()): MoonPhaseResult {
   const elapsed = (((date.getTime() - KNOWN_NEW_MOON_MS) % SYNODIC_MS) + SYNODIC_MS) % SYNODIC_MS;
   const frac = elapsed / SYNODIC_MS;
   if (frac < 0.0625) return MOON_PHASES[0] ?? { emoji: "🌑", label: "ירח חדש" };

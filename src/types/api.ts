@@ -4,6 +4,8 @@
  * TypeScript interfaces for all external API responses.
  */
 
+import { today } from "../core/temporal";
+
 // ── Weather (Open-Meteo) ──
 export interface WeatherResponse {
   current: {
@@ -375,7 +377,7 @@ export function mapToWeatherDomain(r: WeatherResponse): WeatherDomain {
   const c = r.current;
   const h = r.hourly;
   const d = r.daily;
-  const now = new Date();
+  const now = today();
   const nowHour = now.getHours();
   const hourly = h.time
     .slice(0, 24)
@@ -466,7 +468,7 @@ export function mapToStockDomain(symbol: string, r: YahooChartResponse): StockDo
     postMarketChangePct: meta.postMarketChangePercent ?? null,
     preMarketPrice: meta.preMarketPrice ?? null,
     preMarketChangePct: meta.preMarketChangePercent ?? null,
-    fetchedAt: new Date().toISOString(),
+    fetchedAt: today().toISOString(),
   };
 }
 
@@ -490,7 +492,7 @@ export function mapToCurrencyDomain(r: CurrencyResponse): CurrencyDomain {
     base: r.base_code,
     rates: { ...r.rates },
     updatedAt: r.time_last_update_utc,
-    fetchedAt: new Date().toISOString(),
+    fetchedAt: today().toISOString(),
   };
 }
 
@@ -555,7 +557,7 @@ export function mapToAlertsDomain(ev: AlertEvent): AlertsDomain {
   return {
     zones,
     count24h: ev.alerts.length,
-    fetchedAt: new Date().toISOString(),
+    fetchedAt: today().toISOString(),
   };
 }
 
@@ -596,7 +598,7 @@ export function mapToHebcalDomain(r: HebcalResponse): HebcalDomain {
     })),
     candleLighting: candle?.title,
     havdalah: havd?.title,
-    fetchedAt: new Date().toISOString(),
+    fetchedAt: today().toISOString(),
   };
 }
 
