@@ -10,6 +10,7 @@
 
 import { loadConfig } from "../core/config";
 import { getDiagEntries } from "../core/diag";
+import { today } from "../core/temporal";
 
 interface DashboardSnapshot {
   version: string;
@@ -45,7 +46,7 @@ function collectLocalStorageSummary(): Record<string, string | null> {
 export function buildSnapshot(): DashboardSnapshot {
   return {
     version: __APP_VERSION__,
-    timestamp: new Date().toISOString(),
+    timestamp: today().toISOString(),
     userAgent: navigator.userAgent,
     config: loadConfig(),
     localStorageSummary: collectLocalStorageSummary(),
@@ -60,7 +61,7 @@ export function downloadSnapshot(): void {
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const ts = today().toISOString().replace(/[:.]/g, "-").slice(0, 19);
   a.href = url;
   a.download = `fdb-snapshot-${ts}.json`;
   document.body.appendChild(a);

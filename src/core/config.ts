@@ -23,6 +23,7 @@ import {
 } from "../types/config";
 import { diagLog } from "./diag";
 import { state } from "./state";
+import { today } from "./temporal";
 import { LS_CONFIG, LS_NETWORK_MODE } from "./constants";
 
 /**
@@ -462,7 +463,7 @@ export function buildExportEnvelope(config: DashboardConfig): ConfigExportEnvelo
   return {
     appVersion: typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "unknown",
     configSchemaVersion: CONFIG_VERSION,
-    exportedAt: new Date().toISOString(),
+    exportedAt: today().toISOString(),
     config,
   };
 }

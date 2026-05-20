@@ -14,6 +14,8 @@
  *   hasPerfSupport()     — true if PerformanceObserver is available
  */
 
+import { today, nowMs } from "./temporal";
+
 export interface PerfVitals {
   lcp: number | null; // ms — Largest Contentful Paint
   cls: number | null; // score — Cumulative Layout Shift (unitless)
@@ -294,7 +296,7 @@ export function getCardTimings(): ReadonlyMap<string, number> {
  */
 export function downloadPerfJSON(): void {
   const data = {
-    timestamp: new Date().toISOString(),
+    timestamp: today().toISOString(),
     vitals: getPerfVitals(),
     cardTimings: Object.fromEntries(_cardTimings),
   };
@@ -302,7 +304,7 @@ export function downloadPerfJSON(): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `fdb-perf-${Date.now()}.json`;
+  a.download = `fdb-perf-${nowMs()}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
