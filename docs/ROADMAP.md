@@ -7,7 +7,7 @@
 
 ---
 
-## 0. Executive Position
+## 0. 📌 Executive Position
 
 FamilyDashBoard competes in the **ambient family information display** space — a category served by MagicMirror², Glance, Homepage, Home Assistant Lovelace, Homarr, Dakboard, and various e-ink devices. Our differentiators:
 
@@ -33,7 +33,7 @@ The goal of this roadmap is to push every layer to **best-in-class** across reli
 
 ---
 
-## 1. Deep Architecture Rethink
+## 1. 🏗️ Deep Architecture Rethink
 
 Every major decision was reconsidered from first principles. Columns: current decision, verdict after rethink, and forward action.
 
@@ -127,7 +127,7 @@ Every major decision was reconsidered from first principles. Columns: current de
 
 ---
 
-## 2. Competitive Benchmark
+## 2. 📊 Competitive Benchmark
 
 ### 2.1 Full Comparison Matrix
 
@@ -182,7 +182,7 @@ Every major decision was reconsidered from first principles. Columns: current de
 
 ---
 
-## 3. Production Readiness Definition
+## 3. ✅ Production Readiness Definition
 
 ### 3.1 What "Production Ready" Means
 
@@ -223,7 +223,7 @@ Release is blocked if any command fails. No exceptions. No waivers.
 
 ---
 
-## 4. Strategic Streams (Forward Work)
+## 4. 🚀 Strategic Streams (Forward Work)
 
 ### P0 — Temporal Unification
 
@@ -287,7 +287,7 @@ Release is blocked if any command fails. No exceptions. No waivers.
 
 ---
 
-## 5. Near-Term Milestones
+## 5. 🎯 Near-Term Milestones
 
 ### v15.0.0 — Production Reset Complete
 
@@ -317,7 +317,7 @@ Release is blocked if any command fails. No exceptions. No waivers.
 
 ---
 
-## 6. Rejected or Deferred Directions
+## 6. 🚫 Rejected or Deferred Directions
 
 Permanently rejected unless an ADR reverses with concrete evidence:
 
@@ -341,7 +341,7 @@ Tracked but not adopted yet:
 
 ---
 
-## 7. Maintenance Rules
+## 7. 🔧 Maintenance Rules
 
 1. Do not add shipped sprint logs — use CHANGELOG.md
 2. Do not embed volatile counts — reference canonical sources

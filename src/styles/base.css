@@ -29,15 +29,49 @@ body {
   position: relative;
   transition: background 0.6s ease;
 }
-/* Full-screen background image (behind gradient overlay) */
+/* Dark wooden background — pure CSS wood grain, no external URL */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80")
-    center/cover no-repeat;
-  opacity: 0.35;
+  /* Layered repeating-linear-gradient wood grain: fine lines + medium bands + growth rings */
+  background-image:
+    /* 1 — fine grain lines (dark walnut streaks) */
+    repeating-linear-gradient(
+      -4deg,
+      transparent 0px,
+      transparent 3px,
+      rgb(180 130 70 / 0.045) 3px,
+      rgb(180 130 70 / 0.045) 4px,
+      transparent 4px,
+      transparent 9px,
+      rgb(50 28 8 / 0.07) 9px,
+      rgb(50 28 8 / 0.07) 10px
+    ),
+    /* 2 — medium grain bands */
+    repeating-linear-gradient(
+      -2.5deg,
+      transparent 0px,
+      transparent 26px,
+      rgb(145 98 42 / 0.06) 26px,
+      rgb(145 98 42 / 0.06) 30px,
+      transparent 30px,
+      transparent 60px,
+      rgb(28 16 4 / 0.08) 60px,
+      rgb(28 16 4 / 0.08) 64px
+    ),
+    /* 3 — wide growth-ring variation */
+    repeating-linear-gradient(
+      -1.2deg,
+      transparent 0px,
+      transparent 90px,
+      rgb(115 78 32 / 0.04) 90px,
+      rgb(115 78 32 / 0.04) 102px
+    ),
+    /* 4 — vignette: darker edges, lighter center */
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 40%, rgb(0 0 0 / 0.45) 100%);
+  opacity: 0.75;
   pointer-events: none;
   transition: opacity 1.5s ease; /* Background Image Cycling */
 }

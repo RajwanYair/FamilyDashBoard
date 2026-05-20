@@ -51,7 +51,7 @@ Direct → allorigins → codetabs → corsproxy.io
 
 ---
 
-## Card-by-Card Data Source Reference
+## 🃏 Card-by-Card Data Source Reference
 
 ### 🌤 Weather — `open-meteo`
 
@@ -206,7 +206,7 @@ Countdown is configured locally (target date/time) — no external API.
 
 ---
 
-## Adding a New Data Source
+## ➕ Adding a New Data Source
 
 See [adding-a-card.md](adding-a-card.md) for the step-by-step guide.
 
@@ -223,7 +223,7 @@ Key checklist:
 
 ---
 
-## Rate Limiting
+## 🚦 Rate Limiting
 
 All worker routes share a per-IP rate limit (configured in
 `worker/src/middleware/rate-limit.ts`). Clients receive
@@ -232,7 +232,7 @@ Exceeding the limit returns HTTP 429.
 
 ---
 
-## KV TTL Annual Audit — 2026-04-29
+## 🗓️ KV TTL Annual Audit — 2026-04-29
 
 All 22 routes in `worker/openapi.yaml` reviewed. Verdict: **no changes required**.
 

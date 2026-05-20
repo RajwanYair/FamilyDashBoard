@@ -9,16 +9,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7869 tests / 332 suites / 0 failures** (commit `74da0fd`)
 
-- **refactor(ui)**: migrate `night-dimmer.ts` to temporal helpers — `today()`, `nowMs()` (S67)
-- **refactor(ui)**: migrate `status-bar.ts` to temporal helpers — `fromEpochMs()`, `nowMs()` (S68)
-- **refactor(core)**: migrate `config.ts`, `snapshot.ts`, `perf.ts` to temporal helpers (S69)
-- **refactor(core)**: migrate `diag.ts`, `error-tracker.ts`, `freshness.ts`, `provider.ts` to temporal helpers (S70)
-- **refactor**: P0 exit — eliminate all raw `new Date()` outside `temporal.ts`; migrate `diag-overlay.ts`, `utils.ts`, `types/api.ts` (S71)
-- **feat(temporal)**: add `nowISO()` helper; replace `today().toISOString()` across 7 files (S72)
-- **feat(temporal)**: add `formatTimeHHMM()` helper; migrate 3 call sites (S73)
-- **perf(css)**: add `will-change` hints to infinite animations and progress bars (S74)
-- **perf(a11y)**: add `prefers-reduced-motion` overrides for countdown, news, and stock card animations (S75)
-- **perf**: add `fetchpriority=low` to decorative lazy images in news and stocks (S76)
+- 🔧 **refactor(ui)**: migrate `night-dimmer.ts` to temporal helpers — `today()`, `nowMs()` (S67)
+- 🔧 **refactor(ui)**: migrate `status-bar.ts` to temporal helpers — `fromEpochMs()`, `nowMs()` (S68)
+- 🔧 **refactor(core)**: migrate `config.ts`, `snapshot.ts`, `perf.ts` to temporal helpers (S69)
+- 🔧 **refactor(core)**: migrate `diag.ts`, `error-tracker.ts`, `freshness.ts`, `provider.ts` to temporal helpers (S70)
+- 🔧 **refactor**: P0 exit — eliminate all raw `new Date()` outside `temporal.ts`; migrate `diag-overlay.ts`, `utils.ts`, `types/api.ts` (S71)
+- ✨ **feat(temporal)**: add `nowISO()` helper; replace `today().toISOString()` across 7 files (S72)
+- ✨ **feat(temporal)**: add `formatTimeHHMM()` helper; migrate 3 call sites (S73)
+- ⚡ **perf(css)**: add `will-change` hints to infinite animations and progress bars (S74)
+- ⚡ **perf(a11y)**: add `prefers-reduced-motion` overrides for countdown, news, and stock card animations (S75)
+- ⚡ **perf**: add `fetchpriority=low` to decorative lazy images in news and stocks (S76)
 
 ---
 
@@ -26,11 +26,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7864 tests / 332 suites / 0 failures** (commit `c96bbbf`)
 
-- **perf(html)**: upgrade Open-Meteo and Hebcal from dns-prefetch to preconnect hints (S62)
-- **refactor(header)**: migrate all `new Date()` to temporal helpers — `today()`, `fromParts()`, `diffDays()` (S63)
-- **refactor(core)**: migrate `theme.ts` `checkAutoTheme()` and `main.ts` season/diag to temporal helpers (S64)
-- **perf(css)**: add `contain-intrinsic-block-size: auto 200px` to `.card__body` for CLS stability (S65)
-- **feat(temporal)**: add `dayProgressPct()` / `yearProgressPct()` helpers; simplify header progress bars (S66)
+- ⚡ **perf(html)**: upgrade Open-Meteo and Hebcal from dns-prefetch to preconnect hints (S62)
+- 🔧 **refactor(header)**: migrate all `new Date()` to temporal helpers — `today()`, `fromParts()`, `diffDays()` (S63)
+- 🔧 **refactor(core)**: migrate `theme.ts` `checkAutoTheme()` and `main.ts` season/diag to temporal helpers (S64)
+- ⚡ **perf(css)**: add `contain-intrinsic-block-size: auto 200px` to `.card__body` for CLS stability (S65)
+- ✨ **feat(temporal)**: add `dayProgressPct()` / `yearProgressPct()` helpers; simplify header progress bars (S66)
 
 ---
 
@@ -38,12 +38,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7857 tests / 331 suites / 0 failures** (commit `c8e948d`)
 
-- **feat(skeleton)**: wire skeleton shimmer into base-card loaders — auto-show on first cold load (S41)
-- **perf(hints)**: dns-prefetch for all API origins + proxy fallback chain — sefaria, boi, exchangerate-api, frankfurter, allorigins, codetabs, corsproxy (S42)
-- **style(hierarchy)**: P1 primary metric 3× emphasis — wx-temp-main 2.2em, cur-rate 1.5em, stk-price 1.15em (S43)
-- **style(hierarchy)**: P1 reduce secondary visual weight — opacity: 0.75 on wx-desc, wx-detail-label, stk-desc; opacity: 0.6 on stk-time (S48)
-- **perf(cls)**: P5 explicit img dimensions on stock logo, contain: layout on card__body (S49)
-- **style**: prettier format fixes across 11 files
+- ✨ **feat(skeleton)**: wire skeleton shimmer into base-card loaders — auto-show on first cold load (S41)
+- ⚡ **perf(hints)**: dns-prefetch for all API origins + proxy fallback chain — sefaria, boi, exchangerate-api, frankfurter, allorigins, codetabs, corsproxy (S42)
+- 🎨 **style(hierarchy)**: P1 primary metric 3× emphasis — wx-temp-main 2.2em, cur-rate 1.5em, stk-price 1.15em (S43)
+- 🎨 **style(hierarchy)**: P1 reduce secondary visual weight — opacity: 0.75 on wx-desc, wx-detail-label, stk-desc; opacity: 0.6 on stk-time (S48)
+- ⚡ **perf(cls)**: P5 explicit img dimensions on stock logo, contain: layout on card__body (S49)
+- 🎨 **style**: prettier format fixes across 11 files
 
 ---
 
@@ -51,15 +51,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7857 tests / 331 suites / 0 failures** (commit `925887f`)
 
-- **feat(temporal)**: add `fromISOString`/`fromEpochSec`/`addMs` helpers + migrate weather sunrise/sunset (S31)
-- **feat(temporal)**: migrate ims-adapter.ts from raw Date to temporal helpers (S32)
-- **feat(temporal)**: add `fromDateString` + migrate currency/stocks timezone patterns (S33)
-- **feat(temporal)**: migrate news/alerts/tasks — P0 complete (0 raw Date in cards) (S34)
-- **perf**: `fetchpriority="high"` on main script + `loading="lazy"` on news favicons (S35)
-- **perf(sw)**: split precache manifest — critical shell vs lazy card chunks (S36)
-- **fix(a11y)**: WAI-ARIA roving tabindex on config panel tabs (S37)
-- **feat(news)**: persist read state in IDB with 7-day retention (S38)
-- **feat(freshness)**: add freshness badge to motivation card — all data cards now covered (S39)
+- ✨ **feat(temporal)**: add `fromISOString`/`fromEpochSec`/`addMs` helpers + migrate weather sunrise/sunset (S31)
+- ✨ **feat(temporal)**: migrate ims-adapter.ts from raw Date to temporal helpers (S32)
+- ✨ **feat(temporal)**: add `fromDateString` + migrate currency/stocks timezone patterns (S33)
+- ✨ **feat(temporal)**: migrate news/alerts/tasks — P0 complete (0 raw Date in cards) (S34)
+- ⚡ **perf**: `fetchpriority="high"` on main script + `loading="lazy"` on news favicons (S35)
+- ⚡ **perf(sw)**: split precache manifest — critical shell vs lazy card chunks (S36)
+- 🐛 **fix(a11y)**: WAI-ARIA roving tabindex on config panel tabs (S37)
+- ✨ **feat(news)**: persist read state in IDB with 7-day retention (S38)
+- ✨ **feat(freshness)**: add freshness badge to motivation card — all data cards now covered (S39)
 
 ---
 
@@ -67,13 +67,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **57 governor/base-card tests / 0 failures** (commit `166ce48`)
 
-- **feat(temporal)**: complete Temporal unification — migrate tasks, stocks, currency, weather, calendar, alerts, hebrew-cal, countdown, and system-info cards to `src/core/temporal.ts` helpers (S21-S25)
-- **feat(core)**: refresh-rate governor module — FNV-1a hash + MIN_RENDER_INTERVAL throttle prevents unnecessary DOM repaints (S26)
-- **feat(core)**: wire governor into base-card loaders — `shouldSkipRender`/`markRendered` wrap all `createCardLoader`/`createAsyncCardLoader` render paths (S27)
-- **feat(ui)**: freshness badges on calendar, alerts, and hebrew-cal cards (S27)
-- **feat(ui)**: governor render/skip metrics in diagnostics overlay (D key) — per-card stats table (S28)
-- **perf(css)**: upgrade card containment to `contain: layout style paint` for isolated repaints (S29)
-- **feat(core)**: `resetGovernor()` on manual refresh (R key) — ensures user-triggered reload bypasses hash check (S29)
+- ✨ **feat(temporal)**: complete Temporal unification — migrate tasks, stocks, currency, weather, calendar, alerts, hebrew-cal, countdown, and system-info cards to `src/core/temporal.ts` helpers (S21-S25)
+- ✨ **feat(core)**: refresh-rate governor module — FNV-1a hash + MIN_RENDER_INTERVAL throttle prevents unnecessary DOM repaints (S26)
+- ✨ **feat(core)**: wire governor into base-card loaders — `shouldSkipRender`/`markRendered` wrap all `createCardLoader`/`createAsyncCardLoader` render paths (S27)
+- ✨ **feat(ui)**: freshness badges on calendar, alerts, and hebrew-cal cards (S27)
+- ✨ **feat(ui)**: governor render/skip metrics in diagnostics overlay (D key) — per-card stats table (S28)
+- ⚡ **perf(css)**: upgrade card containment to `contain: layout style paint` for isolated repaints (S29)
+- ✨ **feat(core)**: `resetGovernor()` on manual refresh (R key) — ensures user-triggered reload bypasses hash check (S29)
 
 ---
 
@@ -81,11 +81,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **5000+ tests / 328 suites / 0 failures** (commit `8177452`)
 
-- **feat(news)**: recency-weighted ranking algorithm — `newsRankScore()` with breaking boost, category bonus, and time-decay penalty (S16)
-- **feat(temporal)**: migrate news card to `src/core/temporal.ts` — add `parseEpochMs()` helper, zero raw `Date.parse()` in feed processing (S17)
-- **feat(config)**: progressive disclosure in Advanced settings — 4 collapsible `<details>` groups (Location, Network, Countdown, Data) (S18)
-- **feat(ui)**: per-card quick-toggle surface — hide buttons in card headers + floating restore pill (S19)
-- **chore(version)**: bump to 15.0.0; update version strings across 16 files
+- ✨ **feat(news)**: recency-weighted ranking algorithm — `newsRankScore()` with breaking boost, category bonus, and time-decay penalty (S16)
+- ✨ **feat(temporal)**: migrate news card to `src/core/temporal.ts` — add `parseEpochMs()` helper, zero raw `Date.parse()` in feed processing (S17)
+- ✨ **feat(config)**: progressive disclosure in Advanced settings — 4 collapsible `<details>` groups (Location, Network, Countdown, Data) (S18)
+- ✨ **feat(ui)**: per-card quick-toggle surface — hide buttons in card headers + floating restore pill (S19)
+- 🏗️ **chore(version)**: bump to 15.0.0; update version strings across 16 files
 
 ---
 
@@ -93,24 +93,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **Commit `c2a5195`** · 10-sprint roadmap session: temporal migration, freshness UX, provider health
 
-- **feat(temporal)**: migrate countdown, calendar, and hebrew-cal cards to `src/core/temporal.ts` abstraction — zero raw `new Date()` in P0 cards (S1–S3)
-- **feat(freshness)**: add freshness badge system with relative time + color-coded states (fresh/aging/stale) — `markFresh()` / `renderFreshnessBadge()` (S4)
-- **feat(skeleton)**: add `showCardSkeleton()` / `hideCardSkeleton()` for CLS-zero loading placeholders (S5)
-- **feat(hierarchy)**: add `.metric-tile--primary` / `.metric-tile--secondary` CSS modifiers for 3× info hierarchy (S6)
-- **feat(provider)**: add `getProviderSuccessRate()` / `getProviderAvgLatency()` accessors; migrate provider.ts to temporal (S7)
-- **feat(diag)**: enhance provider scorecard in D-overlay with success rate % and avg latency (S8)
-- **feat(provider)**: add `onProviderStatusChange()` listener pattern; auto-toast on degraded/down transitions (S9)
-- **perf(html)**: add `dns-prefetch` hints for open-meteo, hebcal, yahoo, er-api origins (S10)
-- **fix(hebrew-cal)**: fix `toISODateString()` call signature in `loadZmanim` (type error from Sprint 3 migration)
-- **fix(dx)**: uninstall webhint + HTMLHint VS Code extensions — eliminates 277 false-positive IE compat and inline-style warnings at source instead of suppressing via config
-- **fix(dx)**: delete dead `.hintrc` file (webhint config for removed extension)
-- **fix(dx)**: remove `htmlhint.enable: false` and `webhint.enableTelemetry: "disabled"` workarounds from `.vscode/settings.json` — extensions removed, settings unnecessary
-- **fix(build)**: move `_headers` from workspace root → `src/public/_headers` — Vite copies to `dist/_headers` automatically as static asset (was manually handled before)
-- **fix(css)**: enable Stylelint `color-function-notation: "modern"` rule (was `null`/disabled) — auto-fixed all CSS files from legacy `rgb(R, G, B)` / `hsl(H, S%, L%)` to modern `rgb(R G B)` / `hsl(H S% L%)` notation
-- **fix(a11y)**: convert countdown card from inline `style.display` toggling to `classList.add/remove("is-hidden")` — 13 mutations in `countdown.ts`, 3 inline `style="display:none"` in `index.html` replaced with `class="is-hidden"`
-- **test(countdown)**: update 29 assertions from `style.display` checks to `classList.contains("is-hidden")`; update 3 DOM builder helpers in test file
-- **docs**: update `_headers` path in `security.md`, `ADR-018-csp-coop-coep.md`, `check-csp-wildcards.mjs`, `headers.test.ts`, `permissions-policy.test.ts`
-- **chore(version)**: bump to 14.35.0; update version strings across 16 files
+- ✨ **feat(temporal)**: migrate countdown, calendar, and hebrew-cal cards to `src/core/temporal.ts` abstraction — zero raw `new Date()` in P0 cards (S1–S3)
+- ✨ **feat(freshness)**: add freshness badge system with relative time + color-coded states (fresh/aging/stale) — `markFresh()` / `renderFreshnessBadge()` (S4)
+- ✨ **feat(skeleton)**: add `showCardSkeleton()` / `hideCardSkeleton()` for CLS-zero loading placeholders (S5)
+- ✨ **feat(hierarchy)**: add `.metric-tile--primary` / `.metric-tile--secondary` CSS modifiers for 3× info hierarchy (S6)
+- ✨ **feat(provider)**: add `getProviderSuccessRate()` / `getProviderAvgLatency()` accessors; migrate provider.ts to temporal (S7)
+- ✨ **feat(diag)**: enhance provider scorecard in D-overlay with success rate % and avg latency (S8)
+- ✨ **feat(provider)**: add `onProviderStatusChange()` listener pattern; auto-toast on degraded/down transitions (S9)
+- ⚡ **perf(html)**: add `dns-prefetch` hints for open-meteo, hebcal, yahoo, er-api origins (S10)
+- 🐛 **fix(hebrew-cal)**: fix `toISODateString()` call signature in `loadZmanim` (type error from Sprint 3 migration)
+- 🐛 **fix(dx)**: uninstall webhint + HTMLHint VS Code extensions — eliminates 277 false-positive IE compat and inline-style warnings at source instead of suppressing via config
+- 🐛 **fix(dx)**: delete dead `.hintrc` file (webhint config for removed extension)
+- 🐛 **fix(dx)**: remove `htmlhint.enable: false` and `webhint.enableTelemetry: "disabled"` workarounds from `.vscode/settings.json` — extensions removed, settings unnecessary
+- 🐛 **fix(build)**: move `_headers` from workspace root → `src/public/_headers` — Vite copies to `dist/_headers` automatically as static asset (was manually handled before)
+- 🐛 **fix(css)**: enable Stylelint `color-function-notation: "modern"` rule (was `null`/disabled) — auto-fixed all CSS files from legacy `rgb(R, G, B)` / `hsl(H, S%, L%)` to modern `rgb(R G B)` / `hsl(H S% L%)` notation
+- 🐛 **fix(a11y)**: convert countdown card from inline `style.display` toggling to `classList.add/remove("is-hidden")` — 13 mutations in `countdown.ts`, 3 inline `style="display:none"` in `index.html` replaced with `class="is-hidden"`
+- 🧪 **test(countdown)**: update 29 assertions from `style.display` checks to `classList.contains("is-hidden")`; update 3 DOM builder helpers in test file
+- 📝 **docs**: update `_headers` path in `security.md`, `ADR-018-csp-coop-coep.md`, `check-csp-wildcards.mjs`, `headers.test.ts`, `permissions-policy.test.ts`
+- 🏗️ **chore(version)**: bump to 14.35.0; update version strings across 16 files
 
 ---
 
@@ -118,10 +118,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7801 tests / 328 suites / 0 failures** · Coverage: 97.09/90.54/96.46/98.13
 
-- **fix(security)**: harden `supply-chain.yml` worker npm audit — remove `continue-on-error: true` and `|| true` escape; high-severity vulnerabilities in Hono/Valibot now hard-gate the workflow (QA-13)
-- **fix(lint)**: remove unused `eslint-disable-next-line @typescript-eslint/no-explicit-any` in `tests/unit/worker/health.test.ts`; replaced `as any` cast with type-safe `Partial<typeof env>` delete
-- **docs(roadmap)**: ROADMAP v8.0 deep-rethink audit stamp — security gate regression fixed, test count updated to 7801, ADR count corrected to 92, comparison table refreshed to v14.33.0 row, new QA-13/QA-14/QA-15 items, new open decisions D10 (Vite 9/Rolldown) + D11 (commitlint 21), new risk R13 (IDE extension noise), new open questions 13–15 (S29)
-- **chore(version)**: bump to 14.34.0; update version strings in README, copilot-instructions.md, AGENTS.md, workspace.instructions.md, ARCHITECTURE.md, security.md, sw.ts, and 4 SVG assets
+- 🐛 **fix(security)**: harden `supply-chain.yml` worker npm audit — remove `continue-on-error: true` and `|| true` escape; high-severity vulnerabilities in Hono/Valibot now hard-gate the workflow (QA-13)
+- 🐛 **fix(lint)**: remove unused `eslint-disable-next-line @typescript-eslint/no-explicit-any` in `tests/unit/worker/health.test.ts`; replaced `as any` cast with type-safe `Partial<typeof env>` delete
+- 📝 **docs(roadmap)**: ROADMAP v8.0 deep-rethink audit stamp — security gate regression fixed, test count updated to 7801, ADR count corrected to 92, comparison table refreshed to v14.33.0 row, new QA-13/QA-14/QA-15 items, new open decisions D10 (Vite 9/Rolldown) + D11 (commitlint 21), new risk R13 (IDE extension noise), new open questions 13–15 (S29)
+- 🏗️ **chore(version)**: bump to 14.34.0; update version strings in README, copilot-instructions.md, AGENTS.md, workspace.instructions.md, ARCHITECTURE.md, security.md, sw.ts, and 4 SVG assets
 
 ---
 
@@ -142,14 +142,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7669 tests / 319 suites / 0 failures** · Coverage: 97.1/90.54/96.46/98.13
 
-- **fix(dx)**: exclude all HTML files from webhint VS Code scan — eliminates false-positive IE compat warnings on `.html` files (S1)
-- **feat(dx)**: route Playwright output to `$TEMP/fdb-dev/playwright`; suppress webhint on `.ts` files — keeps repo root clean of `test-results/` and `playwright-report/` (S2)
-- **feat(worker)**: `StocksLiveDO` — Hibernatable WebSocket live stock-price fan-out (ADR-087); 4-shard topology, 30 s alarm, zero CPU between messages (S3)
-- **feat(worker)**: OTel OTLP/JSON dep-free exporter — real spans via native `fetch`, feature-gated on `OTEL_ENABLED`; zero npm deps added (ADR-088, S4)
-- **feat(worker)**: R2 `fdb-static-assets` bucket binding + `r2-cache.ts` helper (`r2Get` / `r2Put` / `r2Delete`, fire-and-forget, ADR-050, S5)
-- **docs(adr)**: ADR-087 StocksLiveDO Hibernatable WS + ADR-088 OTel OTLP/JSON dep-free — full architecture records (S6)
-- **docs(roadmap)**: ROADMAP v5.0 audit stamp — S-DO + OTel shipped, inventory updated to 88 ADRs (S7)
-- **test(worker)**: 38 new unit tests — `StocksLiveDO` (13), OTel OTLP exporter (15), R2 cache helper (10); fix `calendar.ts` unused `startOfDayMs` import (S8)
+- 🐛 **fix(dx)**: exclude all HTML files from webhint VS Code scan — eliminates false-positive IE compat warnings on `.html` files (S1)
+- ✨ **feat(dx)**: route Playwright output to `$TEMP/fdb-dev/playwright`; suppress webhint on `.ts` files — keeps repo root clean of `test-results/` and `playwright-report/` (S2)
+- ✨ **feat(worker)**: `StocksLiveDO` — Hibernatable WebSocket live stock-price fan-out (ADR-087); 4-shard topology, 30 s alarm, zero CPU between messages (S3)
+- ✨ **feat(worker)**: OTel OTLP/JSON dep-free exporter — real spans via native `fetch`, feature-gated on `OTEL_ENABLED`; zero npm deps added (ADR-088, S4)
+- ✨ **feat(worker)**: R2 `fdb-static-assets` bucket binding + `r2-cache.ts` helper (`r2Get` / `r2Put` / `r2Delete`, fire-and-forget, ADR-050, S5)
+- 📝 **docs(adr)**: ADR-087 StocksLiveDO Hibernatable WS + ADR-088 OTel OTLP/JSON dep-free — full architecture records (S6)
+- 📝 **docs(roadmap)**: ROADMAP v5.0 audit stamp — S-DO + OTel shipped, inventory updated to 88 ADRs (S7)
+- 🧪 **test(worker)**: 38 new unit tests — `StocksLiveDO` (13), OTel OTLP exporter (15), R2 cache helper (10); fix `calendar.ts` unused `startOfDayMs` import (S8)
 
 ---
 
@@ -157,14 +157,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7631 tests / 316 suites / 0 failures** · Coverage: 97.1/90.54/96.46/98.13
 
-- **feat(temporal)**: TC39 Temporal migration — calendar, countdown, hebrew-cal cards refactored to use `diffDays()`, `addDays()` from `src/core/temporal.ts` instead of raw `MS_PER_DAY` arithmetic
-- **feat(temporal)**: `addWeeks`, `isToday`, `isTomorrow`, `isYesterday` added to temporal module (4 new exports, 15 unit tests)
-- **chore(coverage)**: ratcheted thresholds 97.09/90.5/96.42/98.1 → 97.1/90.54/96.46/98.13
-- **test(props)**: TM15–TM20 property tests for temporal v2 functions (addWeeks equivalence, non-mutating, isToday/isTomorrow/isYesterday semantics, mutual exclusion)
-- **test(props)**: CAL15–CAL16 property tests (calDaysUntilLabel monotonicity, groupEventsByDay bucket placement)
-- **chore(boundary)**: D12-C2 module boundary rule — `src/cards/*` must not import `MS_PER_DAY` from constants (enforces temporal.ts usage)
-- **test(integration)**: `temporal-calendar.test.ts` cross-module integration (7 cases: diffDays agreement, bucket placement, month boundary, midnight edge, past dates, 21-day range, window exclusion)
-- **chore(bundle)**: per-card delta threshold ratcheted 8%→7%, source-delta-fail 12%→10%
+- ✨ **feat(temporal)**: TC39 Temporal migration — calendar, countdown, hebrew-cal cards refactored to use `diffDays()`, `addDays()` from `src/core/temporal.ts` instead of raw `MS_PER_DAY` arithmetic
+- ✨ **feat(temporal)**: `addWeeks`, `isToday`, `isTomorrow`, `isYesterday` added to temporal module (4 new exports, 15 unit tests)
+- 🏗️ **chore(coverage)**: ratcheted thresholds 97.09/90.5/96.42/98.1 → 97.1/90.54/96.46/98.13
+- 🧪 **test(props)**: TM15–TM20 property tests for temporal v2 functions (addWeeks equivalence, non-mutating, isToday/isTomorrow/isYesterday semantics, mutual exclusion)
+- 🧪 **test(props)**: CAL15–CAL16 property tests (calDaysUntilLabel monotonicity, groupEventsByDay bucket placement)
+- 🏗️ **chore(boundary)**: D12-C2 module boundary rule — `src/cards/*` must not import `MS_PER_DAY` from constants (enforces temporal.ts usage)
+- 🧪 **test(integration)**: `temporal-calendar.test.ts` cross-module integration (7 cases: diffDays agreement, bucket placement, month boundary, midnight edge, past dates, 21-day range, window exclusion)
+- 🏗️ **chore(bundle)**: per-card delta threshold ratcheted 8%→7%, source-delta-fail 12%→10%
 
 ---
 
@@ -172,13 +172,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7601 tests / 315 suites / 0 failures** · 86 ADRs · 136 Stryker files · Stryker threshold 90
 
-- **fix(a11y)**: ARIA countdown-body — added `role="region"` to `.countdown-body` to satisfy axe-core `aria-prohibited-attr` (aria-label requires valid role)
-- **fix(eslint)**: Re-enabled `no-prototype-builtins` and `no-inner-declarations` rules (code passes without changes — free safety guardrails)
-- **fix(test)**: Security-doc test regex updated to handle emoji in markdown headings
-- **docs(roadmap)**: ROADMAP v4.0 deep-rethink audit stamp — documents all disabled-item decisions
-- **test(props)**: CP1-CP6 config-panel property tests: `buildConfigAccordion`, `isConfigPanelOpen`, `toggleConfigPanel`, `switchCfgTab` — 8 new tests
-- **docs(adr)**: ADR-086: v14.29.0 QA sprint decisions; ADR index regenerated to 86 ADRs
-- **chore(ci)**: ShellCheck fixes across 5 workflows (bash shell defaults, safe find iteration, quoted variables)
+- 🐛 **fix(a11y)**: ARIA countdown-body — added `role="region"` to `.countdown-body` to satisfy axe-core `aria-prohibited-attr` (aria-label requires valid role)
+- 🐛 **fix(eslint)**: Re-enabled `no-prototype-builtins` and `no-inner-declarations` rules (code passes without changes — free safety guardrails)
+- 🐛 **fix(test)**: Security-doc test regex updated to handle emoji in markdown headings
+- 📝 **docs(roadmap)**: ROADMAP v4.0 deep-rethink audit stamp — documents all disabled-item decisions
+- 🧪 **test(props)**: CP1-CP6 config-panel property tests: `buildConfigAccordion`, `isConfigPanelOpen`, `toggleConfigPanel`, `switchCfgTab` — 8 new tests
+- 📝 **docs(adr)**: ADR-086: v14.29.0 QA sprint decisions; ADR index regenerated to 86 ADRs
+- 🏗️ **chore(ci)**: ShellCheck fixes across 5 workflows (bash shell defaults, safe find iteration, quoted variables)
 
 ---
 
@@ -186,14 +186,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7591 tests / 314 suites / 0 failures** · 85 ADRs · 136 Stryker files · Stryker threshold 90
 
-- **feat(sw)**: QA-7 — `VERSION_ACTIVATED` SW message now shows a `showToast("✓ עודכן לגרסה ${label}", 4000)` confirmation toast when a new service-worker version activates (`src/ui/status-bar.ts`); 2 new unit tests in `status-bar.test.ts` (46 total)
-- **chore(renovate)**: QA-6 — split the single `minor+patch` Renovate rule into two: monthly-schedule `minor` rule + immediate-automerge `patch` rule (`groupName: "devDeps patch updates"`)
-- **fix(docs)**: Mermaid `subgraph id[title]` syntax (v9.1+) in `docs/ARCHITECTURE.md` replaced with v8.8.0-compatible `subgraph id` + `direction TB` — 5 blocks validated clean
-- **fix(docs)**: Broken emoji characters (`&#xFFFD;`) in README.md `## 🤝 Contributing` and `## 🔧 Troubleshooting` headings repaired
-- **chore(vscode)**: QA-9 — extensions.json pruned: removed `mhutchie.git-graph` (redundant — GitLens includes graph view) and `hediet.vscode-drawio` (no `.drawio` files); both added to `unwantedRecommendations`
-- **chore(vscode)**: `.vscode/settings.json` — `htmlhint.enable: false` (extension is unwanted); `markdownlint.ignore` covers `test-results/**`, `dist/**`, `coverage/**`; `search.exclude` covers `test-results/`
-- **chore(vscode)**: `.hintrc` — `"ssllabs": "off"`, `"https-only": "off"`, `"http-cache": "off"` to suppress non-applicable webhint rules; added `"not dead"` to browserslist target
-- **chore(coverage)**: vitest `statements` threshold ratcheted 97.0→97.05; actuals from v14.28.0 S2: 97.09/90.54/96.46/98.13
+- ✨ **feat(sw)**: QA-7 — `VERSION_ACTIVATED` SW message now shows a `showToast("✓ עודכן לגרסה ${label}", 4000)` confirmation toast when a new service-worker version activates (`src/ui/status-bar.ts`); 2 new unit tests in `status-bar.test.ts` (46 total)
+- 🏗️ **chore(renovate)**: QA-6 — split the single `minor+patch` Renovate rule into two: monthly-schedule `minor` rule + immediate-automerge `patch` rule (`groupName: "devDeps patch updates"`)
+- 🐛 **fix(docs)**: Mermaid `subgraph id[title]` syntax (v9.1+) in `docs/ARCHITECTURE.md` replaced with v8.8.0-compatible `subgraph id` + `direction TB` — 5 blocks validated clean
+- 🐛 **fix(docs)**: Broken emoji characters (`&#xFFFD;`) in README.md `## 🤝 Contributing` and `## 🔧 Troubleshooting` headings repaired
+- 🏗️ **chore(vscode)**: QA-9 — extensions.json pruned: removed `mhutchie.git-graph` (redundant — GitLens includes graph view) and `hediet.vscode-drawio` (no `.drawio` files); both added to `unwantedRecommendations`
+- 🏗️ **chore(vscode)**: `.vscode/settings.json` — `htmlhint.enable: false` (extension is unwanted); `markdownlint.ignore` covers `test-results/**`, `dist/**`, `coverage/**`; `search.exclude` covers `test-results/`
+- 🏗️ **chore(vscode)**: `.hintrc` — `"ssllabs": "off"`, `"https-only": "off"`, `"http-cache": "off"` to suppress non-applicable webhint rules; added `"not dead"` to browserslist target
+- 🏗️ **chore(coverage)**: vitest `statements` threshold ratcheted 97.0→97.05; actuals from v14.28.0 S2: 97.09/90.54/96.46/98.13
 
 ---
 
@@ -201,11 +201,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7591 tests / 314 suites / 0 failures** · 85 ADRs · 136 Stryker files · Stryker threshold 90
 
-- **test(coverage)**: Sprint 1 — 19 new tests: `buildWeatherPayload` wind-speed zero, alerts splice, UV rounding; `system-info.ts` `perf.memory` unavailable path and `prewarm()` default-arg branch; `getSwState` stale-cache fallback; Hebrew Calendar `buildHebrewCalPayload` holiday + non-holiday branches via semantic-clipboard producer
-- **test(coverage)**: Sprint 2 — `video-news-adapter.property.test.ts` (VNA1–VNA7, 7 fast-check property suites); `buildHebrewCalPayload via getSemanticPayload` block in `hebrew-cal.test.ts`; 107 property test files across 4 domains (core / cards / ui / worker)
-- **chore(coverage)**: vitest thresholds ratcheted 96.9/90.3/96.2/97.9 → 97.0/90.5/96.4/98.1; actuals: 97.09/90.54/96.46/98.13
-- **chore(bundle)**: per-card source hard-cap ratcheted 65→64 KB (`SOURCE_HARD_CAP_KB` in `check-card-bundle-delta.mjs`); all cards confirmed under cap (weather 63.8 KB)
-- **docs(adr)**: ADR-085 — coverage ratchet v14.28.0 decision (Sprints 1–4 root-cause analysis, threshold table, trade-off notes); ADR index regenerated to 85 ADRs total
+- 🧪 **test(coverage)**: Sprint 1 — 19 new tests: `buildWeatherPayload` wind-speed zero, alerts splice, UV rounding; `system-info.ts` `perf.memory` unavailable path and `prewarm()` default-arg branch; `getSwState` stale-cache fallback; Hebrew Calendar `buildHebrewCalPayload` holiday + non-holiday branches via semantic-clipboard producer
+- 🧪 **test(coverage)**: Sprint 2 — `video-news-adapter.property.test.ts` (VNA1–VNA7, 7 fast-check property suites); `buildHebrewCalPayload via getSemanticPayload` block in `hebrew-cal.test.ts`; 107 property test files across 4 domains (core / cards / ui / worker)
+- 🏗️ **chore(coverage)**: vitest thresholds ratcheted 96.9/90.3/96.2/97.9 → 97.0/90.5/96.4/98.1; actuals: 97.09/90.54/96.46/98.13
+- 🏗️ **chore(bundle)**: per-card source hard-cap ratcheted 65→64 KB (`SOURCE_HARD_CAP_KB` in `check-card-bundle-delta.mjs`); all cards confirmed under cap (weather 63.8 KB)
+- 📝 **docs(adr)**: ADR-085 — coverage ratchet v14.28.0 decision (Sprints 1–4 root-cause analysis, threshold table, trade-off notes); ADR index regenerated to 85 ADRs total
 
 ---
 
@@ -213,11 +213,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7572 tests / 313 suites / 0 failures** · 84 ADRs · 136 Stryker files · Stryker threshold 90
 
-- **test(coverage)**: Sprint 1–5 — 23 new tests across config.ts (migrate v5→v6, v6→v7, sanitize), i18n.ts (meta/sw-banner paths), fdb-card.ts (base fetchCardData, null return), alerts.ts (outer catch via historyAppend), countdown.ts (recurring tick early return), tasks.ts (advanceRecurringDueDate default), system-info.ts (RTT sparkline via Connection API + nav timing)
-- **chore(coverage)**: vitest thresholds ratcheted 96.5/89.8/95.9/97.5 → 96.9/90.3/96.2/97.9; actuals: 96.91/90.32/96.24/97.94
-- **fix(security)**: OWASP 0 findings — `Object.assign` replaced with safe spread in `config-panel.ts` (A04 prototype pollution); Worker DO `fetch()` handlers annotated with `// owasp-allow:A05 owasp-allow:A10` on declaration line
-- **chore(bundle)**: CSS gzip budget ratcheted 29.5→29.4 KB; per-card source hard-cap added at 65 KB in `check-card-bundle-delta.mjs`
-- **docs**: ROADMAP coverage actuals updated (96.91/90.32/96.24/97.94); ARCHITECTURE + README updated to 7572 tests / v14.27.0; test history table updated
+- 🧪 **test(coverage)**: Sprint 1–5 — 23 new tests across config.ts (migrate v5→v6, v6→v7, sanitize), i18n.ts (meta/sw-banner paths), fdb-card.ts (base fetchCardData, null return), alerts.ts (outer catch via historyAppend), countdown.ts (recurring tick early return), tasks.ts (advanceRecurringDueDate default), system-info.ts (RTT sparkline via Connection API + nav timing)
+- 🏗️ **chore(coverage)**: vitest thresholds ratcheted 96.5/89.8/95.9/97.5 → 96.9/90.3/96.2/97.9; actuals: 96.91/90.32/96.24/97.94
+- 🐛 **fix(security)**: OWASP 0 findings — `Object.assign` replaced with safe spread in `config-panel.ts` (A04 prototype pollution); Worker DO `fetch()` handlers annotated with `// owasp-allow:A05 owasp-allow:A10` on declaration line
+- 🏗️ **chore(bundle)**: CSS gzip budget ratcheted 29.5→29.4 KB; per-card source hard-cap added at 65 KB in `check-card-bundle-delta.mjs`
+- 📝 **docs**: ROADMAP coverage actuals updated (96.91/90.32/96.24/97.94); ARCHITECTURE + README updated to 7572 tests / v14.27.0; test history table updated
 
 ---
 
@@ -226,12 +226,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 > **7549 tests / 313 suites / 0 failures** · 84 ADRs · 136 Stryker files · Stryker threshold 90
 
 - **ci(fix)**: 4 CI workflow failures fixed — TruffleHog BASE==HEAD empty-diff guard, Trivy pinned version, SBOM upload condition, check-dead-exports path resolution
-- **test(coverage)**: branch coverage ratcheted 89.7→89.8; motivation.ts 74.71%→89.65% and base-card.ts 86.04%→97.67% via `_resetForTest()` cache-isolation fix; IDB4 property flakiness fixed with `fc.pre(dbA !== dbB)`
-- **test(coverage)**: currency cache-isolation fix (`_resetForTest()` in beforeEach) + calendar stale-path and non-allorigins proxy tests — 7 new tests across currency + calendar
-- **chore(coverage)**: vitest thresholds ratcheted 96.4/89.7/95.8/97.4 → 96.5/89.8/95.9/97.5; actuals: 96.56/89.83/95.93/97.55
-- **chore(bundle)**: CSS gzip budget raised 29.1→29.5 KB (CSS grew from 29.0 to 29.3 KB across v14.15–v14.25); bundle-trend.json baseline updated to v14.25.0 (109.7 KB JS / 29.3 KB CSS)
-- **docs(adr)**: ADR-084 (coverage ratchet v14.26.0 decision — 4 thresholds raised, root-cause analysis of motivation + base-card + IDB4 + currency + calendar coverage gaps) — 84 ADRs total
-- **docs**: ARCHITECTURE, ROADMAP, README, AGENTS, security, data-sources, workspace.instructions all updated to v14.26.0; test counts 7542→7549
+- 🧪 **test(coverage)**: branch coverage ratcheted 89.7→89.8; motivation.ts 74.71%→89.65% and base-card.ts 86.04%→97.67% via `_resetForTest()` cache-isolation fix; IDB4 property flakiness fixed with `fc.pre(dbA !== dbB)`
+- 🧪 **test(coverage)**: currency cache-isolation fix (`_resetForTest()` in beforeEach) + calendar stale-path and non-allorigins proxy tests — 7 new tests across currency + calendar
+- 🏗️ **chore(coverage)**: vitest thresholds ratcheted 96.4/89.7/95.8/97.4 → 96.5/89.8/95.9/97.5; actuals: 96.56/89.83/95.93/97.55
+- 🏗️ **chore(bundle)**: CSS gzip budget raised 29.1→29.5 KB (CSS grew from 29.0 to 29.3 KB across v14.15–v14.25); bundle-trend.json baseline updated to v14.25.0 (109.7 KB JS / 29.3 KB CSS)
+- 📝 **docs(adr)**: ADR-084 (coverage ratchet v14.26.0 decision — 4 thresholds raised, root-cause analysis of motivation + base-card + IDB4 + currency + calendar coverage gaps) — 84 ADRs total
+- 📝 **docs**: ARCHITECTURE, ROADMAP, README, AGENTS, security, data-sources, workspace.instructions all updated to v14.26.0; test counts 7542→7549
 
 ---
 
@@ -239,13 +239,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7542 tests / 313 suites / 0 failures** · 83 ADRs · 136 Stryker files · Stryker threshold 89→90
 
-- **test(props)**: FSA1–FSA5 fast-check property tests for `fs-access.ts`; D1R1–D1R5 for `d1-reports.ts` (worker) — 2 new suites, 10 tests
-- **test(props)**: ERT1–ERT5 fast-check property tests for `errors-route.ts`; NE13–NE15 `normalize-error` depth — 1 new suite, 8 tests
-- **test(props)**: CRON1–CRON4 fast-check cron handler property tests; OTEL1–OTEL3 `initOtel` telemetry depth — 1 new suite, 7 tests
-- **docs(adr)**: ADR-082 (Bun Deploy vendor-neutrality drill v14.25.0 PASS — 0/6 CF-specific APIs detected) + ADR-083 (Stryker mutation expansion strategy) — 83 ADRs total
-- **chore(mutation)**: Stryker mutation score gate ratcheted `high`+`break` 89→90; v14.25.0 property suites documented in `stryker.config.mjs`
-- **docs(style)**: Rule 51 — no space-separated thousands in any `.md` file; all existing occurrences corrected across docs, CHANGELOG, ADRs
-- **docs(modernize)**: README roadmap/badges, SECURITY supported versions, ARCHITECTURE test counts, SVG assets (7542+/313/83 ADRs), tech-stack.svg ES2024+TS6, GitHub topics refreshed (typescript/cloudflare-workers/pwa)
+- 🧪 **test(props)**: FSA1–FSA5 fast-check property tests for `fs-access.ts`; D1R1–D1R5 for `d1-reports.ts` (worker) — 2 new suites, 10 tests
+- 🧪 **test(props)**: ERT1–ERT5 fast-check property tests for `errors-route.ts`; NE13–NE15 `normalize-error` depth — 1 new suite, 8 tests
+- 🧪 **test(props)**: CRON1–CRON4 fast-check cron handler property tests; OTEL1–OTEL3 `initOtel` telemetry depth — 1 new suite, 7 tests
+- 📝 **docs(adr)**: ADR-082 (Bun Deploy vendor-neutrality drill v14.25.0 PASS — 0/6 CF-specific APIs detected) + ADR-083 (Stryker mutation expansion strategy) — 83 ADRs total
+- 🏗️ **chore(mutation)**: Stryker mutation score gate ratcheted `high`+`break` 89→90; v14.25.0 property suites documented in `stryker.config.mjs`
+- 📝 **docs(style)**: Rule 51 — no space-separated thousands in any `.md` file; all existing occurrences corrected across docs, CHANGELOG, ADRs
+- 📝 **docs(modernize)**: README roadmap/badges, SECURITY supported versions, ARCHITECTURE test counts, SVG assets (7542+/313/83 ADRs), tech-stack.svg ES2024+TS6, GitHub topics refreshed (typescript/cloudflare-workers/pwa)
 
 ---
 
@@ -253,12 +253,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7517 tests / 308 suites / 0 failures** · 81 ADRs · 136 Stryker files · Stryker threshold 88↉89
 
-- **chore(coverage)**: lines threshold corrected 97.45→97.40 (actual 97.41–97.42 post S1–S3 property suites); 60s timeout guard added to `config-panel-property.test.ts`
-- **chore(stryker)**: mutation score gate ratcheted `high`+`break` 88↉89; v14.24.0 property suites documented in `stryker.config.mjs` header
-- **docs(adr)**: ADR-080 (CSS `if()`+`@function` adopt-v15 criteria audit, HOLD confirmed) + ADR-081 (TC39 Signals Stage 3 audit, HOLD continued) — 81 ADRs total
-- **test(props)**: FDB1–FDB6 fast-check property tests for `fdb-card.ts`; ALS1–ALS5 for `auto-loop-scroll.ts` — 2 new suites, 11 tests
-- **chore(bundle)**: CSS gzip budget tightened 29.2→29.1 KB; per-card source warn ratcheted 10→9 KB
-- **test(props)**: SL1–SL5 fast-check property tests for `scroll.ts`; LD4–LD5 depth for `layout-drag.ts` — 1 new suite, 8 tests
+- 🏗️ **chore(coverage)**: lines threshold corrected 97.45→97.40 (actual 97.41–97.42 post S1–S3 property suites); 60s timeout guard added to `config-panel-property.test.ts`
+- 🏗️ **chore(stryker)**: mutation score gate ratcheted `high`+`break` 88↉89; v14.24.0 property suites documented in `stryker.config.mjs` header
+- 📝 **docs(adr)**: ADR-080 (CSS `if()`+`@function` adopt-v15 criteria audit, HOLD confirmed) + ADR-081 (TC39 Signals Stage 3 audit, HOLD continued) — 81 ADRs total
+- 🧪 **test(props)**: FDB1–FDB6 fast-check property tests for `fdb-card.ts`; ALS1–ALS5 for `auto-loop-scroll.ts` — 2 new suites, 11 tests
+- 🏗️ **chore(bundle)**: CSS gzip budget tightened 29.2→29.1 KB; per-card source warn ratcheted 10→9 KB
+- 🧪 **test(props)**: SL1–SL5 fast-check property tests for `scroll.ts`; LD4–LD5 depth for `layout-drag.ts` — 1 new suite, 8 tests
 
 ---
 
@@ -266,18 +266,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7461 tests / 299 suites / 0 failures** · 79 ADRs · 136 Stryker files · Stryker threshold 87→88
 
-- **test(props)**: CP1–CP6 fast-check property tests for `config-presets.ts` (6 tests); PA1–PA5 for `provider-adapter.ts` (5 tests) — 2 new suites
-- **test(props)**: ID1–ID4 fast-check property tests for `idle.ts` (4 tests); VR1–VR4 for `vitals-reporter.ts` (4 tests) — 2 new suites
-- **test(props)**: SN1–SN4 fast-check property tests for `snapshot.ts` (4 tests); WC1–WC4 for `worker-client.ts` (4 tests) — 2 new suites
-- **test(props)**: RS1–RS3 fast-check property tests for `resizer.ts`; SC1–SC4 for `scroll.ts` — 1 new suite, 7 tests
-- **chore(coverage)**: statements threshold corrected 96.5→96.4 (actual 96.48 was below gate); lines ratcheted 97.4→97.45; coverage actuals documented in `vitest.config.ts` comments
-- **chore(stryker)**: mutation score gate ratcheted `high`+`break` 87→88; v14.23.0 property suites documented in `stryker.config.mjs` header
-- **chore(bundle)**: CSS gzip budget tightened 29.5→29.2 KB (actual ~29.1 KB); JS budget held at 110 KB pending full audit; bundle trend baseline at v14.14.0 documented
-- **docs(adr)**: Deno Deploy vendor-neutrality drill v14.23.0 — 0/6 CF-specific APIs detected, gate PASSES; drill log entry added to `vendor-drill-log.md`; next rotation target: Bun Deploy
-- **feat(worker)**: ADR-079 — OpenTelemetry opt-in scaffold; `worker/src/telemetry.ts` no-op `initOtel()` behind `OTEL_ENABLED` flag; `Env` type extended; full OTLP implementation deferred to v15
-- **docs(adr)**: ADR-079 (OTel worker opt-in) — 79 ADRs total; ADR index updated
-- **docs(roadmap)**: ROADMAP.md updated for v14.23.0 — inventory counts synced (7461 tests / 299 suites / 79 ADRs / 136 Stryker files)
-- **fix(tests)**: `log.property.test.ts` LG3 — replaced `fc.string().filter()` (near-zero acceptance, hangs) with `fc.array(fc.constantFrom(...), {min,max}).map(join)` pattern
+- 🧪 **test(props)**: CP1–CP6 fast-check property tests for `config-presets.ts` (6 tests); PA1–PA5 for `provider-adapter.ts` (5 tests) — 2 new suites
+- 🧪 **test(props)**: ID1–ID4 fast-check property tests for `idle.ts` (4 tests); VR1–VR4 for `vitals-reporter.ts` (4 tests) — 2 new suites
+- 🧪 **test(props)**: SN1–SN4 fast-check property tests for `snapshot.ts` (4 tests); WC1–WC4 for `worker-client.ts` (4 tests) — 2 new suites
+- 🧪 **test(props)**: RS1–RS3 fast-check property tests for `resizer.ts`; SC1–SC4 for `scroll.ts` — 1 new suite, 7 tests
+- 🏗️ **chore(coverage)**: statements threshold corrected 96.5→96.4 (actual 96.48 was below gate); lines ratcheted 97.4→97.45; coverage actuals documented in `vitest.config.ts` comments
+- 🏗️ **chore(stryker)**: mutation score gate ratcheted `high`+`break` 87→88; v14.23.0 property suites documented in `stryker.config.mjs` header
+- 🏗️ **chore(bundle)**: CSS gzip budget tightened 29.5→29.2 KB (actual ~29.1 KB); JS budget held at 110 KB pending full audit; bundle trend baseline at v14.14.0 documented
+- 📝 **docs(adr)**: Deno Deploy vendor-neutrality drill v14.23.0 — 0/6 CF-specific APIs detected, gate PASSES; drill log entry added to `vendor-drill-log.md`; next rotation target: Bun Deploy
+- ✨ **feat(worker)**: ADR-079 — OpenTelemetry opt-in scaffold; `worker/src/telemetry.ts` no-op `initOtel()` behind `OTEL_ENABLED` flag; `Env` type extended; full OTLP implementation deferred to v15
+- 📝 **docs(adr)**: ADR-079 (OTel worker opt-in) — 79 ADRs total; ADR index updated
+- 📝 **docs(roadmap)**: ROADMAP.md updated for v14.23.0 — inventory counts synced (7461 tests / 299 suites / 79 ADRs / 136 Stryker files)
+- 🐛 **fix(tests)**: `log.property.test.ts` LG3 — replaced `fc.string().filter()` (near-zero acceptance, hangs) with `fc.array(fc.constantFrom(...), {min,max}).map(join)` pattern
 
 ---
 
@@ -285,20 +285,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7348 tests / 291 suites / 0 failures** (commit `fc628e5`) · 78 ADRs · 136 Stryker mutation files
 
-- **test(stryker)**: TM1–TM10 property tests for `temporal.ts` (fast-check, 10 arbitraries); Stryker mutation scope expanded from 135 → 136 files
-- **fix(countdown)**: past-date events now hide by default; default config clearing fixed for countdown card
-- **fix(theme)**: FOUC prevention — OS color-scheme preference respected on first load before localStorage hydration
-- **docs(adr)**: ADR-077 (countdown-past-event-hide) + ADR-078 (theme-fouc-prevention) — 78 ADRs total
-- **chore(vendor)**: v14.22.0 vendor-neutrality drill — fly.io rotation tested, 0/6 Cloudflare-only APIs detected, gate PASSES
-- **chore(tooling)**: tooling baseline synced to v14.22.0; sibling adoption guide added (BudgetManager, CrossTideWeb, Wedding repos)
-- **chore(bundle)**: per-card warn threshold ratcheted 11 → 10 KB gzip; hard cap remains 64 KB
-- **fix(security)**: OWASP A05 iframe delegation — 2 new rules (sensitive `allow` attributes, missing `sandbox`); total 120 rules; Permissions-Policy count corrected 28 → 42 entries in security.md
-- **docs(roadmap)**: ROADMAP.md updated for v14.22.0 — all shipped items marked, inventory counts synced (7348 tests / 291 suites / 78 ADRs / 136 Stryker files)
-- **docs(mermaid)**: ARCHITECTURE.md diagrams updated for Mermaid v8.8.0 compatibility — removed `direction TB` from subgraph, changed quoted subgraph titles to simple id format
-- **chore(webhint)**: `.hintrc` `compat-api/css` and `compat-api/js` set to `"off"` — browser-compat enforcement delegated to lightningcss/Vite build which already enforces `.browserslistrc` targets; eliminates ~1100 IE false-positive VS Code diagnostics
-- **fix(stylelint)**: `.stylelintrc.json` override `color-function-notation: null` — allows modern `rgba(r g b / a)` notation used in `today-pane.css` (Chrome 114+ / Firefox 128+ / Safari 17.4+ all support it)
-- **fix(markdownlint)**: 6 MD032/MD056 errors resolved — blank lines before lists in ADR-076 and ADR-078; extra table column in ROADMAP.md rows 6/8/20 moved into Stream cell
-- **docs(github)**: README badges updated — Version 14.22.0 / 7348 passing; all SVG assets version-bumped
+- 🧪 **test(stryker)**: TM1–TM10 property tests for `temporal.ts` (fast-check, 10 arbitraries); Stryker mutation scope expanded from 135 → 136 files
+- 🐛 **fix(countdown)**: past-date events now hide by default; default config clearing fixed for countdown card
+- 🐛 **fix(theme)**: FOUC prevention — OS color-scheme preference respected on first load before localStorage hydration
+- 📝 **docs(adr)**: ADR-077 (countdown-past-event-hide) + ADR-078 (theme-fouc-prevention) — 78 ADRs total
+- 🏗️ **chore(vendor)**: v14.22.0 vendor-neutrality drill — fly.io rotation tested, 0/6 Cloudflare-only APIs detected, gate PASSES
+- 🏗️ **chore(tooling)**: tooling baseline synced to v14.22.0; sibling adoption guide added (BudgetManager, CrossTideWeb, Wedding repos)
+- 🏗️ **chore(bundle)**: per-card warn threshold ratcheted 11 → 10 KB gzip; hard cap remains 64 KB
+- 🐛 **fix(security)**: OWASP A05 iframe delegation — 2 new rules (sensitive `allow` attributes, missing `sandbox`); total 120 rules; Permissions-Policy count corrected 28 → 42 entries in security.md
+- 📝 **docs(roadmap)**: ROADMAP.md updated for v14.22.0 — all shipped items marked, inventory counts synced (7348 tests / 291 suites / 78 ADRs / 136 Stryker files)
+- 📝 **docs(mermaid)**: ARCHITECTURE.md diagrams updated for Mermaid v8.8.0 compatibility — removed `direction TB` from subgraph, changed quoted subgraph titles to simple id format
+- 🏗️ **chore(webhint)**: `.hintrc` `compat-api/css` and `compat-api/js` set to `"off"` — browser-compat enforcement delegated to lightningcss/Vite build which already enforces `.browserslistrc` targets; eliminates ~1100 IE false-positive VS Code diagnostics
+- 🐛 **fix(stylelint)**: `.stylelintrc.json` override `color-function-notation: null` — allows modern `rgba(r g b / a)` notation used in `today-pane.css` (Chrome 114+ / Firefox 128+ / Safari 17.4+ all support it)
+- 🐛 **fix(markdownlint)**: 6 MD032/MD056 errors resolved — blank lines before lists in ADR-076 and ADR-078; extra table column in ROADMAP.md rows 6/8/20 moved into Stream cell
+- 📝 **docs(github)**: README badges updated — Version 14.22.0 / 7348 passing; all SVG assets version-bumped
 
 ---
 
@@ -358,7 +358,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 - **Fast-check property tests**: 2 new property test files — `kv.property.test.ts` (KV1–KV5) and `log.property.test.ts` (LG1–LG4)
 - **Module boundary D12-W1**: new rule enforcing `worker/src/*` must not import from `src/*`; boundary check now scans 141 files (up from 112)
 - **Dead exports**: check confirmed clean (141 files, 0 dead exports)
-- **Test perf**: property test `numRuns` reduced — full suite 183s→144s (−21%) [from bbb9c0a]
+- 🧪 **test perf**: property test `numRuns` reduced — full suite 183s→144s (−21%) [from bbb9c0a]
 
 ---
 
@@ -366,7 +366,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 > **7331 tests / 287 suites / 0 failures** · Coverage: 96.4 / 89.5 / 95.7 / 97.4
 
-- **Fix flaky idb-store-props**: replaced `vi.stubGlobal("indexedDB")` with per-test instance stubs to eliminate race conditions in property tests
+- 🐛 **fix flaky idb-store-props**: replaced `vi.stubGlobal("indexedDB")` with per-test instance stubs to eliminate race conditions in property tests
 - **config-panel branch coverage**: +14 tests for `createControlRow`, `renderSection`, `mountPanel` uncovered branches (73.9→83.3%)
 - **feeds.ts branch coverage**: +9 tests covering embedding dedup, alerts validation, calendar stale KV, Finnhub fallthrough, crypto schema (76.5→92.9%)
 - **Stryker scope expansion**: +12 fdb-\* web component files added to mutate scope (107→119 total)
@@ -397,7 +397,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ### Added
 
-- **Tests**: 7 new branch-coverage tests for `diffConfigs`, `auditLocalStorageKeys`, `removeOrphanedLsKeys` (7245 → 7252 tests)
+- 🧪 **tests**: 7 new branch-coverage tests for `diffConfigs`, `auditLocalStorageKeys`, `removeOrphanedLsKeys` (7245 → 7252 tests)
 
 ### Fixed
 
@@ -444,10 +444,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ### Fixed
 
-- **Docs**: unified stale version headers across 4 instruction files
-- **Docs**: deduplicated CSS / cache / coverage sections — cross-reference to canonical files
-- **Docs**: removed all sprint version markers from ARCHITECTURE.md
-- **Docs**: synced test count 7221→7228 across 8+ files and SVG assets
+- 📝 **docs**: unified stale version headers across 4 instruction files
+- 📝 **docs**: deduplicated CSS / cache / coverage sections — cross-reference to canonical files
+- 📝 **docs**: removed all sprint version markers from ARCHITECTURE.md
+- 📝 **docs**: synced test count 7221→7228 across 8+ files and SVG assets
 - **Release**: fixed empty "No changes" release body on v14.13.1 (re-released as v14.13.2)
 - **SVG assets**: corrected stale test count (7221→7228) in banner, architecture, and roadmap SVGs
 
@@ -464,8 +464,8 @@ All 20 project-health tasks audited; 19/20 already satisfied. Changes below addr
 ### Fixed
 
 - **CSS build**: comment out CSS `if()` `@supports` block — lightningcss cannot parse it yet
-- **Docs**: resolve 10 markdownlint errors across `docs/` and `.github/`
-- **Tests**: harden HC3 property test against `Intl` edge dates (`fc.pre(false)`)
+- 📝 **docs**: resolve 10 markdownlint errors across `docs/` and `.github/`
+- 🧪 **tests**: harden HC3 property test against `Intl` edge dates (`fc.pre(false)`)
 - **Tasks**: remove stale `serve-local.ps1` task references from `.vscode/tasks.json`
 - **Lint**: remove unused `eslint-disable` directive
 - **Stale refs**: update coverage thresholds in `CONTRIBUTING.md` (94.2→95.7 / 85.4→88.8 / 94.5→95.1 / 95.6→96.7)
@@ -482,7 +482,7 @@ All 20 project-health tasks audited; 19/20 already satisfied. Changes below addr
 - **AGENTS.md**: added full catalog of 17 slash prompts, 5+1 MCP servers with token-saving roles
 - **copilot/config.json**: token optimization rules 23→29 (runTests, search_subagent, view_image, Color Highlight, TODO Tree, enhanced hook descriptions)
 - **CSS instructions**: replaced stale CSS Peek reference with Error Lens + TODO Tree integration
-- **Tests/TS instructions**: synced to v14.13.1 thresholds and version
+- 🧪 **tests/TS instructions**: synced to v14.13.1 thresholds and version
 
 ### Removed
 
@@ -502,7 +502,7 @@ All 20 project-health tasks audited; 19/20 already satisfied. Changes below addr
 - **cache.ts branch 84→88%**: cGetAsync/cGetStaleAsync IDB L2 hit paths
 - **hebrew-cal.ts branch 83→84%**: getUpcomingYahrzeits filter paths
 - **alerts.ts branch 87→90%**: ?? fallbacks, sparse-array guard, render-loop null skip
-- **Fix**: flaky hebrew-cal property test (fc.pre skip for Intl edge dates)
+- 🐛 **fix**: flaky hebrew-cal property test (fc.pre skip for Intl edge dates)
 
 ## [14.12.0] — 2026-05-08
 
@@ -571,7 +571,7 @@ All 20 project-health tasks audited; 19/20 already satisfied. Changes below addr
 
 ### Testing & Quality
 
-- **Fix flaky mcp-bridge test** (S517): handle `-0` → `+0` JSON semantics in deepFreezeJson property test
+- 🐛 **fix flaky mcp-bridge test** (S517): handle `-0` → `+0` JSON semantics in deepFreezeJson property test
 - **Per-card budget ratchet** (S518): warn threshold 20→18 KB (hard-cap held at 66 KB)
 - **OWASP scanner +4 rules** (S519): createTreeWalker SHOW_ALL, SharedArrayBuffer, hardcoded IV/nonce, Authorization header literal
 - **Stryker scope +5 files** (S520): nws-adapter, provider-toast, news-adapter, open-meteo-adapter, auto-loop-scroll
@@ -619,8 +619,8 @@ All 20 project-health tasks audited; 19/20 already satisfied. Changes below addr
 
 ### Testing & Quality
 
-- **Fix flaky AN3 property test** (Sprint 497): compare `normaliseRoute` against `new URL().pathname` instead of raw path
-- **Fix flaky AV6 + WX1 property tests** (Sprint 498): constrain `fc.date()` range, filter whitespace-only strings
+- 🐛 **fix flaky AN3 property test** (Sprint 497): compare `normaliseRoute` against `new URL().pathname` instead of raw path
+- 🐛 **fix flaky AV6 + WX1 property tests** (Sprint 498): constrain `fc.date()` range, filter whitespace-only strings
 - **Wire format:check + vendor into npm check** (Sprint 499): local meta-script now includes `format:check` + `check:vendor`
 - **OWASP scanner +6 rules** (Sprint 500): Range.insertNode, crypto short-key, Permissions-Policy, Reflect.construct(Function), structuredClone user input, env var logging
 - **Cross-project + temporal-polyfill checks in CI** (Sprint 501): `check-cross-project-gate.mjs` + `check-temporal-polyfill-size.mjs` added to build job
@@ -1377,7 +1377,7 @@ All 20 project-health tasks audited; 19/20 already satisfied. Changes below addr
 
 ### Fixed
 
-- **fix(main)** · Restored `globalOffline.value` guard on SW `NETWORK_BACK` handler (was removed when Sprint 174 deleted `_wenOffline`); added `cGetStale` to cache mock in main.test.ts.
+- 🐛 **fix(main)** · Restored `globalOffline.value` guard on SW `NETWORK_BACK` handler (was removed when Sprint 174 deleted `_wenOffline`); added `cGetStale` to cache mock in main.test.ts.
 
 ---
 
@@ -1571,8 +1571,8 @@ Seven files bumped to v13.14.0: `package.json`, `sw.js`, `README.md` badge, `.gi
 
 ### Changed
 
-- **Docs** — `docs/data-sources.md` reflects the 3-tier currency provider chain.
-- **Docs** — `docs/ROADMAP.md` marks oxlint, markdown-link-check, and View Transitions L2 as shipped; new v13.13.0 row in the forward release plan.
+- 📝 **docs** — `docs/data-sources.md` reflects the 3-tier currency provider chain.
+- 📝 **docs** — `docs/ROADMAP.md` marks oxlint, markdown-link-check, and View Transitions L2 as shipped; new v13.13.0 row in the forward release plan.
 - **Version anchors** — eight files bumped to v13.13.0: `package.json`, `sw.js`, `README.md` badge, `.github/copilot-instructions.md`, `.github/instructions/workspace.instructions.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, plus this CHANGELOG.
 
 ---
@@ -2282,11 +2282,11 @@ Seven files bumped to v13.14.0: `package.json`, `sw.js`, `README.md` badge, `.gi
 
 > **3265 tests / 98 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier
 
-- **Fix (sw-register)**: Guard `controllerchange` reload — first-install claim no longer triggers a page refresh loop
-- **Fix (sw-register)**: Remove page-side `caches.delete()` that silently wiped the API cache on every load
-- **Fix (build)**: Convert dynamic `import('./layout-drag')` in `config-panel.ts` to static import — resolves `INEFFECTIVE_DYNAMIC_IMPORT` Vite warning; Vite build is now warning-free
-- **Tests**: Remove 7 duplicate per-theme class assertions from `theme-switch.test.ts` (already covered in `theme.test.ts`); add 2 focused config round-trip integration tests
-- **Tests**: Add coverage for `cEvictIdb`, `_resetForTest`, `sampleNetworkQuality`, `getNetworkQualityHistory`, `getNetworkQualityTier` rtt branches, countdown primary progress bar, `categorizeDevice` width branches, `rttTile.style.display`
+- 🐛 **fix (sw-register)**: Guard `controllerchange` reload — first-install claim no longer triggers a page refresh loop
+- 🐛 **fix (sw-register)**: Remove page-side `caches.delete()` that silently wiped the API cache on every load
+- 🐛 **fix (build)**: Convert dynamic `import('./layout-drag')` in `config-panel.ts` to static import — resolves `INEFFECTIVE_DYNAMIC_IMPORT` Vite warning; Vite build is now warning-free
+- 🧪 **tests**: Remove 7 duplicate per-theme class assertions from `theme-switch.test.ts` (already covered in `theme.test.ts`); add 2 focused config round-trip integration tests
+- 🧪 **tests**: Add coverage for `cEvictIdb`, `_resetForTest`, `sampleNetworkQuality`, `getNetworkQualityHistory`, `getNetworkQualityTier` rtt branches, countdown primary progress bar, `categorizeDevice` width branches, `rttTile.style.display`
 
 ---
 
@@ -2958,7 +2958,7 @@ External 20-task audit evaluating the project against web-project best practices
 
 ### Production Readiness Release
 
-- **Test consolidation**: Converted repetitive `it()` blocks into parameterized `it.each()` tables across stocks, hebrew-cal, and weather test suites (~227 lines removed, same assertions preserved)
+- 🧪 **test consolidation**: Converted repetitive `it()` blocks into parameterized `it.each()` tables across stocks, hebrew-cal, and weather test suites (~227 lines removed, same assertions preserved)
 - **Dead file cleanup**: Removed 10 stale tracked files (debug logs, old reports, superseded roadmap, build artifacts)
 - **Hardened .gitignore**: Added patterns for test artifacts, debug logs, and build outputs to prevent future tracking
 - **Config modernization**: Added SVG and TypeScript patterns to `.gitattributes` for consistent line-ending normalization
@@ -3022,7 +3022,7 @@ External 20-task audit evaluating the project against web-project best practices
 - **Night mode smoothing** (Sprint 157): `brightness(0.85)` transition with reduced-motion fallback
 - **Card init timing** (Sprint 158): `recordCardInitTime()` + `timedInit()` wrapper in main.ts
 - **Startup waterfall** (Sprint 159): per-card init timing table in diagnostic overlay
-- **Perf JSON export** (Sprint 160): `downloadPerfJSON()` exports vitals + card timings as JSON
+- ⚡ **perf JSON export** (Sprint 160): `downloadPerfJSON()` exports vitals + card timings as JSON
 - **Error rate trending** (Sprint 161): sparkline bar chart in diag overlay
 - **Network quality history** (Sprint 162): `sampleNetworkQuality()` tracks last 10 samples
 - **Provider latency histogram** (Sprint 163): `recordProviderLatency()` + per-provider latency history
@@ -3831,7 +3831,7 @@ External 20-task audit evaluating the project against web-project best practices
 - **F8 — Tasks person-filter chips**: `renderFilterChips()` in `tasks.ts` builds `.tasks-person-chip` buttons in `#tasks-filter-bar` when >1 unique person; clicking toggles `_filterPerson` and re-renders filtered tasks
 - **F9 — System info RTT tile**: `#sysinfo-rtt` tile shows network round-trip time from Connection API (`navigator.connection.rtt`) with fallback to `PerformanceNavigationTiming`
 - **F10 — Dynamic help overlay shortcuts**: `getKeyboardActions()` populates `#help-dynamic-keys` with registered shortcut count when help dialog opens
-- **Tests**: 17 new tests covering F1 clear button, F2 storage estimate, F3 removeDoneTasks, F7 setMotivationInterval, F8 person filter chips, F9 RTT tile, F10 dynamic help
+- 🧪 **tests**: 17 new tests covering F1 clear button, F2 storage estimate, F3 removeDoneTasks, F7 setMotivationInterval, F8 person filter chips, F9 RTT tile, F10 dynamic help
 - **Version**: bumped to `7.3.0` in `package.json`, `sw.js`, README badge, docs, SVG assets
 
 ---
@@ -3853,7 +3853,7 @@ External 20-task audit evaluating the project against web-project best practices
 - **F9 — News source filter chips**: `renderSourceFilterChips()` exported from `news.ts`; populates `#news-filter-bar` with one `.news-src-chip` per `NEWS_FEEDS` entry with Google favicon; called in `initNewsCard()`
 - **F10 — L key warm tint toggle**: `L` key registered in `main.ts` calls `setWarmTint(!isWarmTint())`; description "גוון חם לדימר לילה" in help overlay
 - **ESLint**: `coverage/**` added to ignore list in `eslint.config.mjs` (removes false warnings from generated coverage artifacts)
-- **Tests**: 20 new tests covering F2 alert volume, F3 warm tint, F6 cache age, F8 tick2, F9 filter chips, F10 L-key registration
+- 🧪 **tests**: 20 new tests covering F2 alert volume, F3 warm tint, F6 cache age, F8 tick2, F9 filter chips, F10 L-key registration
 - **Version**: bumped to `7.2.0` in `package.json`, `src/main.ts`, `src/ui/status-bar.ts`, `sw.js`
 
 ---
@@ -3869,11 +3869,11 @@ External 20-task audit evaluating the project against web-project best practices
 - **Countdown progress bar**: visual `cd-progress-bar` driven by new `countdownCardStartDate` config field; start date input in Advanced tab
 - **Ticker speed**: configurable 1–5 speed slider in Display tab; `applyTickerSpeed()` sets `--ticker-duration` CSS var and updates running animation
 - **Tasks badge**: shows `N / M ✓` done-counter format (previously hid when all done)
-- **Test coverage — stale-SW cleanup**: 3 tests for unregistering wrong-scope SW, skipping correct-scope SW, and deleting old version caches
-- **Test coverage — countdown `computeProgress`**: 4 tests for null on invalid range, 0 at start, 1 past target, and in-range interpolation
-- **Test coverage — maximize `aria-expanded`**: 2 tests confirming attribute set on expand and cleared on collapse
-- **Test coverage — tasks N/M badge**: 3 tests for initial render, single-check update, and all-done display
-- **Test coverage — ticker `applyTickerSpeed`**: 4 tests for speed 1/3/5 and out-of-range clamping
+- 🧪 **test coverage — stale-SW cleanup**: 3 tests for unregistering wrong-scope SW, skipping correct-scope SW, and deleting old version caches
+- 🧪 **test coverage — countdown `computeProgress`**: 4 tests for null on invalid range, 0 at start, 1 past target, and in-range interpolation
+- 🧪 **test coverage — maximize `aria-expanded`**: 2 tests confirming attribute set on expand and cleared on collapse
+- 🧪 **test coverage — tasks N/M badge**: 3 tests for initial render, single-check update, and all-done display
+- 🧪 **test coverage — ticker `applyTickerSpeed`**: 4 tests for speed 1/3/5 and out-of-range clamping
 
 ---
 
@@ -3881,14 +3881,14 @@ External 20-task audit evaluating the project against web-project best practices
 
 > **1663 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
 
-- **Test coverage — status-bar online/offline**: 3 tests for `window` `online`/`offline` event callbacks updating `#conn-indicator`
-- **Test coverage — night-dimmer chip**: 3 tests for `updateDimIndicator()` when `#dim-indicator` chip element is present (active/inactive/absent)
-- **Test coverage — bg-images crossfade**: 3 tests for `rotateBgImage()` `img.onload` crossfade, empty-validImages early-return, and null-layers early-return; also fixed orphaned stray code from previous session
-- **Test coverage — layout-drag branches**: 2 tests for `readCurrentLayout()` when columns absent (line 28 `??` fallback) and drop-after-midpoint `insertBefore(card, target.nextSibling)` (line 118)
-- **Test coverage — tasks checkbox handler**: 2 tests for badge hide (`badge.style.display="none"`) and `#tasks-all-done-msg` show when last checkbox is checked via `change` event (lines 146, 150)
-- **Test coverage — countdown clearInterval**: 1 test for `tick()` clearing `_cdInterval` when interval fires on a past event (lines 119-120); uses `vi.advanceTimersByTime`
-- **Test coverage — stocks `_statusMarketChip`**: 2 tests for `updateMarketBadge()` updating `#status-market-chip` textContent and className (lines 151-152)
-- **Test coverage — config-panel sliders**: 1 combined test for `dim-level` and `font-scale` range slider `input` events updating their display spans (with correct `max="150"` for font-scale)
+- 🧪 **test coverage — status-bar online/offline**: 3 tests for `window` `online`/`offline` event callbacks updating `#conn-indicator`
+- 🧪 **test coverage — night-dimmer chip**: 3 tests for `updateDimIndicator()` when `#dim-indicator` chip element is present (active/inactive/absent)
+- 🧪 **test coverage — bg-images crossfade**: 3 tests for `rotateBgImage()` `img.onload` crossfade, empty-validImages early-return, and null-layers early-return; also fixed orphaned stray code from previous session
+- 🧪 **test coverage — layout-drag branches**: 2 tests for `readCurrentLayout()` when columns absent (line 28 `??` fallback) and drop-after-midpoint `insertBefore(card, target.nextSibling)` (line 118)
+- 🧪 **test coverage — tasks checkbox handler**: 2 tests for badge hide (`badge.style.display="none"`) and `#tasks-all-done-msg` show when last checkbox is checked via `change` event (lines 146, 150)
+- 🧪 **test coverage — countdown clearInterval**: 1 test for `tick()` clearing `_cdInterval` when interval fires on a past event (lines 119-120); uses `vi.advanceTimersByTime`
+- 🧪 **test coverage — stocks `_statusMarketChip`**: 2 tests for `updateMarketBadge()` updating `#status-market-chip` textContent and className (lines 151-152)
+- 🧪 **test coverage — config-panel sliders**: 1 combined test for `dim-level` and `font-scale` range slider `input` events updating their display spans (with correct `max="150"` for font-scale)
 
 ---
 
@@ -3896,10 +3896,10 @@ External 20-task audit evaluating the project against web-project best practices
 
 > **1648 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
 
-- **Test coverage — system-info tiles**: 6 new tests for `sysinfo-memory` ("X GB" / "—"), `sysinfo-cpu` ("×N ליבות" / "—"), `sysinfo-viewport` (DPR suffix variants) added in v7.10
-- **Test coverage — tasks-all-done-msg**: 5 new tests covering show (all done), hide (pending), hide (no chores), `markAllDone()`, and `resetDoneToday()` state transitions
-- **Test coverage — keyboard shortcuts**: 10 new tests for `w` / `1` / `2` / `3` / `m` key registrations and city-tab handler no-throw behavior
-- **Test coverage — cfg-clock-seconds**: 4 new tests for `populateForm` ("on"/"off") and `collectForm` (`true`/`false`) for the clock-seconds toggle
+- 🧪 **test coverage — system-info tiles**: 6 new tests for `sysinfo-memory` ("X GB" / "—"), `sysinfo-cpu` ("×N ליבות" / "—"), `sysinfo-viewport` (DPR suffix variants) added in v7.10
+- 🧪 **test coverage — tasks-all-done-msg**: 5 new tests covering show (all done), hide (pending), hide (no chores), `markAllDone()`, and `resetDoneToday()` state transitions
+- 🧪 **test coverage — keyboard shortcuts**: 10 new tests for `w` / `1` / `2` / `3` / `m` key registrations and city-tab handler no-throw behavior
+- 🧪 **test coverage — cfg-clock-seconds**: 4 new tests for `populateForm` ("on"/"off") and `collectForm` (`true`/`false`) for the clock-seconds toggle
 
 ---
 
@@ -3911,7 +3911,7 @@ External 20-task audit evaluating the project against web-project best practices
 - **Keyboard — `1/2/3` shortcuts**: switch screen mode directly (compact / normal / cinema) without cycling
 - **Alerts — `buildAlertItem()` tests**: full branch coverage for threat-level, link-wrapping, missing-description paths
 - **Config panel — portfolio editor tests**: save path, invalid-JSON toast path, `tasksResetHour` clamp, NaN-preserves-default
-- **Test stability**: fixed `countdown.test.ts` stale `els` cache (use `initCountdownCard()` to refresh); fixed flaky `getTimeComponents` race with `vi.useFakeTimers()`
+- 🧪 **test stability**: fixed `countdown.test.ts` stale `els` cache (use `initCountdownCard()` to refresh); fixed flaky `getTimeComponents` race with `vi.useFakeTimers()`
 
 ---
 
@@ -3926,14 +3926,14 @@ External 20-task audit evaluating the project against web-project best practices
 - **Keyboard — W key**: `W` toggles °C/°F temperature unit (same as clicking the temperature); help overlay updated
 - **System info — Memory tile**: `#sysinfo-memory` shows device RAM via `navigator.deviceMemory` (e.g. `8 GB`)
 - **System info — CPU tile**: `#sysinfo-cpu` shows logical core count via `navigator.hardwareConcurrency` (e.g. `×16 ליבות`)
-- **Test stability**: fixed flaky `countdown.test.ts` `getTimeComponents` race condition using `vi.useFakeTimers()`
+- 🧪 **test stability**: fixed flaky `countdown.test.ts` `getTimeComponents` race condition using `vi.useFakeTimers()`
 
 ## [7.1.2] — 2026-04-15
 
 > **1574 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
 
 - **Markdown lint**: fixed `MD032/blanks-around-lists` in `pre-release.instructions.md` — all 26 markdown files now 0 errors
-- **Test count**: corrected to 1574 tests (4 additional tests counted; was 1570 in badges/docs)
+- 🧪 **test count**: corrected to 1574 tests (4 additional tests counted; was 1570 in badges/docs)
 
 ---
 
@@ -3947,7 +3947,7 @@ External 20-task audit evaluating the project against web-project best practices
 - **Favicon**: fixed browser-default icon — moved to `src/public/` (Vite static dir); manifest `start_url` corrected
 - **News scroll**: fixed summary text overlapping headlines — `overflow:hidden` flex wrapper
 - **Hebrew Cal + Tasks**: refactored to bordered tile/grid layout
-- **Docs consolidated**: `copilot-instructions.md`, `workspace.instructions.md`, `cicd.instructions.md`, `CLAUDE.md`, `release/SKILL.md` all updated to v7.1 / 1570 tests
+- 📝 **docs consolidated**: `copilot-instructions.md`, `workspace.instructions.md`, `cicd.instructions.md`, `CLAUDE.md`, `release/SKILL.md` all updated to v7.1 / 1570 tests
 
 ---
 

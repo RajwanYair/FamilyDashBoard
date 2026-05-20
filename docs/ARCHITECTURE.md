@@ -7,7 +7,7 @@ Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.m
 
 ![Architecture diagram](../.github/assets/architecture.svg)
 
-## Stack
+## 🛠️ Stack
 
 | Decision         | Choice                                                                                                     | Rationale                                                            |
 | ---------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -25,7 +25,7 @@ Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.m
 | Tooling Vitest   | `tooling/vitest/base.mjs` · `happy-dom.mjs` (DOM) · `node.mjs` (server)                                    | Layered presets; projects extend the relevant preset                 |
 | Tooling tsconfig | `tooling/tsconfig/base-typescript.json` (browser/bundler) · `base-node.json` (Node/Worker)                 | All TS projects extend one of these bases                            |
 
-## File Structure
+## 📂 File Structure
 
 ```text
 src/
@@ -138,7 +138,7 @@ tests/unit/
 └── html/dom-contract.test.ts   # Element ID existence contract tests
 ```
 
-## Runtime Architecture
+## ⚙️ Runtime Architecture
 
 ```text
 Browser
@@ -170,7 +170,7 @@ Cache layers:
 
 ![Cache layers](../.github/assets/cache-layers.svg)
 
-## Data Flow — Mermaid Overview
+## 🔄 Data Flow — Mermaid Overview
 
 ```mermaid
 flowchart TD
@@ -202,7 +202,7 @@ flowchart TD
     classDef faded opacity:0.55;
 ```
 
-## Card Lifecycle — Mermaid Overview
+## 🃏 Card Lifecycle — Mermaid Overview
 
 ![Card lifecycle](../.github/assets/card-lifecycle.svg)
 
@@ -233,7 +233,7 @@ sequenceDiagram
     end
 ```
 
-## Core Module Dependencies — Mermaid Overview
+## 🔗 Core Module Dependencies — Mermaid Overview
 
 ```mermaid
 flowchart LR
@@ -283,7 +283,7 @@ flowchart LR
     CardReg --> Cards
 ```
 
-## CSS Architecture
+## 🎨 CSS Architecture
 
 ```css
 @layer tokens, themes, base, layout, components, animations;
@@ -325,7 +325,7 @@ src/cards/weather/weather.css  ← weather-only styles
 
 Global styles (tokens, layout, animation) remain in `src/styles/`.
 
-## Key Invariants
+## 🔒 Key Invariants
 
 1. **No external JS/CSS libraries** — zero runtime CDN dependencies
 2. **No hardcoded colors** — all via CSS custom properties (`--accent`, `--bg-card`, etc.)
@@ -354,7 +354,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 25. **Cross-card signal protocol (X12)** — `src/core/card-signal-protocol.ts` exposes `setCardSignal` / `getCardSignal` / `onCardSignal`. Values are deep-frozen, subscribers fire via microtask. Cards publish under `(cardId, key)`; consumers subscribe without coupling. See ADR-067 + ADR-071.
 26. **Semantic clipboard (X15)** — `src/core/semantic-clipboard.ts` + `Y` (yank) keystroke. Cards opt in by calling `registerSemanticProducer(cardId, fn)` returning `SemanticPayload` (text + JSON-LD). `ClipboardItem` write with text-only fallback. See ADR-070 + ADR-071.
 
-## Accessibility Compliance
+## ♿ Accessibility Compliance
 
 FamilyDashBoard targets **WCAG 2.2 AA** with select Level AAA criteria. The following notes document the implementation decisions for auditors.
 
