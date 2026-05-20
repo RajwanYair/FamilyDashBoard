@@ -9,6 +9,7 @@ import {
   invalidateGovernor,
   resetGovernor,
   getGovernorStats,
+  getAdaptiveMultiplier,
   _resetForTest,
   _fnv1a32ForTest,
 } from "@/core/refresh-governor";
@@ -144,6 +145,42 @@ describe("refresh-governor", () => {
       shouldSkipRender("news", { items: [] });
       resetGovernor();
       expect(getGovernorStats()).toEqual([]);
+    });
+  });
+
+  describe("getAdaptiveMultiplier (S56)", () => {
+    it("returns 1 when no skips recorded", () => {
+      expect(getAdaptiveMultiplier("weather")).toBe(1);
+    });
+
+    it("increases after consecutive identical fetches", () => {
+      const payload = { temp: 25 };
+      markRendered("weather", payload);
+      shouldSkipRender("weather", payload); // skip 1
+      expect(getAdaptiveMultiplier("weather")).toBe(1.5);
+      shouldSkipRender("weather", payload); // skip 2
+      expect(getAdaptiveMultiplier("weather")).toBe(2);
+    });
+
+    it("caps at 4×", () => {
+      const payload = { a: 1 };
+      markRendered("stocks", payload);
+      for (let i = 0; i < 20; i++) shouldSkipRender("stocks", payload);
+      expect(getAdaptiveMultiplier("stocks")).toBe(4);
+    });
+
+    it("resets to 1 when data changes", () => {
+      const payload = { temp: 25 };
+      markRendered("weather", payload);
+      shouldSkipRender("weather", payload);
+      shouldSkipRender("weather", payload);
+      expect(getAdaptiveMultiplier("weather")).toBe(2);
+
+      // New data arrives — advance time past throttle
+      vi.spyOn(Date, "now").mockReturnValue(Date.now() + 5000);
+      shouldSkipRender("weather", { temp: 30 });
+      expect(getAdaptiveMultiplier("weather")).toBe(1);
+      vi.restoreAllMocks();
     });
   });
 });
