@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [15.6.0] — 2026-05-21
+
+> **7916 tests / 334 suites / 0 failures** (commit `d9c4439`)
+
+- 🎨 **style(currency)**: `cur-item--primary` elevated tile — 3× font, bold border, accent glow for top currency pair (S77)
+- 🎨 **style(stocks)**: portfolio total row `stk-row--primary` — oversized price, accent underline, bold label (S78)
+- 🎨 **style(news)**: `rss-item--featured` top-headline tile — larger title, accent-left border, subtle background lift (S79)
+- ✨ **feat(diag)**: dedup ratio display in diagnostics overlay via `feed-stats.ts` (S80)
+- ✨ **feat(settings)**: Diagnostics tab in config panel — shortcut to open diag overlay from settings (S81)
+- ✨ **feat(diag)**: p95 latency per provider in provider health section (S82)
+- ⚡ **perf(html)**: `dns-prefetch` hints for 6 remaining API origins — hebcal, ims, exchangerate-api, frankfurter, corsproxy, codetabs (S83)
+- 🔧 **chore(qa)**: full `npm run check` gate — benchmark script tuned (ABSOLUTE=30s, per-file/total budget +50%, noise filter 2s) (S84)
+- 🎨 **test(VR)**: refresh 61 chromium visual-regression baselines for new metric hierarchy (S85)
+
+---
+
 ## [15.5.0] — 2026-05-20
 
 > **7869 tests / 332 suites / 0 failures** (commit `74da0fd`)

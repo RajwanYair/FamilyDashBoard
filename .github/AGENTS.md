@@ -1,6 +1,6 @@
 # AI Customizations — FamilyDashBoard
 
-> Version: v15.5.0 · Validation: `npm run check` · Coverage thresholds: see `vitest.config.ts`
+> Version: v15.6.0 · Validation: `npm run check` · Coverage thresholds: see `vitest.config.ts`
 
 ## Customization Model
 

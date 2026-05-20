@@ -3,7 +3,7 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v15.5.0
+# FamilyDashBoard — v15.6.0
 
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.6 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 7 themes · 3 screen modes · 12 cards
 

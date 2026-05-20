@@ -1,7 +1,7 @@
 # FamilyDashBoard — Strategic Roadmap v11.0
 
 > **Refresh date**: 2026-05-20
-> **Shipped baseline**: v15.5.0 → v15.5.1 (production hardening)
+> **Shipped baseline**: v15.6.0 (metric hierarchy · diag tab · perf hints)
 > **Product surface**: 12 cards · 7 themes · 3 screen modes · 0 client runtime dependencies
 > **Purpose**: forward-only plan. Historical sprints and shipped work → [CHANGELOG.md](../CHANGELOG.md). Decisions → [docs/adr/](adr/).
 
