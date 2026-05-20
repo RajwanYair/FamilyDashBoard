@@ -39,7 +39,7 @@ import { effect } from "../../core/signals";
 import { tempUnit as tempUnitSignal } from "../../core/app-signals";
 import { computeMoonPhase as _sharedMoonPhase } from "../../core/utils";
 import type { CardConfigField, CardDefinition } from "../../types/card";
-import { today, parsePlainDateMs, fromISOString, fromEpochMs, addMs } from "../../core/temporal";
+import { today, parsePlainDateMs, fromISOString, fromEpochMs, addMs, nowISO } from "../../core/temporal";
 
 // ── City state ──
 let _activeLat = 31.7683;
@@ -548,7 +548,7 @@ export function renderHourlyStrip(d: WeatherResponse): void {
   if (!time.length) return;
 
   // Find current or next hour index
-  const nowHour = today().toISOString().slice(0, 13); // "2024-01-01T14"
+  const nowHour = nowISO().slice(0, 13); // "2024-01-01T14"
   let startIdx = time.findIndex((t) => t.slice(0, 13) >= nowHour);
   if (startIdx === -1) startIdx = 0;
 

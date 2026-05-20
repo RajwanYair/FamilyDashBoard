@@ -14,7 +14,7 @@
  *   hasPerfSupport()     — true if PerformanceObserver is available
  */
 
-import { today, nowMs } from "./temporal";
+import { nowMs, nowISO } from "./temporal";
 
 export interface PerfVitals {
   lcp: number | null; // ms — Largest Contentful Paint
@@ -296,7 +296,7 @@ export function getCardTimings(): ReadonlyMap<string, number> {
  */
 export function downloadPerfJSON(): void {
   const data = {
-    timestamp: today().toISOString(),
+    timestamp: nowISO(),
     vitals: getPerfVitals(),
     cardTimings: Object.fromEntries(_cardTimings),
   };

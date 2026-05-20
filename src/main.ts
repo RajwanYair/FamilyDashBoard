@@ -32,7 +32,7 @@ import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
 import { ECFG_PREFIX } from "./core/config-crypto";
 import { applyInterfaceLanguage, t } from "./core/i18n";
 import { MS_PER_MIN } from "./core/constants";
-import { today, nowMs } from "./core/temporal";
+import { today, nowMs, nowISO } from "./core/temporal";
 import { state } from "./core/state";
 
 // ── UI ──
@@ -384,7 +384,7 @@ export function init(): void {
     if (e.ctrlKey && e.shiftKey && e.key === "E") {
       e.preventDefault();
       const entries = getDiagEntries(500);
-      const json = JSON.stringify({ exported: today().toISOString(), entries }, null, 2);
+      const json = JSON.stringify({ exported: nowISO(), entries }, null, 2);
       const blob = new Blob([json], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");

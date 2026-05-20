@@ -33,6 +33,7 @@ import {
   toISODateString,
   diffDays,
   addDays,
+  nowISO,
 } from "../../core/temporal";
 import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 
@@ -1078,7 +1079,7 @@ export async function addYahrzeit(
     name: name.trim(),
     hebrewMonth,
     hebrewDay,
-    addedAt: today().toISOString(),
+    addedAt: nowISO(),
   };
   const updated = [entry, ...existing.filter((e) => e.id !== id)].slice(0, YZ_MAX);
   await idbSet<YahrzeitEntry[]>(IDB_HC_DB, IDB_YZ_STORE, "__list__", updated);

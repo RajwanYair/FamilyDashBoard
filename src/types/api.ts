@@ -4,7 +4,7 @@
  * TypeScript interfaces for all external API responses.
  */
 
-import { today } from "../core/temporal";
+import { today, nowISO } from "../core/temporal";
 
 // ── Weather (Open-Meteo) ──
 export interface WeatherResponse {
@@ -468,7 +468,7 @@ export function mapToStockDomain(symbol: string, r: YahooChartResponse): StockDo
     postMarketChangePct: meta.postMarketChangePercent ?? null,
     preMarketPrice: meta.preMarketPrice ?? null,
     preMarketChangePct: meta.preMarketChangePercent ?? null,
-    fetchedAt: today().toISOString(),
+    fetchedAt: nowISO(),
   };
 }
 
@@ -492,7 +492,7 @@ export function mapToCurrencyDomain(r: CurrencyResponse): CurrencyDomain {
     base: r.base_code,
     rates: { ...r.rates },
     updatedAt: r.time_last_update_utc,
-    fetchedAt: today().toISOString(),
+    fetchedAt: nowISO(),
   };
 }
 
@@ -557,7 +557,7 @@ export function mapToAlertsDomain(ev: AlertEvent): AlertsDomain {
   return {
     zones,
     count24h: ev.alerts.length,
-    fetchedAt: today().toISOString(),
+    fetchedAt: nowISO(),
   };
 }
 
@@ -598,7 +598,7 @@ export function mapToHebcalDomain(r: HebcalResponse): HebcalDomain {
     })),
     candleLighting: candle?.title,
     havdalah: havd?.title,
-    fetchedAt: today().toISOString(),
+    fetchedAt: nowISO(),
   };
 }
 

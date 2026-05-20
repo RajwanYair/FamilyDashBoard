@@ -31,6 +31,7 @@ import {
   isYesterday,
   dayProgressPct,
   yearProgressPct,
+  nowISO,
 } from "@/core/temporal";
 
 // ── nowMs ─────────────────────────────────────────────────────────────────────
@@ -482,5 +483,23 @@ describe("yearProgressPct", () => {
     const pct = yearProgressPct();
     expect(pct).toBeGreaterThanOrEqual(0);
     expect(pct).toBeLessThanOrEqual(100);
+  });
+});
+
+// ── nowISO ─────────────────────────────────────────────────────────────────────────
+
+describe("nowISO", () => {
+  it("returns a valid ISO string", () => {
+    const iso = nowISO();
+    expect(iso).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+  });
+
+  it("returns a string parseable back to a recent timestamp", () => {
+    const before = Date.now();
+    const iso = nowISO();
+    const after = Date.now();
+    const parsed = new Date(iso).getTime();
+    expect(parsed).toBeGreaterThanOrEqual(before);
+    expect(parsed).toBeLessThanOrEqual(after);
   });
 });

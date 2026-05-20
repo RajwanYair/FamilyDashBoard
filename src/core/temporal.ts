@@ -283,6 +283,17 @@ export function fromDateString(str: string): Date {
   return new Date(str);
 }
 
+// ── Formatting helpers ────────────────────────────────────────────────────────
+
+/**
+ * Return `today().toISOString()` — shortcut for the most common pattern.
+ *
+ * Temporal: `Temporal.Now.instant().toString()`
+ */
+export function nowISO(): string {
+  return new Date().toISOString();
+}
+
 // ── Progress helpers ──────────────────────────────────────────────────────────
 
 /**
