@@ -17,6 +17,7 @@ import { diagLog } from "../core/diag";
 import { getOldestCacheAgeMinutes } from "../core/cache";
 import { MS_PER_MIN } from "../core/constants";
 import { decomposeDuration } from "../core/utils";
+import { nowMs, fromEpochMs } from "../core/temporal";
 import { showToast } from "./toast";
 
 // ── Sync Pane Definitions ──
@@ -65,8 +66,8 @@ let _lastRefreshMs = 0;
 
 export function stampRefresh(): void {
   if (!elRefreshStamp) return;
-  _lastRefreshMs = Date.now();
-  const now = new Date(_lastRefreshMs);
+  _lastRefreshMs = nowMs();
+  const now = fromEpochMs(_lastRefreshMs);
   elRefreshStamp.textContent =
     "רענון: " +
     now.toLocaleTimeString("he-IL", {
@@ -79,9 +80,9 @@ export function stampRefresh(): void {
 /** Update the refresh stamp to show relative age ("3m ago"). Called every minute. */
 export function updateRefreshAge(): void {
   if (!elRefreshStamp || _lastRefreshMs === 0) return;
-  const mins = Math.floor((Date.now() - _lastRefreshMs) / MS_PER_MIN);
+  const mins = Math.floor((nowMs() - _lastRefreshMs) / MS_PER_MIN);
   if (mins < 1) return; // still fresh — no age suffix needed
-  const now = new Date(_lastRefreshMs);
+  const now = fromEpochMs(_lastRefreshMs);
   const timeStr = now.toLocaleTimeString("he-IL", {
     hour: "2-digit",
     minute: "2-digit",
