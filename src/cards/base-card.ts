@@ -35,6 +35,7 @@ export function createCardLoader<T>(
   renderData: (data: T) => void,
   validate?: (data: unknown) => data is T,
 ): () => Promise<void> {
+  let _firstLoad = true;
   return async function load(): Promise<void> {
     if (!isPageVisible() || !acquireLock(opts.id)) return;
     setSync(opts.id, "loading");
@@ -42,26 +43,37 @@ export function createCardLoader<T>(
     // Cache check
     const fresh = cGet<T>(opts.id, opts.ttl);
     if (fresh) {
+      hideCardSkeleton(opts.id);
       renderData(fresh);
       setSync(opts.id, "ok");
       releaseLock(opts.id);
+      _firstLoad = false;
       return;
     }
 
     // Show stale data while fetching
     const stale = cGetStale<T>(opts.id);
-    if (stale) renderData(stale);
+    if (stale) {
+      renderData(stale);
+    } else if (_firstLoad) {
+      const container = document.querySelector<HTMLElement>(
+        `[data-card-id="${opts.id}"]`,
+      );
+      if (container) showCardSkeleton(opts.id, container);
+    }
 
     try {
       const data = await fetchData();
       // Runtime validation gate — reject malformed API responses
       if (validate && !validate(data)) {
         diagLog(`[${opts.id}] API response failed validation — using stale cache`);
+        hideCardSkeleton(opts.id);
         setSync(opts.id, stale ? "ok" : "error");
         recordFailure(opts.id);
         return;
       }
       cSet(opts.id, data);
+      hideCardSkeleton(opts.id);
       if (!shouldSkipRender(opts.id, data)) {
         renderData(data);
         markRendered(opts.id, data);
@@ -72,9 +84,11 @@ export function createCardLoader<T>(
       markFresh(opts.id);
     } catch (err) {
       diagLog(`[${opts.id}] Load failed: ${String(err)}`);
+      hideCardSkeleton(opts.id);
       setSync(opts.id, stale ? "ok" : "error");
       recordFailure(opts.id);
     } finally {
+      _firstLoad = false;
       releaseLock(opts.id);
     }
   };
@@ -102,6 +116,7 @@ export function createAsyncCardLoader<T>(
   renderData: (data: T) => void,
   validate?: (data: unknown) => data is T,
 ): () => Promise<void> {
+  let _firstLoad = true;
   return async function load(): Promise<void> {
     if (!isPageVisible() || !acquireLock(opts.id)) return;
     setSync(opts.id, "loading");
@@ -109,25 +124,37 @@ export function createAsyncCardLoader<T>(
     // Async cache check: memory → IDB → LS
     const fresh = await cGetAsync<T>(opts.id, opts.ttl);
     if (fresh !== null) {
+      hideCardSkeleton(opts.id);
       renderData(fresh);
       setSync(opts.id, "ok");
       releaseLock(opts.id);
+      _firstLoad = false;
       return;
     }
 
     // Show stale data while fetching (async: IDB → LS)
     const stale = await cGetStaleAsync<T>(opts.id);
-    if (stale !== null) renderData(stale);
+    if (stale !== null) {
+      renderData(stale);
+    } else if (_firstLoad) {
+      // No data at all — show skeleton shimmer
+      const container = document.querySelector<HTMLElement>(
+        `[data-card-id="${opts.id}"]`,
+      );
+      if (container) showCardSkeleton(opts.id, container);
+    }
 
     try {
       const data = await fetchData();
       if (validate && !validate(data)) {
         diagLog(`[${opts.id}] API response failed validation — using stale cache`);
+        hideCardSkeleton(opts.id);
         setSync(opts.id, stale !== null ? "ok" : "error");
         recordFailure(opts.id);
         return;
       }
       await cSetAsync(opts.id, data);
+      hideCardSkeleton(opts.id);
       if (!shouldSkipRender(opts.id, data)) {
         renderData(data);
         markRendered(opts.id, data);
@@ -138,9 +165,11 @@ export function createAsyncCardLoader<T>(
       markFresh(opts.id);
     } catch (err) {
       diagLog(`[${opts.id}] Load failed: ${String(err)}`);
+      hideCardSkeleton(opts.id);
       setSync(opts.id, stale !== null ? "ok" : "error");
       recordFailure(opts.id);
     } finally {
+      _firstLoad = false;
       releaseLock(opts.id);
     }
   };
