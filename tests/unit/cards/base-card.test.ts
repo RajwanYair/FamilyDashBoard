@@ -32,6 +32,10 @@ vi.mock("@/core/cache", () => ({
   cSet: vi.fn(),
   cSetAsync: vi.fn().mockResolvedValue(undefined),
 }));
+vi.mock("@/core/refresh-governor", () => ({
+  shouldSkipRender: vi.fn().mockReturnValue(false),
+  markRendered: vi.fn(),
+}));
 
 import {
   createCardLoader,

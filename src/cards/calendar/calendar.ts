@@ -30,6 +30,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 import { nowMs, today, fromEpochMs, parsePlainDateTime, toISODateString, diffDays, addDays, startOfDayMs } from "../../core/temporal";
+import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 
 // X15: cached snapshot of next event for the semantic-clipboard producer.
 let _nextEventSnapshot: { title: string; startMs: number; isAllDay: boolean } | null = null;
@@ -577,6 +578,7 @@ async function loadCalendar(): Promise<void> {
       setSync("cal", "ok");
       syncBurst("cal");
       recordSuccess("cal");
+      markFresh("cal");
     } else {
       setSync("cal", "error");
       recordFailure("cal");
@@ -612,6 +614,8 @@ let _calScheduleId: number | null = null;
 export function initCalendarCard(): void {
   cacheDom();
   registerSemanticProducer("calendar", buildCalendarPayload);
+  const hd = document.querySelector('[data-card-id="calendar"] .card-hd-title');
+  if (hd) renderFreshnessBadge("cal", hd as HTMLElement);
   void loadCalendar();
   _calScheduleId = scheduleCard(loadCalendar, INTERVALS.CALENDAR);
   diagLog("FDB-029: [calendar] Initialized");

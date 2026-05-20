@@ -30,6 +30,7 @@ import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
+import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 
 // X15: cached snapshot of active alerts for the semantic-clipboard producer.
 let _activeAlertsSnapshot: { count: number; areas: string[]; latestTs: number } | null = null;
@@ -410,6 +411,7 @@ export async function loadAlerts(): Promise<void> {
       setSync("alerts", "ok");
       syncBurst("alerts");
       recordSuccess("alerts");
+      markFresh("alerts");
 
       // Record alert count for 7-day sparkline
       await historyAppend("alerts:count", validData.length);
@@ -644,6 +646,8 @@ export function renderAlertHistory(container: HTMLElement): void {
 export function initAlertsCard(): void {
   cacheDom();
   registerSemanticProducer("alerts", buildAlertsPayload);
+  const hd = document.querySelector('[data-card-id="alerts"] .card-hd-title');
+  if (hd) renderFreshnessBadge("alerts", hd as HTMLElement);
   initAlertsSSE();
   void loadAlerts();
   // wire history toggle button

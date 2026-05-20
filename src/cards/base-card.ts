@@ -12,6 +12,7 @@ import { acquireLock, releaseLock } from "../core/fetch";
 import { diagLog } from "../core/diag";
 import { MS_PER_MIN } from "../core/constants";
 import { markFresh } from "../core/freshness";
+import { shouldSkipRender, markRendered } from "../core/refresh-governor";
 
 export interface CardOptions {
   /** Unique card identifier (used for cache key, sync dot, fetch lock). */
@@ -61,7 +62,10 @@ export function createCardLoader<T>(
         return;
       }
       cSet(opts.id, data);
-      renderData(data);
+      if (!shouldSkipRender(opts.id, data)) {
+        renderData(data);
+        markRendered(opts.id, data);
+      }
       setSync(opts.id, "ok");
       syncBurst(opts.id);
       recordSuccess(opts.id);
@@ -124,7 +128,10 @@ export function createAsyncCardLoader<T>(
         return;
       }
       await cSetAsync(opts.id, data);
-      renderData(data);
+      if (!shouldSkipRender(opts.id, data)) {
+        renderData(data);
+        markRendered(opts.id, data);
+      }
       setSync(opts.id, "ok");
       syncBurst(opts.id);
       recordSuccess(opts.id);

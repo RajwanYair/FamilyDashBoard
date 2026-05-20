@@ -34,6 +34,7 @@ import {
   diffDays,
   addDays,
 } from "../../core/temporal";
+import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 
 // Pure Hebrew-cal utility functions ───────────────────────────
 
@@ -778,6 +779,7 @@ async function loadHebCal(): Promise<void> {
     setSync("hebcal", "ok");
     syncBurst("hebcal");
     recordSuccess("hebcal");
+    markFresh("hebcal");
     // Post-settlement dedup: if loadOmer's fetch raced ahead of loadHoliday,
     // the special row might duplicate the holiday row.  Correct it now that
     // _lastHolidayName is guaranteed to be set.
@@ -997,6 +999,8 @@ export function initHebrewCalCard(): void {
   cacheDom();
   // X15: register semantic-clipboard producer.
   registerSemanticProducer("hebrew-cal", buildHebrewCalPayload);
+  const hd = document.querySelector('[data-card-id="hebrew-cal"] .card-hd-title');
+  if (hd) renderFreshnessBadge("hebcal", hd as HTMLElement);
   renderMoonPhase();
   renderNextCalEvent();
   renderPsalmOfDay();

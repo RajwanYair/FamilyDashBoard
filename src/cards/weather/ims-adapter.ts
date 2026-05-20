@@ -18,7 +18,6 @@
 import type { WeatherResponse } from "../../types/api";
 import { API } from "../../core/constants";
 import { fetchJSON } from "../../core/fetch";
-import { today } from "../../core/temporal";
 import { diagLog } from "../../core/diag";
 import { cGet, cSet } from "../../core/cache";
 
@@ -143,7 +142,7 @@ export function imsStationToWeatherResponse(station: IMSStation): WeatherRespons
   const gustKmh = msToKmh(windGustMs);
 
   // Build ISO-8601 time strings for hourly (24 repeating slots from obs time)
-  const baseTime = station.time_obs ?? today().toISOString();
+  const baseTime = station.time_obs ?? new Date().toISOString();
   const baseMs = new Date(baseTime).getTime();
   const hourlyTimes = Array.from({ length: 24 }, (_, i) =>
     new Date(baseMs + i * 3_600_000).toISOString().slice(0, 16),
@@ -152,7 +151,7 @@ export function imsStationToWeatherResponse(station: IMSStation): WeatherRespons
   // Daily: single entry using TDmax/TDmin if available; fall back to ±3°C estimate
   const tdMax = typeof station.TDmax === "number" ? station.TDmax : tempC + 3;
   const tdMin = typeof station.TDmin === "number" ? station.TDmin : tempC - 3;
-  const today = new Date(baseMs).toISOString().slice(0, 10);
+  const todayStr = new Date(baseMs).toISOString().slice(0, 10);
 
   return {
     current: {
@@ -173,7 +172,7 @@ export function imsStationToWeatherResponse(station: IMSStation): WeatherRespons
       weather_code: Array(24).fill(wmoCode) as number[],
     },
     daily: {
-      time: [today],
+      time: [todayStr],
       temperature_2m_max: [tdMax],
       temperature_2m_min: [tdMin],
       weather_code: [wmoCode],
