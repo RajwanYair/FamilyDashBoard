@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [15.4.0] — 2026-05-20
+
+> **7864 tests / 332 suites / 0 failures** (commit `c96bbbf`)
+
+- **perf(html)**: upgrade Open-Meteo and Hebcal from dns-prefetch to preconnect hints (S62)
+- **refactor(header)**: migrate all `new Date()` to temporal helpers — `today()`, `fromParts()`, `diffDays()` (S63)
+- **refactor(core)**: migrate `theme.ts` `checkAutoTheme()` and `main.ts` season/diag to temporal helpers (S64)
+- **perf(css)**: add `contain-intrinsic-block-size: auto 200px` to `.card__body` for CLS stability (S65)
+- **feat(temporal)**: add `dayProgressPct()` / `yearProgressPct()` helpers; simplify header progress bars (S66)
+
+---
+
 ## [15.3.0] — 2026-05-20
 
 > **7857 tests / 331 suites / 0 failures** (commit `c8e948d`)
