@@ -63,6 +63,7 @@ import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initProviderDegradationToasts } from "./core/provider-toast";
 import { resetGovernor } from "./core/refresh-governor";
 import { updateFreshnessClasses } from "./core/sync";
+import { startConfigAutoBackup } from "./core/config-backup";
 import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
 import { initCardQuickToggle } from "./ui/card-quick-toggle";
@@ -531,6 +532,9 @@ export function init(): void {
 
   // S59: Update card freshness indicators every 60 seconds
   setInterval(updateFreshnessClasses, MS_PER_MIN);
+
+  // S60: Auto-backup config to IndexedDB every 5 minutes
+  startConfigAutoBackup();
 
   // Wire notification bell (replaces inline onclick="requestNotifPermission()")
   document.getElementById("notif-bell")?.addEventListener("click", () => {
