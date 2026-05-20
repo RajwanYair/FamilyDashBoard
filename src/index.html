@@ -47,11 +47,18 @@
          first API call. Limited to the single hot origin; lighthouse caps preconnects ≤ 4. -->
     <link rel="preconnect" href="https://fdb.rajwanyair.workers.dev" crossorigin>
     <link rel="dns-prefetch" href="https://fdb.rajwanyair.workers.dev">
-    <!-- dns-prefetch for high-frequency API origins (Sprint 10) -->
+    <!-- dns-prefetch for all API origins + proxy fallback chain (P5 perf) -->
     <link rel="dns-prefetch" href="https://api.open-meteo.com">
     <link rel="dns-prefetch" href="https://www.hebcal.com">
     <link rel="dns-prefetch" href="https://query1.finance.yahoo.com">
     <link rel="dns-prefetch" href="https://open.er-api.com">
+    <link rel="dns-prefetch" href="https://www.sefaria.org">
+    <link rel="dns-prefetch" href="https://boi.org.il">
+    <link rel="dns-prefetch" href="https://api.exchangerate-api.com">
+    <link rel="dns-prefetch" href="https://api.frankfurter.dev">
+    <link rel="dns-prefetch" href="https://api.allorigins.win">
+    <link rel="dns-prefetch" href="https://api.codetabs.com">
+    <link rel="dns-prefetch" href="https://corsproxy.io">
 </head>
 <body class="theme-black">
     <!-- A11y: skip to main content -->
