@@ -23,6 +23,7 @@ import { diagLog } from "./diag";
 import { setSync, type SyncState } from "./sync";
 import { cGet, cGetStale, cSet } from "./cache";
 import { isPageVisible } from "./idle";
+import { showSkeleton, hideSkeleton } from "./skeleton";
 import { getInterfaceLanguage } from "./i18n";
 import { state } from "./state";
 import { effect } from "./signals";
@@ -142,10 +143,17 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
 
   /**
    * Set the loading state. Updates `aria-busy` for accessibility.
+   * S61: Shows/hides skeleton shimmer in the card's first child element.
    * @param loading - true while fetching, false when complete
    */
   setLoading(loading: boolean): void {
     this.setAttribute("aria-busy", loading ? "true" : "false");
+    // S61: Skeleton loading indicator
+    const body = this.querySelector<HTMLElement>("[role='region'], .card-body, [class$='-body']");
+    if (body) {
+      if (loading) showSkeleton(body);
+      else hideSkeleton(body);
+    }
   }
 
   /**
