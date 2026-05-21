@@ -62,6 +62,7 @@ import {
 } from "./ui/night-dimmer";
 import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initProviderDegradationToasts } from "./core/provider-toast";
+import { initHealthProbe } from "./core/health-probe";
 import { resetGovernor } from "./core/refresh-governor";
 import { updateFreshnessClasses } from "./core/sync";
 import { startConfigAutoBackup } from "./core/config-backup";
@@ -276,6 +277,7 @@ export function init(): void {
   initConfigPanel();
   initDiagOverlay();
   initProviderDegradationToasts();
+  initHealthProbe();
   initScrollShadows();
   // auto-mount registry cards not already in index.html (e.g. video-news)
   mountRegisteredCards();
