@@ -73,6 +73,8 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
    */
   connectedCallback(): void {
     document.addEventListener("visibilitychange", this._visListener);
+    // S95: ensure custom element has landmark role for screen readers
+    if (!this.hasAttribute("role")) this.setAttribute("role", "region");
     // wire theme and alert lifecycle hooks via event-bus effects
     this._disposeTheme = effect(() => {
       const theme = globalThemeChannel.value;
