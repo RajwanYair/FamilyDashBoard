@@ -815,6 +815,13 @@ export function newsRankScore(item: {
   // Base score: timestamp in minutes from epoch (avoids large numbers)
   let score = validPub / 60_000;
 
+  // P3: Recency boost for very fresh items
+  if (validPub > 0) {
+    const ageMs = now - validPub;
+    if (ageMs < 5 * 60_000) score += 20;       // <5 min → +20
+    else if (ageMs < 30 * 60_000) score += 10; // <30 min → +10
+  }
+
   // Breaking news bonus (+30 min equivalent)
   if (isBreaking(item.title, item.pubDate)) {
     score += 30;
