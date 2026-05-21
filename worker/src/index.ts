@@ -23,6 +23,7 @@
  *   GET /api/crypto?ids=bitcoin          → CoinGecko Bitcoin price (validated)
  *   POST /api/errors                      → Client error ingestion (best-effort telemetry)
  *   GET  /api/metrics                     → Prometheus text metrics (token-gated, D1-backed)
+ *   GET  /api/provider-health              → Synthetic upstream health probes (P2, cached 5 min)
  *   POST /api/reports                     → Browser Reporting API ingest (CSP + deprecation + intervention)
  *   GET  /api/reports/digest              → Report summary digest (token-gated, D1-backed, ADR-028)
  *   GET  /api/r2-asset?url=X             → R2 background image cache proxy (ADR-050, allowlisted CDNs only)
@@ -57,6 +58,7 @@ import {
 } from "./routes/feeds";
 import { handleErrors, handleErrorsExport, handleErrorsQueue } from "./routes/errors";
 import { handleMetrics } from "./routes/metrics";
+import { handleProviderHealth } from "./routes/health-probes";
 import { handleReportsIngest, handleReportsDigest } from "./routes/reports";
 import { handleR2Asset } from "./routes/r2-asset";
 import {
@@ -133,7 +135,7 @@ app.get("/health", earlyHintsMiddleware, (c) => {
     ok: true,
     status: "healthy",
     ts: Date.now(),
-    version: "15.5.0",
+    version: "15.7.0",
     environment: env.ENVIRONMENT ?? "production",
     bindings: {
       cache_kv: true, // always required
@@ -224,6 +226,9 @@ app.get("/api/errors/export", (c) => handleErrorsExport(c.req.raw, c.env));
 app.post("/api/errors", (c) => handleErrors(c.req.raw, c.env));
 
 app.get("/api/metrics", (c) => handleMetrics(c.req.raw, c.env));
+
+// P2: Synthetic health probes for all critical upstreams
+app.get("/api/provider-health", (c) => handleProviderHealth(c.env));
 
 app.post("/api/reports", (c) => handleReportsIngest(c.req.raw, c.env));
 
