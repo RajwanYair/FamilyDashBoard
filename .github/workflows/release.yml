@@ -77,6 +77,16 @@ jobs:
       - name: Package dist
         run: zip -r dist.zip dist/ -x "dist/**/*.map"
 
+      - name: Generate SBOM (CycloneDX)
+        run: |
+          npm install --package-lock-only --ignore-scripts --silent
+          npx @cyclonedx/cyclonedx-npm --output-format JSON --output-file sbom.json --package-lock-only --ignore-npm-errors
+          if [ ! -f sbom.json ]; then
+            echo "::error::SBOM generation failed — sbom.json not found"
+            exit 1
+          fi
+          echo "✅ SBOM generated: $(wc -c < sbom.json) bytes"
+
       - name: Generate checksums
         run: |
           sha256sum dist.zip > dist.zip.sha256
@@ -115,6 +125,7 @@ jobs:
             sw.js
             sw.js.bundle
             dist/icon.svg
+            sbom.json
 
       - name: Attest build provenance (SLSA)
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
