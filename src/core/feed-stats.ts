@@ -6,6 +6,8 @@
  * This keeps the strict ui/* ↔ cards/* isolation rule intact.
  */
 
+import { nowMs, fromEpochMs } from "./temporal";
+
 export interface DedupStats {
   /** Total news items fetched across all feeds before deduplication. */
   totalFetched: number;
@@ -21,7 +23,7 @@ let _stats: DedupStats | null = null;
 
 /** Record dedup stats from the latest news fetch. Called by news.ts. */
 export function recordDedupStats(stats: Omit<DedupStats, "lastRunAt">): void {
-  _stats = { ...stats, lastRunAt: new Date().toISOString() };
+  _stats = { ...stats, lastRunAt: fromEpochMs(nowMs()).toISOString() };
 }
 
 /** Return the most recent dedup stats, or null if news hasn't fetched yet. */
