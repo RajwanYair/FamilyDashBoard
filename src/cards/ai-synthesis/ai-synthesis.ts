@@ -17,6 +17,7 @@ import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../core/semantic-clipboard";
 import type { CardConfigField } from "../../types/card";
 import { formatTimeHHMM } from "../../core/temporal";
+import { markFresh, renderFreshnessBadge } from "../../core/freshness";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -157,6 +158,7 @@ async function loadAiSynthesisData(): Promise<void> {
   const text = await fetchSynthesis();
   if (text) {
     cSet(SYNTH_CACHE_KEY, { synthesis: text } satisfies SynthesisPayload);
+    markFresh("ai-synthesis");
     renderSynthesis(text, "fresh");
     setCardSignal("ai-synthesis", "synthesis", { text }); // X12: publish for MCP + today-pane
     setSync("ai-synthesis", "ok");
@@ -232,6 +234,9 @@ export function initAiSynthesisCard(): void {
   _scheduleId = window.setInterval(() => {
     void loadAiSynthesisData();
   }, SYNTH_REFRESH_MS);
+  // P1: freshness badge in card header
+  const hd = document.querySelector<HTMLElement>('[data-card-id="ai-synthesis"] .card-header');
+  if (hd) renderFreshnessBadge("ai-synthesis", hd);
   // X15: register semantic clipboard producer
   registerSemanticProducer("ai-synthesis", buildAiSynthesisPayload);
 }
