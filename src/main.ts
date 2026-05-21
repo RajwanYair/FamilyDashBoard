@@ -82,7 +82,7 @@ import { copyFocusedCardPayload } from "./core/semantic-clipboard";
 // ── Cards ──
 import { initWeatherCard, toggleTempUnit } from "./cards/weather/weather";
 import { initMotivationCard, renderMotivation } from "./cards/motivation/motivation";
-import { initNewsCard, toggleBookmarkMode } from "./cards/news/news";
+import { initNewsCard, toggleBookmarkMode, markAllRead } from "./cards/news/news";
 import { initStocksCard } from "./cards/stocks/stocks";
 import { initCurrencyCard } from "./cards/currency/currency";
 import {
@@ -323,6 +323,10 @@ export function init(): void {
   });
   registerKey("b", document.documentElement.lang === "en" ? "Bookmarks" : "מועדפים", () =>
     toggleBookmarkMode(),
+  );
+  // P3: mark all news items as read
+  registerKey("x", document.documentElement.lang === "en" ? "Mark all read" : "סמן הכל כנקרא", () =>
+    markAllRead(),
   );
   registerKey("m", document.documentElement.lang === "en" ? "Next quote" : "ציטוט הבא", () =>
     renderMotivation(),

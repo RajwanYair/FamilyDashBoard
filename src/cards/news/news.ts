@@ -329,7 +329,14 @@ export function isVisited(key: string): boolean {
   return _visited.has(key);
 }
 
-// ── Bookmarks ──
+/** P3: Mark all currently-rendered news items as visited and refresh the view. */
+export function markAllRead(): void {
+  for (const item of _lastItems) {
+    markVisited(getBookmarkKey(item.title));
+  }
+  renderNews(_lastItems);
+}
+
 // LS_NEWS_BOOKMARKS imported from constants
 let _bkmMode = false;
 let _lastItems: NewsItem[] = [];
