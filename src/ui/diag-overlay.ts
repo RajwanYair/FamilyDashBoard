@@ -273,31 +273,74 @@ export function providerStatusIcon(status: string): string {
 }
 
 /**
- * Render a provider health summary as an HTML string.
+ * Render a Grafana-style provider health scorecard table.
  * Returns empty string when no providers have been recorded.
+ *
+ * Columns: Status | Provider | ✓ | ✗ | Rate% | p50ms | p95ms | Consec | Last OK
  */
 export function renderProviderHealthHtml(): string {
   const providers = getAllProviderHealth();
   if (providers.length === 0) return "";
-  const rows = providers
+
+  const tableRows = providers
     .map((p) => {
-      const rate = (getProviderSuccessRate(p.id) * 100).toFixed(0);
-      const avg = getProviderAvgLatency(p.id);
+      const rate = getProviderSuccessRate(p.id) * 100;
+      const rateStr = rate.toFixed(0);
+      const rateColor =
+        rate >= 95 ? "var(--positive)" : rate >= 80 ? "var(--warning)" : "var(--negative)";
+
       const samples = getProviderLatency(p.id);
+      const p50 = getProviderAvgLatency(p.id);
       const p95 = computeP95(samples);
-      const latStr =
-        avg > 0 ? ` · avg ${String(avg)}ms` + (p95 > 0 ? ` p95 ${String(p95)}ms` : "") : "";
+      const p50Str = p50 > 0 ? String(p50) : "–";
+      const p95Str = p95 > 0 ? String(p95) : "–";
+      const p95Color =
+        p95 === 0
+          ? "inherit"
+          : p95 < 1000
+            ? "var(--positive)"
+            : p95 < 3000
+              ? "var(--warning)"
+              : "var(--negative)";
+
+      const consecStr = p.consecutiveFails > 0 ? `×${p.consecutiveFails}` : "–";
+      const consecColor = p.consecutiveFails === 0 ? "inherit" : "var(--negative)";
+      const lastOkStr = p.lastOkAt ? p.lastOkAt.slice(11, 16) : "–";
+
       return (
-        `<span>${providerStatusIcon(p.status)} <b>${p.id}</b>: ` +
-        `↑${p.successCount} ↓${p.failureCount} (${rate}%)` +
-        `${p.consecutiveFails > 0 ? ` ×${p.consecutiveFails}` : ""}` +
-        `${latStr}` +
-        `${p.lastOkAt ? ` • ok@${p.lastOkAt.slice(11, 16)}` : ""}</span>`
+        `<tr>` +
+        `<td>${providerStatusIcon(p.status)}</td>` +
+        `<td style="font-weight:700">${p.id}</td>` +
+        `<td style="text-align:end;color:var(--positive)">${p.successCount}</td>` +
+        `<td style="text-align:end;color:var(--negative)">${p.failureCount}</td>` +
+        `<td style="text-align:end;color:${rateColor}"><b>${rateStr}%</b></td>` +
+        `<td style="text-align:end">${p50Str}</td>` +
+        `<td style="text-align:end;color:${p95Color}">${p95Str}</td>` +
+        `<td style="text-align:end;color:${consecColor}">${consecStr}</td>` +
+        `<td style="text-align:end;color:var(--text-muted)">${lastOkStr}</td>` +
+        `</tr>`
       );
     })
     .join("");
-  return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">
-    🏥 Providers: ${rows}
+
+  return `<div style="margin-top:8px;font-size:0.75em">
+    <b>🏥 Provider Health Scorecard</b>
+    <table style="width:100%;border-collapse:collapse;margin-top:4px;line-height:1.5">
+      <thead>
+        <tr style="color:var(--text-muted);font-size:0.9em">
+          <th style="text-align:start"></th>
+          <th style="text-align:start">Provider</th>
+          <th style="text-align:end">✓</th>
+          <th style="text-align:end">✗</th>
+          <th style="text-align:end">Rate</th>
+          <th style="text-align:end">p50</th>
+          <th style="text-align:end">p95</th>
+          <th style="text-align:end">Consec</th>
+          <th style="text-align:end">Last OK</th>
+        </tr>
+      </thead>
+      <tbody>${tableRows}</tbody>
+    </table>
   </div>`;
 }
 
