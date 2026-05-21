@@ -210,18 +210,18 @@
         },
         "cardSource": {
             "ai-synthesis": 10.4,
-            "alerts": 31,
-            "calendar": 30.8,
+            "alerts": 31.3,
+            "calendar": 31.8,
             "countdown": 33.3,
-            "currency": 35.3,
-            "hebrew-cal": 53.8,
-            "motivation": 28.9,
-            "news": 58.6,
-            "stocks": 59.3,
+            "currency": 36.3,
+            "hebrew-cal": 54.1,
+            "motivation": 29.2,
+            "news": 63.2,
+            "stocks": 60.2,
             "system-info": 25.1,
-            "tasks": 41.1,
+            "tasks": 40.9,
             "video-news": 28.9,
-            "weather": 63.8
+            "weather": 65.9
         }
     }
 ]
