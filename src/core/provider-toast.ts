@@ -25,6 +25,10 @@ const RATE_LIMIT_MS = 10 * 60 * 1000;
 
 const _lastNotifyAt = new Map<string, number>();
 
+// Track whether each provider was previously non-ok so recovery toasts only
+// fire when the provider actually came back from a real degraded/down state.
+const _wasNonOk = new Set<string>();
+
 /**
  * Notify the user that a provider appears blocked by the network. Rate-limited
  * to one toast per `providerId` per 10-minute window.
@@ -62,15 +66,35 @@ export function notifyProviderDegraded(providerId: string, now: number = nowMs()
 }
 
 /**
- * Wire the automatic degradation toast listener.
+ * Notify the user that a provider has recovered from degraded or down state.
+ * Rate-limited per provider. Only shown when previous status was non-ok.
+ */
+export function notifyProviderRecovered(providerId: string, now: number = nowMs()): boolean {
+  const key = `${providerId}:recovered`;
+  const last = _lastNotifyAt.get(key);
+  if (last !== undefined && now - last < RATE_LIMIT_MS) {
+    return false;
+  }
+  _lastNotifyAt.set(key, now);
+  showToast(`✅ ${providerId}: חזר לתקינות`, 3500);
+  return true;
+}
+
+/**
+ * Wire the automatic degradation + recovery toast listener.
  * Call once during app init.
  */
 export function initProviderDegradationToasts(): void {
   onProviderStatusChange((id: string, newStatus: ProviderStatus) => {
     if (newStatus === "degraded") {
+      _wasNonOk.add(id);
       notifyProviderDegraded(id);
     } else if (newStatus === "down") {
+      _wasNonOk.add(id);
       notifyProviderBlocked(id, id);
+    } else if (newStatus === "ok" && _wasNonOk.has(id)) {
+      _wasNonOk.delete(id);
+      notifyProviderRecovered(id);
     }
   });
 }
@@ -81,4 +105,5 @@ export function initProviderDegradationToasts(): void {
  */
 export function _resetProviderToast(): void {
   _lastNotifyAt.clear();
+  _wasNonOk.clear();
 }
