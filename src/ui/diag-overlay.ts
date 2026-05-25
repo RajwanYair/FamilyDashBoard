@@ -292,8 +292,8 @@ export function renderProviderHealthHtml(): string {
       const samples = getProviderLatency(p.id);
       const p50 = getProviderAvgLatency(p.id);
       const p95 = computeP95(samples);
-      const p50Str = p50 > 0 ? String(p50) : "–";
-      const p95Str = p95 > 0 ? String(p95) : "–";
+      const p50Str = p50 > 0 ? `${p50}ms` : "–";
+      const p95Str = p95 > 0 ? `${p95}ms` : "–";
       const p95Color =
         p95 === 0
           ? "inherit"
@@ -305,7 +305,7 @@ export function renderProviderHealthHtml(): string {
 
       const consecStr = p.consecutiveFails > 0 ? `×${p.consecutiveFails}` : "–";
       const consecColor = p.consecutiveFails === 0 ? "inherit" : "var(--negative)";
-      const lastOkStr = p.lastOkAt ? p.lastOkAt.slice(11, 16) : "–";
+      const lastOkStr = p.lastOkAt ? `ok@${p.lastOkAt.slice(11, 16)}` : "–";
 
       return (
         `<tr>` +

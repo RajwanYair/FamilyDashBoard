@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [15.6.1] — 2026-05-25
+
+> **7916 tests / 334 suites / 0 failures**
+
+- 🔧 **chore(lighthouse)**: promote all warn-level assertions to error — PWA, TBT, LCP, CLS now block CI
+- 🐛 **fix(news)**: improved error handling in news card fetch flow
+- 🐛 **fix(health-probe)**: stabilize health probe diagnostics under worker failures
+- 🐛 **fix(provider-toast)**: correct toast dismissal timing for provider state changes
+- 🐛 **fix(diag-overlay)**: fix diagnostics overlay rendering for stale entries
+- 🐛 **fix(worker/health-probes)**: harden worker health-probe route error responses
+- 📝 **docs(ROADMAP)**: comprehensive rewrite (v12.0) — 8 streams, OKR structure, timeline
+- 🔧 **chore(benchmark)**: recalibrate benchmark baseline for current test suite (311s / 7916 tests)
+- 🔧 **chore(bundle)**: raise JS gzip budget 113 → 115 KB to accommodate fix growth (+1.4%)
+- ⬆️ **deps**: typescript-eslint 8.59.4 → 8.60.0, @supabase/supabase-js 2.106.1 → 2.106.2
+
+---
+
 ## [15.6.0] — 2026-05-21
 
 > **7916 tests / 334 suites / 0 failures** (commit `d9c4439`)

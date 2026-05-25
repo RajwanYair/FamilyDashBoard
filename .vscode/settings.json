@@ -29,9 +29,11 @@
     // ── Baseline Lens — align with .browserslistrc, not full caniuse ──
     // Project supports modern evergreen only (see .browserslistrc). IE/legacy
     // warnings are false positives for our targets.
+    // worker/ runs on Cloudflare edge runtime — exclude from browser compat checks.
     "baseline-lens.support": "newly",
     "baseline-lens.browserslist": true,
     "baseline-lens.showInlineHints": false,
+    "baseline-lens.exclude": ["worker/**"],
     "baseline-lens.ignoredFeatures": [
         "view-transition-name",
         "@view-transition",

@@ -17,7 +17,9 @@ coverage/
 dist/
 tsconfig.tsbuildinfo
 
-# Test / CI artifacts
+# Test / CI artifacts (all intermediate output → $TEMP, never committed)
+vitest-*.txt
+vitest-*.json
 vitest-report.json
 final-vitest-report.json
 test-results.json

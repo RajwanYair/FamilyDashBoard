@@ -825,7 +825,8 @@ export function newsRankScore(item: {
   // P3: Recency boost for very fresh items
   if (validPub > 0) {
     const ageMs = now - validPub;
-    if (ageMs < 5 * 60_000) score += 20;       // <5 min → +20
+    if (ageMs < 5 * 60_000)
+      score += 20; // <5 min → +20
     else if (ageMs < 30 * 60_000) score += 10; // <30 min → +10
   }
 

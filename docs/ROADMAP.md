@@ -1,13 +1,13 @@
-# FamilyDashBoard — Strategic Roadmap v11.0
+# FamilyDashBoard — Strategic Roadmap v12.0
 
-> **Refresh date**: 2026-05-20
-> **Shipped baseline**: v15.6.0 (metric hierarchy · diag tab · perf hints)
+> **Refresh date**: 2026-05-25
+> **Shipped baseline**: v15.6.1 (metric hierarchy · diag tab · perf hints · quality hardening)
 > **Product surface**: 12 cards · 7 themes · 3 screen modes · 0 client runtime dependencies
 > **Purpose**: forward-only plan. Historical sprints and shipped work → [CHANGELOG.md](../CHANGELOG.md). Decisions → [docs/adr/](adr/).
 
 ---
 
-## 0. 📌 Executive Position
+## 0. Executive Position
 
 FamilyDashBoard competes in the **ambient family information display** category — alongside MagicMirror², Glance, Homepage, Homarr, Home Assistant Lovelace, Dakboard, TRMNL, e-ink frames, and self-hosted dashboards. Our durable differentiators:
 
@@ -15,7 +15,7 @@ FamilyDashBoard competes in the **ambient family information display** category 
 | ----------------------------- | ----------------------------------------------------------------------------------------- |
 | **Zero runtime dependencies** | Only entrant with 0 client npm deps AND full offline-first PWA                            |
 | **Hebrew RTL native**         | Only ambient dashboard with native Hebrew + Jewish calendar + Shabbat-aware UI            |
-| **TV-first density**          | Optimized for 1920×1080 always-on at 3 m reading distance                                 |
+| **TV-first density**          | Optimized for 1920x1080 always-on at 3 m reading distance                                 |
 | **Privacy by architecture**   | No auth, no accounts, no server-side user data — local-first localStorage + IDB           |
 | **Edge-augmented, not bound** | Cloudflare Worker optional; dashboard renders, refreshes, and self-heals fully without it |
 | **In-house reactivity**       | ~1 KB signals engine aligned to TC39 Stage 3 — swap-ready when native lands               |
@@ -28,15 +28,16 @@ This roadmap pushes every layer to **best-in-class** across reliability, maintai
 
 1. **One production bar.** CI, release, and local scripts run the same gate
 2. **Zero tolerated quality drift.** Stale counts, dead code, suppressed rules, or disabled checks are release blockers
-3. **Generated output ≠ product structure.** Intermediates → `$TEMP`, artifacts → ignored dirs
+3. **Generated output != product structure.** Intermediates → `$TEMP`, artifacts → ignored dirs
 4. **Forward-only roadmap.** Shipped items move to changelog or ADR within the same PR
 5. **Harvest practice over imitate stack.** We copy _methods_, not framework choices
+6. **No waivers, no workarounds.** Every error, warning, or note is resolved at root cause
 
 ---
 
-## 1. 🏗️ Deep Architecture Rethink (v11)
+## 1. Deep Architecture Rethink (v12)
 
-Every major decision was reconsidered from first principles for v11. Columns: current decision, verdict, forward action.
+Every major decision reconsidered from first principles. Columns: current decision, verdict, forward action.
 
 ### 1.1 Product & Scope
 
@@ -53,10 +54,10 @@ Every major decision was reconsidered from first principles for v11. Columns: cu
 
 | Area             | Current                                                  | Verdict     | Forward action                                                                           |
 | ---------------- | -------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------- |
-| Language         | TypeScript 6 strict + `strictFunctionTypes`              | **Keep**    | Adopt TS 7 only when emit is byte-stable                                                 |
+| Language         | TypeScript 6 strict + `exactOptionalPropertyTypes`       | **Keep**    | Adopt TS 7 only when emit is byte-stable                                                 |
 | UI framework     | Vanilla DOM + card class hierarchy + custom elements     | **Keep**    | Frameworks add no value for 12 stable cards; improve view-model separation incrementally |
 | CSS architecture | `@layer` cascade governance (ADR-008)                    | **Keep**    | Expand container queries; enforce `light-dark()` for new themes                          |
-| Reactivity       | In-house signals (~200 LOC, ADR aligned)                 | **Keep**    | Track TC39 Stage 3; swap when native — keep adapter layer thin                           |
+| Reactivity       | In-house signals (~200 LOC, ADR-038)                     | **Keep**    | Track TC39 Stage 3; swap when native — keep adapter layer thin                           |
 | State            | Signals + localStorage + IDB + SW                        | **Keep**    | Four-tier (memory → LS → IDB → SW) is architecturally correct                            |
 | Date/time        | Mostly `Intl` + Temporal polyfill                        | **Improve** | Finish temporal unification; grep for `new Date(` in cards must return 0                 |
 | Build            | Vite 8 + Rollup, dual `--base` targets                   | **Keep**    | IIFE for `file://`, ESM for hosted; correct                                              |
@@ -74,7 +75,7 @@ Every major decision was reconsidered from first principles for v11. Columns: cu
 | API proxy         | Worker routes → upstream APIs                  | **Keep** | Centralizes CORS; keeps API keys server-side                       |
 | Telemetry         | Analytics Engine (operational metrics only)    | **Keep** | No user tracking; latency, cache-hit, error rates                  |
 | Database (server) | None                                           | **Keep** | No server-side user state by design                                |
-| Database (client) | localStorage + IndexedDB (LRU, ≤50 MB)         | **Keep** | Privacy-preserving; works offline                                  |
+| Database (client) | localStorage + IndexedDB (LRU, 50 MB cap)      | **Keep** | Privacy-preserving; works offline                                  |
 | CDN/hosting       | GitHub Pages                                   | **Keep** | Zero-cost, deterministic, correct for static PWA                   |
 | Secrets           | Cloudflare Worker env bindings                 | **Keep** | API keys never reach client                                        |
 | OpenAPI           | `worker/openapi.yaml` with TTL annotations     | **Keep** | `check:openapi-ttl` enforces freshness                             |
@@ -102,16 +103,16 @@ Every major decision was reconsidered from first principles for v11. Columns: cu
 
 ### 1.5 Documentation & DX
 
-| Area          | Current                                 | Verdict   | Forward action                                                                |
-| ------------- | --------------------------------------- | --------- | ----------------------------------------------------------------------------- |
-| Architecture  | `docs/ARCHITECTURE.md`                  | **Keep**  | Runtime topology + cache layers                                               |
-| Decisions     | `docs/adr/` (≥9 ADRs accepted)          | **Keep**  | One ADR per non-trivial decision; reference, never inline                     |
-| Worker API    | `worker/API.md` + `worker/openapi.yaml` | **Keep**  | Machine-readable contract                                                     |
-| Skills        | `.github/skills/` (4 skills)            | **Keep**  | add-api, release, debug-fetch, update-tests — covers all common workflows     |
-| Agents        | `.github/agents/` (3 agents)            | **Keep**  | api-integrator, dashboard-designer, quality-reviewer                          |
-| Copilot rules | 51-rule `copilot-instructions.md`       | **Prune** | Move file-type rules into per-instruction files (Rule 39 already covers this) |
-| Reading level | `check:reading-level`                   | **Keep**  | Forces docs to be approachable                                                |
-| Mermaid       | `check:mermaid` validates diagrams      | **Keep**  | Prevents broken diagrams in docs                                              |
+| Area          | Current                                 | Verdict  | Forward action                                                            |
+| ------------- | --------------------------------------- | -------- | ------------------------------------------------------------------------- |
+| Architecture  | `docs/ARCHITECTURE.md`                  | **Keep** | Runtime topology + cache layers                                           |
+| Decisions     | `docs/adr/` (92 ADRs accepted)          | **Keep** | One ADR per non-trivial decision; reference, never inline                 |
+| Worker API    | `worker/API.md` + `worker/openapi.yaml` | **Keep** | Machine-readable contract                                                 |
+| Skills        | `.github/skills/` (4 skills)            | **Keep** | add-api, release, debug-fetch, update-tests — covers all common workflows |
+| Agents        | `.github/agents/` (3 agents)            | **Keep** | api-integrator, dashboard-designer, quality-reviewer                      |
+| Copilot rules | 51-rule `copilot-instructions.md`       | **Keep** | Battle-tested; per-file instructions supplement via `applyTo`             |
+| Reading level | `check:reading-level`                   | **Keep** | Forces docs to be approachable                                            |
+| Mermaid       | `check:mermaid` validates diagrams      | **Keep** | Prevents broken diagrams in docs                                          |
 
 ### 1.6 Tools & Versions
 
@@ -120,29 +121,29 @@ Every major decision was reconsidered from first principles for v11. Columns: cu
 | Node.js    | 22.x (`.nvmrc`)  | 22 LTS           | Stay on active LTS; bump to 24 when LTS     |
 | TypeScript | 6.0.3            | 6.x latest patch | TS 7 only when emit unchanged               |
 | Vite       | 8.x              | 8.x latest       | Auto-bump minor                             |
-| Vitest     | 4.1.6            | 4.x latest       | Track Vite major                            |
+| Vitest     | 4.1.7            | 4.x latest       | Track Vite major                            |
 | Playwright | 1.60.x           | 1.x latest       | Monthly upgrade for browser engine coverage |
 | ESLint     | 10.x flat config | 10.x latest      | Flat config is final form                   |
 | Prettier   | 3.8.x            | 3.x latest       | Stable                                      |
-| Stylelint  | 16.x             | 16.x latest      | Modern-color notation enforced              |
+| Stylelint  | 17.x             | 17.x latest      | Modern-color notation enforced              |
 | Hono       | latest           | latest           | Tiny edge router                            |
 | Valibot    | 1.x              | 1.x latest       | Schema validation, smaller than Zod         |
 | Wrangler   | 4.x              | 4.x latest       | Cloudflare deploy CLI                       |
 
 ### 1.7 External Data Sources
 
-| Source          | Card(s)    | Status       | Forward action                                                       |
-| --------------- | ---------- | ------------ | -------------------------------------------------------------------- |
-| Open-Meteo      | weather    | **Healthy**  | Add precipitation radar tile endpoint                                |
-| Yahoo Finance   | stocks     | **Healthy**  | Worker-only proxying; add market-hours awareness                     |
-| Bank of Israel  | currency   | **Healthy**  | Historical trend sparklines                                          |
-| Pikud HaOref    | alerts     | **Healthy**  | WebSocket via DO for sub-second delivery                             |
-| Google Calendar | calendar   | **Healthy**  | Read-only public URL only; no OAuth                                  |
-| Hebcal          | hebrew-cal | **Healthy**  | Single Worker endpoint for holidays + shabbat                        |
-| Sefaria         | hebrew-cal | **Healthy**  | Aggressive 24 h cache for daily study text                           |
-| RSS feeds       | news       | **Healthy**  | SimHash deduplication (already wired); recency-weighted ranking next |
-| YouTube/RSS     | video-news | **Healthy**  | Passive embed; no YouTube API key                                    |
-| CoinGecko       | currency   | **Optional** | Bonus data; not critical path                                        |
+| Source          | Card(s)    | Status      | Forward action                                       |
+| --------------- | ---------- | ----------- | ---------------------------------------------------- |
+| Open-Meteo      | weather    | **Healthy** | Add precipitation radar tile endpoint                |
+| Yahoo Finance   | stocks     | **Healthy** | Worker-only proxying; add market-hours awareness     |
+| Bank of Israel  | currency   | **Healthy** | Historical trend sparklines                          |
+| Pikud HaOref    | alerts     | **Healthy** | WebSocket via DO for sub-second delivery             |
+| Google Calendar | calendar   | **Healthy** | Read-only public URL only; no OAuth                  |
+| Hebcal          | hebrew-cal | **Healthy** | Single Worker endpoint for holidays + shabbat        |
+| Sefaria         | hebrew-cal | **Healthy** | Aggressive 24 h cache for daily study text           |
+| RSS feeds       | news       | **Healthy** | SimHash deduplication; recency-weighted ranking next |
+| YouTube/RSS     | video-news | **Healthy** | Passive embed; no YouTube API key                    |
+| CoinGecko       | currency   | **Healthy** | Crypto rates, 5-min cache                            |
 
 ### 1.8 Security & Supply Chain
 
@@ -160,54 +161,60 @@ Every major decision was reconsidered from first principles for v11. Columns: cu
 
 ---
 
-## 2. 📊 Competitive Benchmark (refreshed 2026-05-20)
+## 2. Competitive Benchmark (refreshed 2026-05-25)
 
 ### 2.1 Full Comparison Matrix
 
-| Dimension                 | FamilyDashBoard                 | Glance    | MagicMirror²   | Homepage   | Homarr      | Dakboard | HA Lovelace | Grafana      | TRMNL    |
-| ------------------------- | ------------------------------- | --------- | -------------- | ---------- | ----------- | -------- | ----------- | ------------ | -------- |
-| **Runtime deps (client)** | **0**                           | ~5 (Go)   | ~40 (Node)     | ~30 (Go)   | ~80 (TS)    | SaaS     | ~200 (Py)   | ~150 (Go)    | SaaS     |
-| **Offline capability**    | **Full PWA**                    | None      | Partial        | None       | None        | None     | None        | None         | Firmware |
-| **Auth required**         | **No**                          | No        | No             | Optional   | Yes         | Yes      | Yes         | Yes          | Yes      |
-| **Server required**       | **No**                          | Yes       | Yes            | Yes        | Yes         | Cloud    | Yes         | Yes          | Cloud    |
-| **TV/ambient optimized**  | **Yes**                         | Partial   | Yes            | No         | No          | Yes      | Partial     | No           | Yes      |
-| **RTL / Hebrew native**   | **Yes**                         | No        | Community      | No         | No          | No       | Community   | No           | No       |
-| **Cards / widgets**       | 12 curated                      | ~30       | ~200 community | ~100       | ~150        | ~20      | 1000+       | Plugin model | ~15      |
-| **Card configurability**  | Medium                          | Low       | High           | Medium     | High        | Low      | Very High   | Very High    | Low      |
-| **Information density**   | High                            | Very High | Medium         | Medium     | Medium      | Low      | Variable    | Very High    | Very Low |
-| **Release automation**    | **Full CI/CD**                  | Manual    | npm publish    | GoReleaser | Docker      | SaaS     | pip/Docker  | GoReleaser   | SaaS     |
-| **Test depth**            | **U+E2E+VR+Mut+Bench**          | Minimal   | Minimal        | Good       | Good        | Unknown  | Excellent   | Excellent    | Unknown  |
-| **Custom check gates**    | **27**                          | 0         | ~3             | ~5         | ~8          | 0        | ~15         | ~20          | 0        |
-| **Reproducible builds**   | **Yes**                         | No        | No             | No         | No          | N/A      | No          | No           | N/A      |
-| **Sigstore attestation**  | **Yes**                         | No        | No             | No         | No          | N/A      | No          | No           | N/A      |
-| **CSP / Trusted Types**   | **Strict + TT**                 | None      | None           | Basic      | Basic       | Unknown  | Basic       | Basic        | N/A      |
-| **A11y posture**          | WCAG 2.2 AA target              | Unknown   | Community      | Unknown    | Unknown     | Unknown  | Partial     | Partial      | N/A      |
-| **i18n model**            | RTL+Hebrew first                | en-only   | i18n plugin    | en-only    | i18n plugin | en-only  | i18n plugin | en-only      | en-only  |
-| **Privacy posture**       | **Maximal**                     | Good      | Good           | Good       | Medium      | Poor     | Good        | Medium       | Poor     |
-| **Bundle size (client)**  | **~180 KB gz**                  | N/A       | ~500 KB        | N/A        | ~2 MB       | N/A      | N/A         | N/A          | N/A      |
-| **Setup**                 | `git clone` + open              | Docker    | npm + config   | Docker     | Docker      | Sign up  | OS install  | Docker       | Buy HW   |
-| **Observability**         | Diag overlay + Analytics Engine | None      | None           | Logs only  | Basic       | None     | Excellent   | Excellent    | None     |
+| Dimension                 | FamilyDashBoard           | Glance (Go)     | MagicMirror² (JS)   | Homepage (Next.js)  | Homarr (TS)  | Dakboard (SaaS) | HA Lovelace (Py) | Grafana (Go) | TRMNL (HW) |
+| ------------------------- | ------------------------- | --------------- | ------------------- | ------------------- | ------------ | --------------- | ---------------- | ------------ | ---------- |
+| **Runtime deps (client)** | **0**                     | ~5              | ~40                 | ~30                 | ~80          | SaaS            | ~200             | ~150         | Firmware   |
+| **Offline capability**    | **Full PWA**              | None            | Partial             | None                | None         | None            | None             | None         | Firmware   |
+| **Auth required**         | **No**                    | No              | No                  | Optional            | Yes          | Yes             | Yes              | Yes          | Yes        |
+| **Server required**       | **No**                    | Yes (Go binary) | Yes (Node+Electron) | Yes (Docker)        | Yes (Docker) | Cloud           | Yes (Python)     | Yes (Docker) | Cloud      |
+| **TV/ambient optimized**  | **Yes**                   | Partial         | Yes                 | No                  | No           | Yes             | Partial          | No           | Yes        |
+| **RTL / Hebrew native**   | **Yes**                   | No              | Community plugin    | No                  | No           | No              | Community        | No           | No         |
+| **Cards / widgets**       | 12 curated                | ~30             | ~200 community      | ~100                | ~150         | ~20             | 1000+            | Plugin model | ~15        |
+| **Information density**   | High                      | Very High       | Medium              | Medium              | Medium       | Low             | Variable         | Very High    | Very Low   |
+| **Build system**          | Vite 8 + Rollup           | Go build        | npm + webpack       | Next.js             | Turborepo    | N/A             | pip/Docker       | GoReleaser   | N/A        |
+| **Type safety**           | **TS 6 strict**           | Go (typed)      | No (JS)             | Partial             | TS           | N/A             | Python typing    | Go (typed)   | N/A        |
+| **Test depth**            | **U+E2E+VR+Mut+Bench**    | Minimal         | Minimal             | Good                | Good         | Unknown         | Excellent        | Excellent    | Unknown    |
+| **Custom check gates**    | **27**                    | 0               | ~3                  | ~5                  | ~8           | 0               | ~15              | ~20          | 0          |
+| **Reproducible builds**   | **Yes**                   | No              | No                  | No                  | No           | N/A             | No               | No           | N/A        |
+| **Sigstore attestation**  | **Yes**                   | No              | No                  | No                  | No           | N/A             | No               | No           | N/A        |
+| **CSP / Trusted Types**   | **Strict + TT**           | None            | None                | Basic               | Basic        | Unknown         | Basic            | Basic        | N/A        |
+| **A11y posture**          | WCAG 2.2 AA target        | Unknown         | Community           | Unknown             | Unknown      | Unknown         | Partial          | Partial      | N/A        |
+| **i18n model**            | RTL+Hebrew first          | en-only         | i18n plugin         | en-only             | i18n plugin  | en-only         | i18n plugin      | en-only      | en-only    |
+| **Privacy posture**       | **Maximal (no tracking)** | Good            | Good                | Good                | Medium       | Poor            | Good             | Medium       | Poor       |
+| **Bundle size (client)**  | **~180 KB gz**            | N/A (server)    | ~500 KB             | N/A (server)        | ~2 MB        | N/A             | N/A              | N/A          | N/A        |
+| **Setup complexity**      | `git clone` + open        | Docker/binary   | npm + config        | Docker              | Docker       | Sign up         | OS install       | Docker       | Buy HW     |
+| **Observability**         | Diag overlay + AE         | None            | None                | Logs only           | Basic        | None            | Excellent        | Excellent    | None       |
+| **Container queries**     | **Yes (enforced)**        | No              | No                  | Tailwind responsive | Tailwind     | No              | No               | No           | No         |
+| **View Transitions**      | **Yes**                   | No              | No                  | No                  | No           | No              | No               | No           | No         |
+| **Lighthouse perf**       | **0.99**                  | N/A             | ~0.60               | ~0.85               | ~0.70        | Unknown         | N/A              | N/A          | N/A        |
 
 ### 2.2 Harvested Methods (executable list)
 
 | Source             | Method                                     | Adoption plan                                                                |
 | ------------------ | ------------------------------------------ | ---------------------------------------------------------------------------- |
-| **Glance**         | Ruthless information hierarchy per card    | Primary metric always largest; secondary 0.6×; tertiary 0.4×                 |
-| **Glance**         | Single-column density with breathing room  | Narrow screen mode default                                                   |
+| **Glance**         | Ruthless information hierarchy per card    | Primary metric always largest; secondary 0.6x; tertiary 0.4x                 |
+| **Glance**         | Single binary / zero-config deployment     | Our `file://` mode is the equivalent — one artifact, no server               |
+| **Glance**         | Minimal vanilla JS, no framework           | Already aligned — validates our decision                                     |
 | **TRMNL**          | Pacing for always-on displays              | Refresh-rate governor; coalesce repaints                                     |
 | **TRMNL**          | "Less but clearer"                         | Default card config hides optional fields; expand-on-demand                  |
-| **NetNewsWire**    | Explicit stale/fresh visual semantics      | Color-coded timestamp badges (green <5 m, yellow <30 m, red >1 h)            |
+| **NetNewsWire**    | Explicit stale/fresh visual semantics      | Color-coded timestamp badges (green < 5 m, yellow < 30 m, red > 1 h)         |
 | **NetNewsWire**    | Cross-feed deduplication                   | SimHash already wired; surface dedup ratio in diag overlay                   |
 | **Grafana**        | Provider health dashboard                  | Scorecard in diag overlay: success rate, p50/p95, last-ok, consecutive fails |
 | **Grafana**        | Evidence-driven release gates              | All 27 checks emit machine-readable pass/fail                                |
 | **Home Assistant** | Semantic card grouping                     | Group cards by function (info / status / action) in settings                 |
 | **Home Assistant** | Progressive disclosure in settings         | Tab-based settings with summary → detail drill-down                          |
 | **Homepage**       | Overview-first framing                     | Fastest-available data renders first; slow cards show skeleton               |
-| **MagicMirror²**   | Ambient mindset preservation               | Night dimmer, auto-scroll, low-motion preferences as first-class             |
+| **Homepage**       | YAML-driven widget configuration           | Our JSON-schema settings dialog achieves same with type safety               |
+| **MagicMirror2**   | Ambient mindset preservation               | Night dimmer, auto-scroll, low-motion preferences as first-class             |
+| **MagicMirror2**   | Module lifecycle hooks (start/stop/resume) | Our FdbCard lifecycle (ADR-051) mirrors this with signals                    |
 | **Dakboard**       | Photo/media integration as ambient content | Optional background media rotation during idle                               |
 | **Dakboard**       | Family calendar as primary anchor          | Calendar card highest priority in default layout                             |
 | **HACS / HA**      | Versioned, signed update channels          | We already have Sigstore; add visible "verified build" badge in diag overlay |
-| **Lighthouse**     | Continuous performance budget              | Add Lighthouse CI gate at 95+ across all categories                          |
+| **Lighthouse**     | Continuous performance budget              | LHCI gate at 0.99 performance (already shipping)                             |
 | **Vite Ecosystem** | Pre-bundled IIFE for `file://`             | Already shipped; document as best practice                                   |
 
 ### 2.3 Anti-Patterns (Permanently Rejected)
@@ -227,54 +234,58 @@ Every major decision was reconsidered from first principles for v11. Columns: cu
 
 ---
 
-## 3. ✅ Production Readiness Definition
+## 3. Production Readiness Definition
 
 ### 3.1 What "Production Ready" Means (canonical, no waivers)
 
-| Criterion                           | Requirement                            | Enforced by          |
-| ----------------------------------- | -------------------------------------- | -------------------- |
-| Zero type errors                    | `tsc -b --noEmit` exits 0              | `check` script       |
-| Zero SW type errors                 | `tsc -p tsconfig.sw.json` exits 0      | `check` script       |
-| Zero lint errors/warnings           | `eslint . --max-warnings 0` exits 0    | `check` script       |
-| Zero format drift                   | `prettier --check .` exits 0           | `check` script       |
-| Zero CSS lint errors                | `stylelint "src/**/*.css"` exits 0     | `check` script       |
-| Zero markdown errors                | `markdownlint-cli2` exits 0            | `check` script       |
-| Zero instruction-file violations    | `lint:instructions` exits 0            | `check` script       |
-| All unit tests pass                 | `vitest run` exits 0                   | `check` script       |
-| Coverage above per-file thresholds  | `vitest run --coverage` exits 0        | `vitest.config.ts`   |
-| All 27 custom gates pass            | each `check:*` exits 0                 | `check` script       |
-| No `eslint-disable`                 | grep finds 0 in `src/` and `tests/`    | manual + pre-release |
-| No `@ts-ignore`/`@ts-expect-error`  | grep finds 0 in `src/` and `tests/`    | manual + pre-release |
-| No `TODO`/`FIXME`/`HACK`            | grep finds 0 in `src/` and `tests/`    | manual + pre-release |
-| No disabled feature flags           | no compile-time `false` flags          | manual               |
-| No dead code files                  | `check:dead-exports --fail-on-dead`    | `check` script       |
-| Production build succeeds           | `npm run build` exits 0                | release gate         |
-| Build artifacts untracked           | `check:artifacts` exits 0              | `check` script       |
-| Bundle size within budget           | `check:bundle` exits 0                 | release gate         |
-| Per-card bundle delta within budget | `check:card-bundle` exits 0            | release gate         |
-| SW version matches package.json     | `check:sw` exits 0                     | `check` script       |
-| Version consistency across files    | `check:version` exits 0                | `check` script       |
-| Actions SHA-pinned                  | `check:actions-pinned` exits 0         | `check` script       |
-| npm ignore-scripts enforced         | `check:ignore-scripts` exits 0         | `check` script       |
-| OWASP review                        | `check:owasp` exits 0                  | `check` script       |
-| CSP no wildcards                    | `check:csp-wildcards` exits 0          | `check` script       |
-| Trusted Types respected             | `check:trusted-types` exits 0          | `check` script       |
-| ADR index current                   | `check:adr` exits 0                    | `check` script       |
-| OpenAPI TTL annotations current     | `check:openapi-ttl` exits 0            | `check` script       |
-| Release notes prepared              | `check:release-notes` exits 0          | `check` script       |
-| Module boundaries respected         | `check:boundaries` exits 0             | `check` script       |
-| Container queries used over MQ      | `check:containers` exits 0             | `check` script       |
-| Reading level approachable          | `check:reading-level` exits 0          | `check` script       |
-| Smart contrast tokens               | `check:smart-contrast` exits 0         | `check` script       |
-| Temporal polyfill size budget       | `check:temporal-polyfill` exits 0      | `check` script       |
-| Benchmark within drift budget       | `check:benchmark` exits 0              | `check` script       |
-| Reproducible build                  | `check:reproducible --dry-run` exits 0 | release gate         |
-| Sigstore attestation valid          | `check:sigstore` exits 0               | release gate         |
+| Criterion                           | Requirement                            | Enforced by        |
+| ----------------------------------- | -------------------------------------- | ------------------ |
+| Zero type errors                    | `tsc -b --noEmit` exits 0              | `check` script     |
+| Zero SW type errors                 | `tsc -p tsconfig.sw.json` exits 0      | `check` script     |
+| Zero lint errors/warnings           | `eslint . --max-warnings 0` exits 0    | `check` script     |
+| Zero format drift                   | `prettier --check .` exits 0           | `check` script     |
+| Zero CSS lint errors                | `stylelint "src/**/*.css"` exits 0     | `check` script     |
+| Zero markdown errors                | `markdownlint-cli2` exits 0            | `check` script     |
+| Zero instruction-file violations    | `lint:instructions` exits 0            | `check` script     |
+| All unit tests pass                 | `vitest run` exits 0                   | `check` script     |
+| Coverage above per-file thresholds  | `vitest run --coverage` exits 0        | `vitest.config.ts` |
+| All 27 custom gates pass            | each `check:*` exits 0                 | `check` script     |
+| No `eslint-disable`                 | grep finds 0 in `src/` and `tests/`    | pre-release gate   |
+| No `@ts-ignore`/`@ts-expect-error`  | grep finds 0 in `src/` and `tests/`    | pre-release gate   |
+| No `TODO`/`FIXME`/`HACK`            | grep finds 0 in `src/` and `tests/`    | pre-release gate   |
+| No disabled feature flags           | no compile-time `false` flags          | pre-release gate   |
+| No dead code files                  | `check:dead-exports --fail-on-dead`    | `check` script     |
+| Production build succeeds           | `npm run build` exits 0                | release gate       |
+| Build artifacts untracked           | `check:artifacts` exits 0              | `check` script     |
+| Bundle size within budget           | `check:bundle` exits 0                 | release gate       |
+| Per-card bundle delta within budget | `check:card-bundle` exits 0            | release gate       |
+| SW version matches package.json     | `check:sw` exits 0                     | `check` script     |
+| Version consistency across files    | `check:version` exits 0                | `check` script     |
+| Actions SHA-pinned                  | `check:actions-pinned` exits 0         | `check` script     |
+| npm ignore-scripts enforced         | `check:ignore-scripts` exits 0         | `check` script     |
+| OWASP review                        | `check:owasp` exits 0                  | `check` script     |
+| CSP no wildcards                    | `check:csp-wildcards` exits 0          | `check` script     |
+| Trusted Types respected             | `check:trusted-types` exits 0          | `check` script     |
+| ADR index current                   | `check:adr` exits 0                    | `check` script     |
+| OpenAPI TTL annotations current     | `check:openapi-ttl` exits 0            | `check` script     |
+| Release notes prepared              | `check:release-notes` exits 0          | `check` script     |
+| Module boundaries respected         | `check:boundaries` exits 0             | `check` script     |
+| Container queries used over MQ      | `check:containers` exits 0             | `check` script     |
+| Reading level approachable          | `check:reading-level` exits 0          | `check` script     |
+| Smart contrast tokens               | `check:smart-contrast` exits 0         | `check` script     |
+| Temporal polyfill size budget       | `check:temporal-polyfill` exits 0      | `check` script     |
+| Benchmark within drift budget       | `check:benchmark` exits 0              | `check` script     |
+| Reproducible build                  | `check:reproducible --dry-run` exits 0 | release gate       |
+| Sigstore attestation valid          | `check:sigstore` exits 0               | release gate       |
+| Zero VS Code extension errors       | All workspace diagnostics resolved     | pre-release gate   |
+| No intermediate files in repo       | All temp output → `$TEMP`              | `.gitignore` + CI  |
+| No suspended/disabled config        | All config options active or removed   | pre-release gate   |
 
 ### 3.2 Canonical Release Gate
 
 ```powershell
 npm run check               # 27 gates + typecheck + lint + format + tests
+npm run test                # unit tests (redundant with check but explicit)
 npm run check:reproducible  # byte-stable artifact verification
 npm run check:sigstore      # signature attestation
 npm run build               # production build
@@ -286,7 +297,7 @@ Release is blocked if any command fails. **No exceptions. No waivers. No suppres
 
 ---
 
-## 4. 🚀 Strategic Streams (forward work)
+## 4. Strategic Streams (forward work)
 
 ### P0 — Temporal Unification
 
@@ -301,7 +312,7 @@ Release is blocked if any command fails. **No exceptions. No waivers. No suppres
 
 **Goal**: each card's primary metric is unambiguously primary.
 
-- Primary metric ≥ 3× the size of any secondary
+- Primary metric >= 3x the size of any secondary
 - Stale/fresh color-coded timestamp badges on all data cards
 - Skeleton loading states for slow-loading cards (LCP discipline)
 - Reduce simultaneous visual weight of optional fields
@@ -345,7 +356,7 @@ Release is blocked if any command fails. **No exceptions. No waivers. No suppres
 - CLS = 0 (skeletons prevent layout shift)
 - SW precache only critical assets; lazy-cache card-specific resources
 - Resource hints (`preconnect`, `dns-prefetch`) for all API origins
-- **Exit**: Lighthouse CI gate at 95+ across all categories
+- **Exit**: Lighthouse CI gate at 100 across all categories
 
 ### P6 — Accessibility Hardening (WCAG 2.2 AA)
 
@@ -369,24 +380,26 @@ Release is blocked if any command fails. **No exceptions. No waivers. No suppres
 
 ---
 
-## 5. 🎯 Near-Term Milestones
+## 5. Near-Term Milestones
 
-### v15.5.1 — Production Cleanup (this release)
+### v15.7.0 — Production Cleanup (next release)
 
-- ROADMAP consolidated to v11.0 (this document)
-- VS Code extension noise tuned to `.browserslistrc` (Baseline Lens config)
-- Legitimate CSS hygiene fixes (`-webkit-` ordering, missing prefixes)
-- Repo memory refreshed
-- No behavior change, no version-breaking change
+- Workspace hygiene: intermediate files excluded from repo
+- VS Code extension false positives resolved (Baseline Lens worker/ exclusion)
+- All suspended/disabled config options removed or activated
+- Dead code audit: no unreachable exports, no dead config files
+- `.gitignore` hardened for all temp/intermediate output
+- ROADMAP consolidated to v12.0 (this document)
+- Full `npm run check` passing with zero warnings
 
-### v15.6.0 — Information Hierarchy (P1)
+### v15.8.0 — Information Hierarchy (P1)
 
 - Glance/TRMNL harvest applied to weather, stocks, currency, news
 - Freshness badges across all data cards
 - Skeleton states for slow loaders
 - VR baselines updated
 
-### v15.7.0 — Provider Health (P2)
+### v15.9.0 — Provider Health (P2)
 
 - Diag overlay scorecard
 - Worker health probes
@@ -402,7 +415,7 @@ Release is blocked if any command fails. **No exceptions. No waivers. No suppres
 
 ### v16.1.0 — Performance & A11y (P5 + P6)
 
-- Lighthouse CI 95+ gate
+- Lighthouse CI 100 gate
 - Resource hints
 - axe-core clean
 
@@ -414,7 +427,7 @@ Release is blocked if any command fails. **No exceptions. No waivers. No suppres
 
 ---
 
-## 6. 🚫 Rejected or Deferred Directions
+## 6. Rejected or Deferred Directions
 
 Permanently rejected unless an ADR reverses with concrete evidence:
 
@@ -441,7 +454,7 @@ Tracked but not adopted yet:
 
 ---
 
-## 7. 🔧 Maintenance Rules
+## 7. Maintenance Rules
 
 1. No shipped sprint logs — use `CHANGELOG.md`
 2. No embedded volatile counts — reference canonical sources
@@ -450,3 +463,6 @@ Tracked but not adopted yet:
 5. Comparison tables re-audited quarterly
 6. This document must be mechanically accurate at all times — any drift is a release blocker
 7. Every new architectural commitment requires an ADR before code lands
+8. No suspended options, disabled flags, or TODO markers in production code
+9. All intermediate/generated files route to `$TEMP` — never committed to repo
+10. VS Code extension diagnostics treated same as CI errors — resolve at root cause

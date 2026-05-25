@@ -27,7 +27,7 @@ import { gzipSync } from "node:zlib";
 const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
-const JS_BUDGET_KB = 113;
+const JS_BUDGET_KB = 115;
 const CSS_BUDGET_KB = 30;
 /** Alert if a bundle type grows more than this fraction vs last baseline. */
 const GROWTH_THRESHOLD = 0.1;

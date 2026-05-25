@@ -112,7 +112,8 @@ async function probeTarget(target: ProbeTarget): Promise<ProviderProbeResult> {
       const res = await fetch(target.url, {
         method: target.method ?? "HEAD",
         headers: {
-          "User-Agent": "FamilyDashBoard/15.7 health-probe https://github.com/RajwanYair/FamilyDashBoard",
+          "User-Agent":
+            "FamilyDashBoard/15.7 health-probe https://github.com/RajwanYair/FamilyDashBoard",
         },
         signal: controller.signal,
       });
@@ -161,18 +162,15 @@ export async function handleProviderHealth(env: Env): Promise<Response> {
       const parsed = JSON.parse(cached) as HealthProbeResponse;
       const ageS = Math.floor((Date.now() - parsed.probed) / 1000);
       const ttlRemaining = Math.max(0, CACHE_TTL_S - ageS);
-      return new Response(
-        JSON.stringify({ ...parsed, ttl: ttlRemaining }),
-        {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json",
-            "Cache-Control": `public, max-age=${ttlRemaining}`,
-            "X-FDB-Source": "kv-cache",
-            ...CORS_HEADERS,
-          },
+      return new Response(JSON.stringify({ ...parsed, ttl: ttlRemaining }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": `public, max-age=${ttlRemaining}`,
+          "X-FDB-Source": "kv-cache",
+          ...CORS_HEADERS,
         },
-      );
+      });
     }
   }
 
