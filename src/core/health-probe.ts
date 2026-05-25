@@ -19,11 +19,7 @@
 import { WORKER_BASE_URL } from "./constants";
 import { isWorkerEnabled } from "./constants";
 import { diagLog } from "./diag";
-import {
-  recordProviderSuccess,
-  recordProviderFailure,
-  recordProviderLatency,
-} from "./provider";
+import { recordProviderSuccess, recordProviderFailure, recordProviderLatency } from "./provider";
 
 const PROBE_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const PROBE_URL = `${WORKER_BASE_URL}/api/provider-health`;
@@ -101,6 +97,7 @@ export function initHealthProbe(): void {
  * @internal
  */
 export function _stopHealthProbe(): void {
+  // dead-export-ok
   if (_probeTimer !== null) {
     clearInterval(_probeTimer);
     _probeTimer = null;

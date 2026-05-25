@@ -69,7 +69,7 @@ export function notifyProviderDegraded(providerId: string, now: number = nowMs()
  * Notify the user that a provider has recovered from degraded or down state.
  * Rate-limited per provider. Only shown when previous status was non-ok.
  */
-export function notifyProviderRecovered(providerId: string, now: number = nowMs()): boolean {
+function notifyProviderRecovered(providerId: string, now: number = nowMs()): boolean {
   const key = `${providerId}:recovered`;
   const last = _lastNotifyAt.get(key);
   if (last !== undefined && now - last < RATE_LIMIT_MS) {
