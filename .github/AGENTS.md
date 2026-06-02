@@ -79,28 +79,28 @@
 
 ## MCP Servers (8 configured)
 
-| Server               | Type           | Token-Saving Role                                             |
-| -------------------- | -------------- | ------------------------------------------------------------- |
-| `github`             | http           | PRs, issues, code search — no manual `gh` CLI needed          |
-| `fetch`              | stdio          | Test upstream APIs in chat — no manual curl/Invoke-WebRequest |
-| `filesystem`         | stdio          | Read coverage/test output — no manual file parsing            |
-| `gitkraken`          | http           | Git blame, log, diff — no manual `git log` parsing            |
-| `playwright`         | stdio          | Browser automation in chat — no manual E2E debugging          |
-| `cloudflare`         | streamableHttp | Workers/KV/D1 management — no manual wrangler CLI             |
-| `memory`             | stdio          | Cross-session knowledge graph — persistent project context    |
-| `sequential-thinking`| stdio          | Complex reasoning — architecture decisions, multi-factor analysis |
+| Server                | Type           | Token-Saving Role                                                 |
+| --------------------- | -------------- | ----------------------------------------------------------------- |
+| `github`              | http           | PRs, issues, code search — no manual `gh` CLI needed              |
+| `fetch`               | stdio          | Test upstream APIs in chat — no manual curl/Invoke-WebRequest     |
+| `filesystem`          | stdio          | Read coverage/test output — no manual file parsing                |
+| `gitkraken`           | http           | Git blame, log, diff — no manual `git log` parsing                |
+| `playwright`          | stdio          | Browser automation in chat — no manual E2E debugging              |
+| `cloudflare`          | streamableHttp | Workers/KV/D1 management — no manual wrangler CLI                 |
+| `memory`              | stdio          | Cross-session knowledge graph — persistent project context        |
+| `sequential-thinking` | stdio          | Complex reasoning — architecture decisions, multi-factor analysis |
 
 > All MCP tools are deferred — call `tool_search` before first use. See `.github/copilot/MCP_SERVERS.md` for full docs.
 
 ## Skills (5)
 
-| Skill                | Purpose                                                          |
-| -------------------- | ---------------------------------------------------------------- |
-| `add-api`            | Add new API data source with full production wiring              |
-| `debug-fetch`        | Debug broken API calls and fetch failures                        |
-| `release`            | Create versioned release with full checklist                     |
-| `update-tests`       | Add or update test coverage                                      |
-| `workspace-optimize` | Audit workspace, clean generated files, enforce $TEMP            |
+| Skill                | Purpose                                               |
+| -------------------- | ----------------------------------------------------- |
+| `add-api`            | Add new API data source with full production wiring   |
+| `debug-fetch`        | Debug broken API calls and fetch failures             |
+| `release`            | Create versioned release with full checklist          |
+| `update-tests`       | Add or update test coverage                           |
+| `workspace-optimize` | Audit workspace, clean generated files, enforce $TEMP |
 
 ## Slash Prompts (22)
 
@@ -127,7 +127,7 @@
 | `/roadmap-status`      | Show roadmap progress report                          |
 | `/roadmap-update`      | Track and update roadmap progress                     |
 | `/production-audit`    | Full production readiness audit                       |
-| `/optimize-workspace`  | Optimize VS Code workspace configuration             |
+| `/optimize-workspace`  | Optimize VS Code workspace configuration              |
 
 ## Extension-Aware Token Optimization
 
@@ -155,16 +155,16 @@ Extensions that reduce Copilot work (user sees inline data):
 
 ## Production Readiness
 
-| Gate              | Command                                             | Required |
-| ----------------- | --------------------------------------------------- | -------- |
-| Type safety       | `npx tsc --noEmit`                                  | ✅        |
-| Lint              | `npx eslint . --max-warnings 0`                    | ✅        |
-| CSS lint          | `npx stylelint "src/**/*.css" --max-warnings 0`    | ✅        |
-| Markdown lint     | `npm run lint:md`                                   | ✅        |
-| Unit tests        | `npx vitest run`                                    | ✅        |
-| E2E tests         | `npx playwright test`                               | ✅        |
-| Bundle size       | `node scripts/check-bundle-size.mjs`                | ✅        |
-| Security          | `node scripts/check-owasp.mjs`                      | ✅        |
-| Supply chain      | `node scripts/check-actions-pinned.mjs`             | ✅        |
-| Clean workspace   | No generated files in root                          | ✅        |
-| $TEMP enforcement | All intermediates → `$TEMP/FamilyDashBoard/`        | ✅        |
+| Gate              | Command                                         | Required |
+| ----------------- | ----------------------------------------------- | -------- |
+| Type safety       | `npx tsc --noEmit`                              | ✅       |
+| Lint              | `npx eslint . --max-warnings 0`                 | ✅       |
+| CSS lint          | `npx stylelint "src/**/*.css" --max-warnings 0` | ✅       |
+| Markdown lint     | `npm run lint:md`                               | ✅       |
+| Unit tests        | `npx vitest run`                                | ✅       |
+| E2E tests         | `npx playwright test`                           | ✅       |
+| Bundle size       | `node scripts/check-bundle-size.mjs`            | ✅       |
+| Security          | `node scripts/check-owasp.mjs`                  | ✅       |
+| Supply chain      | `node scripts/check-actions-pinned.mjs`         | ✅       |
+| Clean workspace   | No generated files in root                      | ✅       |
+| $TEMP enforcement | All intermediates → `$TEMP/FamilyDashBoard/`    | ✅       |

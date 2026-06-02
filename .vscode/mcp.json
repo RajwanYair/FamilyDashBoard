@@ -42,19 +42,13 @@
         "memory": {
             "type": "stdio",
             "command": "npx",
-            "args": [
-                "-y",
-                "@modelcontextprotocol/server-memory@latest"
-            ],
+            "args": ["-y", "@modelcontextprotocol/server-memory@latest"],
             "description": "Persistent knowledge graph for project decisions, patterns, and cross-session context."
         },
         "sequential-thinking": {
             "type": "stdio",
             "command": "npx",
-            "args": [
-                "-y",
-                "@modelcontextprotocol/server-sequential-thinking@latest"
-            ],
+            "args": ["-y", "@modelcontextprotocol/server-sequential-thinking@latest"],
             "description": "Step-by-step reasoning for complex debugging, architecture decisions, and multi-factor analysis."
         }
     }

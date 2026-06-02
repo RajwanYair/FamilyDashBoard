@@ -33,10 +33,7 @@
     "baseline-lens.support": "newly",
     "baseline-lens.browserslist": true,
     "baseline-lens.showInlineHints": false,
-    "baseline-lens.exclude": [
-        "worker/**",
-        "**/worker/**"
-    ],
+    "baseline-lens.exclude": ["worker/**", "**/worker/**"],
     "baseline-lens.ignoredFeatures": [
         "view-transition-name",
         "@view-transition",

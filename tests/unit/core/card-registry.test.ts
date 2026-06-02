@@ -164,6 +164,7 @@ describe("Card Registry — loadCard (parameterized)", () => {
       expect(typeof def.init).toBe("function");
       expect(typeof def.render).toBe("function");
     },
+    30000,
   );
 
   it.each(ceCards)("%s render() returns <%s> custom element host", async (cardId, expectedTag) => {

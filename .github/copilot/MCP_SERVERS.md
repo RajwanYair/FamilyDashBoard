@@ -6,16 +6,16 @@ This repository ships a committed `.vscode/mcp.json` for shared team servers and
 
 ## Committed Servers (`.vscode/mcp.json`)
 
-| Server               | Type             | Package / URL                                 | Purpose                                                                 |
-| -------------------- | ---------------- | --------------------------------------------- | ----------------------------------------------------------------------- |
-| `github`             | `http`           | `api.githubcopilot.com/mcp` (Copilot-managed) | PRs, issues, code search, workflows, labels, releases via Copilot       |
-| `fetch`              | `stdio`          | `@modelcontextprotocol/server-fetch`          | Test API endpoints (Open-Meteo, Hebcal, Yahoo, CoinGecko) in chat       |
-| `filesystem`         | `stdio`          | `@modelcontextprotocol/server-filesystem`     | Scoped read/write to workspace — coverage reports, configs, test output |
-| `gitkraken`          | `http`           | `mcp.gitkraken.com/mcp`                       | Git blame, log, diff, branch ops, PR workflow, cross-repo work          |
-| `playwright`         | `stdio`          | `@microsoft/mcp-server-playwright`            | Browser automation, screenshot capture, visual regression in chat       |
-| `cloudflare`         | `streamableHttp` | `mcp.cloudflare.com/sse`                      | Workers, Pages, D1, KV, R2 — deploy, manage, debug worker routes        |
-| `memory`             | `stdio`          | `@modelcontextprotocol/server-memory`         | Persistent knowledge graph — cross-session project context              |
-| `sequential-thinking`| `stdio`          | `@modelcontextprotocol/server-sequential-thinking` | Step-by-step reasoning for architecture decisions and complex analysis |
+| Server                | Type             | Package / URL                                      | Purpose                                                                 |
+| --------------------- | ---------------- | -------------------------------------------------- | ----------------------------------------------------------------------- |
+| `github`              | `http`           | `api.githubcopilot.com/mcp` (Copilot-managed)      | PRs, issues, code search, workflows, labels, releases via Copilot       |
+| `fetch`               | `stdio`          | `@modelcontextprotocol/server-fetch`               | Test API endpoints (Open-Meteo, Hebcal, Yahoo, CoinGecko) in chat       |
+| `filesystem`          | `stdio`          | `@modelcontextprotocol/server-filesystem`          | Scoped read/write to workspace — coverage reports, configs, test output |
+| `gitkraken`           | `http`           | `mcp.gitkraken.com/mcp`                            | Git blame, log, diff, branch ops, PR workflow, cross-repo work          |
+| `playwright`          | `stdio`          | `@microsoft/mcp-server-playwright`                 | Browser automation, screenshot capture, visual regression in chat       |
+| `cloudflare`          | `streamableHttp` | `mcp.cloudflare.com/sse`                           | Workers, Pages, D1, KV, R2 — deploy, manage, debug worker routes        |
+| `memory`              | `stdio`          | `@modelcontextprotocol/server-memory`              | Persistent knowledge graph — cross-session project context              |
+| `sequential-thinking` | `stdio`          | `@modelcontextprotocol/server-sequential-thinking` | Step-by-step reasoning for architecture decisions and complex analysis  |
 
 ### Parent-Level Servers (`MyScripts/.vscode/mcp.json`)
 

@@ -1,3 +1,9 @@
+---
+name: workspace-optimize
+description: "Audit and optimize the FamilyDashBoard workspace for production readiness, clean generated files, enforce $TEMP for intermediates, and validate VS Code integration quality. Use when: before a release, after adding new tooling, or when generated files accumulate."
+argument-hint: "Describe the audit scope: 'full', 'generated-files', 'vscode-settings', or 'pre-release'"
+---
+
 # Skill: workspace-optimize
 
 > Audit and optimize the FamilyDashBoard workspace for production readiness, clean generated files, enforce $TEMP for intermediates, and validate VS Code integration quality.
@@ -38,14 +44,14 @@ foreach ($pattern in $forbidden) {
 
 All test/coverage/report output MUST go to `$env:TEMP/FamilyDashBoard/`:
 
-| Output Type      | Correct Location                                |
-| ---------------- | ----------------------------------------------- |
-| Coverage HTML    | `$env:TEMP/FamilyDashBoard/coverage/`           |
-| Test reports     | `$env:TEMP/FamilyDashBoard/reports/`            |
-| Bundle analysis  | `$env:TEMP/FamilyDashBoard/bundle-stats/`       |
-| Mutation reports | `$env:TEMP/FamilyDashBoard/mutation/`           |
-| Debug logs       | `$env:TEMP/FamilyDashBoard/logs/`               |
-| Build artifacts  | `dist/` (gitignored)                            |
+| Output Type      | Correct Location                          |
+| ---------------- | ----------------------------------------- |
+| Coverage HTML    | `$env:TEMP/FamilyDashBoard/coverage/`     |
+| Test reports     | `$env:TEMP/FamilyDashBoard/reports/`      |
+| Bundle analysis  | `$env:TEMP/FamilyDashBoard/bundle-stats/` |
+| Mutation reports | `$env:TEMP/FamilyDashBoard/mutation/`     |
+| Debug logs       | `$env:TEMP/FamilyDashBoard/logs/`         |
+| Build artifacts  | `dist/` (gitignored)                      |
 
 ### 3. Validate VS Code Integration
 
@@ -92,11 +98,11 @@ Return a structured report:
 
 | Check                      | Status | Details |
 | -------------------------- | ------ | ------- |
-| Generated files in root    | ✅/❌   |         |
-| $TEMP enforcement          | ✅/❌   |         |
-| VS Code settings valid     | ✅/❌   |         |
-| Tasks reference valid cmds | ✅/❌   |         |
-| Extensions up to date      | ✅/❌   |         |
-| MCP servers configured     | ✅/❌   |         |
-| Production gate passes     | ✅/❌   |         |
+| Generated files in root    | ✅/❌  |         |
+| $TEMP enforcement          | ✅/❌  |         |
+| VS Code settings valid     | ✅/❌  |         |
+| Tasks reference valid cmds | ✅/❌  |         |
+| Extensions up to date      | ✅/❌  |         |
+| MCP servers configured     | ✅/❌  |         |
+| Production gate passes     | ✅/❌  |         |
 ```

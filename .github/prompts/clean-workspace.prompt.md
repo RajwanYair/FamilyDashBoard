@@ -16,6 +16,7 @@ Audit the workspace and enforce the rule that all generated/intermediate files g
    - `dist/`, `tsconfig.tsbuildinfo`, `.eslintcache`
 
 2. **Clean** — Remove them:
+
    ```powershell
    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue dist, coverage, test-results, playwright-report, blob-report, .playwright, .eslintcache, tsconfig.tsbuildinfo
    Get-ChildItem -Recurse -Include *.tmp,*.bak,*.log,*_output.txt | Remove-Item -Force

@@ -13,18 +13,18 @@
 
 FamilyDashBoard competes in the **ambient family information display** category — alongside MagicMirror², Glance, Homepage, Homarr, Home Assistant Lovelace, Dakboard, TRMNL, e-ink frames, and self-hosted dashboards. Our durable differentiators:
 
-| Differentiator                | Strength vs field                                                                         |
-| ----------------------------- | ----------------------------------------------------------------------------------------- |
-| **Zero runtime dependencies** | Only entrant with 0 client npm deps AND full offline-first PWA                            |
-| **Hebrew RTL native**         | Only ambient dashboard with native Hebrew + Jewish calendar + Shabbat-aware UI            |
-| **TV-first density**          | Optimized for 1920×1080 always-on at 3 m reading distance                                 |
-| **Privacy by architecture**   | No auth, no accounts, no server-side user data — local-first localStorage + IDB           |
-| **Edge-augmented, not bound** | Cloudflare Worker optional; dashboard renders, refreshes, and self-heals fully without it |
-| **In-house reactivity**       | ~1 KB signals engine aligned to TC39 Stage 3 — swap-ready when native lands               |
-| **27 production gates**       | `npm run check` is the canonical bar; lint + test alone are insufficient                  |
-| **Reproducible artifacts**    | `check:reproducible` + `check:sigstore` provide supply-chain guarantees most peers do not |
+| Differentiator                | Strength vs field                                                                          |
+| ----------------------------- | ------------------------------------------------------------------------------------------ |
+| **Zero runtime dependencies** | Only entrant with 0 client npm deps AND full offline-first PWA                             |
+| **Hebrew RTL native**         | Only ambient dashboard with native Hebrew + Jewish calendar + Shabbat-aware UI             |
+| **TV-first density**          | Optimized for 1920×1080 always-on at 3 m reading distance                                  |
+| **Privacy by architecture**   | No auth, no accounts, no server-side user data — local-first localStorage + IDB            |
+| **Edge-augmented, not bound** | Cloudflare Worker optional; dashboard renders, refreshes, and self-heals fully without it  |
+| **In-house reactivity**       | ~1 KB signals engine aligned to TC39 Stage 3 — swap-ready when native lands                |
+| **27 production gates**       | `npm run check` is the canonical bar; lint + test alone are insufficient                   |
+| **Reproducible artifacts**    | `check:reproducible` + `check:sigstore` provide supply-chain guarantees most peers do not  |
 | **Temporal API native**       | All date/time operations route through `src/core/temporal.ts` — zero raw `Date()` in cards |
-| **DX-first tooling**          | 8 MCP servers · 5 skills · 3 agents · 56 Copilot rules · 25 VS Code tasks · 3-tier memory |
+| **DX-first tooling**          | 8 MCP servers · 5 skills · 3 agents · 56 Copilot rules · 25 VS Code tasks · 3-tier memory  |
 
 This roadmap pushes every layer to **best-in-class** across reliability, maintainability, information clarity, accessibility, and supply-chain integrity. Complexity is added only where it eliminates a real failure mode.
 
@@ -56,21 +56,21 @@ Every major decision reconsidered from first principles. Columns: current decisi
 
 ### 1.2 Frontend Stack
 
-| Area             | Current                                                  | Verdict     | Forward action                                                                           |
-| ---------------- | -------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------- |
-| Language         | TypeScript 6 strict + `exactOptionalPropertyTypes`       | **Keep**    | Adopt TS 7 only when emit is byte-stable                                                 |
-| UI framework     | Vanilla DOM + card class hierarchy + custom elements     | **Keep**    | Frameworks add no value for 12 stable cards; improve view-model separation incrementally |
-| CSS architecture | `@layer` cascade governance (ADR-008)                    | **Keep**    | Expand container queries; enforce `light-dark()` + `@scope` for new themes               |
-| CSS future       | Tracking `css if()` (ADR-080), anchor positioning        | **Track**   | Adopt `css if()` when Baseline Newly; anchor-pos for tooltip stacking contexts           |
-| Reactivity       | In-house signals (~200 LOC, ADR-038)                     | **Keep**    | Track TC39 Stage 3; swap when native — keep adapter layer thin (ADR-081 audit done)      |
-| State            | Signals + localStorage + IDB + SW                        | **Keep**    | Four-tier (memory → LS → IDB → SW) is architecturally correct                            |
-| Date/time        | `src/core/temporal.ts` — **DONE** (P0 shipped v15.5)     | **Done** ✓  | Zero raw `new Date()` in cards; temporal.ts is the SSoT                                  |
-| Build            | Vite 8 + Rollup, dual `--base` targets                   | **Keep**    | IIFE for `file://`, ESM for hosted; correct                                              |
-| CSS processing   | LightningCSS via Vite                                    | **Keep**    | Fastest correct transform; targets aligned with `.browserslistrc`                        |
-| Service Worker   | Hand-crafted, versioned, `SKIP_WAITING` message contract | **Keep**    | Full cache control without Workbox bloat                                                 |
-| Icons & manifest | `src/public/` (Vite static dir)                          | **Keep**    | Unfingerprinted, stable URLs                                                             |
-| Type packaging   | Per-feature `types/` modules + central `api.ts`          | **Keep**    | Domain types co-located; cross-cutting in `types/`                                       |
-| View Transitions | Level 1 shipping; Level 2 cross-doc tracked (ADR-037)    | **Track**   | Adopt L2 when broadly supported; gate behind `@view-transition` opt-in                   |
+| Area             | Current                                                  | Verdict    | Forward action                                                                           |
+| ---------------- | -------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------- |
+| Language         | TypeScript 6 strict + `exactOptionalPropertyTypes`       | **Keep**   | Adopt TS 7 only when emit is byte-stable                                                 |
+| UI framework     | Vanilla DOM + card class hierarchy + custom elements     | **Keep**   | Frameworks add no value for 12 stable cards; improve view-model separation incrementally |
+| CSS architecture | `@layer` cascade governance (ADR-008)                    | **Keep**   | Expand container queries; enforce `light-dark()` + `@scope` for new themes               |
+| CSS future       | Tracking `css if()` (ADR-080), anchor positioning        | **Track**  | Adopt `css if()` when Baseline Newly; anchor-pos for tooltip stacking contexts           |
+| Reactivity       | In-house signals (~200 LOC, ADR-038)                     | **Keep**   | Track TC39 Stage 3; swap when native — keep adapter layer thin (ADR-081 audit done)      |
+| State            | Signals + localStorage + IDB + SW                        | **Keep**   | Four-tier (memory → LS → IDB → SW) is architecturally correct                            |
+| Date/time        | `src/core/temporal.ts` — **DONE** (P0 shipped v15.5)     | **Done** ✓ | Zero raw `new Date()` in cards; temporal.ts is the SSoT                                  |
+| Build            | Vite 8 + Rollup, dual `--base` targets                   | **Keep**   | IIFE for `file://`, ESM for hosted; correct                                              |
+| CSS processing   | LightningCSS via Vite                                    | **Keep**   | Fastest correct transform; targets aligned with `.browserslistrc`                        |
+| Service Worker   | Hand-crafted, versioned, `SKIP_WAITING` message contract | **Keep**   | Full cache control without Workbox bloat                                                 |
+| Icons & manifest | `src/public/` (Vite static dir)                          | **Keep**   | Unfingerprinted, stable URLs                                                             |
+| Type packaging   | Per-feature `types/` modules + central `api.ts`          | **Keep**   | Domain types co-located; cross-cutting in `types/`                                       |
+| View Transitions | Level 1 shipping; Level 2 cross-doc tracked (ADR-037)    | **Track**  | Adopt L2 when broadly supported; gate behind `@view-transition` opt-in                   |
 
 ### 1.3 Backend / Infrastructure
 
@@ -127,79 +127,79 @@ Every major decision reconsidered from first principles. Columns: current decisi
 
 ### 1.6 GitHub Actions & CI/CD
 
-| Area                  | Current                                           | Verdict  | Forward action                                                         |
-| --------------------- | ------------------------------------------------- | -------- | ---------------------------------------------------------------------- |
-| Primary CI            | `ci.yml` — unified typecheck → lint → test → build | **Keep** | Single source of truth; no parallel ci-v*.yml files                    |
-| Deploy                | `deploy.yml` + `deploy-worker.yml`                | **Keep** | Pages deploy from `main`; worker from `worker/`                        |
-| Release               | `release.yml` + `release-drafter.yml`             | **Keep** | Automated GitHub release + release notes                               |
-| Security              | `codeql.yml` · `security.yml` · `trivy.yml`       | **Keep** | Multi-layer security scanning                                          |
-| TruffleHog            | `trufflehog.yml` — secret scanning                | **Keep** | Prevents credential leaks in history                                   |
-| ZAP                   | `zap-baseline.yml` — DAST                         | **Keep** | Dynamic application security testing                                   |
-| SBOM                  | `sbom.yml` + `pr-sbom-diff.yml`                   | **Keep** | Software bill of materials on every release                            |
-| Scorecard             | `scorecard.yml` — OpenSSF                         | **Keep** | External supply-chain scoring                                          |
-| Stale                 | `stale.yml`                                       | **Keep** | Keeps issues/PRs clean                                                 |
-| Dependabot            | `dependabot.yml` + `dependabot-auto-merge.yml`    | **Keep** | Automated dep bumps; auto-merge for minor/patch                        |
-| Renovate              | `renovate.json`                                   | **Keep** | Supplemental to Dependabot for worker/ deps                            |
-| Visual baselines      | `visual-baselines.yml`                            | **Keep** | Regenerates VR baselines on main after intentional UI changes          |
-| Perf regression       | `perf-regression.yml`                             | **Keep** | Lighthouse CI ratchet (0.99 floor)                                     |
-| Rebuild verify        | `rebuild-verify.yml`                              | **Keep** | Reproducible build attestation                                         |
-| Supply chain          | `supply-chain.yml`                                | **Keep** | SLSA provenance generation                                             |
-| Action SHA pinning    | All actions use SHA pins                          | **Keep** | `check:actions-pinned` enforces this in CI                             |
-| Branch protection     | `branch-protection.yml`                           | **Improve** | Add required reviewers + code owner approval for `main`              |
-| PR coverage           | `pr-coverage.yml` — coverage delta on PRs         | **Keep** | Prevent coverage regressions in PRs                                    |
+| Area               | Current                                            | Verdict     | Forward action                                                |
+| ------------------ | -------------------------------------------------- | ----------- | ------------------------------------------------------------- |
+| Primary CI         | `ci.yml` — unified typecheck → lint → test → build | **Keep**    | Single source of truth; no parallel ci-v\*.yml files          |
+| Deploy             | `deploy.yml` + `deploy-worker.yml`                 | **Keep**    | Pages deploy from `main`; worker from `worker/`               |
+| Release            | `release.yml` + `release-drafter.yml`              | **Keep**    | Automated GitHub release + release notes                      |
+| Security           | `codeql.yml` · `security.yml` · `trivy.yml`        | **Keep**    | Multi-layer security scanning                                 |
+| TruffleHog         | `trufflehog.yml` — secret scanning                 | **Keep**    | Prevents credential leaks in history                          |
+| ZAP                | `zap-baseline.yml` — DAST                          | **Keep**    | Dynamic application security testing                          |
+| SBOM               | `sbom.yml` + `pr-sbom-diff.yml`                    | **Keep**    | Software bill of materials on every release                   |
+| Scorecard          | `scorecard.yml` — OpenSSF                          | **Keep**    | External supply-chain scoring                                 |
+| Stale              | `stale.yml`                                        | **Keep**    | Keeps issues/PRs clean                                        |
+| Dependabot         | `dependabot.yml` + `dependabot-auto-merge.yml`     | **Keep**    | Automated dep bumps; auto-merge for minor/patch               |
+| Renovate           | `renovate.json`                                    | **Keep**    | Supplemental to Dependabot for worker/ deps                   |
+| Visual baselines   | `visual-baselines.yml`                             | **Keep**    | Regenerates VR baselines on main after intentional UI changes |
+| Perf regression    | `perf-regression.yml`                              | **Keep**    | Lighthouse CI ratchet (0.99 floor)                            |
+| Rebuild verify     | `rebuild-verify.yml`                               | **Keep**    | Reproducible build attestation                                |
+| Supply chain       | `supply-chain.yml`                                 | **Keep**    | SLSA provenance generation                                    |
+| Action SHA pinning | All actions use SHA pins                           | **Keep**    | `check:actions-pinned` enforces this in CI                    |
+| Branch protection  | `branch-protection.yml`                            | **Improve** | Add required reviewers + code owner approval for `main`       |
+| PR coverage        | `pr-coverage.yml` — coverage delta on PRs          | **Keep**    | Prevent coverage regressions in PRs                           |
 
 ### 1.7 Tools & Versions
 
-| Tool          | Current          | Target           | Action                                                        |
-| ------------- | ---------------- | ---------------- | ------------------------------------------------------------- |
-| Node.js       | 22.x (`.nvmrc`)  | 22 LTS           | Stay on active LTS; bump to 24 when LTS                       |
-| TypeScript    | 6.0.3            | 6.x latest patch | TS 7 only when emit unchanged                                 |
-| Vite          | 8.x              | 8.x latest       | Auto-bump minor                                               |
-| Vitest        | 4.1.6            | 4.x latest       | Track Vite major                                              |
-| Playwright    | 1.60.x           | 1.x latest       | Monthly upgrade for browser engine coverage                   |
-| ESLint        | 10.x flat config | 10.x latest      | Flat config is final form                                     |
-| Oxlint        | Not yet          | ADR-039          | Add as fast prepass (<50 ms); block ESLint for oxlint errors  |
-| Prettier       | 3.8.x            | 3.x latest       | Stable                                                        |
-| Stylelint     | 17.x             | 17.x latest      | Modern-color notation enforced                                |
-| Hono          | latest           | latest           | Tiny edge router                                              |
-| Valibot       | 1.x              | 1.x latest       | Schema validation, smaller than Zod                           |
-| Wrangler      | 4.x              | 4.x latest       | Cloudflare deploy CLI                                         |
-| LightningCSS  | via Vite 8       | via Vite         | Aligned with `.browserslistrc`; update when targets change    |
-| happy-dom     | 20.x             | 20.x latest      | Matches Vitest; update together                               |
-| Stryker       | 9.x              | 9.x latest       | Mutation testing; expand scope per ADR-083                    |
+| Tool         | Current          | Target           | Action                                                       |
+| ------------ | ---------------- | ---------------- | ------------------------------------------------------------ |
+| Node.js      | 22.x (`.nvmrc`)  | 22 LTS           | Stay on active LTS; bump to 24 when LTS                      |
+| TypeScript   | 6.0.3            | 6.x latest patch | TS 7 only when emit unchanged                                |
+| Vite         | 8.x              | 8.x latest       | Auto-bump minor                                              |
+| Vitest       | 4.1.6            | 4.x latest       | Track Vite major                                             |
+| Playwright   | 1.60.x           | 1.x latest       | Monthly upgrade for browser engine coverage                  |
+| ESLint       | 10.x flat config | 10.x latest      | Flat config is final form                                    |
+| Oxlint       | Not yet          | ADR-039          | Add as fast prepass (<50 ms); block ESLint for oxlint errors |
+| Prettier     | 3.8.x            | 3.x latest       | Stable                                                       |
+| Stylelint    | 17.x             | 17.x latest      | Modern-color notation enforced                               |
+| Hono         | latest           | latest           | Tiny edge router                                             |
+| Valibot      | 1.x              | 1.x latest       | Schema validation, smaller than Zod                          |
+| Wrangler     | 4.x              | 4.x latest       | Cloudflare deploy CLI                                        |
+| LightningCSS | via Vite 8       | via Vite         | Aligned with `.browserslistrc`; update when targets change   |
+| happy-dom    | 20.x             | 20.x latest      | Matches Vitest; update together                              |
+| Stryker      | 9.x              | 9.x latest       | Mutation testing; expand scope per ADR-083                   |
 
 ### 1.8 External Data Sources
 
-| Source          | Card(s)    | Status      | Forward action                                                        |
-| --------------- | ---------- | ----------- | --------------------------------------------------------------------- |
-| Open-Meteo      | weather    | **Healthy** | Add precipitation radar tile endpoint; 3-day sparkline                |
-| Yahoo Finance   | stocks     | **Healthy** | Worker-only proxying; Hibernatable WebSocket (ADR-087)                |
-| Bank of Israel  | currency   | **Healthy** | Historical trend sparklines; crypto add-on via CoinGecko              |
-| Pikud HaOref    | alerts     | **Healthy** | Hibernatable WebSocket DO (ADR-089); VAPID push opt-in (ADR-091)      |
-| Google Calendar | calendar   | **Healthy** | Read-only public URL only; no OAuth                                   |
-| Hebcal          | hebrew-cal | **Healthy** | Single Worker endpoint for holidays + shabbat                         |
-| Sefaria         | hebrew-cal | **Healthy** | Aggressive 24 h cache for daily study text                            |
-| RSS feeds       | news       | **Healthy** | SimHash dedup done; recency-weighted ranking + starred persistence    |
-| YouTube/RSS     | video-news | **Healthy** | Passive embed; no YouTube API key; PiP API (ADR-045)                  |
-| CoinGecko       | currency   | **Healthy** | Crypto rates, 5-min cache                                             |
+| Source          | Card(s)    | Status      | Forward action                                                     |
+| --------------- | ---------- | ----------- | ------------------------------------------------------------------ |
+| Open-Meteo      | weather    | **Healthy** | Add precipitation radar tile endpoint; 3-day sparkline             |
+| Yahoo Finance   | stocks     | **Healthy** | Worker-only proxying; Hibernatable WebSocket (ADR-087)             |
+| Bank of Israel  | currency   | **Healthy** | Historical trend sparklines; crypto add-on via CoinGecko           |
+| Pikud HaOref    | alerts     | **Healthy** | Hibernatable WebSocket DO (ADR-089); VAPID push opt-in (ADR-091)   |
+| Google Calendar | calendar   | **Healthy** | Read-only public URL only; no OAuth                                |
+| Hebcal          | hebrew-cal | **Healthy** | Single Worker endpoint for holidays + shabbat                      |
+| Sefaria         | hebrew-cal | **Healthy** | Aggressive 24 h cache for daily study text                         |
+| RSS feeds       | news       | **Healthy** | SimHash dedup done; recency-weighted ranking + starred persistence |
+| YouTube/RSS     | video-news | **Healthy** | Passive embed; no YouTube API key; PiP API (ADR-045)               |
+| CoinGecko       | currency   | **Healthy** | Crypto rates, 5-min cache                                          |
 
 ### 1.9 Security & Supply Chain
 
-| Area                 | Current                                      | Verdict  | Forward action                                     |
-| -------------------- | -------------------------------------------- | -------- | -------------------------------------------------- |
-| CSP                  | Strict, no wildcards (`check:csp-wildcards`) | **Keep** | No `unsafe-inline`, no wildcard sources            |
-| Trusted Types        | Enforced (`check:trusted-types`)             | **Keep** | Blocks DOM XSS sinks                               |
-| Dependency surface   | 0 client deps; worker deps minimal           | **Keep** | `npm audit --audit-level=high` in CI               |
-| Action pinning       | SHA-pinned (`check:actions-pinned`)          | **Keep** | No floating `@vX` tags                             |
-| Install scripts      | `--ignore-scripts` (`check:ignore-scripts`)  | **Keep** | Prevents postinstall malware                       |
-| Reproducible builds  | `check:reproducible`                         | **Keep** | Byte-stable artifacts                              |
-| Sigstore attestation | `check:sigstore`                             | **Keep** | Cryptographic provenance                           |
-| TruffleHog           | Secret scanning in CI (`trufflehog.yml`)     | **Keep** | Catches accidental credential commits              |
-| ZAP DAST             | `zap-baseline.yml` on deploy                 | **Keep** | Dynamic security scan against Pages URL            |
-| OpenSSF Scorecard    | `scorecard.yml`                              | **Keep** | External supply-chain health score                 |
-| SBOM                 | CycloneDX on release (`sbom.yml`)            | **Keep** | Software bill of materials in every release        |
-| Privacy posture      | No telemetry, no analytics, no cookies       | **Keep** | See `docs/privacy.md`                              |
-| OWASP review         | `check:owasp` per release                    | **Keep** | Mapped to Top 10:2021                              |
+| Area                 | Current                                      | Verdict  | Forward action                              |
+| -------------------- | -------------------------------------------- | -------- | ------------------------------------------- |
+| CSP                  | Strict, no wildcards (`check:csp-wildcards`) | **Keep** | No `unsafe-inline`, no wildcard sources     |
+| Trusted Types        | Enforced (`check:trusted-types`)             | **Keep** | Blocks DOM XSS sinks                        |
+| Dependency surface   | 0 client deps; worker deps minimal           | **Keep** | `npm audit --audit-level=high` in CI        |
+| Action pinning       | SHA-pinned (`check:actions-pinned`)          | **Keep** | No floating `@vX` tags                      |
+| Install scripts      | `--ignore-scripts` (`check:ignore-scripts`)  | **Keep** | Prevents postinstall malware                |
+| Reproducible builds  | `check:reproducible`                         | **Keep** | Byte-stable artifacts                       |
+| Sigstore attestation | `check:sigstore`                             | **Keep** | Cryptographic provenance                    |
+| TruffleHog           | Secret scanning in CI (`trufflehog.yml`)     | **Keep** | Catches accidental credential commits       |
+| ZAP DAST             | `zap-baseline.yml` on deploy                 | **Keep** | Dynamic security scan against Pages URL     |
+| OpenSSF Scorecard    | `scorecard.yml`                              | **Keep** | External supply-chain health score          |
+| SBOM                 | CycloneDX on release (`sbom.yml`)            | **Keep** | Software bill of materials in every release |
+| Privacy posture      | No telemetry, no analytics, no cookies       | **Keep** | See `docs/privacy.md`                       |
+| OWASP review         | `check:owasp` per release                    | **Keep** | Mapped to Top 10:2021                       |
 
 ---
 
@@ -207,66 +207,66 @@ Every major decision reconsidered from first principles. Columns: current decisi
 
 ### 2.1 Full Comparison Matrix
 
-| Dimension                 | FamilyDashBoard           | Glance (Go)     | MagicMirror² (JS)   | Homepage (Next.js)  | Homarr (TS)  | Dakboard (SaaS) | HA Lovelace (Py) | Grafana (Go) | TRMNL (HW) | Flame (Node) | Dasherr (SSR) | Netdata (Go) | Actual Budget (TS) | Nextcloud (PHP) |
-| ------------------------- | ------------------------- | --------------- | ------------------- | ------------------- | ------------ | --------------- | ---------------- | ------------ | ---------- | ------------ | ------------- | ------------ | ------------------ | --------------- |
-| **Runtime deps (client)** | **0**                     | ~5              | ~40                 | ~30                 | ~80          | SaaS            | ~200             | ~150         | Firmware   | ~20          | ~5            | ~100         | ~60                | ~300            |
-| **Offline capability**    | **Full PWA**              | None            | Partial             | None                | None         | None            | None             | None         | Firmware   | None         | None          | None         | **Full PWA**       | Partial         |
-| **Auth required**         | **No**                    | No              | No                  | Optional            | Yes          | Yes             | Yes              | Yes          | Yes        | No           | Optional      | Yes          | Optional           | Yes             |
-| **Server required**       | **No**                    | Yes (Go)        | Yes (Node)          | Yes (Docker)        | Yes (Docker) | Cloud           | Yes (Python)     | Yes (Docker) | Cloud      | Yes (Node)   | Yes (Node)    | Yes (Go)     | **No**             | Yes (LAMP)      |
-| **TV/ambient optimized**  | **Yes**                   | Partial         | Yes                 | No                  | No           | Yes             | Partial          | No           | Yes        | No           | No            | No           | No                 | No              |
-| **RTL / Hebrew native**   | **Yes**                   | No              | Community plugin    | No                  | No           | No              | Community        | No           | No         | No           | No            | No           | No                 | Partial         |
-| **Cards / widgets**       | 12 curated                | ~30             | ~200 community      | ~100                | ~150         | ~20             | 1000+            | Plugin model | ~15        | 15 apps      | ~25           | ~50          | ~12                | 100+ apps       |
-| **Information density**   | High                      | Very High       | Medium              | Medium              | Medium       | Low             | Variable         | Very High    | Very Low   | Low          | Low           | Very High    | High               | Variable        |
-| **Build system**          | Vite 8 + Rollup           | Go build        | npm + webpack       | Next.js             | Turborepo    | N/A             | pip/Docker       | GoReleaser   | N/A        | npm + webpack | Vite          | GoReleaser  | Vite + Rollup      | npm             |
-| **Type safety**           | **TS 6 strict**           | Go (typed)      | No (JS)             | Partial             | TS           | N/A             | Python typing    | Go (typed)   | N/A        | JS only      | Go (typed)    | Go (typed)   | **TS strict**      | PHP typed       |
-| **Test depth**            | **U+E2E+VR+Mut+Bench**    | Minimal         | Minimal             | Good                | Good         | Unknown         | Excellent        | Excellent    | Unknown    | Basic        | Basic         | Good         | Good               | Good            |
-| **Custom check gates**    | **27**                    | 0               | ~3                  | ~5                  | ~8           | 0               | ~15              | ~20          | 0          | 0            | 0             | ~5           | ~10                | ~5              |
-| **Reproducible builds**   | **Yes**                   | No              | No                  | No                  | No           | N/A             | No               | No           | N/A        | No           | No            | No           | No                 | No              |
-| **Sigstore attestation**  | **Yes**                   | No              | No                  | No                  | No           | N/A             | No               | No           | N/A        | No           | No            | No           | No                 | No              |
-| **CSP / Trusted Types**   | **Strict + TT**           | None            | None                | Basic               | Basic        | Unknown         | Basic            | Basic        | N/A        | None         | None          | Basic        | Basic              | Basic           |
-| **A11y posture**          | WCAG 2.2 AA target        | Unknown         | Community           | Unknown             | Unknown      | Unknown         | Partial          | Partial      | N/A        | Unknown      | Unknown       | Partial      | Good               | Partial         |
-| **i18n model**            | RTL+Hebrew first          | en-only         | i18n plugin         | en-only             | i18n plugin  | en-only         | i18n plugin      | en-only      | en-only    | en-only      | en-only       | Multi-lang   | en-only            | Multi-lang      |
-| **Privacy posture**       | **Maximal (no tracking)** | Good            | Good                | Good                | Medium       | Poor            | Good             | Medium       | Poor       | Good         | Good          | Medium       | **Maximal**        | Good            |
-| **Bundle size (client)**  | **~180 KB gz**            | N/A (server)    | ~500 KB             | N/A (server)        | ~2 MB        | N/A             | N/A              | N/A          | N/A        | N/A          | ~50 KB        | N/A          | ~400 KB            | N/A             |
-| **Setup complexity**      | `git clone` + open        | Docker/binary   | npm + config        | Docker              | Docker       | Sign up         | OS install       | Docker       | Buy HW     | Docker       | npm + config  | Docker       | npm start          | Full LAMP stack |
-| **Observability**         | Diag overlay + AE         | None            | None                | Logs only           | Basic        | None            | Excellent        | Excellent    | None       | None         | None          | **Excellent** | Basic             | Basic           |
-| **Container queries**     | **Yes (enforced)**        | No              | No                  | Tailwind responsive | Tailwind     | No              | No               | No           | No         | No           | No            | No           | No                 | No              |
-| **View Transitions**      | **Yes**                   | No              | No                  | No                  | No           | No              | No               | No           | No         | No           | No            | No           | No                 | No              |
-| **Lighthouse perf**       | **0.99**                  | N/A             | ~0.60               | ~0.85               | ~0.70        | Unknown         | N/A              | N/A          | N/A        | ~0.80        | ~0.70         | N/A          | ~0.90              | N/A             |
-| **Financial tracking**    | Stocks + Currency         | No              | Plugin              | No                  | No           | No              | Plugin           | Plugin       | No         | No           | No            | No           | **Excellent**      | Plugin          |
-| **Real-time monitoring**  | Provider health + diag    | Process info    | Plugin              | No                  | Service ping | No              | Excellent        | **Excellent** | No        | No           | No            | **Excellent** | No                | Plugin          |
+| Dimension                 | FamilyDashBoard           | Glance (Go)   | MagicMirror² (JS) | Homepage (Next.js)  | Homarr (TS)  | Dakboard (SaaS) | HA Lovelace (Py) | Grafana (Go)  | TRMNL (HW) | Flame (Node)  | Dasherr (SSR) | Netdata (Go)  | Actual Budget (TS) | Nextcloud (PHP) |
+| ------------------------- | ------------------------- | ------------- | ----------------- | ------------------- | ------------ | --------------- | ---------------- | ------------- | ---------- | ------------- | ------------- | ------------- | ------------------ | --------------- |
+| **Runtime deps (client)** | **0**                     | ~5            | ~40               | ~30                 | ~80          | SaaS            | ~200             | ~150          | Firmware   | ~20           | ~5            | ~100          | ~60                | ~300            |
+| **Offline capability**    | **Full PWA**              | None          | Partial           | None                | None         | None            | None             | None          | Firmware   | None          | None          | None          | **Full PWA**       | Partial         |
+| **Auth required**         | **No**                    | No            | No                | Optional            | Yes          | Yes             | Yes              | Yes           | Yes        | No            | Optional      | Yes           | Optional           | Yes             |
+| **Server required**       | **No**                    | Yes (Go)      | Yes (Node)        | Yes (Docker)        | Yes (Docker) | Cloud           | Yes (Python)     | Yes (Docker)  | Cloud      | Yes (Node)    | Yes (Node)    | Yes (Go)      | **No**             | Yes (LAMP)      |
+| **TV/ambient optimized**  | **Yes**                   | Partial       | Yes               | No                  | No           | Yes             | Partial          | No            | Yes        | No            | No            | No            | No                 | No              |
+| **RTL / Hebrew native**   | **Yes**                   | No            | Community plugin  | No                  | No           | No              | Community        | No            | No         | No            | No            | No            | No                 | Partial         |
+| **Cards / widgets**       | 12 curated                | ~30           | ~200 community    | ~100                | ~150         | ~20             | 1000+            | Plugin model  | ~15        | 15 apps       | ~25           | ~50           | ~12                | 100+ apps       |
+| **Information density**   | High                      | Very High     | Medium            | Medium              | Medium       | Low             | Variable         | Very High     | Very Low   | Low           | Low           | Very High     | High               | Variable        |
+| **Build system**          | Vite 8 + Rollup           | Go build      | npm + webpack     | Next.js             | Turborepo    | N/A             | pip/Docker       | GoReleaser    | N/A        | npm + webpack | Vite          | GoReleaser    | Vite + Rollup      | npm             |
+| **Type safety**           | **TS 6 strict**           | Go (typed)    | No (JS)           | Partial             | TS           | N/A             | Python typing    | Go (typed)    | N/A        | JS only       | Go (typed)    | Go (typed)    | **TS strict**      | PHP typed       |
+| **Test depth**            | **U+E2E+VR+Mut+Bench**    | Minimal       | Minimal           | Good                | Good         | Unknown         | Excellent        | Excellent     | Unknown    | Basic         | Basic         | Good          | Good               | Good            |
+| **Custom check gates**    | **27**                    | 0             | ~3                | ~5                  | ~8           | 0               | ~15              | ~20           | 0          | 0             | 0             | ~5            | ~10                | ~5              |
+| **Reproducible builds**   | **Yes**                   | No            | No                | No                  | No           | N/A             | No               | No            | N/A        | No            | No            | No            | No                 | No              |
+| **Sigstore attestation**  | **Yes**                   | No            | No                | No                  | No           | N/A             | No               | No            | N/A        | No            | No            | No            | No                 | No              |
+| **CSP / Trusted Types**   | **Strict + TT**           | None          | None              | Basic               | Basic        | Unknown         | Basic            | Basic         | N/A        | None          | None          | Basic         | Basic              | Basic           |
+| **A11y posture**          | WCAG 2.2 AA target        | Unknown       | Community         | Unknown             | Unknown      | Unknown         | Partial          | Partial       | N/A        | Unknown       | Unknown       | Partial       | Good               | Partial         |
+| **i18n model**            | RTL+Hebrew first          | en-only       | i18n plugin       | en-only             | i18n plugin  | en-only         | i18n plugin      | en-only       | en-only    | en-only       | en-only       | Multi-lang    | en-only            | Multi-lang      |
+| **Privacy posture**       | **Maximal (no tracking)** | Good          | Good              | Good                | Medium       | Poor            | Good             | Medium        | Poor       | Good          | Good          | Medium        | **Maximal**        | Good            |
+| **Bundle size (client)**  | **~180 KB gz**            | N/A (server)  | ~500 KB           | N/A (server)        | ~2 MB        | N/A             | N/A              | N/A           | N/A        | N/A           | ~50 KB        | N/A           | ~400 KB            | N/A             |
+| **Setup complexity**      | `git clone` + open        | Docker/binary | npm + config      | Docker              | Docker       | Sign up         | OS install       | Docker        | Buy HW     | Docker        | npm + config  | Docker        | npm start          | Full LAMP stack |
+| **Observability**         | Diag overlay + AE         | None          | None              | Logs only           | Basic        | None            | Excellent        | Excellent     | None       | None          | None          | **Excellent** | Basic              | Basic           |
+| **Container queries**     | **Yes (enforced)**        | No            | No                | Tailwind responsive | Tailwind     | No              | No               | No            | No         | No            | No            | No            | No                 | No              |
+| **View Transitions**      | **Yes**                   | No            | No                | No                  | No           | No              | No               | No            | No         | No            | No            | No            | No                 | No              |
+| **Lighthouse perf**       | **0.99**                  | N/A           | ~0.60             | ~0.85               | ~0.70        | Unknown         | N/A              | N/A           | N/A        | ~0.80         | ~0.70         | N/A           | ~0.90              | N/A             |
+| **Financial tracking**    | Stocks + Currency         | No            | Plugin            | No                  | No           | No              | Plugin           | Plugin        | No         | No            | No            | No            | **Excellent**      | Plugin          |
+| **Real-time monitoring**  | Provider health + diag    | Process info  | Plugin            | No                  | Service ping | No              | Excellent        | **Excellent** | No         | No            | No            | **Excellent** | No                 | Plugin          |
 
 ### 2.2 Harvested Methods (executable list)
 
-| Source             | Method                                       | Adoption plan                                                                  |
-| ------------------ | -------------------------------------------- | ------------------------------------------------------------------------------ |
-| **Glance**         | Ruthless information hierarchy per card      | Primary metric always largest; secondary 0.6×; tertiary 0.4× — **P1 done**    |
-| **Glance**         | Single binary / zero-config deployment       | Our `file://` mode is the equivalent — one artifact, no server — **done**      |
-| **Glance**         | Minimal vanilla JS, no framework             | Already aligned — validates our decision                                       |
-| **TRMNL**          | Pacing for always-on displays                | Refresh-rate governor; coalesce repaints — **P1 in-progress**                  |
-| **TRMNL**          | "Less but clearer"                           | Default card config hides optional fields; expand-on-demand — **P4**           |
-| **NetNewsWire**    | Explicit stale/fresh visual semantics        | Color-coded timestamp badges — **P1 in-progress**                              |
-| **NetNewsWire**    | Cross-feed deduplication                     | SimHash done; dedup ratio in diag overlay — **P3 done**                        |
-| **Grafana**        | Provider health dashboard                    | Scorecard in diag overlay: success rate, p50/p95, last-ok — **P2 in-progress** |
-| **Grafana**        | Evidence-driven release gates                | All 27 checks emit machine-readable pass/fail — **done**                       |
-| **Home Assistant** | Semantic card grouping                       | Group cards by function (info / status / action) in settings — **P4**          |
-| **Home Assistant** | Progressive disclosure in settings           | Tab-based settings with summary → detail drill-down — **P4**                   |
-| **Homepage**       | Overview-first framing                       | Fastest-available data renders first; slow cards show skeleton — **P1 done**   |
-| **Homepage**       | YAML-driven widget configuration             | Our JSON-schema settings dialog achieves same with type safety — **done**      |
-| **MagicMirror2**   | Ambient mindset preservation                 | Night dimmer, auto-scroll, low-motion preferences as first-class — **done**    |
-| **MagicMirror2**   | Module lifecycle hooks (start/stop/resume)   | FdbCard lifecycle (ADR-051) mirrors this with signals — **done**               |
-| **Dakboard**       | Photo/media integration as ambient content   | Optional background media rotation during idle — **R2 ADR-092**                |
-| **Dakboard**       | Family calendar as primary anchor            | Calendar card highest priority in default layout — **done**                    |
-| **HACS / HA**      | Versioned, signed update channels            | Sigstore shipped; add visible "verified build" badge in diag — **P7**          |
-| **Lighthouse**     | Continuous performance budget                | LHCI gate at 0.99 performance — **done** (v15.6.1)                             |
-| **Vite Ecosystem** | Pre-bundled IIFE for `file://`               | Already shipped; documented as best practice                                   |
-| **Actual Budget**  | Clean financial data visualization           | Sparkline charts for currency/stocks; trend comparison — **P3 extension**      |
-| **Actual Budget**  | Offline-first with full PWA                  | Validates our architecture; similar LevelDB → IDB pattern                      |
-| **Netdata**        | Real-time streaming metrics display          | Provider health WebSocket streams via DO (ADR-087/089) — **P9**                |
-| **Netdata**        | Self-healing metric collection               | Worker synthetic probes + fallback chain mirrors their agent model             |
-| **Nextcloud**      | Progressive offline sync strategy            | Our SW + IDB cache mirrors their offline-first approach; validates four-tier   |
-| **Flame**          | Minimalist "just works" homelab page         | Validates our zero-config `file://` target as the right simplicity anchor      |
-| **Dasherr**        | Clean bookmark + service status in one pane  | Semantic link service (ADR-X11) provides cross-card linking equivalent         |
+| Source             | Method                                      | Adoption plan                                                                  |
+| ------------------ | ------------------------------------------- | ------------------------------------------------------------------------------ |
+| **Glance**         | Ruthless information hierarchy per card     | Primary metric always largest; secondary 0.6×; tertiary 0.4× — **P1 done**     |
+| **Glance**         | Single binary / zero-config deployment      | Our `file://` mode is the equivalent — one artifact, no server — **done**      |
+| **Glance**         | Minimal vanilla JS, no framework            | Already aligned — validates our decision                                       |
+| **TRMNL**          | Pacing for always-on displays               | Refresh-rate governor; coalesce repaints — **P1 in-progress**                  |
+| **TRMNL**          | "Less but clearer"                          | Default card config hides optional fields; expand-on-demand — **P4**           |
+| **NetNewsWire**    | Explicit stale/fresh visual semantics       | Color-coded timestamp badges — **P1 in-progress**                              |
+| **NetNewsWire**    | Cross-feed deduplication                    | SimHash done; dedup ratio in diag overlay — **P3 done**                        |
+| **Grafana**        | Provider health dashboard                   | Scorecard in diag overlay: success rate, p50/p95, last-ok — **P2 in-progress** |
+| **Grafana**        | Evidence-driven release gates               | All 27 checks emit machine-readable pass/fail — **done**                       |
+| **Home Assistant** | Semantic card grouping                      | Group cards by function (info / status / action) in settings — **P4**          |
+| **Home Assistant** | Progressive disclosure in settings          | Tab-based settings with summary → detail drill-down — **P4**                   |
+| **Homepage**       | Overview-first framing                      | Fastest-available data renders first; slow cards show skeleton — **P1 done**   |
+| **Homepage**       | YAML-driven widget configuration            | Our JSON-schema settings dialog achieves same with type safety — **done**      |
+| **MagicMirror2**   | Ambient mindset preservation                | Night dimmer, auto-scroll, low-motion preferences as first-class — **done**    |
+| **MagicMirror2**   | Module lifecycle hooks (start/stop/resume)  | FdbCard lifecycle (ADR-051) mirrors this with signals — **done**               |
+| **Dakboard**       | Photo/media integration as ambient content  | Optional background media rotation during idle — **R2 ADR-092**                |
+| **Dakboard**       | Family calendar as primary anchor           | Calendar card highest priority in default layout — **done**                    |
+| **HACS / HA**      | Versioned, signed update channels           | Sigstore shipped; add visible "verified build" badge in diag — **P7**          |
+| **Lighthouse**     | Continuous performance budget               | LHCI gate at 0.99 performance — **done** (v15.6.1)                             |
+| **Vite Ecosystem** | Pre-bundled IIFE for `file://`              | Already shipped; documented as best practice                                   |
+| **Actual Budget**  | Clean financial data visualization          | Sparkline charts for currency/stocks; trend comparison — **P3 extension**      |
+| **Actual Budget**  | Offline-first with full PWA                 | Validates our architecture; similar LevelDB → IDB pattern                      |
+| **Netdata**        | Real-time streaming metrics display         | Provider health WebSocket streams via DO (ADR-087/089) — **P9**                |
+| **Netdata**        | Self-healing metric collection              | Worker synthetic probes + fallback chain mirrors their agent model             |
+| **Nextcloud**      | Progressive offline sync strategy           | Our SW + IDB cache mirrors their offline-first approach; validates four-tier   |
+| **Flame**          | Minimalist "just works" homelab page        | Validates our zero-config `file://` target as the right simplicity anchor      |
+| **Dasherr**        | Clean bookmark + service status in one pane | Semantic link service (ADR-X11) provides cross-card linking equivalent         |
 
 ### 2.3 Anti-Patterns (Permanently Rejected)
 

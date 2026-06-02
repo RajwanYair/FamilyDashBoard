@@ -13,17 +13,21 @@ Read `docs/ROADMAP.md` and produce a concise progress report.
 ## Roadmap Progress — v{{VERSION}}
 
 ### Active Streams
+
 | Stream | Status | Next Action |
 | ------ | ------ | ----------- |
 | ...    | ...    | ...         |
 
 ### Completed This Cycle
+
 - ...
 
 ### Blockers
+
 - ...
 
 ### Next Priorities (top 5)
+
 1. ...
 ```
 

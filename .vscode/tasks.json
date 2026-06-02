@@ -236,10 +236,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": [
-                "$tsc",
-                "$eslint-stylish"
-            ],
+            "problemMatcher": ["$tsc", "$eslint-stylish"],
             "detail": "Full production gate: typecheck + lint + test + e2e + bundle size"
         },
         {
