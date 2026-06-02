@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v15.5.0
+/* FamilyDashBoard ServiceWorker — v15.7.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * Stream SW.4: Migrated from sw.js to sw.ts (TypeScript + WebWorker lib)
@@ -9,7 +9,7 @@
 // TypeScript's webworker lib declares `self` as `WorkerGlobalScope & typeof
 // globalThis`. A service worker's actual global IS ServiceWorkerGlobalScope,
 // but TypeScript won't accept a re-declaration. Use a typed alias instead.
-const sw = self as unknown as ServiceWorkerGlobalScope;
+const sw = globalThis as unknown as ServiceWorkerGlobalScope;
 
 // Build-time constant injected by the vite.config.ts `injectSwVersion` plugin.
 declare const __APP_VERSION__: string;
@@ -102,7 +102,7 @@ function _ttlForOrigin(hostname: string): number {
 function _isFresh(response: Response, hostname: string): boolean {
   const dateHeader = response.headers.get("x-sw-cached-at");
   if (!dateHeader) return true; // no timestamp — treat as fresh to avoid over-invalidation
-  const age = (Date.now() - parseInt(dateHeader, 10)) / 1000;
+  const age = (Date.now() - Number.parseInt(dateHeader, 10)) / 1000;
   return age < _ttlForOrigin(hostname);
 }
 
@@ -131,8 +131,9 @@ sw.addEventListener("install", (event: ExtendableEvent) => {
 
 // ── Message: skip waiting on request from page ────────────────────────────
 sw.addEventListener("message", (event: ExtendableMessageEvent) => {
+  if (event.origin && event.origin !== sw.location.origin) return;
   if ((event.data as { type?: string } | null)?.type === "SKIP_WAITING") {
-    void sw.skipWaiting();
+    sw.skipWaiting().catch(() => undefined);
   }
   // F5 (v7.2): Clear API cache on demand
   if ((event.data as { type?: string } | null)?.type === "CLEAR_API_CACHE") {
@@ -162,9 +163,14 @@ sw.addEventListener("activate", (event: ExtendableEvent) => {
       )
       // F167: tell all clients this version has activated
       .then(() => {
-        void sw.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
-          clients.forEach((c) => c.postMessage({ type: "VERSION_ACTIVATED", version: CACHE_NAME }));
-        });
+        sw.clients
+          .matchAll({ includeUncontrolled: true })
+          .then((clients) => {
+            clients.forEach((c) =>
+              c.postMessage({ type: "VERSION_ACTIVATED", version: CACHE_NAME }),
+            );
+          })
+          .catch(() => undefined);
         return sw.clients.claim();
       }),
   );
@@ -172,9 +178,12 @@ sw.addEventListener("activate", (event: ExtendableEvent) => {
 
 // ── F113: notify all clients that network is back ─────────────────────────
 function _notifyNetworkBack(): void {
-  void sw.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
-    clients.forEach((c) => c.postMessage({ type: "NETWORK_BACK" }));
-  });
+  sw.clients
+    .matchAll({ includeUncontrolled: true })
+    .then((clients) => {
+      clients.forEach((c) => c.postMessage({ type: "NETWORK_BACK" }));
+    })
+    .catch(() => undefined);
 }
 
 // ── Fetch: app shell stale-while-revalidate + F112 API network-first ──────
@@ -325,6 +334,7 @@ async function _flushErrorQueue(): Promise<void> {
 
 // Handle QUEUE_ERROR_REPORT message from the page
 sw.addEventListener("message", (event: ExtendableMessageEvent) => {
+  if (event.origin && event.origin !== sw.location.origin) return;
   const data = event.data as { type?: string; payload?: unknown } | null;
   if (data?.type === "QUEUE_ERROR_REPORT" && data.payload !== undefined) {
     event.waitUntil(_queueErrorReport(data.payload));

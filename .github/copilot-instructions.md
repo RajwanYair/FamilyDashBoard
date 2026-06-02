@@ -1,4 +1,4 @@
-# GitHub Copilot Instructions — FamilyDashBoard v15.6.1
+# GitHub Copilot Instructions — FamilyDashBoard v15.7.0
 
 > TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 7 Themes · 12 Cards · Vite 8 + TS 6.0.3 + Vitest 4.1.6
 > **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
@@ -72,3 +72,8 @@
 49. **Conversation compaction** — long sessions are automatically compacted by Copilot. Key state survives in `<conversation-summary>`. When resuming after compaction, re-read critical files before editing — do not rely on stale cached content.
 50. **Vision & image tools** — use `view_image` to inspect VR baseline screenshots, test failure screenshots in `test-results/`, and SVG doc assets in `.github/assets/`. Prefer visual inspection over guessing at layout issues.
 51. **Number formatting in docs** — never use a space as a thousands separator in any `.md` file. Write full numbers without separations: `7517`, `200000`, `10000`. This applies to code, comments, docs, changelogs, and ADRs everywhere in the project.
+52. **Generated files → $TEMP** — all intermediate/generated output (coverage HTML, test reports, bundle stats, mutation reports, debug logs) MUST go to `$env:TEMP/FamilyDashBoard/`. Never create `.tmp`, `.log`, `*_output.txt`, or report files in the workspace root. The workspace must stay clean of transient artifacts.
+53. **Roadmap tracking** — use TODO Tree tags (`ROADMAP:`, `DEBT:`, `PERF:`, `SECURITY:`, `BREAKING:`) in source comments for inline progress tracking. These are visible in the TODO Tree sidebar and aggregated by tag. Use `/roadmap-status` prompt for progress reports.
+54. **Production gate task** — the workspace task "Production Readiness Gate" runs the full check + e2e + bundle pipeline. Use it before any release tag. Individual gate failures must be fixed before proceeding — no waivers.
+55. **MCP servers** — 8 configured: github, fetch, filesystem, gitkraken, playwright, cloudflare, memory, sequential-thinking. All are deferred — `tool_search` before first use. Memory MCP persists knowledge graphs across sessions. Sequential-thinking MCP enables step-by-step complex reasoning.
+56. **Workspace optimization** — use `/optimize-workspace` or `/clean-workspace` prompts to audit the workspace state. File nesting in Explorer groups related configs. `files.watcherExclude` and `files.exclude` keep generated dirs hidden. Extensions are recommendations-only (no auto-install).

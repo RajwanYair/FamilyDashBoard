@@ -223,6 +223,84 @@
             "group": "test",
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []
+        },
+        {
+            "label": "🚀 Production Readiness Gate",
+            "type": "shell",
+            "command": "npm run check ; npm run test:e2e ; npm run check:bundle",
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [
+                "$tsc",
+                "$eslint-stylish"
+            ],
+            "detail": "Full production gate: typecheck + lint + test + e2e + bundle size"
+        },
+        {
+            "label": "🧹 Clean Generated Files",
+            "type": "shell",
+            "command": "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue dist, coverage, test-results, playwright-report, blob-report, .playwright, .eslintcache, tsconfig.tsbuildinfo ; Write-Host '✅ Cleaned all generated files'",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Remove all build/test/cache artifacts from workspace"
+        },
+        {
+            "label": "📋 Release Report",
+            "type": "shell",
+            "command": "node scripts/release-report.mjs",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Generate release readiness report"
+        },
+        {
+            "label": "🔍 Dead Exports Scan",
+            "type": "shell",
+            "command": "node scripts/check-dead-exports.mjs --fail-on-dead",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Find unused exports across the codebase"
+        },
+        {
+            "label": "🛡️ Security: Full OWASP Audit",
+            "type": "shell",
+            "command": "node scripts/check-owasp.mjs ; node scripts/check-trusted-types.mjs ; node scripts/check-csp-wildcards.mjs",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Run all security checks: OWASP + Trusted Types + CSP"
+        },
+        {
+            "label": "📊 Coverage to TEMP",
+            "type": "shell",
+            "command": "npx vitest run --coverage --coverage.reportsDirectory \"$env:TEMP/FamilyDashBoard/coverage\"",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Run coverage with output to $TEMP (not in workspace)"
         }
     ]
 }

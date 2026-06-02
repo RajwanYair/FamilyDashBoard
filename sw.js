@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v15.6.1
+/* FamilyDashBoard ServiceWorker — v15.7.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * v13.6.0: coverage ratchet (moon-phase+GPU) · LHCI perf ≥0.97 · NWS US-travel mode · @vitest/browser scaffold · motivation non-repeat window · icalendar fuzz 157→171 · Stryker→error-reporter+diag · V14-HARMONISE README (+41 tests, Sprints 66-73)
@@ -82,7 +82,7 @@ function _ttlForOrigin(hostname) {
 function _isFresh(response, hostname) {
   const dateHeader = response.headers.get("x-sw-cached-at");
   if (!dateHeader) return true; // no timestamp — treat as fresh to avoid over-invalidation
-  const age = (Date.now() - parseInt(dateHeader, 10)) / 1000;
+  const age = (Date.now() - Number.parseInt(dateHeader, 10)) / 1000;
   return age < _ttlForOrigin(hostname);
 }
 
@@ -105,14 +105,15 @@ self.addEventListener("install", (event) => {
 
 // ── Message: skip waiting on request from page ────────────────────────────
 self.addEventListener("message", (event) => {
+  if (event.origin && event.origin !== globalThis.location.origin) return;
   if (event.data?.type === "SKIP_WAITING") {
-    self.skipWaiting();
+    globalThis.skipWaiting();
   }
   // F5 (v7.2): Clear API cache on demand
   if (event.data?.type === "CLEAR_API_CACHE") {
     event.waitUntil(
       caches.delete(CACHE_NAME_API).then(() => {
-        return self.clients
+        return globalThis.clients
           .matchAll({ includeUncontrolled: true })
           .then((clients) => clients.forEach((c) => c.postMessage({ type: "API_CACHE_CLEARED" })));
       }),
@@ -132,17 +133,17 @@ self.addEventListener("activate", (event) => {
       )
       // F167: tell all clients this version has activated
       .then(() => {
-        self.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
+        globalThis.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
           clients.forEach((c) => c.postMessage({ type: "VERSION_ACTIVATED", version: CACHE_NAME }));
         });
-        return self.clients.claim();
+        return globalThis.clients.claim();
       }),
   );
 });
 
 // ── F113: notify all clients that network is back ─────────────────────────
 function _notifyNetworkBack() {
-  self.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
+  globalThis.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
     clients.forEach((c) => c.postMessage({ type: "NETWORK_BACK" }));
   });
 }
@@ -292,6 +293,7 @@ async function _flushErrorQueue() {
 
 // Handle QUEUE_ERROR_REPORT message from the page
 self.addEventListener("message", (event) => {
+  if (event.origin && event.origin !== globalThis.location.origin) return;
   if (event.data?.type === "QUEUE_ERROR_REPORT" && event.data.payload) {
     event.waitUntil(_queueErrorReport(event.data.payload));
   }

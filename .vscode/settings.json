@@ -33,7 +33,10 @@
     "baseline-lens.support": "newly",
     "baseline-lens.browserslist": true,
     "baseline-lens.showInlineHints": false,
-    "baseline-lens.exclude": ["worker/**"],
+    "baseline-lens.exclude": [
+        "worker/**",
+        "**/worker/**"
+    ],
     "baseline-lens.ignoredFeatures": [
         "view-transition-name",
         "@view-transition",
@@ -173,5 +176,115 @@
     "vitest.enable": false,
     "testing.automaticallyOpenPeekView": "never",
     "testing.openTesting": "neverOpen",
-    "testing.automaticallyOpenTestResults": "neverOpen"
+    "testing.automaticallyOpenTestResults": "neverOpen",
+    // ── TODO Tree — roadmap & task tracking ──
+    "todo-tree.general.enableFileWatcher": true,
+    "todo-tree.general.showActivityBarBadge": true,
+    "todo-tree.general.tags": [
+        "TODO",
+        "FIXME",
+        "HACK",
+        "BUG",
+        "PERF",
+        "SECURITY",
+        "ROADMAP",
+        "DEBT",
+        "DEPRECATED",
+        "BREAKING"
+    ],
+    "todo-tree.highlights.customHighlight": {
+        "TODO": {
+            "icon": "checklist",
+            "foreground": "#FFD700",
+            "type": "tag"
+        },
+        "FIXME": {
+            "icon": "alert",
+            "foreground": "#FF6B6B",
+            "type": "tag"
+        },
+        "HACK": {
+            "icon": "tools",
+            "foreground": "#FF8C00",
+            "type": "tag"
+        },
+        "BUG": {
+            "icon": "bug",
+            "foreground": "#FF4444",
+            "type": "tag"
+        },
+        "PERF": {
+            "icon": "flame",
+            "foreground": "#00CED1",
+            "type": "tag"
+        },
+        "SECURITY": {
+            "icon": "shield",
+            "foreground": "#FF69B4",
+            "type": "tag"
+        },
+        "ROADMAP": {
+            "icon": "milestone",
+            "foreground": "#7B68EE",
+            "type": "tag"
+        },
+        "DEBT": {
+            "icon": "credit-card",
+            "foreground": "#FFA500",
+            "type": "tag"
+        },
+        "DEPRECATED": {
+            "icon": "trash",
+            "foreground": "#808080",
+            "type": "tag"
+        },
+        "BREAKING": {
+            "icon": "warning",
+            "foreground": "#FF0000",
+            "type": "tag"
+        }
+    },
+    "todo-tree.filtering.excludeGlobs": [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/coverage/**",
+        "**/test-results/**",
+        "**/.git/**",
+        "CHANGELOG.md"
+    ],
+    "todo-tree.tree.groupedByTag": true,
+    "todo-tree.tree.showCountsInTree": true,
+    // ── File Nesting — cleaner Explorer ──
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "package.json": "package-lock.json, .npmrc, .nvmrc, .node-version, .browserslistrc, commitlint.config.*, .editorconfig, .prettierrc*, .prettierignore, .eslintcache, CITATION.cff",
+        "tsconfig.json": "tsconfig.*.json",
+        "vite.config.ts": "vitest.config.ts, vitest.browser.config.ts, playwright.config.ts",
+        "README.md": "LICENSE, CHANGELOG.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md",
+        "sw.ts": "sw.js"
+    },
+    // ── Output / generated files → $TEMP enforcement ──
+    "files.exclude": {
+        "**/.git": true,
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/coverage": true,
+        "**/test-results": true,
+        "**/playwright-report": true,
+        "**/blob-report": true,
+        "**/.playwright": true,
+        "**/.eslintcache": true,
+        "**/tsconfig.tsbuildinfo": true
+    },
+    // ── Workspace Trust ──
+    "security.workspace.trust.untrustedFiles": "open",
+    // ── Performance ──
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/dist/**": true,
+        "**/coverage/**": true,
+        "**/test-results/**": true,
+        "**/.git/objects/**": true
+    }
 }

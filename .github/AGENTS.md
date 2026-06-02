@@ -1,6 +1,6 @@
 # AI Customizations — FamilyDashBoard
 
-> Version: v15.6.1 · Validation: `npm run check` · Coverage thresholds: see `vitest.config.ts`
+> Version: v15.7.0 · Validation: `npm run check` · Coverage thresholds: see `vitest.config.ts`
 
 ## Customization Model
 
@@ -77,18 +77,57 @@
 | `/kv-stale-audit`      | Audit KV stale cache fallback patterns                |
 | `/modernize-tooling`   | Upgrade or modernize build/test tooling               |
 
-## MCP Servers (5 committed + 1 parent)
+## MCP Servers (8 configured)
 
-| Server                | Type           | Token-Saving Role                                             |
-| --------------------- | -------------- | ------------------------------------------------------------- |
-| `github`              | http           | PRs, issues, code search — no manual `gh` CLI needed          |
-| `fetch`               | stdio          | Test upstream APIs in chat — no manual curl/Invoke-WebRequest |
-| `filesystem`          | stdio          | Read coverage/test output — no manual file parsing            |
-| `gitkraken`           | http           | Git blame, log, diff — no manual `git log` parsing            |
-| `playwright`          | stdio          | Browser automation in chat — no manual E2E debugging          |
-| `cloudflare` (parent) | streamableHttp | Workers/KV/D1 management — no manual wrangler CLI             |
+| Server               | Type           | Token-Saving Role                                             |
+| -------------------- | -------------- | ------------------------------------------------------------- |
+| `github`             | http           | PRs, issues, code search — no manual `gh` CLI needed          |
+| `fetch`              | stdio          | Test upstream APIs in chat — no manual curl/Invoke-WebRequest |
+| `filesystem`         | stdio          | Read coverage/test output — no manual file parsing            |
+| `gitkraken`          | http           | Git blame, log, diff — no manual `git log` parsing            |
+| `playwright`         | stdio          | Browser automation in chat — no manual E2E debugging          |
+| `cloudflare`         | streamableHttp | Workers/KV/D1 management — no manual wrangler CLI             |
+| `memory`             | stdio          | Cross-session knowledge graph — persistent project context    |
+| `sequential-thinking`| stdio          | Complex reasoning — architecture decisions, multi-factor analysis |
 
 > All MCP tools are deferred — call `tool_search` before first use. See `.github/copilot/MCP_SERVERS.md` for full docs.
+
+## Skills (5)
+
+| Skill                | Purpose                                                          |
+| -------------------- | ---------------------------------------------------------------- |
+| `add-api`            | Add new API data source with full production wiring              |
+| `debug-fetch`        | Debug broken API calls and fetch failures                        |
+| `release`            | Create versioned release with full checklist                     |
+| `update-tests`       | Add or update test coverage                                      |
+| `workspace-optimize` | Audit workspace, clean generated files, enforce $TEMP            |
+
+## Slash Prompts (22)
+
+| Prompt                 | Purpose                                               |
+| ---------------------- | ----------------------------------------------------- |
+| `/sprint`              | Implement next N roadmap sprints in priority order    |
+| `/release-check`       | Full pre-release checklist — all gates must be green  |
+| `/version-bump`        | Bump version across all 16 documented files           |
+| `/fix-lint`            | Fix all ESLint and TypeScript errors to zero warnings |
+| `/fix-quality`         | Fix quality issues found by reviewer                  |
+| `/test-coverage`       | Increase test coverage for a specific module          |
+| `/code-review`         | Review code for quality, security, and conventions    |
+| `/security-audit`      | OWASP Top 10 audit of the codebase                    |
+| `/browser-compat`      | Check browser compatibility of new features           |
+| `/debug-card`          | Debug a broken or stale dashboard card                |
+| `/worker-debug`        | Debug a failing worker route or upstream API          |
+| `/worker-route`        | Add or modify a Cloudflare Worker route               |
+| `/add-card`            | Add a new dashboard card from scratch                 |
+| `/add-section`         | Add a new section or overlay to the dashboard         |
+| `/card-contract-audit` | Audit card HTML/TS/CSS contract compliance            |
+| `/kv-stale-audit`      | Audit KV stale cache fallback patterns                |
+| `/modernize-tooling`   | Upgrade or modernize build/test tooling               |
+| `/clean-workspace`     | Clean generated files, enforce $TEMP                  |
+| `/roadmap-status`      | Show roadmap progress report                          |
+| `/roadmap-update`      | Track and update roadmap progress                     |
+| `/production-audit`    | Full production readiness audit                       |
+| `/optimize-workspace`  | Optimize VS Code workspace configuration             |
 
 ## Extension-Aware Token Optimization
 
@@ -113,3 +152,19 @@ Extensions that reduce Copilot work (user sees inline data):
 | Baseline Lens    | CSS/JS compat status inline   | Checking caniuse.com           |
 | Color Highlight  | Hardcoded colors visible      | Grepping for hex values        |
 | TODO Tree        | TODO/FIXME locations sidebar  | Grepping for TODO comments     |
+
+## Production Readiness
+
+| Gate              | Command                                             | Required |
+| ----------------- | --------------------------------------------------- | -------- |
+| Type safety       | `npx tsc --noEmit`                                  | ✅        |
+| Lint              | `npx eslint . --max-warnings 0`                    | ✅        |
+| CSS lint          | `npx stylelint "src/**/*.css" --max-warnings 0`    | ✅        |
+| Markdown lint     | `npm run lint:md`                                   | ✅        |
+| Unit tests        | `npx vitest run`                                    | ✅        |
+| E2E tests         | `npx playwright test`                               | ✅        |
+| Bundle size       | `node scripts/check-bundle-size.mjs`                | ✅        |
+| Security          | `node scripts/check-owasp.mjs`                      | ✅        |
+| Supply chain      | `node scripts/check-actions-pinned.mjs`             | ✅        |
+| Clean workspace   | No generated files in root                          | ✅        |
+| $TEMP enforcement | All intermediates → `$TEMP/FamilyDashBoard/`        | ✅        |

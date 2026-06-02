@@ -16,6 +16,7 @@ coverage/
 # Build output
 dist/
 tsconfig.tsbuildinfo
+*.tsbuildinfo
 
 # Test / CI artifacts (all intermediate output → $TEMP, never committed)
 vitest-*.txt
@@ -43,24 +44,36 @@ playwright-report/
 blob-report/
 .playwright/
 
-# Debug logs (transient)
+# Debug logs (transient — must go to $TEMP)
 git_out.txt
 log.txt
 status.txt
 ci_status.json
 
+# Stryker mutation testing output
+.stryker-tmp/
+reports/mutation/
+
 # Python (not used — guard against stray caches)
 .mypy_cache/
 __pycache__/
 
-# Misc
+# Misc generated files
 *.log
 *.bak
 *.tmp
 *.old
 .extracted.*
-
 .fake
+
+# Bundle analysis (intermediate — use $TEMP)
+stats.html
+bundle-stats.json
 
 # Secrets
 .env.ps1
+.env
+.env.local
+.env.*.local
+*.pem
+*.key

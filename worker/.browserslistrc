@@ -1,0 +1,4 @@
+# Cloudflare Workers runtime — not a browser target.
+# This file tells browserslist-aware tools (Baseline Lens, caniuse)
+# to stop flagging standard Web APIs as unsupported.
+last 1 Chrome version

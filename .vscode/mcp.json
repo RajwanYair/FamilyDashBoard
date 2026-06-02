@@ -38,6 +38,24 @@
             "type": "streamableHttp",
             "url": "https://mcp.cloudflare.com/sse",
             "description": "Cloudflare Workers, Pages, KV, D1, R2 — deploy, manage, debug worker routes and edge config."
+        },
+        "memory": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-memory@latest"
+            ],
+            "description": "Persistent knowledge graph for project decisions, patterns, and cross-session context."
+        },
+        "sequential-thinking": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-sequential-thinking@latest"
+            ],
+            "description": "Step-by-step reasoning for complex debugging, architecture decisions, and multi-factor analysis."
         }
     }
 }

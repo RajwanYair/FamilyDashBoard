@@ -1,7 +1,7 @@
 {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "project": "FamilyDashBoard",
-    "appVersion": "15.5.0",
+    "appVersion": "15.7.0",
     "copilot": {
         "enabled": true,
         "features": {
@@ -138,7 +138,67 @@
             "vscode_listCodeUsages before refactoring — avoids missed references",
             "vscode_renameSymbol for semantics-aware renames across workspace",
             "Cloudflare MCP for worker management — avoid manual wrangler CLI",
-            "Read instruction files only when applyTo matches — skip for unrelated edits"
+            "Read instruction files only when applyTo matches — skip for unrelated edits",
+            "Memory MCP for cross-session knowledge persistence",
+            "Sequential-thinking MCP for complex multi-factor analysis",
+            "TODO Tree tags (ROADMAP, DEBT, PERF, SECURITY) for inline tracking",
+            "File nesting in Explorer reduces visual clutter",
+            "Production gate task runs all checks in one command"
+        ]
+    },
+    "skills": {
+        "add-api": "Add new API data source with full production wiring",
+        "debug-fetch": "Debug broken API calls and fetch failures",
+        "release": "Create versioned release with full checklist",
+        "update-tests": "Add or update test coverage",
+        "workspace-optimize": "Audit workspace, clean generated files, enforce $TEMP"
+    },
+    "prompts": {
+        "sprint": "Implement next roadmap sprints",
+        "release-check": "Full pre-release gate",
+        "version-bump": "Bump version across all files",
+        "fix-lint": "Fix all lint errors to zero",
+        "fix-quality": "Fix quality issues",
+        "test-coverage": "Increase test coverage",
+        "code-review": "Review for quality and security",
+        "security-audit": "OWASP Top 10 audit",
+        "browser-compat": "Check browser compatibility",
+        "debug-card": "Debug broken dashboard card",
+        "worker-debug": "Debug failing worker route",
+        "worker-route": "Add/modify worker route",
+        "add-card": "Add new dashboard card",
+        "add-section": "Add new section/overlay",
+        "card-contract-audit": "Audit card contract compliance",
+        "kv-stale-audit": "Audit KV stale cache patterns",
+        "modernize-tooling": "Upgrade build/test tooling",
+        "clean-workspace": "Clean generated files, enforce $TEMP",
+        "roadmap-status": "Show roadmap progress report",
+        "roadmap-update": "Update roadmap with recent progress",
+        "production-audit": "Full production readiness audit",
+        "optimize-workspace": "Optimize VS Code workspace config"
+    },
+    "mcpServers": {
+        "github": "PRs, issues, code search, workflows",
+        "fetch": "HTTP client for API testing",
+        "filesystem": "Workspace file operations",
+        "gitkraken": "Git history, blame, diff",
+        "playwright": "Browser automation and screenshots",
+        "cloudflare": "Workers, KV, D1, R2 management",
+        "memory": "Cross-session knowledge graph",
+        "sequential-thinking": "Complex reasoning and analysis"
+    },
+    "productionGates": {
+        "description": "All gates must pass before any release tag",
+        "gates": [
+            "typecheck (tsc --noEmit + tsconfig.sw.json)",
+            "lint (eslint + stylelint + markdownlint + instructions)",
+            "format (prettier --check)",
+            "tests (vitest run + playwright)",
+            "security (owasp + trusted-types + csp-wildcards + npm audit)",
+            "bundle (check:bundle + check:card-bundle + check:benchmark)",
+            "supply-chain (actions-pinned + ignore-scripts + reproducible + sigstore)",
+            "docs (adr-index + mermaid + reading-level + release-notes)",
+            "clean (dead-exports + no eslint-disable + no ts-ignore)"
         ]
     }
 }

@@ -4,7 +4,7 @@
             {
                 "type": "message",
                 "toolNames": ["create_file"],
-                "message": "Before creating: check if a similar file already exists via file_search. Never duplicate files. Check applyTo-matched instructions for conventions."
+                "message": "Before creating: check if a similar file already exists via file_search. Never duplicate files. Check applyTo-matched instructions for conventions. Generated/intermediate files MUST go to $TEMP/FamilyDashBoard/ — never create .tmp, .log, or report files in the workspace."
             },
             {
                 "type": "message",
@@ -14,7 +14,7 @@
             {
                 "type": "message",
                 "toolNames": ["run_in_terminal"],
-                "message": "Prefer run_task for workspace tasks (Vitest, Playwright, lint, build, coverage). Prefer get_errors for single-file diagnostics (ESLint+Stylelint+markdownlint+spell). PowerShell only — never bash/Unix. Use ; not && to chain."
+                "message": "Prefer run_task for workspace tasks (Vitest, Playwright, lint, build, coverage). Prefer get_errors for single-file diagnostics (ESLint+Stylelint+markdownlint+spell). PowerShell only — never bash/Unix. Use ; not && to chain. Redirect test/coverage output to $env:TEMP/FamilyDashBoard/ when possible."
             },
             {
                 "type": "message",
@@ -40,12 +40,12 @@
                     "multi_replace_string_in_file",
                     "create_file"
                 ],
-                "message": "Post-edit checklist: RTL logical props · CSS custom properties only · cGet→null not undefined · textContent not innerHTML · dialog+showModal for overlays · correct @layer · card data-card-id=registry-id. Run get_errors on changed files to catch ESLint+Stylelint+spell issues."
+                "message": "Post-edit checklist: RTL logical props · CSS custom properties only · cGet→null not undefined · textContent not innerHTML · dialog+showModal for overlays · correct @layer · card data-card-id=registry-id · no generated files in workspace · $TEMP for intermediates. Run get_errors on changed files."
             },
             {
                 "type": "message",
                 "toolNames": ["run_in_terminal"],
-                "message": "Post-terminal: if command was a test/lint/build, check exit code. If errors found, fix before proceeding. Coverage Gutters and Error Lens show results inline — point user to them."
+                "message": "Post-terminal: if command was a test/lint/build, check exit code. If errors found, fix before proceeding. Coverage Gutters and Error Lens show results inline. Verify no intermediate files were written to workspace root."
             }
         ]
     }

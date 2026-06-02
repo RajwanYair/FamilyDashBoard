@@ -5,6 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [15.7.0] — 2026-06-02
+
+> **DX pipeline hardening · ROADMAP v13.0 · version bump**
+
+- 📝 **docs(ROADMAP)**: v13.0 — 5 new competitors (Dasherr, Flame, Glances v3, Netdata, Actual), 6 new strategic streams (P8–P13), status updates for P0–P7, milestones v15.7–v17.0
+- 🔧 **chore(dx)**: add 4 VS Code extension recommendations — import-cost, pretty-ts-errors, better-comments, js-profile-flame
+- 🔧 **chore(config)**: bump Copilot config appVersion 15.6.1 → 15.7.0
+- 🔧 **chore(docs)**: bump version in workspace.instructions.md, AGENTS.md, copilot-instructions.md, ARCHITECTURE.md, security.md, CITATION.cff, README.md
+- 🔧 **chore(docs)**: bump version in SVG assets (banner, architecture, data-sources, preview)
+- 🔧 **chore(sw)**: bump version comment in sw.ts and sw.js
+
+---
+
 ## [15.6.1] — 2026-05-25
 
 > **7916 tests / 334 suites / 0 failures**

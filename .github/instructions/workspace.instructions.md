@@ -3,7 +3,7 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v15.6.1
+# FamilyDashBoard — v15.7.0
 
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.6 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 7 themes · 3 screen modes · 12 cards
 
@@ -26,7 +26,7 @@ docs/ARCHITECTURE.md        # Runtime structure, cache layers, worker topology
 docs/ROADMAP.md             # Strategic plan, stream priorities, forward release plan
 docs/adr/                   # Accepted architectural decisions
 .github/SUPPORT.md          # Support and operator guidance (GitHub community health file)
-.github/skills/             # add-api, release, debug-fetch, update-tests
+.github/skills/             # add-api, release, debug-fetch, update-tests, workspace-optimize
 .github/agents/             # api-integrator, dashboard-designer, quality-reviewer
 .github/copilot/            # Copilot repo config + MCP/server guidance docs
 .github/assets/             # SVG docs graphics
@@ -36,7 +36,7 @@ docs/adr/                   # Accepted architectural decisions
 
 Prefer `get_errors` over terminal for lint/tsc/CSS/spell/compat checks. Use `run_task` for Vitest/Playwright/build commands. Use MCP `gitkraken` for git history. See `AGENTS.md` for full extension map.
 
-Key extensions installed: ESLint, Stylelint, markdownlint, Spell Checker (EN+HE), Error Lens, Coverage Gutters, Console Ninja, Baseline Lens, Version Lens, TODO Tree, Bookmarks, Mermaid Chart, SVG Preview, Path IntelliSense, npm IntelliSense, caniuse, browserslist. Full config in `.github/copilot/config.json`.
+Key extensions installed: ESLint, Stylelint, markdownlint, Spell Checker (EN+HE), Error Lens, Coverage Gutters, Console Ninja, Baseline Lens, Version Lens, TODO Tree, Bookmarks, Mermaid Chart, SVG Preview, Path IntelliSense, npm IntelliSense, caniuse, browserslist, SonarLint, axe-linter, Conventional Commits, YAML. Full config in `.github/copilot/config.json`.
 
 ## Token Optimization Strategy
 
@@ -49,6 +49,9 @@ Key extensions installed: ESLint, Stylelint, markdownlint, Spell Checker (EN+HE)
 - Error Lens / Coverage Gutters / Console Ninja / Version Lens / Baseline Lens reduce Copilot round-trips (user sees data inline)
 - `PreToolUse` hooks guard duplicate files, missing context, and terminal misuse
 - `PostToolUse` hooks auto-remind conventions after edits
+- Memory MCP persists knowledge graphs across sessions
+- Sequential-thinking MCP for complex multi-factor reasoning
+- TODO Tree tags (`ROADMAP:`, `DEBT:`, `PERF:`, `SECURITY:`) for inline progress tracking
 
 ## Shared Tooling
 

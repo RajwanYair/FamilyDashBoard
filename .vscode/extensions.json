@@ -31,6 +31,8 @@
         "christian-kohler.path-intellisense",
         "christian-kohler.npm-intellisense",
         "Gruntfuggly.todo-tree",
+        "yoavbls.pretty-ts-errors",
+        "aaron-bond.better-comments",
         // Diagnostics & debugging
         "usernamehw.errorlens",
         "wallabyjs.console-ninja",
@@ -41,7 +43,22 @@
         "alefragnani.bookmarks",
         // Diagrams & assets
         "mermaidchart.vscode-mermaid-chart",
-        "jock.svg"
+        "jock.svg",
+        // Production readiness & security
+        "SonarSource.sonarlint-vscode",
+        "bierner.markdown-mermaid",
+        // Performance & optimization
+        "nicolo-ribaudo.vscode-shrink-bundle",
+        "wix.vscode-import-cost",
+        "ms-vscode.vscode-js-profile-flame",
+        // PWA & Service Worker
+        "nicolo-ribaudo.pwa-studio",
+        // Accessibility
+        "deque-systems.vscode-axe-linter",
+        // Git workflow
+        "vivaxy.vscode-conventional-commits",
+        // JSON/YAML schema validation
+        "redhat.vscode-yaml"
     ],
     "unwantedRecommendations": [
         "connor4312.nodejs-testing",
