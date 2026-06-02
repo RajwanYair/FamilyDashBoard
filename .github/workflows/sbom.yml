@@ -42,6 +42,12 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Generate lock file (required by @cyclonedx/cyclonedx-npm)
+        # Must run BEFORE installing devtools so the lock file only reflects
+        # actual package.json dependencies (zero for FamilyDashBoard).
+        # @cyclonedx/cyclonedx-npm --package-lock-only requires a lock file.
+        run: npm install --package-lock-only --ignore-scripts
+
       - name: Install CI toolchain (production deps only)
         run: |
           # FamilyDashBoard shares node_modules from parent MyScripts/

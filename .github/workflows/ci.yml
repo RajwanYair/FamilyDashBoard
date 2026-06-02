@@ -103,12 +103,16 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
-      - name: Install CI toolchain
-        run: bash .github/ci/install-tools.sh
       - name: npm audit (high+critical)
+        # Must run BEFORE install-tools.sh so that npm install --package-lock-only
+        # only resolves actual package.json deps (zero for FamilyDashBoard).
+        # Running after install-tools.sh contaminates the lock file with
+        # devtool transitive deps (e.g. @lhci/cli → cookie/tmp/uuid).
         run: |
           npm install --package-lock-only --ignore-scripts --silent
           npm audit --audit-level=high
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
       - name: OWASP Top 10 pattern scan
         run: node scripts/check-owasp.mjs
       - name: Trusted Types enforcement audit

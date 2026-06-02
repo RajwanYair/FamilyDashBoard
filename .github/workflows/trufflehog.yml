@@ -49,4 +49,4 @@ jobs:
           # Schedule/dispatch: base='' scans full history (safe, no alert fatigue).
           base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before || '' }}
           head: ${{ github.sha }}
-          extra_args: --only-verified --no-update
+          extra_args: --only-verified

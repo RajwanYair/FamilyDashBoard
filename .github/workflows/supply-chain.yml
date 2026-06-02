@@ -72,13 +72,17 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Install CI toolchain
-        run: bash .github/ci/install-tools.sh
-
       - name: npm audit (high+ severity, production deps)
+        # Must run BEFORE install-tools.sh so that npm install --package-lock-only
+        # only resolves actual package.json deps (zero for FamilyDashBoard).
+        # Running after install-tools.sh contaminates the lock file with
+        # devtool transitive deps (e.g. @lhci/cli → cookie/tmp/uuid).
         run: |
           npm install --package-lock-only --ignore-scripts --silent
           npm audit --omit=dev --audit-level=high
+
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
 
       - name: Verify package signatures (Sigstore transparency log)
         run: npm audit signatures
