@@ -45,15 +45,14 @@ jobs:
         run: bash .github/ci/install-tools.sh
 
       - name: Run coverage
-        run: npx vitest run --coverage
+        run: npx vitest run --coverage --coverage.reportsDirectory=./coverage-output
 
       - name: Locate coverage-summary.json
         id: locate
         run: |
-          # Vitest writes to $TEMP/coverage on the agent (see vitest.config.ts).
-          SUMMARY=$(find "${RUNNER_TEMP}" /tmp -name coverage-summary.json -path '*/coverage/*' 2>/dev/null | head -n 1)
-          if [ -z "$SUMMARY" ]; then
-            echo "::error::coverage-summary.json not found"
+          SUMMARY="./coverage-output/coverage-summary.json"
+          if [ ! -f "$SUMMARY" ]; then
+            echo "::error::coverage-summary.json not found at $SUMMARY"
             exit 1
           fi
           echo "summary=$SUMMARY" >> "$GITHUB_OUTPUT"
