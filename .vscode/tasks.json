@@ -10,6 +10,17 @@
     },
     "tasks": [
         {
+            "label": "S01: Benchmark Gate Regression",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; node node_modules/typescript/bin/tsc --project tests/unit/scripts/tsconfig.json --noEmit; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; node node_modules/eslint/bin/eslint.js scripts/check-benchmark.mjs tests/unit/scripts --max-warnings 0; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; node node_modules/prettier/bin/prettier.cjs --check .vscode/tasks.json tests/unit/scripts scripts/check-benchmark.mjs docs/local-dev.md docs/ROADMAP.md; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; node node_modules/vitest/vitest.mjs run tests/unit/scripts --pool=threads --maxWorkers=1 --reporter=dot; exit $LASTEXITCODE",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": ["$tsc", "$eslint-stylish"]
+        },
+        {
             "label": "✅ Repository Quality Gate",
             "type": "shell",
             "command": "$ErrorActionPreference = 'Stop'; npm run check; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",

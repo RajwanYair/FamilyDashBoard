@@ -27,7 +27,7 @@ function parseAdrContent(fileText: string, fileName: string) {
   for (const l of lines) {
     for (const pat of datePatterns) {
       const m = l.match(pat);
-      if (m) {
+      if (m?.[1]) {
         date = m[1];
         break;
       }
@@ -40,7 +40,7 @@ function parseAdrContent(fileText: string, fileName: string) {
   for (const l of lines) {
     for (const pat of statusPatterns) {
       const m = l.match(pat);
-      if (m) {
+      if (m?.[1]) {
         status = m[1].trim();
         break;
       }
@@ -221,7 +221,7 @@ describe("buildAdrIndex — generate README.md content ", () => {
   });
 
   it("produces different output when title changes", () => {
-    const modified = [{ ...ONE_ADR[0], title: "Updated Title" }];
+    const modified = ONE_ADR.map((entry) => ({ ...entry, title: "Updated Title" }));
     expect(buildAdrIndex(ONE_ADR)).not.toBe(buildAdrIndex(modified));
   });
 

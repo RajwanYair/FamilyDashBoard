@@ -20,7 +20,7 @@
  * interfering with the normal test run.
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { spawn } from "node:child_process";
@@ -75,7 +75,6 @@ function runTests() {
       if (settled) return;
       settled = true;
       clearInterval(heartbeat);
-      clearInterval(jsonPoll);
       clearTimeout(timer);
       try {
         child.kill("SIGKILL");
@@ -90,28 +89,8 @@ function runTests() {
       console.log(`   …still running (${elapsed}s elapsed)`);
     }, HEARTBEAT_MS);
 
-    // Poll for the JSON output every 2s. Vitest writes it once test execution
-    // finishes — even if a worker fork won't terminate cleanly afterward, we
-    // can pick it up and proceed. This is the gate's defence against the
-    // known "Timeout terminating forks worker" issue (background fetch /
-    // timers in a card test that survive afterEach cleanup).
-    const jsonPoll = setInterval(() => {
-      if (!existsSync(BENCHMARK_JSON)) return;
-      const stats = statSync(BENCHMARK_JSON);
-      if (stats.size < 1024) return; // not finished writing yet
-      if (stats.mtimeMs < startedAt) return; // stale
-      // Give vitest a brief grace window to exit cleanly itself.
-      setTimeout(() => {
-        if (settled) return;
-        const elapsed = Math.round((Date.now() - startedAt) / 1000);
-        console.log(`   ✅ Benchmark JSON ready after ${elapsed}s — proceeding.`);
-        finish(0);
-      }, 3000);
-      clearInterval(jsonPoll);
-    }, 2000);
-
     const timer = setTimeout(() => {
-      console.error(`❌ Vitest timed out after ${timeoutLabel} (no JSON output produced).`);
+      console.error(`❌ Vitest did not exit within ${timeoutLabel}.`);
       console.error("   Override with: $env:BENCHMARK_TIMEOUT_MS=1800000; npm run check:benchmark");
       finish(1);
       process.exit(1);
@@ -129,7 +108,7 @@ function runTests() {
       if (code !== 0) {
         console.log("⚠️  Some tests failed, but benchmark data was collected.\n");
       }
-      finish(code ?? 0);
+      finish(code ?? 1);
     });
 
     child.on("error", (err) => {
