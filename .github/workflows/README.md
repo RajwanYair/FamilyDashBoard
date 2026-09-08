@@ -94,6 +94,7 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 ### Readiness Repairs (2026-09-08)
 
 - The root preview and CI jobs install the shared toolchain through `.github/ci/install-tools.sh`; Worker installation uses its committed lockfile via `npm ci --ignore-scripts`. Cloudflare Workers types 5.x satisfies the locked Wrangler peer requirement; no legacy peer bypass is used. Preview publication is skipped when the repository's Cloudflare Pages credentials are not configured; the build remains validated.
+- The Security workflow audits both scopes: the root toolchain manifest and the committed `worker/package-lock.json`. The Worker lockfile overrides Wrangler's vulnerable `undici` transitive pin to `7.29.0` until an available Wrangler release carries the patched Miniflare dependency; the override is explicit and remains covered by `npm audit`.
 - CI explicitly installs the YAML parser used by workflow regression tests and pins Prettier 3.8.3 to the verified shared formatter. Upgrade formatting locally and in CI together; a floating range produced inconsistent formatting failures with 3.9.6.
 - Scorecard is pinned to upstream v2.4.4, which uses GHCR instead of the GCR image that failed with a registry billing error.
 - Windows workspace tasks explicitly select `pwsh.exe`; PowerShell failure checks must not execute under `cmd`.

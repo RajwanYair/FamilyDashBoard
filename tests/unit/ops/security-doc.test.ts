@@ -22,10 +22,12 @@ const ROOT = resolve(__dir, "..", "..", "..");
 
 let secDoc = "";
 let ciYaml = "";
+let workflowReadme = "";
 
 beforeAll(() => {
   secDoc = readFileSync(resolve(ROOT, "docs", "security.md"), "utf8");
   ciYaml = readFileSync(resolve(ROOT, ".github", "workflows", "ci.yml"), "utf8");
+  workflowReadme = readFileSync(resolve(ROOT, ".github", "workflows", "README.md"), "utf8");
 });
 
 // ── docs/security.md: SRI section ────────────────────────────────────────────
@@ -74,5 +76,23 @@ describe("docs/security.md: SLSA provenance controls ", () => {
 describe("CI workflow: check:adr in ci.yml ", () => {
   it("ci.yml runs check-adr-index.mjs", () => {
     expect(ciYaml).toMatch(/check-adr-index/);
+  });
+});
+
+describe("Security workflow: dependency scopes ", () => {
+  it("audits the Worker dependency tree separately", () => {
+    const securityYaml = readFileSync(
+      resolve(ROOT, ".github", "workflows", "security.yml"),
+      "utf8",
+    );
+    expect(securityYaml).toMatch(/Audit Worker dependency scope/);
+    expect(securityYaml).toMatch(/working-directory: worker/);
+    expect(securityYaml).toMatch(/npm audit --audit-level=moderate/);
+  });
+
+  it("documents the root and Worker audit scopes", () => {
+    expect(workflowReadme).toMatch(/audits both scopes/);
+    expect(workflowReadme).toMatch(/worker\/package-lock\.json/);
+    expect(workflowReadme).toMatch(/undici.*7\.29\.0/);
   });
 });

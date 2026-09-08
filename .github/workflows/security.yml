@@ -51,6 +51,9 @@ jobs:
         run: npm install --package-lock-only --ignore-scripts
       - name: Run npm audit (moderate+)
         run: npm audit --audit-level=moderate
+      - name: Audit Worker dependency scope (moderate+)
+        working-directory: worker
+        run: npm audit --audit-level=moderate
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
 
