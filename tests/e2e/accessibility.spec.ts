@@ -25,6 +25,8 @@ test.describe("Accessibility — axe-core WCAG 2.2 AA", () => {
         .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
         // Loading skeletons use transient palettes that can briefly fail contrast.
         .exclude(".card-loading")
+        // The embedded YouTube player is third-party DOM; validate the host iframe instead.
+        .exclude(".video-news__iframe")
         // Inline JS-set colour tokens are validated by styles/theme-audit unit tests.
         .disableRules(["color-contrast"])
         .analyze();

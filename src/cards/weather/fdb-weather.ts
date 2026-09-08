@@ -54,7 +54,7 @@ export class FdbWeatherCard extends FdbCard {
         <div id="wx-daily-summary" class="wx-daily-summary" aria-live="polite"></div>
         <div id="wx-week-summary"></div>
         <div class="wx-forecast" id="wx-forecast" role="list" aria-live="polite" aria-label="תחזית שבועית">
-          ${Array.from({ length: 7 }, () => '<div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>').join("\n          ")}
+          ${Array.from({ length: 7 }, () => '<div class="wx-fday" role="listitem"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>').join("\n          ")}
         </div>
       `);
     }
