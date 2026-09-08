@@ -40,6 +40,7 @@ describe("FdbMotivationCard", () => {
 
   function mountCard(): FdbMotivationCard {
     const card = document.createElement("fdb-motivation") as FdbMotivationCard;
+    expect(card).toBeInstanceOf(FdbMotivationCard);
     card.setAttribute("data-card-id", "motivation");
     document.body.appendChild(card);
     return card;

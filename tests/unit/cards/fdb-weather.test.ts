@@ -27,6 +27,7 @@ describe("FdbWeatherCard", () => {
 
   function mountCard(): FdbWeatherCard {
     const card = document.createElement("fdb-weather") as FdbWeatherCard;
+    expect(card).toBeInstanceOf(FdbWeatherCard);
     card.setAttribute("data-card-id", "weather");
     document.body.appendChild(card);
     return card;

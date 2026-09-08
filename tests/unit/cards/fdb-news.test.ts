@@ -27,6 +27,7 @@ describe("FdbNewsCard", () => {
 
   function mountCard(): FdbNewsCard {
     const card = document.createElement("fdb-news") as FdbNewsCard;
+    expect(card).toBeInstanceOf(FdbNewsCard);
     card.setAttribute("data-card-id", "news");
     document.body.appendChild(card);
     return card;

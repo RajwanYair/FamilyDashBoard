@@ -39,7 +39,7 @@ describe("FdbVideoNewsCard", () => {
   }
 
   it("is registered as fdb-video-news custom element", () => {
-    expect(customElements.get("fdb-video-news")).toBeDefined();
+    expect(customElements.get("fdb-video-news")).toBe(FdbVideoNewsCard);
   });
 
   it("builds header and body on connect", () => {

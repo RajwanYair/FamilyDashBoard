@@ -31,6 +31,7 @@ describe("FdbStocksCard", () => {
 
   function mountCard(): FdbStocksCard {
     const card = document.createElement("fdb-stocks") as FdbStocksCard;
+    expect(card).toBeInstanceOf(FdbStocksCard);
     card.setAttribute("data-card-id", "stocks");
     document.body.appendChild(card);
     return card;

@@ -14,8 +14,8 @@
         "source.organizeImports": "never"
     },
     // ── TypeScript ──
-    "typescript.tsdk": "../node_modules/typescript/lib",
-    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "js/ts.tsdk.path": "${workspaceFolder}/node_modules/typescript/lib",
+    "js/ts.tsdk.promptToUseWorkspaceVersion": true,
     // ── ESLint ──
     "eslint.validate": ["javascript", "typescript"],
     "eslint.run": "onType",
@@ -104,7 +104,6 @@
     "chat.agent.enabled": true,
     "chat.useCustomizationsInParentRepositories": true,
     "chat.mcp.autoStart": true,
-    "chat.tools.terminal.backgroundNotifications": true,
     "chat.tools.confirmationCarousel.enabled": true,
     "github.copilot.chat.agentDebugLog.fileLogging.enabled": true,
     "jsts-chat-features.skills.enabled": true,

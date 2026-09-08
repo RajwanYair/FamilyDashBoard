@@ -35,7 +35,7 @@ npm install --no-save --no-package-lock --ignore-scripts \
   "stylelint@^17.11.1" \
   "markdownlint-cli2@^0.22.0" \
   "zod@^3.24.0" \
-  "@cloudflare/workers-types@^4.0.0" \
+  "@cloudflare/workers-types@^5.20260722.1" \
   "fast-check@^4.7.0" \
   "valibot@^1.3.1" \
   "@lhci/cli@^0.14.0"
@@ -48,11 +48,17 @@ echo "→ Installing worker runtime + type deps (for worker typecheck + worker t
 # worker/package.json — bump in both places.
 (
   cd worker
-  npm install --no-save --no-package-lock --ignore-scripts \
-    "hono@^4.12.14" \
-    "valibot@^1.3.1" \
-    "@cloudflare/workers-types@^4.0.0" \
-    "typescript@^6.0.3"
+  npm ci --ignore-scripts
 )
+
+echo "-> Verifying installed CLI entry points..."
+npm exec -- tsc --version >/dev/null
+npm exec -- vite --version >/dev/null
+npm exec -- vitest --version >/dev/null
+npm exec -- eslint --version >/dev/null
+npm exec -- stylelint --version >/dev/null
+npm exec -- markdownlint-cli2 --version >/dev/null
+npm exec -- oxlint --version >/dev/null
+npm exec -- prettier --version >/dev/null
 
 echo "✅ CI toolchain installed"

@@ -21,6 +21,7 @@ vi.mock("@/cards/calendar/calendar", () => ({
 
 function mountCard(): FdbCalendarCard {
   const card = document.createElement("fdb-calendar") as FdbCalendarCard;
+  expect(card).toBeInstanceOf(FdbCalendarCard);
   card.setAttribute("data-card-id", "calendar");
   document.body.appendChild(card);
   return card;

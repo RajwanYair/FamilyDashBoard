@@ -75,7 +75,7 @@
             "token_hint": "Markdown diagnostics via get_errors"
         },
         "edge-devtools": {
-            "id": "ms-edgetools.vscode-edge-devtools"
+            "id": "ms-edgedevtools.vscode-edge-devtools"
         },
         "powershell": {
             "id": "ms-vscode.powershell",

@@ -1,29 +1,49 @@
 {
     "version": "2.0.0",
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "pwsh.exe",
+                "args": ["-NoLogo", "-NoProfile", "-Command"]
+            }
+        }
+    },
     "tasks": [
         {
             "label": "✅ Repository Quality Gate",
             "type": "shell",
             "command": "$ErrorActionPreference = 'Stop'; npm run check; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
-            "group": { "kind": "test", "isDefault": true },
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": ["$tsc", "$eslint-stylish"]
         },
         {
             "label": "🔬 Vitest: Run All Tests",
             "type": "shell",
-            "command": "npx vitest run",
+            "command": "npm exec -- vitest run",
             "group": "test",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": []
         },
         {
             "label": "🔬 Vitest: Watch Mode",
             "type": "shell",
-            "command": "npx vitest",
+            "command": "npm exec -- vitest",
             "group": "test",
             "isBackground": true,
-            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
             "problemMatcher": [
                 {
                     "owner": "vitest",
@@ -43,41 +63,56 @@
         {
             "label": "🔬 Vitest: Current File",
             "type": "shell",
-            "command": "npx vitest run ${relativeFile}",
+            "command": "npm exec -- vitest run ${relativeFile}",
             "group": "test",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": []
         },
         {
             "label": "📊 Vitest: Coverage Report",
             "type": "shell",
-            "command": "npx vitest run --coverage",
+            "command": "npm exec -- vitest run --coverage",
             "group": "test",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": []
         },
         {
             "label": "🔍 ESLint: Lint src + tests",
             "type": "shell",
-            "command": "npx eslint src tests --max-warnings 0",
+            "command": "npm exec -- eslint src tests --max-warnings 0",
             "group": "build",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": ["$eslint-stylish"]
         },
         {
             "label": "🔧 ESLint: Fix src + tests",
             "type": "shell",
-            "command": "npx eslint src tests --fix",
+            "command": "npm exec -- eslint src tests --fix",
             "group": "build",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": ["$eslint-stylish"]
         },
         {
             "label": "🏷️ TypeScript: Type Check",
             "type": "shell",
-            "command": "npx tsc --noEmit",
+            "command": "npm exec -- tsc --noEmit",
             "group": "build",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": ["$tsc"]
         },
         {
@@ -85,7 +120,10 @@
             "type": "shell",
             "command": "npm run build",
             "group": "build",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": ["$tsc"]
         },
         {
@@ -93,7 +131,10 @@
             "type": "shell",
             "command": "npm run build:local",
             "group": "build",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": ["$tsc"]
         },
         {
@@ -146,16 +187,19 @@
         {
             "label": "🚀 Dev Server",
             "type": "shell",
-            "command": "npx vite",
+            "command": "npm exec -- vite",
             "group": "build",
             "isBackground": true,
-            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
             "problemMatcher": []
         },
         {
             "label": "🌐 Serve Local: Dev (hot-reload)",
             "type": "shell",
-            "command": "npx vite --host",
+            "command": "npm exec -- vite --host",
             "group": "build",
             "isBackground": true,
             "presentation": {
@@ -167,7 +211,7 @@
         {
             "label": "🌐 Serve Local: Preview (production build)",
             "type": "shell",
-            "command": "$ErrorActionPreference = 'Stop'; npx vite build; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npx vite preview --host",
+            "command": "$ErrorActionPreference = 'Stop'; npm exec -- vite build; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npm exec -- vite preview --host",
             "group": "build",
             "isBackground": true,
             "presentation": {
@@ -179,25 +223,34 @@
         {
             "label": "🎭 Playwright: E2E Tests",
             "type": "shell",
-            "command": "npx playwright test",
+            "command": "npm exec -- playwright test",
             "group": "test",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": []
         },
         {
             "label": "🎭 Playwright: Visual Regression",
             "type": "shell",
-            "command": "npx playwright test tests/e2e/visual-regression.spec.ts",
+            "command": "npm exec -- playwright test tests/e2e/visual-regression.spec.ts",
             "group": "test",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": []
         },
         {
             "label": "🎭 Playwright: Update Snapshots",
             "type": "shell",
-            "command": "npx playwright test tests/e2e/visual-regression.spec.ts --update-snapshots",
+            "command": "npm exec -- playwright test tests/e2e/visual-regression.spec.ts --update-snapshots",
             "group": "test",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": []
         },
         {
@@ -205,7 +258,10 @@
             "type": "shell",
             "command": "npm run check:benchmark",
             "group": "test",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": []
         },
         {
@@ -213,7 +269,10 @@
             "type": "shell",
             "command": "npm run bench:update",
             "group": "test",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": []
         },
         {
@@ -221,7 +280,10 @@
             "type": "shell",
             "command": "npm run bench:report",
             "group": "test",
-            "presentation": { "reveal": "always", "panel": "shared" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
             "problemMatcher": []
         },
         {
@@ -278,7 +340,7 @@
         {
             "label": "🛡️ Security: Full OWASP Audit",
             "type": "shell",
-            "command": "node scripts/check-owasp.mjs ; node scripts/check-trusted-types.mjs ; node scripts/check-csp-wildcards.mjs",
+            "command": "$ErrorActionPreference = 'Stop'; node scripts/check-owasp.mjs; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; node scripts/check-trusted-types.mjs; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; node scripts/check-csp-wildcards.mjs; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
             "group": "build",
             "presentation": {
                 "reveal": "always",
@@ -290,7 +352,7 @@
         {
             "label": "📊 Coverage to TEMP",
             "type": "shell",
-            "command": "npx vitest run --coverage --coverage.reportsDirectory \"$env:TEMP/FamilyDashBoard/coverage\"",
+            "command": "npm exec -- vitest run --coverage --coverage.reportsDirectory \"$env:TEMP/FamilyDashBoard/coverage\"",
             "group": "test",
             "presentation": {
                 "reveal": "always",
@@ -298,6 +360,30 @@
             },
             "problemMatcher": [],
             "detail": "Run coverage with output to $TEMP (not in workspace)"
+        },
+        {
+            "label": "🔧 Repair Shared Toolchain Resolution",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; $repo = (Get-Location).Path; $shared = Join-Path $HOME 'OneDrive - Intel Corporation\\Documents\\MyScripts\\node_modules'; $local = Join-Path $repo 'node_modules'; if (-not (Test-Path $shared)) { throw \"Shared node_modules not found: $shared\" }; if (-not (Test-Path $local)) { New-Item -ItemType Junction -Path $local -Target $shared | Out-Null }; Write-Host \"Resolution junction: $local -> $shared\"; npm exec -- tsc --noEmit; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npm exec -- vitest run tests/unit/core/freshness.test.ts --reporter=dot; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "🔬 Freshness Test Single Thread",
+            "type": "shell",
+            "command": "npm exec -- vitest run tests/unit/core/freshness.test.ts --pool=forks --fileParallelism=false --reporter=dot",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "🔬 Freshness Test Threads",
+            "type": "shell",
+            "command": "npm exec -- vitest run tests/unit/core/freshness.test.ts --pool=threads --reporter=dot",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "test"
         }
     ]
 }

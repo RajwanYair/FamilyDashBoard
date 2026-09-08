@@ -16,7 +16,7 @@
         "vitest.explorer",
         "ms-playwright.playwright",
         // Browser compatibility
-        "ms-edgetools.vscode-edge-devtools",
+        "ms-edgedevtools.vscode-edge-devtools",
         "kwesinavilot.baseline-lens",
         "akamud.vscode-caniuse",
         "webben.browserslist",
@@ -64,7 +64,7 @@
         "connor4312.nodejs-testing",
         "formulahendry.auto-close-tag",
         "vincaslt.highlight-matching-tag",
-        "ritwickdey.LiveServer",
+        "ms-vscode.live-server",
         "HTMLHint.vscode-htmlhint",
         "webhint.vscode-webhint",
         "pranaygp.vscode-css-peek",

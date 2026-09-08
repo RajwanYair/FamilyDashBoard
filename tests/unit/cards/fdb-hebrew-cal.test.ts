@@ -25,6 +25,7 @@ vi.mock("@/cards/hebrew-cal/hebrew-cal", () => ({
 
 function mountCard(): FdbHebrewCalCard {
   const card = document.createElement("fdb-hebrew-cal") as FdbHebrewCalCard;
+  expect(card).toBeInstanceOf(FdbHebrewCalCard);
   card.setAttribute("data-card-id", "hebrew-cal");
   document.body.appendChild(card);
   return card;

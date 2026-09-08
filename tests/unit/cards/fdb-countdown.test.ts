@@ -22,6 +22,7 @@ vi.mock("@/cards/countdown/countdown", () => ({
 
 function mountCard(): FdbCountdownCard {
   const card = document.createElement("fdb-countdown") as FdbCountdownCard;
+  expect(card).toBeInstanceOf(FdbCountdownCard);
   card.setAttribute("data-card-id", "countdown");
   document.body.appendChild(card);
   return card;

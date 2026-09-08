@@ -23,8 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 22
-          cache: npm
+          node-version: 24
 
       - name: Install shared toolchain (mirrors MyScripts/ parent install)
         # Local devs run `npm install` from the parent MyScripts/ folder.

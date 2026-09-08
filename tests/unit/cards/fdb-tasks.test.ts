@@ -26,6 +26,7 @@ describe("FdbTasksCard", () => {
 
   function mountCard(): FdbTasksCard {
     const card = document.createElement("fdb-tasks") as FdbTasksCard;
+    expect(card).toBeInstanceOf(FdbTasksCard);
     card.setAttribute("data-card-id", "tasks");
     document.body.appendChild(card);
     return card;

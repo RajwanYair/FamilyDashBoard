@@ -44,6 +44,16 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.ts"],
     ...sharedVitestTestConfig,
+    environmentOptions: {
+      happyDOM: {
+        settings: {
+          ...sharedVitestTestConfig.environmentOptions.happyDOM.settings,
+          navigation: {
+            disableChildFrameNavigation: true,
+          },
+        },
+      },
+    },
 
     setupFiles: ["tests/setup.ts"],
 

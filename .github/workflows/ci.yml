@@ -68,6 +68,8 @@ jobs:
         run: npx oxlint --quiet src tests
       - name: ESLint (0 warnings allowed)
         run: npx eslint src tests --max-warnings 0
+      - name: CSS lint (0 warnings allowed)
+        run: npx stylelint "src/**/*.css" --max-warnings 0
       - name: Prettier format check
         run: npx prettier --check .
       - name: Markdownlint

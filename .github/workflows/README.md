@@ -45,10 +45,11 @@ The main quality gate in `ci.yml` is expected to cover:
 
 1. TypeScript type checking
 2. ESLint with zero warnings
-3. Markdownlint
-4. Vitest on supported Node versions
-5. Security scanning and worker-focused validation
-6. Production build and bundle-size gate
+3. CSS lint with zero warnings
+4. Markdownlint
+5. Vitest on supported Node versions
+6. Security scanning and worker-focused validation
+7. Production build and bundle-size gate
 
 The branch-protection defaults require these `ci.yml` checks: `CI / TypeScript`,
 `CI / Lint + Markdown`, `CI / Vitest (Node 24)`, `CI / Worker Unit Tests`,
@@ -83,8 +84,19 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 - it re-runs the repository's canonical production gate (`npm run check`)
 - it runs the CI-only supply-chain checks that are not part of `npm run check`
 - it packages `dist.zip`
-- it attaches `dist.zip`, `sw.js`, and `dist/icon.svg`
+- it attests and signs artifacts before publishing the release
+- it attaches `dist.zip`, checksums, both Cosign bundles, `sw.js`, `dist/icon.svg`, and the SBOM
+- publication fails if any declared attachment is missing; regression coverage lives in `tests/unit/scripts/release-workflow.test.ts`
 - it uses generated release notes plus the repository release-note configuration in `.github/release.yml`
+
+### Readiness Repairs (2026-09-08)
+
+- Worker installation uses its committed lockfile via `npm ci --ignore-scripts`. Cloudflare Workers types 5.x satisfies the locked Wrangler peer requirement; no legacy peer bypass is used.
+- Scorecard is pinned to upstream v2.4.4, which uses GHCR instead of the GCR image that failed with a registry billing error.
+- Windows workspace tasks explicitly select `pwsh.exe`; PowerShell failure checks must not execute under `cmd`.
+- Copilot setup targets Node 24 without npm caching against a nonexistent root lockfile; installation remains owned by the shared CI installer.
+- A successful historical release does not validate a new commit. Record CI, Pages, security, and tagged-release results against their exact SHAs.
+- Existing checkout/setup-node v4 pins still emit Node runtime deprecation notices on hosted runners. A verified runtime-native action migration requires revising the repository's explicit v4 policy; forcing Node 24 alone does not resolve these notices.
 
 ## Change Rules
 

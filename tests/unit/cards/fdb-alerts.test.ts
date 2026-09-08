@@ -22,6 +22,7 @@ vi.mock("@/cards/alerts/alerts", () => ({
 
 function mountCard(): FdbAlertsCard {
   const card = document.createElement("fdb-alerts") as FdbAlertsCard;
+  expect(card).toBeInstanceOf(FdbAlertsCard);
   card.setAttribute("data-card-id", "alerts");
   document.body.appendChild(card);
   return card;

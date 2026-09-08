@@ -107,26 +107,6 @@ jobs:
           echo "$COMMITS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.3.2
-        with:
-          generate_release_notes: true
-          body: |
-            ## What's Changed
-            ${{ steps.changelog.outputs.CHANGELOG }}
-
-            ## 🚀 Deploy
-            Deployed automatically to GitHub Pages on push to `main`.
-            To self-host: extract `dist.zip` and serve the `dist/` folder from any static host.
-          files: |
-            dist.zip
-            dist.zip.sha256
-            dist.zip.bundle
-            sw.js
-            sw.js.bundle
-            dist/icon.svg
-            sbom.json
-
       - name: Attest build provenance (SLSA)
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:
@@ -152,3 +132,24 @@ jobs:
 
       - name: Generate rebuilder manifest
         run: node scripts/check-reproducible.mjs
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.3.2
+        with:
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          body: |
+            ## What's Changed
+            ${{ steps.changelog.outputs.CHANGELOG }}
+
+            ## Deploy
+            GitHub Pages deployment follows successful CI on `main`.
+            To self-host: extract `dist.zip` and serve the `dist/` folder from any static host.
+          files: |
+            dist.zip
+            dist.zip.sha256
+            dist.zip.bundle
+            sw.js
+            sw.js.bundle
+            dist/icon.svg
+            sbom.json

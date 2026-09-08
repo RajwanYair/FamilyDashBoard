@@ -25,6 +25,7 @@ vi.mock("@/cards/system-info/system-info", () => ({
 
 function mountCard(): FdbSystemInfoCard {
   const card = document.createElement("fdb-system-info") as FdbSystemInfoCard;
+  expect(card).toBeInstanceOf(FdbSystemInfoCard);
   card.setAttribute("data-card-id", "system-info");
   document.body.appendChild(card);
   return card;

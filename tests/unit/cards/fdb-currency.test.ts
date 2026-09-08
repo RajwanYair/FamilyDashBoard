@@ -24,6 +24,7 @@ vi.mock("@/cards/currency/currency", () => ({
 
 function mountCard(): FdbCurrencyCard {
   const card = document.createElement("fdb-currency") as FdbCurrencyCard;
+  expect(card).toBeInstanceOf(FdbCurrencyCard);
   card.setAttribute("data-card-id", "currency");
   document.body.appendChild(card);
   return card;
