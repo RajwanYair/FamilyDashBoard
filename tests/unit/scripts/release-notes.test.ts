@@ -61,6 +61,11 @@ const CHANGELOG_NO_VERSION = `
 // ── hasChangelogEntry ─────────────────────────────────────────────────────────
 
 describe("hasChangelogEntry", () => {
+  it("distinguishes an empty section from a missing version", () => {
+    expect(hasChangelogEntry(CHANGELOG_EMPTY_SECTION, "12.9.0")).toBe(true);
+    expect(hasChangelogEntry(CHANGELOG_NO_VERSION, "12.9.0")).toBe(false);
+  });
+
   it("returns true when version heading exists", () => {
     expect(hasChangelogEntry(CHANGELOG_FULL, "12.9.0")).toBe(true);
   });

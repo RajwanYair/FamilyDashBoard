@@ -16,7 +16,7 @@ function extractPathKeys(yamlText: string): string[] {
   const keys: string[] = [];
   for (const line of yamlText.split("\n")) {
     const m = line.match(/^  (\/[^:]+):/);
-    if (m) keys.push(m[1]);
+    if (m?.[1]) keys.push(m[1]);
   }
   return keys.sort();
 }
@@ -30,7 +30,7 @@ function hashPathKeys(pathKeys: string[]): string {
 
 function readStoredHash(fileText: string): string | null {
   const m = fileText.match(/^\/\/ @openapi-paths-hash: ([0-9a-f]{64})/m);
-  return m ? m[1] : null;
+  return m?.[1] ?? null;
 }
 
 // ── extractPathKeys ───────────────────────────────────────────────────────────

@@ -120,6 +120,10 @@ not completion evidence: a later failure, signal termination, missing report, or
 timeout fails the gate. Diagnose surviving timers or requests instead of treating
 an unfinished run as a pass. Benchmark timing budgets remain enforced separately.
 
+The VS Code task `S01: Benchmark Gate Regression` runs the Node script-test
+TypeScript project, lint, formatting, and script regression suites. It uses one
+Vitest thread for this focused check; it does not replace the full repository gate.
+
 ---
 
 ## 🏢 Corp-Proxy Quickstart
