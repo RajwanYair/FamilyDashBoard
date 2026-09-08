@@ -318,7 +318,7 @@ export function renderNowcastStrip(data: NowcastResponse): void {
     .map((p, i) => {
       const label = `${i * 15}–${(i + 1) * 15} דק׳`;
       const cls = p >= 70 ? "nc-high" : p >= 40 ? "nc-med" : "nc-low";
-      return `<div class="nc-seg ${cls}" title="${label}: ${p}%" aria-label="${label}: ${p}%"><span class="nc-pct">${p}%</span></div>`;
+      return `<div class="nc-seg ${cls}" role="img" title="${label}: ${p}%" aria-label="${label}: ${p}%"><span class="nc-pct">${p}%</span></div>`;
     })
     .join("");
 

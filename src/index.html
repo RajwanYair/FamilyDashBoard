@@ -786,7 +786,7 @@
             </section>
             <section class="card" role="region" data-card-id="weather" aria-labelledby="wx-city-label">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-wx" role="status" aria-label="מצב סנכרון מזג אוויר" title="סנכרון מזג אוויר — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span><span class="card-mini-info" id="mini-weather"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית מזג אוויר" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
-              <div class="weather-body" aria-live="polite" aria-label="נתוני מזג אוויר">
+              <div class="weather-body" role="region" aria-live="polite" aria-label="נתוני מזג אוויר">
                 <!-- Feature 45: Multi-city tabs -->
                 <div class="wx-city-tabs" id="wx-city-tabs">
                   <button type="button" class="wx-city-tab active" data-city="jerusalem" data-lat="31.7683" data-lon="35.2137" title="לחץ להצגת מזג אוויר בירושלים">ירושלים</button>
@@ -833,7 +833,7 @@
                 <div id="wx-alert-banner"></div>
                 <!-- F148: Weekly weather summary -->
                 <div id="wx-week-summary"></div>
-                <div class="wx-forecast" id="wx-forecast" aria-live="polite" aria-label="תחזית עשרת הימים">
+                <div class="wx-forecast" id="wx-forecast" role="list" aria-live="polite" aria-label="תחזית עשרת הימים">
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
@@ -1046,7 +1046,12 @@
                   <div class="cd-progress-wrap is-hidden" id="cd3-progress-wrap"><div class="cd-progress-bar" id="cd3-progress-bar"></div></div>
                 </div>
                 <!-- S58: Upcoming holidays mini-grid -->
-                <div id="cd-upcoming-holidays" class="cd-upcoming-holidays is-hidden" aria-label="חגים קרובים"></div>
+                <div
+                  id="cd-upcoming-holidays"
+                  class="cd-upcoming-holidays is-hidden"
+                  role="group"
+                  aria-label="חגים קרובים"
+                ></div>
               </div>
             </section>
             <section class="card" role="region" data-card-id="tasks" aria-labelledby="card-title-tasks">

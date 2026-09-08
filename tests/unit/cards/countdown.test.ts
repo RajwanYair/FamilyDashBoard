@@ -1833,6 +1833,8 @@ describe("Countdown — renderUpcomingHolidays (S58)", () => {
     const container = document.createElement("div");
     container.id = "cd-upcoming-holidays";
     container.className = "cd-upcoming-holidays is-hidden";
+    container.setAttribute("role", "group");
+    container.setAttribute("aria-label", "חגים קרובים");
     document.body.appendChild(container);
   });
 
