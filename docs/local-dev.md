@@ -124,6 +124,14 @@ The VS Code task `S01: Benchmark Gate Regression` runs the Node script-test
 TypeScript project, lint, formatting, and script regression suites. It uses one
 Vitest thread for this focused check; it does not replace the full repository gate.
 
+The video-news unit suite also includes a deterministic iframe fixture. It checks
+that channel URLs are retained as test metadata while happy-dom keeps navigation
+at `about:blank`, and that initialization performs no fetch. Run it with:
+
+```powershell
+npm exec -- vitest run tests/unit/cards/video-news.test.ts --pool=threads --maxWorkers=1 --reporter=dot
+```
+
 ---
 
 ## 🏢 Corp-Proxy Quickstart
