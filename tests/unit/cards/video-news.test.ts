@@ -147,6 +147,26 @@ describe("video-news module — channel state (headless)", () => {
   });
 });
 
+describe("video-news module — deterministic iframe loading", () => {
+  it("keeps iframe navigation inert while preserving channel URLs", async () => {
+    const { destroyVideoNews, initVideoNews } = await import("@/cards/video-news/video-news");
+    const root = document.createElement("section");
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+
+    initVideoNews(root, "c14");
+
+    const iframes = [...root.querySelectorAll<HTMLIFrameElement>(".video-news__iframe")];
+    expect(iframes).toHaveLength(6);
+    expect(iframes.every((iframe) => iframe.getAttribute("src") === "about:blank")).toBe(true);
+    expect(iframes.map((iframe) => iframe.getAttribute("data-src"))).toEqual(
+      listChannels().map((id) => getStreamDescriptor(id).url),
+    );
+    expect(fetchSpy).not.toHaveBeenCalled();
+
+    destroyVideoNews();
+  });
+});
+
 // ── listPinnedChannels ─────────────────────────────────
 
 describe("video-news — listPinnedChannels ( V1)", () => {
