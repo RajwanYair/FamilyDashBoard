@@ -41,9 +41,8 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Install dependencies (parent tooling)
-        run: npm ci --ignore-scripts
-        working-directory: ..
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
 
       - name: Build (GitHub Pages base)
         run: npx vite build
