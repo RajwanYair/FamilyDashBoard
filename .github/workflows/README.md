@@ -50,6 +50,10 @@ The main quality gate in `ci.yml` is expected to cover:
 5. Security scanning and worker-focused validation
 6. Production build and bundle-size gate
 
+The branch-protection defaults require these `ci.yml` checks: `CI / TypeScript`,
+`CI / Lint + Markdown`, `CI / Vitest (Node 24)`, `CI / Worker Unit Tests`,
+`CI / Security Scan`, and `CI / Production Build + Size`.
+
 If a change adds a new required quality gate, add it to `ci.yml` rather than creating a second overlapping CI workflow.
 
 ## Deployment Workflows

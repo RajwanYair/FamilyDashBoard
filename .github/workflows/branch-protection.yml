@@ -92,7 +92,7 @@ jobs:
           gh api --method PUT \
             -H "Accept: application/vnd.github+json" \
             repos/${OWNER}/${REPO}/branches/main/protection \
-            --field required_status_checks='{"strict":true,"contexts":["CI / Lint + Test"]}' \
+            --field required_status_checks='{"strict":true,"contexts":["CI / TypeScript","CI / Lint + Markdown","CI / Vitest (Node 24)","CI / Worker Unit Tests","CI / Security Scan","CI / Production Build + Size"]}' \
             --field enforce_admins=true \
             --field required_pull_request_reviews=null \
             --field restrictions=null \

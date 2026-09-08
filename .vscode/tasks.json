@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "✅ Check All (typecheck + lint + test)",
+            "label": "✅ Repository Quality Gate",
             "type": "shell",
-            "command": "npm run check",
+            "command": "$ErrorActionPreference = 'Stop'; npm run check; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
             "group": { "kind": "test", "isDefault": true },
             "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": ["$tsc", "$eslint-stylish"]
@@ -167,7 +167,7 @@
         {
             "label": "🌐 Serve Local: Preview (production build)",
             "type": "shell",
-            "command": "npx vite build ; npx vite preview --host",
+            "command": "$ErrorActionPreference = 'Stop'; npx vite build; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npx vite preview --host",
             "group": "build",
             "isBackground": true,
             "presentation": {
@@ -227,7 +227,7 @@
         {
             "label": "🚀 Production Readiness Gate",
             "type": "shell",
-            "command": "npm run check ; npm run test:e2e ; npm run check:bundle",
+            "command": "$ErrorActionPreference = 'Stop'; npm run check; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npm run test:e2e; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npm run check:bundle; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
             "group": {
                 "kind": "test",
                 "isDefault": false
