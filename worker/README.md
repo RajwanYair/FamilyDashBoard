@@ -2,9 +2,22 @@
 
 > Cloudflare Worker · Edge-deployed · CORS-enabled · Rate-limited (120 req/min per IP)
 
-Base URL: `https://family-dashboard-worker.rajwanyair.workers.dev`
+Configured Worker name: `familydashboard-api`. Verify the deployed URL in the target Cloudflare account; this repository configuration alone does not establish a live endpoint.
 
 ---
+
+## Deployment Readiness
+
+`npm run deploy` uses the root configuration in `wrangler.toml`, where `ENVIRONMENT` is `production`. There is no named `[env.production]` section. Do not pass `--env production` without defining that environment and its required bindings.
+
+Before deployment:
+
+1. Install the committed Worker dependency set with `npm ci --ignore-scripts` and run `npm run typecheck`.
+2. Replace the KV/D1 placeholder IDs with provisioned resources in the intended account. Confirm all declared Durable Objects, queues, R2, Vectorize, analytics, AI permissions, and associated operating costs. Do not invent IDs or create billable services just to pass CI.
+3. Configure the repository's `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets directly in GitHub settings. Never place their values in source, logs, or chat.
+4. Run `npx wrangler deploy --dry-run` before the authorized deployment, then verify the actual health endpoint and rollback procedure.
+
+API cache lifetimes are controlled by route response headers and KV TTLs, not an unsupported `[cache].default_ttl` Wrangler setting. A successful typecheck does not validate account bindings or prove deployment readiness.
 
 ## Overview
 

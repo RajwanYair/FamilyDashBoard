@@ -76,6 +76,8 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 - `worker/` is the exception to the parent-tooling pattern
 - `worker/package-lock.json` is valid and expected
 - worker secrets must be documented when changed
+- `npm run deploy` targets the root production configuration; no named `production` environment is defined
+- replace placeholder resource IDs and verify account bindings before deployment; see `worker/README.md`
 
 ## Release Workflow
 
@@ -92,6 +94,7 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 ### Readiness Repairs (2026-09-08)
 
 - Worker installation uses its committed lockfile via `npm ci --ignore-scripts`. Cloudflare Workers types 5.x satisfies the locked Wrangler peer requirement; no legacy peer bypass is used.
+- CI explicitly installs the YAML parser used by workflow regression tests and pins Prettier 3.8.3 to the verified shared formatter. Upgrade formatting locally and in CI together; a floating range produced inconsistent formatting failures with 3.9.6.
 - Scorecard is pinned to upstream v2.4.4, which uses GHCR instead of the GCR image that failed with a registry billing error.
 - Windows workspace tasks explicitly select `pwsh.exe`; PowerShell failure checks must not execute under `cmd`.
 - Copilot setup targets Node 24 without npm caching against a nonexistent root lockfile; installation remains owned by the shared CI installer.

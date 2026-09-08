@@ -31,9 +31,10 @@ npm install --no-save --no-package-lock --ignore-scripts \
   "typescript-eslint@^8.59.0" \
   "@eslint/js@^10.0.1" \
   "happy-dom@^20.9.0" \
-  "prettier@^3.5.0" \
+  "prettier@3.8.3" \
   "stylelint@^17.11.1" \
   "markdownlint-cli2@^0.22.0" \
+  "yaml@^2.9.0" \
   "zod@^3.24.0" \
   "@cloudflare/workers-types@^5.20260722.1" \
   "fast-check@^4.7.0" \

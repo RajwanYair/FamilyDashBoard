@@ -11,10 +11,6 @@ mode = "smart"
 [vars]
 ENVIRONMENT = "production"
 
-# Cache API responses at the edge
-[cache]
-default_ttl = 300  # 5 minutes
-
 # KV namespace for stale-fallback cache
 # Create via: wrangler kv:namespace create CACHE_KV
 [[kv_namespaces]]

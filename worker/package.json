@@ -5,7 +5,7 @@
     "description": "Cloudflare Worker API proxy for FamilyDashBoard",
     "scripts": {
         "dev": "wrangler dev",
-        "deploy": "wrangler deploy --env production",
+        "deploy": "wrangler deploy",
         "typecheck": "tsc --noEmit"
     },
     "engines": {
