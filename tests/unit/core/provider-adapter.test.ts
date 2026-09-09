@@ -20,7 +20,7 @@ vi.mock("@/core/provider-toast", () => ({
   notifyProviderBlocked: vi.fn(),
 }));
 
-import { createCachedProviderAdapter } from "@/core/provider-adapter";
+import { createCachedProviderAdapter, ProviderAdapterError } from "@/core/provider-adapter";
 import { cGet, cGetStale, cSet } from "@/core/cache";
 import { getProviderHealth, recordProviderFailure, recordProviderSuccess } from "@/core/provider";
 import { diagLog } from "@/core/diag";
@@ -88,8 +88,77 @@ describe("createCachedProviderAdapter", () => {
       error: "wrapped boom",
       stale: { value: 1 },
     });
-    expect(recordProviderFailure).toHaveBeenCalledWith("demo");
+    expect(recordProviderFailure).toHaveBeenCalledWith("demo", "unknown");
     expect(diagLog).toHaveBeenCalledWith("demo failed: boom");
+  });
+
+  it("preserves an explicitly classified adapter failure stage", async () => {
+    const adapter = createCachedProviderAdapter({
+      id: "demo-parse",
+      displayName: "Demo Parse",
+      cacheKey: "demo-parse-key",
+      cacheTtl: 123,
+      fetchFresh: vi.fn().mockRejectedValue(new ProviderAdapterError("invalid payload", "parse")),
+    });
+
+    const result = await adapter.fetch();
+
+    expect(result.ok).toBe(false);
+    expect(recordProviderFailure).toHaveBeenCalledWith("demo-parse", "parse");
+  });
+
+  it("returns a cache failure when the fresh cache read throws", async () => {
+    vi.mocked(cGet).mockImplementationOnce(() => {
+      throw new Error("storage unavailable");
+    });
+    const adapter = createCachedProviderAdapter({
+      id: "demo-cache-read",
+      displayName: "Demo Cache Read",
+      cacheKey: "demo-cache-read-key",
+      cacheTtl: 123,
+      fetchFresh: vi.fn(),
+    });
+
+    const result = await adapter.fetch();
+
+    expect(result).toEqual({ ok: false, error: "Cache read failed: storage unavailable" });
+    expect(recordProviderFailure).toHaveBeenCalledWith("demo-cache-read", "cache");
+  });
+
+  it("returns a cache failure when writing fresh data throws", async () => {
+    vi.mocked(cSet).mockImplementationOnce(() => {
+      throw new Error("quota exceeded");
+    });
+    const adapter = createCachedProviderAdapter({
+      id: "demo-cache-write",
+      displayName: "Demo Cache Write",
+      cacheKey: "demo-cache-write-key",
+      cacheTtl: 123,
+      fetchFresh: vi.fn().mockResolvedValue({ value: 1 }),
+    });
+
+    const result = await adapter.fetch();
+
+    expect(result).toEqual({ ok: false, error: "Cache write failed: quota exceeded" });
+    expect(recordProviderFailure).toHaveBeenCalledWith("demo-cache-write", "cache");
+  });
+
+  it("does not let a stale cache read failure escape the provider result", async () => {
+    vi.mocked(cGetStale).mockImplementationOnce(() => {
+      throw new Error("stale storage unavailable");
+    });
+    const adapter = createCachedProviderAdapter({
+      id: "demo-stale-read",
+      displayName: "Demo Stale Read",
+      cacheKey: "demo-stale-read-key",
+      cacheTtl: 123,
+      fetchFresh: vi.fn().mockRejectedValue(new Error("network down")),
+    });
+
+    const result = await adapter.fetch();
+
+    expect(result).toEqual({ ok: false, error: "network down" });
+    expect(recordProviderFailure).toHaveBeenCalledWith("demo-stale-read", "unknown");
   });
 
   it("surfaces provider status from provider health", () => {

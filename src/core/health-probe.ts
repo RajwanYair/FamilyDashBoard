@@ -16,8 +16,7 @@
  *   - Results are NOT stored persistently — session state only.
  */
 
-import { WORKER_BASE_URL } from "./constants";
-import { isWorkerEnabled } from "./constants";
+import { WORKER_BASE_URL, isWorkerEnabled } from "./constants";
 import { diagLog } from "./diag";
 import { recordProviderSuccess, recordProviderFailure, recordProviderLatency } from "./provider";
 
@@ -38,6 +37,25 @@ interface WorkerProbeResponse {
   providers: WorkerProbeResult[];
 }
 
+function isWorkerProbeResponse(value: unknown): value is WorkerProbeResponse {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as { providers?: unknown };
+  if (!Array.isArray(candidate.providers)) return false;
+  return candidate.providers.every((provider: unknown): provider is WorkerProbeResult => {
+    if (typeof provider !== "object" || provider === null) return false;
+    const item = provider as Partial<WorkerProbeResult>;
+    return (
+      typeof item.id === "string" &&
+      (item.status === "ok" || item.status === "degraded" || item.status === "down") &&
+      typeof item.latencyMs === "number" &&
+      Number.isFinite(item.latencyMs) &&
+      item.latencyMs >= 0 &&
+      (item.httpStatus === null || typeof item.httpStatus === "number") &&
+      typeof item.probedAt === "string"
+    );
+  });
+}
+
 let _probeTimer: ReturnType<typeof setInterval> | null = null;
 
 /**
@@ -55,14 +73,17 @@ async function fetchAndIngest(): Promise<void> {
   }
   if (!resp.ok) return;
 
-  let body: WorkerProbeResponse;
+  let body: unknown;
   try {
-    body = (await resp.json()) as WorkerProbeResponse;
+    body = await resp.json();
   } catch {
     return;
   }
 
-  if (!Array.isArray(body?.providers)) return;
+  if (!isWorkerProbeResponse(body)) {
+    diagLog("[health-probe] Ignored malformed Worker response");
+    return;
+  }
 
   for (const p of body.providers) {
     if (typeof p.id !== "string") continue;

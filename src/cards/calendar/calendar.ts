@@ -608,7 +608,7 @@ async function loadCalendar(): Promise<void> {
       setSync("cal", "ok");
       syncBurst("cal");
       recordSuccess("cal");
-      markFresh("cal");
+      markFresh("calendar");
     } else {
       setSync("cal", "error");
       recordFailure("cal");

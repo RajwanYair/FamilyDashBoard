@@ -28,6 +28,7 @@ const _lastNotifyAt = new Map<string, number>();
 // Track whether each provider was previously non-ok so recovery toasts only
 // fire when the provider actually came back from a real degraded/down state.
 const _wasNonOk = new Set<string>();
+let _unsubscribe: (() => void) | null = null;
 
 /**
  * Notify the user that a provider appears blocked by the network. Rate-limited
@@ -85,7 +86,8 @@ function notifyProviderRecovered(providerId: string, now: number = nowMs()): boo
  * Call once during app init.
  */
 export function initProviderDegradationToasts(): void {
-  onProviderStatusChange((id: string, newStatus: ProviderStatus) => {
+  if (_unsubscribe !== null) return;
+  _unsubscribe = onProviderStatusChange((id: string, newStatus: ProviderStatus) => {
     if (newStatus === "degraded") {
       _wasNonOk.add(id);
       notifyProviderDegraded(id);
@@ -104,6 +106,8 @@ export function initProviderDegradationToasts(): void {
  * @internal
  */
 export function _resetProviderToast(): void {
+  _unsubscribe?.();
+  _unsubscribe = null;
   _lastNotifyAt.clear();
   _wasNonOk.clear();
 }

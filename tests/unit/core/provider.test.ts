@@ -17,6 +17,7 @@ import {
   getAllProviderLatencies,
   getProviderSuccessRate,
   getProviderAvgLatency,
+  onProviderStatusChange,
 } from "@/core/provider";
 
 beforeEach(() => {
@@ -31,6 +32,9 @@ describe("getProviderHealth — default record", () => {
     expect(h.failureCount).toBe(0);
     expect(h.consecutiveFails).toBe(0);
     expect(h.lastOkAt).toBeNull();
+    expect(h.lastAttemptAt).toBeNull();
+    expect(h.lastFailureAt).toBeNull();
+    expect(h.lastFailureStage).toBeNull();
   });
 
   it("returns a copy, not the internal reference", () => {
@@ -64,6 +68,16 @@ describe("recordProviderSuccess", () => {
     const h = getProviderHealth("open-meteo");
     expect(typeof h.lastOkAt).toBe("string");
     expect(h.lastOkAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    expect(h.lastAttemptAt).toBe(h.lastOkAt);
+  });
+
+  it("notifies listeners when a degraded provider recovers", () => {
+    const listener = vi.fn();
+    const unsubscribe = onProviderStatusChange(listener);
+    recordProviderFailure("recovering");
+    recordProviderSuccess("recovering");
+    expect(listener).toHaveBeenLastCalledWith("recovering", "ok", "degraded");
+    unsubscribe();
   });
 });
 
@@ -71,6 +85,14 @@ describe("recordProviderFailure", () => {
   it("increments failureCount", () => {
     recordProviderFailure("yahoo");
     expect(getProviderHealth("yahoo").failureCount).toBe(1);
+  });
+
+  it("records failure timing and stage", () => {
+    recordProviderFailure("yahoo", "parse");
+    const h = getProviderHealth("yahoo");
+    expect(h.lastAttemptAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    expect(h.lastFailureAt).toBe(h.lastAttemptAt);
+    expect(h.lastFailureStage).toBe("parse");
   });
 
   it("status becomes degraded after 1 failure", () => {

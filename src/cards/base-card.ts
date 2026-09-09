@@ -5,7 +5,7 @@
  * Each card module exports an init function and a load function.
  */
 
-import { cGet, cGetStale, cSet, cSetAsync, cGetAsync, cGetStaleAsync } from "../core/cache";
+import { cGet, cGetStale, cSet, cSetAsync, cGetAsync, cGetStaleAsync, cAge } from "../core/cache";
 import { isPageVisible } from "../core/idle";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../core/sync";
 import { acquireLock, releaseLock } from "../core/fetch";
@@ -21,6 +21,14 @@ export interface CardOptions {
   ttl: number;
   /** Refresh interval in milliseconds. */
   interval: number;
+}
+
+function markCachedFreshness(cardId: string, ttlMs: number): void {
+  const ageMs = cAge(cardId);
+  markFresh(cardId, {
+    ttlMs,
+    ...(ageMs === null ? {} : { retrievedAtMs: Date.now() - ageMs }),
+  });
 }
 
 /**
@@ -42,10 +50,11 @@ export function createCardLoader<T>(
 
     // Cache check
     const fresh = cGet<T>(opts.id, opts.ttl);
-    if (fresh) {
+    if (fresh !== null) {
       hideCardSkeleton(opts.id);
       renderData(fresh);
       setSync(opts.id, "ok");
+      markCachedFreshness(opts.id, opts.ttl);
       releaseLock(opts.id);
       _firstLoad = false;
       return;
@@ -79,7 +88,7 @@ export function createCardLoader<T>(
       setSync(opts.id, "ok");
       syncBurst(opts.id);
       recordSuccess(opts.id);
-      markFresh(opts.id);
+      markFresh(opts.id, { ttlMs: opts.ttl });
     } catch (err) {
       diagLog(`[${opts.id}] Load failed: ${String(err)}`);
       hideCardSkeleton(opts.id);
@@ -125,6 +134,7 @@ export function createAsyncCardLoader<T>(
       hideCardSkeleton(opts.id);
       renderData(fresh);
       setSync(opts.id, "ok");
+      markCachedFreshness(opts.id, opts.ttl);
       releaseLock(opts.id);
       _firstLoad = false;
       return;
@@ -158,7 +168,7 @@ export function createAsyncCardLoader<T>(
       setSync(opts.id, "ok");
       syncBurst(opts.id);
       recordSuccess(opts.id);
-      markFresh(opts.id);
+      markFresh(opts.id, { ttlMs: opts.ttl });
     } catch (err) {
       diagLog(`[${opts.id}] Load failed: ${String(err)}`);
       hideCardSkeleton(opts.id);

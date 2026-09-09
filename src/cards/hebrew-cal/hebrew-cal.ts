@@ -778,7 +778,7 @@ async function loadHebCal(): Promise<void> {
     setSync("hebcal", "ok");
     syncBurst("hebcal");
     recordSuccess("hebcal");
-    markFresh("hebcal");
+    markFresh("hebrew-cal");
     // Post-settlement dedup: if loadOmer's fetch raced ahead of loadHoliday,
     // the special row might duplicate the holiday row.  Correct it now that
     // _lastHolidayName is guaranteed to be set.

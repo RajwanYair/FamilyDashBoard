@@ -47,7 +47,7 @@ export function createOpenMeteoAdapter(lat: number, lon: number): ProviderAdapte
       try {
         const data = await fetchJSONWithWorker<WeatherResponse>(url);
         if (!isWeatherResponse(data)) {
-          recordProviderFailure(PROVIDER_ID);
+          recordProviderFailure(PROVIDER_ID, "parse");
           const stale = cGetStale<WeatherResponse>(CACHE_KEY);
           return { ok: false, error: "Invalid response shape", stale: stale ?? undefined };
         }

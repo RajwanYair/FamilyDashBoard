@@ -79,7 +79,7 @@ describe("OpenMeteoAdapter ", () => {
       expect(result.error).toBe("Invalid response shape");
       expect(result.stale).toBe(stale);
     }
-    expect(recordProviderFailure).toHaveBeenCalledWith("open-meteo");
+    expect(recordProviderFailure).toHaveBeenCalledWith("open-meteo", "parse");
   });
 
   it("returns ok:false with stale=undefined when isWeatherResponse false and no stale ", async () => {

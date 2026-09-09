@@ -54,6 +54,7 @@ describe("Stocks Provider Adapter ", () => {
     const adapter = createStocksAdapter("BAD");
     const result = await adapter.fetch();
     expect(result.ok).toBe(false);
+    expect(getProviderHealth("yahoo-finance").lastFailureStage).toBe("parse");
   });
 
   it("returns ok:true and caches valid response", async () => {
