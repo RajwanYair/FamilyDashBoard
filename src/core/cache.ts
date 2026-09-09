@@ -6,7 +6,7 @@
  */
 
 import { LS_PREFIX, LS_MAX_AGE, MS_PER_MIN } from "./constants";
-import { idbSet, idbGetEntry, idbKeys, idbClear, idbDel } from "./idb-cache";
+import { idbSet, idbSetConfirmed, idbGetEntry, idbKeys, idbClear, idbDel } from "./idb-cache";
 
 // ── In-memory layer ──
 interface MemEntry {
@@ -364,6 +364,7 @@ export async function migrateLocalStorageToIdb(): Promise<number> {
   if (localStorage.getItem(FLAG)) return 0;
 
   const entries: Array<{ key: string; data: unknown; ts: number }> = [];
+  let migrated = 0;
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
     if (!k?.startsWith(LS_PREFIX)) continue;
@@ -382,13 +383,13 @@ export async function migrateLocalStorageToIdb(): Promise<number> {
   }
 
   for (const e of entries) {
-    await idbSet(e.key, e.data);
+    if (await idbSetConfirmed(e.key, e.data)) migrated++;
   }
 
-  if (entries.length > 0) {
+  if (entries.length > 0 && migrated === entries.length) {
     localStorage.setItem(FLAG, "1");
   }
-  return entries.length;
+  return migrated;
 }
 
 /**
@@ -482,14 +483,14 @@ export function cAge(key: string): number | null {
 
   // In-memory
   const entry = mem.get(key);
-  if (entry) return now - entry.ts;
+  if (entry) return Math.max(0, now - entry.ts);
 
   // localStorage
   try {
     const raw = localStorage.getItem(LS_PREFIX + key);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as { ts?: number };
-    if (typeof parsed.ts === "number") return now - parsed.ts;
+    if (typeof parsed.ts === "number") return Math.max(0, now - parsed.ts);
   } catch {
     // Corrupted entry
   }

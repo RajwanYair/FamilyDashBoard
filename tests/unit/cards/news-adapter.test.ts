@@ -78,5 +78,6 @@ describe("createNewsAdapter ", () => {
     if (!result.ok) {
       expect(result.error).toContain("No news items");
     }
+    expect(getProviderHealth("news-rss").lastFailureStage).toBe("parse");
   });
 });

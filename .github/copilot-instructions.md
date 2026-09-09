@@ -1,8 +1,8 @@
 # GitHub Copilot Instructions — FamilyDashBoard v15.7.0
 
 > TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 7 Themes · 12 Cards · Vite 8 + TS 6.0.3 + Vitest 4.1.6
-> **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
-> No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`. Shared configs vendored into `tooling/`.
+> **Local toolchain with shared fallback** — this repository's package manifest and lockfile provide the reproducible local toolchain; the parent `MyScripts/` install remains supported for sibling projects and shared development.
+> Runtime dependencies remain separate from local development tools. Use `npm ci` in this checkout for local setup, or the approved shared `MyScripts/` install when working from the shared workspace.
 > Validation: `npm run check` for the canonical repository gate; `npx vitest run` and `npx eslint src tests --max-warnings 0` for focused checks
 > Coverage thresholds: see `vitest.config.ts`
 
@@ -22,7 +22,7 @@
 12. `_tempUnit` = `'C'`/`'F'` (NOT `_useFahrenheit`)
 13. Stock columns: `width` + `flex-shrink: 0` (NOT `min-width`)
 14. Grep `id="X"` in `index.html` before keeping any loader — dead elements = dead code
-15. Dev deps go in `MyScripts/package.json` (parent) — **never** add `devDependencies` to `FamilyDashBoard/package.json`
+15. Development tools belong in this repository's package manifest and lockfile for reproducible standalone setup; keep the parent `MyScripts/` toolchain supported as a shared alternative and do not add browser/runtime dependencies here.
 
 ## Key Names & Gotchas
 

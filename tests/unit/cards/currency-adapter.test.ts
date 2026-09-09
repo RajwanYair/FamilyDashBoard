@@ -59,7 +59,7 @@ describe("CurrencyAdapter ", () => {
     vi.mocked(fetchJSONWithWorker).mockRejectedValue(new Error("fail"));
     const result = await adapter.fetch();
     expect(result.ok).toBe(false);
-    expect(recordProviderFailure).toHaveBeenCalledWith("currency");
+    expect(recordProviderFailure).toHaveBeenCalledWith("currency", "unknown");
   });
 
   it(" : tries 3 endpoints (primary + ER fallback + ECB Frankfurter)", async () => {
@@ -85,7 +85,7 @@ describe("CurrencyAdapter ", () => {
       .mockResolvedValueOnce({ error: "no rates" });
     const result = await adapter.fetch();
     expect(result.ok).toBe(false);
-    expect(recordProviderFailure).toHaveBeenCalledWith("currency");
+    expect(recordProviderFailure).toHaveBeenCalledWith("currency", "parse");
   });
 
   // BoI primary path (lines 37-38 in currency-adapter.ts)

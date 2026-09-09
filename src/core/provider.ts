@@ -15,6 +15,7 @@
 import { nowMs, fromEpochMs } from "./temporal";
 
 export type ProviderStatus = "ok" | "degraded" | "down";
+export type ProviderFailureStage = "worker" | "direct" | "proxy" | "parse" | "cache" | "unknown";
 
 export interface ProviderHealth {
   /** Provider identifier (e.g. "open-meteo", "yahoo-finance"). */
@@ -25,6 +26,12 @@ export interface ProviderHealth {
   failureCount: number;
   /** ISO timestamp of last successful response, or null. */
   lastOkAt: string | null;
+  /** ISO timestamp of the most recent attempt, or null. */
+  lastAttemptAt: string | null;
+  /** ISO timestamp of the most recent failed attempt, or null. */
+  lastFailureAt: string | null;
+  /** Stage at which the most recent failure was observed, or null. */
+  lastFailureStage: ProviderFailureStage | null;
   /** Number of failures since the last success (reset on success). */
   consecutiveFails: number;
   /**
@@ -46,6 +53,9 @@ function _ensure(id: string): ProviderHealth {
       successCount: 0,
       failureCount: 0,
       lastOkAt: null,
+      lastAttemptAt: null,
+      lastFailureAt: null,
+      lastFailureStage: null,
       consecutiveFails: 0,
       status: "ok",
     };
@@ -66,21 +76,31 @@ function _computeStatus(consecutiveFails: number): ProviderStatus {
  */
 export function recordProviderSuccess(id: string): void {
   const h = _ensure(id);
+  const prev = h.status;
+  const now = nowMs();
   h.successCount++;
   h.consecutiveFails = 0;
-  h.lastOkAt = fromEpochMs(nowMs()).toISOString();
+  h.lastAttemptAt = fromEpochMs(now).toISOString();
+  h.lastOkAt = fromEpochMs(now).toISOString();
   h.status = "ok";
+  if (prev !== "ok") {
+    for (const cb of _statusListeners) cb(id, "ok", prev);
+  }
 }
 
 /**
  * Record a failed provider response.
  * @param id - Provider identifier
  */
-export function recordProviderFailure(id: string): void {
+export function recordProviderFailure(id: string, stage: ProviderFailureStage = "unknown"): void {
   const h = _ensure(id);
   const prev = h.status;
+  const now = nowMs();
   h.failureCount++;
   h.consecutiveFails++;
+  h.lastAttemptAt = fromEpochMs(now).toISOString();
+  h.lastFailureAt = fromEpochMs(now).toISOString();
+  h.lastFailureStage = stage;
   h.status = _computeStatus(h.consecutiveFails);
   if (h.status !== prev && h.status !== "ok") {
     for (const cb of _statusListeners) cb(id, h.status, prev);
@@ -136,8 +156,12 @@ export type ProviderStatusListener = (
 const _statusListeners: ProviderStatusListener[] = [];
 
 /** Register a listener for provider status degradation transitions. */
-export function onProviderStatusChange(cb: ProviderStatusListener): void {
+export function onProviderStatusChange(cb: ProviderStatusListener): () => void {
   _statusListeners.push(cb);
+  return () => {
+    const index = _statusListeners.indexOf(cb);
+    if (index >= 0) _statusListeners.splice(index, 1);
+  };
 }
 
 /**

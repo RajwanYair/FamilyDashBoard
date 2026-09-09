@@ -54,7 +54,7 @@ export function createHebcalAdapter(geonameid = 281184): ProviderAdapter<HebcalR
       try {
         const data = await fetchJSONWithWorker<HebcalResponse>(url);
         if (!data?.items || !Array.isArray(data.items)) {
-          recordProviderFailure(PROVIDER_ID);
+          recordProviderFailure(PROVIDER_ID, "parse");
           const stale = cGetStale<HebcalResponse>(CACHE_KEY);
           return { ok: false, error: "Invalid response shape", stale: stale ?? undefined };
         }

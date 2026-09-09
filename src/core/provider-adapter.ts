@@ -2,7 +2,18 @@ import { cGet, cGetStale, cSet } from "./cache";
 import { getProviderHealth, recordProviderFailure, recordProviderSuccess } from "./provider";
 import { diagLog } from "./diag";
 import { notifyProviderBlocked } from "./provider-toast";
+import type { ProviderFailureStage } from "./provider";
 import type { ProviderAdapter, ProviderResult } from "../types/provider";
+
+export class ProviderAdapterError extends Error {
+  readonly stage: ProviderFailureStage;
+
+  constructor(message: string, stage: ProviderFailureStage) {
+    super(message);
+    this.name = "ProviderAdapterError";
+    this.stage = stage;
+  }
+}
 
 interface CachedProviderAdapterOptions<T> {
   id: string;
@@ -13,6 +24,35 @@ interface CachedProviderAdapterOptions<T> {
   successLog?: (data: T) => string;
   failureLog?: (message: string) => string;
   failureMessage?: (message: string) => string;
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function readFreshCache<T>(cacheKey: string, cacheTtl: number): T | null {
+  try {
+    return cGet<T>(cacheKey, cacheTtl);
+  } catch (error) {
+    throw new ProviderAdapterError(`Cache read failed: ${errorMessage(error)}`, "cache");
+  }
+}
+
+function writeFreshCache<T>(cacheKey: string, data: T): void {
+  try {
+    cSet(cacheKey, data);
+  } catch (error) {
+    throw new ProviderAdapterError(`Cache write failed: ${errorMessage(error)}`, "cache");
+  }
+}
+
+function readStaleCache<T>(cacheKey: string): T | null {
+  try {
+    return cGetStale<T>(cacheKey);
+  } catch (error) {
+    diagLog(`[${cacheKey}] Stale cache read failed: ${errorMessage(error)}`);
+    return null;
+  }
 }
 
 export function createCachedProviderAdapter<T>(
@@ -36,23 +76,24 @@ export function createCachedProviderAdapter<T>(
     cacheTtl,
 
     async fetch(): Promise<ProviderResult<T>> {
-      const cached = cGet<T>(cacheKey, cacheTtl);
-      if (cached !== null) {
-        return { ok: true, data: cached };
-      }
-
       try {
+        const cached = readFreshCache<T>(cacheKey, cacheTtl);
+        if (cached !== null) {
+          return { ok: true, data: cached };
+        }
+
         const data = await fetchFresh();
-        cSet(cacheKey, data);
+        writeFreshCache(cacheKey, data);
         recordProviderSuccess(id);
         if (successLog) {
           diagLog(successLog(data));
         }
         return { ok: true, data };
       } catch (err) {
-        recordProviderFailure(id);
-        const stale = cGetStale<T>(cacheKey);
-        const message = err instanceof Error ? err.message : String(err);
+        const stage = err instanceof ProviderAdapterError ? err.stage : "unknown";
+        recordProviderFailure(id, stage);
+        const stale = readStaleCache<T>(cacheKey);
+        const message = errorMessage(err);
         diagLog(failureLog ? failureLog(message) : `[${id}] ${message}`);
         // when health flips to "down" and
         // there is no stale fallback, surface a rate-limited toast so the user

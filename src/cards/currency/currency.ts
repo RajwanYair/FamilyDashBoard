@@ -619,7 +619,7 @@ export async function loadCurrency(): Promise<void> {
     setSync("cur", "ok");
     syncBurst("cur");
     recordSuccess("cur");
-    markFresh("cur");
+    markFresh("currency", { ttlMs: ttl });
   } catch (err) {
     diagLog(`[currency] Load failed: ${String(err)}`);
     setSync("cur", stale !== null ? "ok" : "error");

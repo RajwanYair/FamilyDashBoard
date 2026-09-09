@@ -555,6 +555,17 @@ describe("migrateLsToIdb ", () => {
     expect(localStorage.getItem("bad-key")).toBe("{{not json");
   });
 
+  it("keeps the source value when IndexedDB is unavailable", async () => {
+    vi.stubGlobal("indexedDB", undefined);
+    _resetIdb();
+    localStorage.setItem("offline-key", JSON.stringify({ v: 2 }));
+
+    const count = await migrateLsToIdb(["offline-key"]);
+
+    expect(count).toBe(0);
+    expect(localStorage.getItem("offline-key")).toBe(JSON.stringify({ v: 2 }));
+  });
+
   it("migrates multiple keys in one call", async () => {
     localStorage.setItem("k1", JSON.stringify("hello"));
     localStorage.setItem("k2", JSON.stringify(42));

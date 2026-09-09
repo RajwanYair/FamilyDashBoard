@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { MS_PER_MIN } from "../../../src/core/constants";
 import {
   markFresh,
   formatRelativeTime,
@@ -13,6 +14,7 @@ import {
   renderFreshnessBadge,
   removeFreshnessBadge,
   getLastFetchMs,
+  getFreshnessSnapshot,
   resetFreshness,
 } from "../../../src/core/freshness";
 
@@ -63,6 +65,10 @@ describe("freshnessState", () => {
     expect(freshnessState(1_800_001, 900_000)).toBe("stale");
     expect(freshnessState(5_000_000, 900_000)).toBe("stale");
   });
+
+  it("treats a negative age as fresh instead of exposing clock skew", () => {
+    expect(freshnessState(-1, 900_000)).toBe("fresh");
+  });
 });
 
 describe("markFresh / getLastFetchMs", () => {
@@ -74,6 +80,45 @@ describe("markFresh / getLastFetchMs", () => {
 
   it("returns null for unknown card", () => {
     expect(getLastFetchMs("unknown")).toBeNull();
+  });
+
+  it("normalizes legacy card ids to the canonical registry id", () => {
+    vi.setSystemTime(new Date("2025-06-01T12:00:00Z"));
+    markFresh("wx");
+    expect(getLastFetchMs("weather")).toBe(Date.now());
+    expect(getFreshnessSnapshot("wx")?.cardId).toBe("weather");
+  });
+
+  it("keeps an invalid future observation separate from retrieval time", () => {
+    vi.setSystemTime(new Date("2025-06-01T12:00:00Z"));
+    markFresh("news", { observedAtMs: Date.now() + 10 * MS_PER_MIN });
+    const snapshot = getFreshnessSnapshot("news");
+    expect(snapshot?.observedAtMs).toBeNull();
+    expect(snapshot?.retrievedAtMs).toBe(Date.now());
+    expect(snapshot?.ageMs).toBe(0);
+  });
+
+  it("uses the provider TTL instead of a universal badge threshold", () => {
+    vi.setSystemTime(new Date("2025-06-01T12:00:00Z"));
+    markFresh("weather");
+    vi.setSystemTime(new Date("2025-06-01T12:20:00Z"));
+    const snapshot = getFreshnessSnapshot("weather");
+    expect(snapshot?.state).toBe("fresh");
+    expect(snapshot?.ttlMs).toBe(30 * 60_000);
+  });
+
+  it("preserves the original retrieval time when data is rendered from cache", () => {
+    const retrievedAtMs = new Date("2025-06-01T11:40:00Z").getTime();
+    const renderedAtMs = new Date("2025-06-01T12:00:00Z").getTime();
+    vi.setSystemTime(renderedAtMs);
+
+    markFresh("weather", { retrievedAtMs, renderedAtMs });
+
+    expect(getFreshnessSnapshot("weather")).toMatchObject({
+      retrievedAtMs,
+      renderedAtMs,
+      ageMs: 20 * MS_PER_MIN,
+    });
   });
 });
 
@@ -100,10 +145,18 @@ describe("renderFreshnessBadge", () => {
   it("sets data-state attribute based on freshness", () => {
     const container = document.createElement("div");
     vi.setSystemTime(new Date("2025-06-01T12:00:00Z"));
-    markFresh("currency");
+    markFresh("news");
     vi.setSystemTime(new Date("2025-06-01T12:20:00Z")); // 20 min later — aging (> 15 min TTL, < 30 min)
-    const el = renderFreshnessBadge("currency", container);
+    const el = renderFreshnessBadge("news", container);
     expect(el.dataset["state"]).toBe("aging");
+  });
+
+  it("shares one badge between legacy and canonical ids", () => {
+    const container = document.createElement("div");
+    markFresh("calendar");
+    const canonical = renderFreshnessBadge("calendar", container);
+    const legacy = renderFreshnessBadge("cal", container);
+    expect(legacy).toBe(canonical);
   });
 });
 
@@ -112,8 +165,8 @@ describe("removeFreshnessBadge", () => {
     const container = document.createElement("div");
     markFresh("alerts");
     renderFreshnessBadge("alerts", container);
-    expect(container.children.length).toBe(1);
+    expect(container.children).toHaveLength(1);
     removeFreshnessBadge("alerts");
-    expect(container.children.length).toBe(0);
+    expect(container.children).toHaveLength(0);
   });
 });

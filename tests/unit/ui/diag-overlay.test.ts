@@ -550,8 +550,23 @@ describe("renderProviderHealthHtml ", () => {
     recordProviderSuccess("fast");
     recordProviderLatency("fast", 100);
     recordProviderLatency("fast", 200);
+    recordProviderLatency("fast", 1000);
     const html = renderProviderHealthHtml();
-    expect(html).toContain("150ms");
+    expect(html).toContain("200ms");
+    expect(html).toContain("1000ms");
+  });
+
+  it("shows the latest failure time and classified failure stage", () => {
+    recordProviderFailure("api", "parse");
+    const html = renderProviderHealthHtml();
+    expect(html).toContain("fail@");
+    expect(html).toContain("parse");
+  });
+
+  it("exposes provider status text to assistive technology", () => {
+    recordProviderSuccess("api");
+    const html = renderProviderHealthHtml();
+    expect(html).toContain('aria-label="ok"');
   });
 });
 

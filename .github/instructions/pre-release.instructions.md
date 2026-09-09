@@ -160,4 +160,4 @@ One commit per session minimum. Use `feat:`, `fix:`, `chore:` prefixes.
 
 - **Authentication (Google / Facebook / Apple)** — this is a static client-only PWA with no server. Auth is permanently out of scope. Do not add it.
 - External CDN dependencies — permanently forbidden (Rule 1).
-- `devDependencies` in `FamilyDashBoard/package.json` — all dev tools live in parent `MyScripts/package.json`.
+- Runtime dependencies in `FamilyDashBoard/package.json` remain separate from local development tools. Development tools are pinned locally for standalone reproducibility; the parent `MyScripts` manifest remains a supported shared-tooling alternative.

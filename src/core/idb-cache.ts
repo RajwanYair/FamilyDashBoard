@@ -91,22 +91,34 @@ export async function idbGet<T = unknown>(key: string, ttl = 0): Promise<T | nul
  * @param key - Cache key
  * @param data - Serialisable payload
  */
-export async function idbSet(key: string, data: unknown): Promise<void> {
+async function writeIdbEntry(key: string, data: unknown): Promise<boolean> {
   const db = await openDB();
-  if (!db) return;
+  if (!db) return false;
 
-  return new Promise<void>((resolve) => {
+  return new Promise<boolean>((resolve) => {
     try {
       const tx = db.transaction(STORE_NAME, "readwrite");
       const entry: IdbEntry = { data, ts: Date.now() };
       // Explicit key form: put(value, key)
       const req = tx.objectStore(STORE_NAME).put(entry, key);
-      req.onsuccess = () => resolve();
-      req.onerror = () => resolve();
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => resolve(false);
     } catch {
-      resolve();
+      resolve(false);
     }
   });
+}
+
+export async function idbSet(key: string, data: unknown): Promise<void> {
+  await writeIdbEntry(key, data);
+}
+
+/**
+ * Store data in IDB and report whether the write was accepted.
+ * Used by migrations that must keep the source value when IDB is unavailable.
+ */
+export async function idbSetConfirmed(key: string, data: unknown): Promise<boolean> {
+  return writeIdbEntry(key, data);
 }
 
 /**
@@ -285,9 +297,10 @@ export async function migrateLsToIdb(keys: string[]): Promise<number> {
       } catch {
         continue; // skip non-JSON or corrupt entries
       }
-      await idbSet(key, parsed);
-      localStorage.removeItem(key);
-      migrated++;
+      if (await idbSetConfirmed(key, parsed)) {
+        localStorage.removeItem(key);
+        migrated++;
+      }
     } catch {
       // Ignore individual key errors
     }

@@ -126,8 +126,8 @@ function formatMs(ms) {
 }
 
 function relPath(absPath) {
-  const root = join(__dirname, "..").replace(/\\/g, "/");
-  return absPath.replace(/\\/g, "/").replace(root, "").replace(/^\//, "");
+  const root = join(__dirname, "..").replaceAll("\\", "/");
+  return absPath.replaceAll("\\", "/").replaceAll(root, "").replace(/^\//, "");
 }
 
 // ── Parse Vitest JSON output ───────────────────────────────────────────────────
@@ -265,62 +265,58 @@ function checkRegression(data, baseline) {
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────────
-const args = process.argv.slice(2);
-const isUpdate = args.includes("--update");
-const isReport = args.includes("--report");
-const skipRun = args.includes("--skip-run");
+const args = new Set(process.argv.slice(2));
+const isUpdate = args.has("--update");
+const isReport = args.has("--report");
+const skipRun = args.has("--skip-run");
 
-async function main() {
-  let testCode = 0;
-  if (!skipRun) {
-    testCode = await runTests();
-  }
-
-  const data = parseReport(BENCHMARK_JSON);
-  printReport(data);
-
-  if (isUpdate) {
-    saveBaseline(data);
-    process.exit(testCode);
-  }
-
-  if (isReport) {
-    if (testCode !== 0) console.log("\n⚠️  Test failures detected (exit code propagated)\n");
-    process.exit(testCode);
-  }
-
-  // Gate mode: check against baseline
-  const baseline = loadBaseline();
-  if (!baseline) {
-    console.log("⚠️  No baseline found. Run with --update to create one:");
-    console.log("   node scripts/check-benchmark.mjs --update");
-    console.log("   (Skipping regression check — first run)\n");
-    // Auto-create baseline on first run
-    saveBaseline(data);
-    process.exit(testCode);
-  }
-
-  const violations = checkRegression(data, baseline);
-
-  if (violations.length === 0) {
-    if (testCode !== 0) {
-      console.log(`❌ Tests failed (exit code: ${testCode}) — benchmark timing OK\n`);
-      process.exit(testCode);
-    }
-    console.log(`✅ Benchmark check passed — no regressions detected`);
-    console.log(
-      `   Baseline: ${baseline.generated} | Budget headroom: +${REGRESSION_THRESHOLD * 100}% per file, +${TOTAL_BUDGET_GROWTH * 100}% total\n`,
-    );
-    process.exit(0);
-  } else {
-    console.log(`❌ Benchmark regressions detected (${violations.length}):\n`);
-    for (const v of violations) {
-      console.log(`   • ${v}`);
-    }
-    console.log(`\n   To update the baseline after intentional changes:`);
-    console.log(`   node scripts/check-benchmark.mjs --update\n`);
-    process.exit(1);
-  }
+let testCode = 0;
+if (!skipRun) {
+  testCode = await runTests();
 }
 
-main();
+const data = parseReport(BENCHMARK_JSON);
+printReport(data);
+
+if (isUpdate) {
+  saveBaseline(data);
+  process.exit(testCode);
+}
+
+if (isReport) {
+  if (testCode !== 0) console.log("\n⚠️  Test failures detected (exit code propagated)\n");
+  process.exit(testCode);
+}
+
+// Gate mode: check against baseline
+const baseline = loadBaseline();
+if (!baseline) {
+  console.log("⚠️  No baseline found. Run with --update to create one:");
+  console.log("   node scripts/check-benchmark.mjs --update");
+  console.log("   (Skipping regression check — first run)\n");
+  // Auto-create baseline on first run
+  saveBaseline(data);
+  process.exit(testCode);
+}
+
+const violations = checkRegression(data, baseline);
+
+if (violations.length === 0) {
+  if (testCode !== 0) {
+    console.log(`❌ Tests failed (exit code: ${testCode}) — benchmark timing OK\n`);
+    process.exit(testCode);
+  }
+  console.log(`✅ Benchmark check passed — no regressions detected`);
+  console.log(
+    `   Baseline: ${baseline.generated} | Budget headroom: +${REGRESSION_THRESHOLD * 100}% per file, +${TOTAL_BUDGET_GROWTH * 100}% total\n`,
+  );
+  process.exit(0);
+} else {
+  console.log(`❌ Benchmark regressions detected (${violations.length}):\n`);
+  for (const v of violations) {
+    console.log(`   • ${v}`);
+  }
+  console.log(`\n   To update the baseline after intentional changes:`);
+  console.log(`   node scripts/check-benchmark.mjs --update\n`);
+  process.exit(1);
+}

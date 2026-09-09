@@ -10,7 +10,7 @@
 import type { ProviderAdapter } from "../../types/provider";
 import { API, INTERVALS } from "../../core/constants";
 import { fetchJSONWithWorker } from "../../core/fetch";
-import { createCachedProviderAdapter } from "../../core/provider-adapter";
+import { createCachedProviderAdapter, ProviderAdapterError } from "../../core/provider-adapter";
 import { fetchBoIRates } from "./boi-adapter";
 
 const PROVIDER_ID = "currency";
@@ -42,17 +42,22 @@ export function createCurrencyAdapter(): ProviderAdapter<CurrencyRateResponse> {
       }
 
       // ECB-direct via Frankfurter as 3rd fallback.
+      let sawInvalidPayload = false;
       for (const url of [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK, API.CURRENCY_FALLBACK_ECB]) {
         try {
           const data = await fetchJSONWithWorker<CurrencyRateResponse>(url);
           if (data?.rates && typeof data.rates === "object") {
             return data;
           }
+          sawInvalidPayload = true;
         } catch {
           // Try next URL.
         }
       }
 
+      if (sawInvalidPayload) {
+        throw new ProviderAdapterError("All currency endpoints returned invalid payloads", "parse");
+      }
       throw new Error("All currency endpoints failed");
     },
     successLog: () => `FDB-091: [currency] Fetched rates from configured endpoint`,

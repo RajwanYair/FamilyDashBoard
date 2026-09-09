@@ -29,12 +29,16 @@ vi.mock("@/core/cache", () => ({
   cGetStale: vi.fn().mockReturnValue(null),
   cGetAsync: vi.fn().mockResolvedValue(null),
   cGetStaleAsync: vi.fn().mockResolvedValue(null),
+  cAge: vi.fn().mockReturnValue(null),
   cSet: vi.fn(),
   cSetAsync: vi.fn().mockResolvedValue(undefined),
 }));
 vi.mock("@/core/refresh-governor", () => ({
   shouldSkipRender: vi.fn().mockReturnValue(false),
   markRendered: vi.fn(),
+}));
+vi.mock("@/core/freshness", () => ({
+  markFresh: vi.fn(),
 }));
 
 import {
@@ -52,6 +56,7 @@ import * as idleMod from "@/core/idle";
 import * as fetchMod from "@/core/fetch";
 import * as cacheMod from "@/core/cache";
 import * as syncMod from "@/core/sync";
+import * as freshnessMod from "@/core/freshness";
 
 const OPTS = { id: "test-card", ttl: 60_000, interval: 300_000 };
 
@@ -62,6 +67,7 @@ beforeEach(() => {
   vi.mocked(fetchMod.acquireLock).mockReturnValue(true);
   vi.mocked(cacheMod.cGet).mockReturnValue(null);
   vi.mocked(cacheMod.cGetStale).mockReturnValue(null);
+  vi.mocked(cacheMod.cAge).mockReturnValue(null);
 });
 
 describe("Base Card — createCardLoader fresh cache hit", () => {
@@ -81,6 +87,22 @@ describe("Base Card — createCardLoader fresh cache hit", () => {
     expect(fetchData).not.toHaveBeenCalled();
     expect(renderData).toHaveBeenCalledWith(cachedData);
     expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok");
+    expect(freshnessMod.markFresh).toHaveBeenCalledWith(OPTS.id, { ttlMs: OPTS.ttl });
+  });
+
+  it("preserves the cache timestamp when rehydrating freshness", async () => {
+    const cachedData = { value: 42 };
+    vi.mocked(cacheMod.cGet).mockReturnValueOnce(cachedData);
+    vi.mocked(cacheMod.cAge).mockReturnValueOnce(5 * 60_000);
+    const renderData = vi.fn();
+    const load = createCardLoader(OPTS, vi.fn(), renderData);
+
+    await load();
+
+    expect(freshnessMod.markFresh).toHaveBeenCalledWith(
+      OPTS.id,
+      expect.objectContaining({ ttlMs: OPTS.ttl, retrievedAtMs: expect.any(Number) }),
+    );
   });
 });
 
@@ -98,6 +120,7 @@ describe("Base Card — createCardLoader fetch success", () => {
     expect(renderData).toHaveBeenCalledWith(freshData);
     expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok");
     expect(syncMod.recordSuccess).toHaveBeenCalledWith(OPTS.id);
+    expect(freshnessMod.markFresh).toHaveBeenCalledWith(OPTS.id, { ttlMs: OPTS.ttl });
   });
 });
 
@@ -352,6 +375,7 @@ describe("createAsyncCardLoader", () => {
     expect(fetchFn).toHaveBeenCalled();
     expect(renderFn).toHaveBeenCalledWith(42);
     expect(cacheMod.cSetAsync).toHaveBeenCalledWith("test-card", 42);
+    expect(freshnessMod.markFresh).toHaveBeenCalledWith("test-card", { ttlMs: OPTS.ttl });
   });
 
   it("shows stale data while fetching", async () => {

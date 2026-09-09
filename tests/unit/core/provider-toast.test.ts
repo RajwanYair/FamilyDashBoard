@@ -13,7 +13,11 @@ import {
   initProviderDegradationToasts,
   _resetProviderToast,
 } from "@/core/provider-toast";
-import { recordProviderFailure, _resetProviderHealth } from "@/core/provider";
+import {
+  recordProviderFailure,
+  recordProviderSuccess,
+  _resetProviderHealth,
+} from "@/core/provider";
 
 describe("provider-toast ", () => {
   beforeEach(() => {
@@ -105,5 +109,21 @@ describe("initProviderDegradationToasts", () => {
     recordProviderFailure("api"); // down (consecutiveFails=3)
     expect(showToast).toHaveBeenCalledTimes(1);
     expect(vi.mocked(showToast).mock.calls[0]?.[0]).toContain("חסום");
+  });
+
+  it("fires a recovery toast after a provider returns to ok", () => {
+    initProviderDegradationToasts();
+    recordProviderFailure("api");
+    vi.clearAllMocks();
+    recordProviderSuccess("api");
+    expect(showToast).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(showToast).mock.calls[0]?.[0]).toContain("חזר לתקינות");
+  });
+
+  it("does not register duplicate listeners", () => {
+    initProviderDegradationToasts();
+    initProviderDegradationToasts();
+    recordProviderFailure("api");
+    expect(showToast).toHaveBeenCalledTimes(1);
   });
 });

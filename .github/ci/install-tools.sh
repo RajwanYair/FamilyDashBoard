@@ -26,10 +26,10 @@ npm install --no-save --no-package-lock --ignore-scripts \
   "vite@^8.0.9" \
   "vitest@^4.1.5" \
   "@vitest/coverage-v8@^4.1.5" \
-  "eslint@^10.2.1" \
+  "eslint@^9.39.1" \
   "oxlint@^1.61.0" \
   "typescript-eslint@^8.59.0" \
-  "@eslint/js@^10.0.1" \
+  "@eslint/js@^9.39.1" \
   "happy-dom@^20.9.0" \
   "prettier@3.8.3" \
   "stylelint@^17.11.1" \

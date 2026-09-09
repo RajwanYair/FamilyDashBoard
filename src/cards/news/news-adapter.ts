@@ -12,7 +12,7 @@ import type { NewsItem } from "../../types/api";
 import { NEWS_FEEDS, fetchFeed } from "./news";
 import type { NewsFeed } from "./news";
 import { loadConfig } from "../../core/config";
-import { createCachedProviderAdapter } from "../../core/provider-adapter";
+import { createCachedProviderAdapter, ProviderAdapterError } from "../../core/provider-adapter";
 import { parseEpochMs } from "../../core/temporal";
 
 const PROVIDER_ID = "news-rss";
@@ -42,7 +42,7 @@ export function createNewsAdapter(): ProviderAdapter<NewsItem[]> {
       }
 
       if (allItems.length === 0) {
-        throw new Error("No news items fetched from any feed");
+        throw new ProviderAdapterError("No news items fetched from any feed", "parse");
       }
 
       const seen = new Set<string>();

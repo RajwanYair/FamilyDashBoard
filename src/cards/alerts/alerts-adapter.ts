@@ -45,7 +45,7 @@ export function createAlertsAdapter(): ProviderAdapter<AlertsResponse> {
       try {
         const data = await fetchJSONWithWorker<AlertsResponse>(API.ALERTS);
         if (!Array.isArray(data)) {
-          recordProviderFailure(PROVIDER_ID);
+          recordProviderFailure(PROVIDER_ID, "parse");
           const stale = cGetStale<AlertsResponse>(CACHE_KEY);
           return {
             ok: false,

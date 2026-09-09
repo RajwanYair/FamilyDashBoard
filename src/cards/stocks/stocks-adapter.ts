@@ -9,7 +9,7 @@ import type { ProviderAdapter } from "../../types/provider";
 import type { YahooChartResponse } from "../../types/api";
 import { API, INTERVALS } from "../../core/constants";
 import { fetchJSONWithWorker } from "../../core/fetch";
-import { createCachedProviderAdapter } from "../../core/provider-adapter";
+import { createCachedProviderAdapter, ProviderAdapterError } from "../../core/provider-adapter";
 
 const PROVIDER_ID = "yahoo-finance";
 
@@ -39,7 +39,7 @@ export function createStocksAdapter(
         !data?.chart?.result?.[0]?.meta ||
         typeof data.chart.result[0].meta.regularMarketPrice !== "number"
       ) {
-        throw new Error(`Invalid chart response for ${symbol}`);
+        throw new ProviderAdapterError(`Invalid chart response for ${symbol}`, "parse");
       }
 
       return data;
