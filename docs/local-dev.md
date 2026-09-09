@@ -2,7 +2,7 @@
 
 ![Local Development](../.github/assets/local-dev.svg)
 
-> FamilyDashBoard v14.13.1 · TypeScript · Vite 8 · Hebrew RTL
+> FamilyDashBoard v15.7.0 · TypeScript 6 · Vite 8 · Hebrew RTL
 
 Three verified workflows for running and testing the dashboard locally.
 
@@ -10,17 +10,22 @@ Three verified workflows for running and testing the dashboard locally.
 
 ## 📦 Prerequisites
 
-All dev tools live in the **parent** `MyScripts/` directory:
+The repository has a local development-tool install. Use the parent `MyScripts/` install when working in the shared workspace or when another sibling project needs the same tools:
 
 ```powershell
-# Run ONCE from the parent directory
+# Run from FamilyDashBoard for standalone setup
+cd "C:\GitHub\FamilyDashBoard"
+npm ci
+```
+
+The shared installation remains available from the parent directory:
+
+```powershell
 cd "C:\Users\ryair\OneDrive - Intel Corporation\Documents\MyScripts"
 npm install
 ```
 
-> **Never run `npm install` inside `FamilyDashBoard/`.**
-> There is no `package-lock.json` here — all dependencies resolve from
-> `MyScripts/node_modules/`.
+The two installs use the same pinned tool versions. Do not copy `node_modules` between them.
 
 ---
 

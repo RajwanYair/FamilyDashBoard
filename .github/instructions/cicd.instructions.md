@@ -34,16 +34,16 @@ Keep `.github/workflows/README.md` aligned with any workflow changes.
 
 ## Tool Install Model
 
-| Context             | How tools are provided                                                        |
-| ------------------- | ----------------------------------------------------------------------------- |
-| Local dev           | `npm install` in `MyScripts/` (parent) — Node walks up to find `node_modules` |
-| CI (GitHub Actions) | `.github/ci/install-tools.sh` — `npm install --no-save --no-package-lock`     |
+| Context             | How tools are provided                                                                  |
+| ------------------- | --------------------------------------------------------------------------------------- |
+| Local dev           | `npm ci` in this checkout; the parent `MyScripts/` install remains a shared alternative |
+| CI (GitHub Actions) | `.github/ci/install-tools.sh` plus the dedicated `worker/` lockfile                     |
 
-> To update tool versions: edit **both** `MyScripts/package.json` AND `.github/ci/install-tools.sh`.
+> To update local tool versions: edit this repository's `package.json` and lockfile. Keep CI-only pins in `.github/ci/install-tools.sh` and equivalent shared pins in `MyScripts/package.json` aligned for their respective consumers.
 
 ## Shared Tooling Layout
 
-- Shared Node-based tools live in `MyScripts/node_modules/`
+- Repository-local Node-based tools live in `node_modules/`; CI-only tools remain installed by `.github/ci/install-tools.sh`; the shared `MyScripts/node_modules/` install remains available to sibling projects.
 - Shared reusable config can live in `MyScripts/tooling/`
 - Repository-specific workflow logic stays in this workspace
 - Do not move project-only paths, aliases, includes, or coverage rules into shared tooling without proving they are reusable
