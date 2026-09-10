@@ -13,6 +13,8 @@
  *   - cosign sign-blob step for dist.zip is missing
  *   - cosign sign-blob step for sw.js is missing
  *   - dist.zip.bundle is not listed as a release artefact
+ *   - exact identity/issuer verification is missing
+ *   - a permissive identity regexp is still used
  *
  * Usage:
  *   node scripts/check-sigstore.mjs
@@ -83,13 +85,28 @@ if (hasBundleFiles) {
   );
 }
 
-if (exitCode === 0) {
-  console.log(
-    "\n[check-sigstore] All Sigstore signing checks passed. Release artefacts are Cosign-signed.",
+// ── Check 5: exact identity and issuer verification ────────────────────────
+const hasExactIdentity = content.includes('--certificate-identity="$EXPECTED_COSIGN_IDENTITY"');
+const hasExactIssuer = content.includes('--certificate-oidc-issuer="$COSIGN_OIDC_ISSUER"');
+if (hasExactIdentity && hasExactIssuer) {
+  pass("release verification pins the exact GitHub workflow identity and OIDC issuer");
+} else {
+  fail(
+    "release verification must pass --certificate-identity and --certificate-oidc-issuer explicitly",
   );
+}
+
+if (content.includes('certificate-identity-regexp=".*"')) {
+  fail("release workflow still accepts any certificate identity");
+} else {
+  pass("release workflow has no permissive certificate identity regexp");
+}
+
+if (exitCode === 0) {
+  console.log("\n[check-sigstore] Signing and exact-identity verification checks passed.");
 } else {
   console.error(
-    "\n[check-sigstore] Sigstore signing gate FAILED. Add cosign steps before tagging.",
+    "\n[check-sigstore] Sigstore gate FAILED. Fix signing and verification before tagging.",
   );
 }
 process.exit(exitCode);

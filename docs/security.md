@@ -214,15 +214,15 @@ computed with `openssl dgst -sha384 | base64` and reviewed in the release checkl
 
 Since SRI is N/A for bundled build artifacts, the equivalent supply-chain integrity controls are:
 
-| Control                 | Implementation                                                                                                                                  |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Source integrity        | All commits signed via GitHub; branch protection requires PR review                                                                             |
-| Build reproducibility   | Vite build is deterministic from the repository-root `package-lock.json` with `SOURCE_DATE_EPOCH` normalization and two-build output comparison |
-| Dependency pinning      | Dependabot opens PRs for `package.json` updates (`.github/dependabot.yml`)                                                                      |
-| Dependency audit        | `npm audit --audit-level=high` runs in CI on every push                                                                                         |
-| SBOM                    | `npm sbom --sbom-format cyclonedx` can be run per ADR-027                                                                                       |
-| Worker bundle integrity | Cloudflare verifies bundle hash on deploy; `wrangler deploy --dry-run` in CI                                                                    |
-| Release provenance      | GitHub Releases are tagged from a protected branch; release notes auto-generated                                                                |
+| Control                 | Implementation                                                                                                                                                                                           |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Source integrity        | All commits signed via GitHub; branch protection requires PR review                                                                                                                                      |
+| Build reproducibility   | Vite build is deterministic from the repository-root `package-lock.json` with `SOURCE_DATE_EPOCH` normalization and two-build output comparison                                                          |
+| Dependency pinning      | Dependabot opens PRs for `package.json` updates (`.github/dependabot.yml`)                                                                                                                               |
+| Dependency audit        | `npm audit --audit-level=high` runs in CI on every push                                                                                                                                                  |
+| SBOM                    | Release `sbom.json` is regenerated from the tagged lockfile and compared after removing only invocation-specific serial/timestamp metadata                                                               |
+| Worker bundle integrity | Cloudflare verifies bundle hash on deploy; `wrangler deploy --dry-run` in CI                                                                                                                             |
+| Release provenance      | Cosign bundles and GitHub SLSA attestations are independently verified for the exact repository/workflow/tag identity and OIDC issuer; tamper, wrong-identity, and missing-bundle negatives are required |
 
 For a full SLSA Level 2 upgrade path, see ADR-027 (SBOM Generation and Automated Dependency Updates).
 For the SLSA Level 3 upgrade path (signed provenance attestations via GitHub Actions), see ADR-035.

@@ -36,6 +36,7 @@ on:
 permissions:
   contents: read
   issues: write # open a GitHub issue on mismatch
+  attestations: read
 
 concurrency:
   group: rebuilder-${{ github.ref }}
@@ -88,6 +89,9 @@ jobs:
       - name: Install repository-local tools
         run: bash .github/ci/install-tools.sh --ignore-scripts
 
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@7e8b541eb2e61bf99390e1afd4be13a184e9ebc5 # v3.10.1
+
       # ── 4. Clean build ─────────────────────────────────────────────────────
       - name: Build dist/ from tag
         run: npm run build
@@ -99,7 +103,7 @@ jobs:
           find dist -type f ! -name "*.map" -print | LC_ALL=C sort | zip -X -q dist-rebuild.zip -@
           sha256sum dist-rebuild.zip | awk '{print $1}' > dist-rebuild.zip.sha256
 
-      # ── 6. Download official dist.zip from release ────────────────────────
+      # ── 6. Download official release assets ───────────────────────────────
       - name: Download official release artefact
         id: download
         run: |
@@ -111,22 +115,61 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG")
 
-          DIST_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name == "dist.zip") | .browser_download_url')
+          download_asset() {
+            local name="$1"
+            local output="$2"
+            local url
+            url=$(echo "$RELEASE_DATA" | jq -r --arg name "$name" '.assets[] | select(.name == $name) | .browser_download_url')
+            if [[ -z "$url" || "$url" == "null" ]]; then
+              echo "::error::No $name asset found for release $TAG"
+              exit 1
+            fi
+            curl -fLsS -o "$output" "$url"
+          }
 
-          if [[ -z "$DIST_URL" || "$DIST_URL" == "null" ]]; then
-            echo "::error::No dist.zip asset found for release $TAG"
-            exit 1
-          fi
+          download_asset "dist.zip" dist-official.zip
+          download_asset "dist.zip.bundle" dist.zip.bundle
+          download_asset "dist.zip.sha256" dist-official.zip.sha256
+          download_asset "sw.js" sw.js
+          download_asset "sw.js.bundle" sw.js.bundle
+          download_asset "sbom.json" sbom.json
 
-          curl -sS -L -o dist-official.zip "$DIST_URL"
-          sha256sum dist-official.zip | awk '{print $1}' > dist-official.zip.sha256
           mkdir -p official-dist
           unzip -q dist-official.zip -d official-dist
 
-          echo "official=$(cat dist-official.zip.sha256)" >> "$GITHUB_OUTPUT"
+          sha256sum dist-official.zip | awk '{print $1}' > dist-official.zip.actual.sha256
+          echo "official=$(cat dist-official.zip.actual.sha256)" >> "$GITHUB_OUTPUT"
           echo "rebuild=$(cat dist-rebuild.zip.sha256)" >> "$GITHUB_OUTPUT"
 
-      # ── 7. Compare SHA-256 ────────────────────────────────────────────────
+      # ── 7. Regenerate the SBOM from the checked-out tag ────────────────────
+      - name: Regenerate SBOM for source comparison
+        run: |
+          npm exec --no -- cyclonedx-npm \
+            --output-format JSON \
+            --output-file sbom-rebuild.json \
+            --package-lock-only \
+            --ignore-npm-errors
+
+      # ── 8. Independently verify signatures, provenance, and SBOM ──────────
+      - name: Verify release provenance and negative fixtures
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/verify-release-provenance.mjs \
+            --artifact dist-official.zip \
+            --rebuilt-artifact dist-rebuild.zip \
+            --bundle dist.zip.bundle \
+            --service-worker sw.js \
+            --service-worker-bundle sw.js.bundle \
+            --checksum dist-official.zip.sha256 \
+            --sbom sbom.json \
+            --expected-sbom sbom-rebuild.json \
+            --tag "${{ steps.resolve.outputs.tag }}" \
+            --repository "${{ github.repository }}" \
+            --provenance-output "$RUNNER_TEMP/release-provenance.json" \
+            --negative-fixtures
+
+      # ── 9. Compare SHA-256 ────────────────────────────────────────────────
       - name: Compare SHA-256 hashes
         id: compare
         run: |
@@ -159,14 +202,14 @@ jobs:
           path: rebuild-compare.txt
           if-no-files-found: ignore
 
-      # ── 8. Generate rebuilder manifest for comparison ─────────────────────
+      # ── 10. Generate rebuilder manifest for comparison ────────────────────
       - name: Generate rebuilder manifest
         run: node scripts/check-reproducible.mjs
 
       - name: Verify published rebuilder manifest
         run: node scripts/check-reproducible.mjs --verify official-dist/dist/rebuilder-manifest.json
 
-      # ── 9. Open GitHub issue on mismatch (for human review) ───────────────
+      # ── 11. Open GitHub issue on mismatch (for human review) ─────────────
       - name: Open issue on SHA-256 mismatch
         if: always() && steps.compare.outputs.match == 'false'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1

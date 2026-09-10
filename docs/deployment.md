@@ -57,8 +57,20 @@ archive input list, so the published `dist.zip` can be compared with an
 independent rebuild. The directory comparison is content-based, sorts paths,
 and ignores only generated reproducibility manifests. A mismatch is a release
 blocker; do not update a baseline or publish an artifact to make the hashes
-agree. Verify the release `dist.zip` and `sw.js` Sigstore bundles with the
-exact repository and workflow identity before accepting the result.
+agree.
+
+The independent rebuilder downloads `dist.zip`, `sw.js`, both Cosign bundles,
+the published checksum file, and `sbom.json`. It then runs
+[`scripts/verify-release-provenance.mjs`](../scripts/verify-release-provenance.mjs)
+with the exact repository, `release.yml` workflow, `refs/tags/<tag>` identity,
+and `https://token.actions.githubusercontent.com` issuer. The verifier checks
+both SHA-256 entries, validates the CycloneDX root component and dependency
+graph against a fresh SBOM from the checked-out tag, verifies that `dist.zip`
+matches the independent rebuild, verifies the GitHub SLSA attestation with
+`gh attestation verify`, and requires Cosign verification for both artifacts.
+It also proves that tampered content, a different certificate identity, and a
+missing bundle are rejected. A release is not accepted when any of these
+checks fails.
 
 For rollback, retain the last known-good `dist.zip`, publish that artifact to
 the static host, and confirm the Service Worker update path. Do not clear

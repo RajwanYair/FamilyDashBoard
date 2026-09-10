@@ -28,11 +28,24 @@ describe("release workflow", () => {
     const provenanceIndex = steps.findIndex((step) =>
       step.uses?.startsWith("actions/attest-build-provenance@"),
     );
+    const verificationIndex = steps.findIndex((step) =>
+      step.name?.includes("Verify signed artefacts"),
+    );
     expect(signingIndex).toBeGreaterThanOrEqual(0);
     expect(provenanceIndex).toBeGreaterThanOrEqual(0);
+    expect(verificationIndex).toBeGreaterThanOrEqual(0);
     expect(publishIndex).toBeGreaterThan(signingIndex);
     expect(publishIndex).toBeGreaterThan(provenanceIndex);
+    expect(publishIndex).toBeGreaterThan(verificationIndex);
     expect(publishIndex).toBe(steps.length - 1);
+  });
+
+  it("verifies both bundles with the exact release workflow identity", () => {
+    const verification = steps.find((step) => step.name?.includes("Verify signed artefacts"));
+    expect(verification?.run).toContain('--certificate-identity="$EXPECTED_COSIGN_IDENTITY"');
+    expect(verification?.run).toContain('--certificate-oidc-issuer="$COSIGN_OIDC_ISSUER"');
+    expect(verification?.run).toContain("dist.zip.bundle");
+    expect(verification?.run).toContain("sw.js.bundle");
   });
 
   it("requires every declared release attachment", () => {

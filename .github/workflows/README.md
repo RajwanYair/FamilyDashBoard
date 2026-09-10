@@ -87,9 +87,17 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 - it runs the CI-only supply-chain checks that are not part of `npm run check`
 - it packages `dist.zip`
 - it attests and signs artifacts before publishing the release
+- it verifies both Cosign signatures before publication using the exact
+  repository/workflow/tag certificate identity and GitHub Actions OIDC issuer
 - it attaches `dist.zip`, checksums, both Cosign bundles, `sw.js`, `dist/icon.svg`, and the SBOM
 - publication fails if any declared attachment is missing; regression coverage lives in `tests/unit/scripts/release-workflow.test.ts`
 - it uses generated release notes plus the repository release-note configuration in `.github/release.yml`
+
+The `rebuild-verify.yml` workflow is the independent verifier. It downloads all
+release inputs, regenerates and compares the SBOM, verifies both Cosign bundles
+and the GitHub SLSA attestation, checks published digests, and runs negative
+fixtures for tampered artifacts, an incorrect certificate identity, and an
+absent bundle. Provenance verification is not inferred from workflow text.
 
 ### Readiness Repairs (2026-09-08)
 
