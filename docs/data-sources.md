@@ -128,6 +128,7 @@ Finance crypto quotes are unreliable in browser CORS contexts.
 | Cache TTL      | 15 min (`INTERVALS.NEWS`)                                                                                                                                                        |
 | Cache key      | `news-<hash>`                                                                                                                                                                    |
 | Stale fallback | `cGetStale` on error                                                                                                                                                             |
+| Boundary       | HTTPS only; exact allowlisted origin; URL credentials and non-default ports rejected; redirects disabled; 8 s timeout; response capped at 1 MiB                                  |
 | Time display   | Each item: `.news-pub-time` (HH:MM / אתמול HH:MM / DD/MM HH:MM) + `.news-age` (MM:SS / HH:MM:SS / D:HH:MM:SS)                                                                    |
 | Failure mode   | Worker returns 403 if origin not in `ALLOWED_NEWS_ORIGINS`                                                                                                                       |
 
@@ -149,15 +150,16 @@ Finance crypto quotes are unreliable in browser CORS contexts.
 
 ### 🗓 Calendar — Google ICS
 
-| Property     | Value                                                                                 |
-| ------------ | ------------------------------------------------------------------------------------- |
-| Provider     | Google Calendar (ICS export)                                                          |
-| Worker route | `GET /api/calendar?url=<encoded-ics-url>` — tried **first** before direct/proxy chain |
-| Upstream     | ICS URL (allowlisted origins: `google.com`, `apple.com`, etc.)                        |
-| Cache TTL    | 15 min (`INTERVALS.CALENDAR`)                                                         |
-| Cache key    | `cal-ics-<index>`                                                                     |
-| Validation   | Server validates `BEGIN:VCALENDAR` presence                                           |
-| Failure mode | Worker returns 403 if origin not in `ALLOWED_CALENDAR_ORIGINS`, 502 if not valid ICS  |
+| Property     | Value                                                                                                                                           |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Provider     | Google Calendar (ICS export)                                                                                                                    |
+| Worker route | `GET /api/calendar?url=<encoded-ics-url>` — tried **first** before direct/proxy chain                                                           |
+| Upstream     | ICS URL (allowlisted origins: `google.com`, `apple.com`, etc.)                                                                                  |
+| Cache TTL    | 15 min (`INTERVALS.CALENDAR`)                                                                                                                   |
+| Cache key    | `cal-ics-<index>`                                                                                                                               |
+| Validation   | Server validates `BEGIN:VCALENDAR` presence                                                                                                     |
+| Boundary     | HTTPS only; exact allowlisted origin; URL credentials and non-default ports rejected; redirects disabled; 8 s timeout; response capped at 2 MiB |
+| Failure mode | Worker returns 403 if origin not in `ALLOWED_CALENDAR_ORIGINS`, 502 if not valid ICS                                                            |
 
 ---
 

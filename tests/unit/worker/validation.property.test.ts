@@ -156,4 +156,14 @@ describe("validation — VL6: requireHttpsUrl", () => {
     const url = makeUrl({ target: "http://example.com" });
     expect(() => requireHttpsUrl(url, "target")).toThrow(ValidationError);
   });
+
+  it("rejects URL credentials", () => {
+    const url = makeUrl({ target: "https://user:secret@example.com/feed" });
+    expect(() => requireHttpsUrl(url, "target")).toThrow(ValidationError);
+  });
+
+  it("rejects non-default HTTPS ports", () => {
+    const url = makeUrl({ target: "https://example.com:8443/feed" });
+    expect(() => requireHttpsUrl(url, "target")).toThrow(ValidationError);
+  });
 });

@@ -20,6 +20,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 - 📰 **feat(news)**: complete S09-R1 feed relevance hardening — deterministic ranking, future/missing-date handling, mixed-language dedup fixtures, and collision-safe read/starred identities
 - 📰 **feat(news)**: complete S09-02 read/starred persistence — seven-day read-state retention, validated IndexedDB/localStorage recovery, cross-tab synchronization, canonical bookmark migration, and local export/delete controls
 - 📈 **feat(trends)**: complete S09-03 financial trend integrity — hourly sampled seven-day currency/stock histories, validated 30-day currency snapshots, timestamp-aware gap rendering across missing observations and market closures, and explicit stale-data labels
+- 🔐 **fix(worker)**: complete S08-02 provider boundary hardening — reject URL credentials, non-default ports, unsafe calendar suffix hosts, and redirects; bound news/ICS/R2 response bodies; preserve calendar stale fallback; and add regression coverage for rejected inputs and read failures
 - ♿ **fix(accessibility)**: harden the S05-R1 input/status path — overlay focus return and Tab trapping, Escape from form controls, hidden-card/reduced-motion Chromium coverage, and non-live accessible stale indicators; manual screen-reader and physical-device evidence remains open
 - ⚡ **perf(lifecycle)**: bound repeated visibility and PerformanceObserver wiring for the S06-R1 endurance track; target-device soak evidence remains pending
 

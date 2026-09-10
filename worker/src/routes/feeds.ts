@@ -1,4 +1,4 @@
-import { jsonResponse, workerEnvelope, CORS_HEADERS } from "../utils/response";
+import { jsonResponse, workerEnvelope, CORS_HEADERS, readTextWithLimit } from "../utils/response";
 import {
   ALLOWED_NEWS_ORIGINS,
   ALLOWED_CALENDAR_ORIGINS,
@@ -32,6 +32,9 @@ import { vectorizeShadowRun } from "../utils/vectorize-client";
 import { writeVectorizeShadowMetrics } from "../utils/analytics";
 import { initOtel } from "../telemetry";
 import type { Env } from "../types";
+
+const MAX_NEWS_FEED_BYTES = 1_048_576;
+const MAX_CALENDAR_BYTES = 2_097_152;
 
 export async function handleStocks(url: URL, env: Env): Promise<Response> {
   let sym: string;
@@ -154,12 +157,28 @@ export async function handleNews(url: URL): Promise<Response> {
     return jsonResponse({ error: "News feed origin not permitted", param: "url" }, 403);
   }
 
-  const res = await fetch(parsed.toString(), {
-    // owasp-allow:A05 — Cloudflare Worker runtime
-    headers: { Accept: "application/rss+xml, application/xml, text/xml" },
-  });
+  let res: Response;
+  try {
+    res = await fetch(parsed.toString(), {
+      redirect: "error",
+      // owasp-allow:A05 — Cloudflare Worker runtime
+      headers: { Accept: "application/rss+xml, application/xml, text/xml" },
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch {
+    return jsonResponse({ error: "News upstream unavailable" }, 502);
+  }
   if (!res.ok) return jsonResponse({ error: `Upstream ${res.status}` }, 502);
-  const text = await res.text();
+  const body = await readTextWithLimit(res, MAX_NEWS_FEED_BYTES);
+  if (!body.ok) {
+    return jsonResponse(
+      {
+        error: body.reason === "too_large" ? "News response too large" : "News response unreadable",
+      },
+      body.reason === "too_large" ? 413 : 502,
+    );
+  }
+  const text = body.text;
   const validated = safeParse(NewsRssSchema, text);
   if (!validated.ok) {
     return jsonResponse(
@@ -365,29 +384,49 @@ export async function handleCalendar(url: URL, env: Env): Promise<Response> {
   } catch (err) {
     return validationErrorResponse(err as ValidationError);
   }
-  if (!ALLOWED_CALENDAR_ORIGINS.some((origin) => parsed.hostname.endsWith(origin))) {
+  if (!ALLOWED_CALENDAR_ORIGINS.includes(parsed.hostname)) {
     return jsonResponse({ error: "Calendar origin not permitted", param: "url" }, 403);
   }
 
   // KV key: cap to 80 chars to stay within KV key limits
   const kvKey = `calendar:${parsed.hostname}${parsed.pathname}`.slice(0, 80);
-  const res = await fetch(parsed.toString()); // owasp-allow:A05 — Cloudflare Worker runtime
-  if (!res.ok) {
+  const staleCalendar = async (): Promise<Response | null> => {
     const stale = await kvGetStale<{ ics: string }>(env.CACHE_KV, kvKey);
-    if (stale?.ics) {
-      return new Response(stale.ics, {
-        status: 200,
-        headers: {
-          "Content-Type": "text/calendar; charset=utf-8",
-          "Cache-Control": "public, max-age=900",
-          "X-Cache": "kv-stale",
-          ...CORS_HEADERS,
-        },
-      });
-    }
-    return jsonResponse({ error: `Upstream ${res.status}` }, 502);
+    if (!stale?.ics) return null;
+    return new Response(stale.ics, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/calendar; charset=utf-8",
+        "Cache-Control": "public, max-age=900",
+        "X-Cache": "kv-stale",
+        ...CORS_HEADERS,
+      },
+    });
+  };
+
+  let res: Response;
+  try {
+    res = await fetch(parsed.toString(), {
+      redirect: "error",
+      // owasp-allow:A05 — Cloudflare Worker runtime
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch {
+    return (await staleCalendar()) ?? jsonResponse({ error: "Calendar upstream unavailable" }, 502);
   }
-  const text = await res.text();
+  if (!res.ok) {
+    return (await staleCalendar()) ?? jsonResponse({ error: `Upstream ${res.status}` }, 502);
+  }
+  const body = await readTextWithLimit(res, MAX_CALENDAR_BYTES);
+  if (!body.ok) {
+    if (body.reason === "read_error") {
+      return (
+        (await staleCalendar()) ?? jsonResponse({ error: "Calendar response unreadable" }, 502)
+      );
+    }
+    return jsonResponse({ error: "Calendar response too large" }, 413);
+  }
+  const text = body.text;
   if (!text.includes("BEGIN:VCALENDAR")) {
     return jsonResponse({ error: "Not a valid ICS response" }, 502);
   }

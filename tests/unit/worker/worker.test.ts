@@ -1752,6 +1752,36 @@ describe("Worker — handleNews route", () => {
     expect(body.error).toContain("not valid RSS");
   });
 
+  it("rejects a redirect response without following it", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, {
+        status: 302,
+        headers: { Location: "https://evil.example.com/feed.xml" },
+      }),
+    );
+    const url = new URL("https://worker.example.com/api/news?url=https://rss.ynet.co.il/0.xml");
+    const res = await handleNews(url);
+    expect(res.status).toBe(502);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://rss.ynet.co.il/0.xml",
+      expect.objectContaining({ redirect: "error" }),
+    );
+  });
+
+  it("returns 413 when the RSS response exceeds the body limit", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("small", {
+        status: 200,
+        headers: { "Content-Length": String(1_048_576 + 1) },
+      }),
+    );
+    const url = new URL("https://worker.example.com/api/news?url=https://rss.ynet.co.il/0.xml");
+    const res = await handleNews(url);
+    expect(res.status).toBe(413);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toBe("News response too large");
+  });
+
   it("returns 403 for disallowed origin", async () => {
     const url = new URL(
       "https://worker.example.com/api/news?url=https://evil.example.com/feed.xml",
@@ -1999,6 +2029,14 @@ describe("Worker — handleCalendar route", () => {
     expect(body.error).toContain("not permitted");
   });
 
+  it("rejects calendar hostname suffixes that are not exact allowlist entries", async () => {
+    const url = new URL(
+      "https://worker.dev/api/calendar?url=https%3A%2F%2Fcalendar.google.com.evil.example%2Fcal.ics",
+    );
+    const res = await handleCalendar(url, mockEnv);
+    expect(res.status).toBe(403);
+  });
+
   it("returns 200 text/calendar for valid ICS upstream", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response("BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR", {
@@ -2024,6 +2062,38 @@ describe("Worker — handleCalendar route", () => {
     const url = new URL(`https://worker.dev/api/calendar?url=${urlParam}`);
     const res = await handleCalendar(url, mockEnv);
     expect(res.status).toBe(502);
+  });
+
+  it("rejects a redirect response without following it", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, {
+        status: 302,
+        headers: { Location: "https://evil.example.com/cal.ics" },
+      }),
+    );
+    const urlParam = encodeURIComponent("https://calendar.google.com/cal.ics");
+    const url = new URL(`https://worker.dev/api/calendar?url=${urlParam}`);
+    const res = await handleCalendar(url, mockEnv);
+    expect(res.status).toBe(502);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://calendar.google.com/cal.ics",
+      expect.objectContaining({ redirect: "error" }),
+    );
+  });
+
+  it("returns 413 when the calendar response exceeds the body limit", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("small", {
+        status: 200,
+        headers: { "Content-Length": String(2_097_152 + 1) },
+      }),
+    );
+    const urlParam = encodeURIComponent("https://calendar.google.com/cal.ics");
+    const url = new URL(`https://worker.dev/api/calendar?url=${urlParam}`);
+    const res = await handleCalendar(url, mockEnv);
+    expect(res.status).toBe(413);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toBe("Calendar response too large");
   });
 
   it("returns stale KV when upstream fails", async () => {

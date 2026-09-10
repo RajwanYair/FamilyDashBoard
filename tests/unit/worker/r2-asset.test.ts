@@ -84,6 +84,26 @@ describe("handleR2Asset — input validation", () => {
     expect(body.error).toBe("https_required");
   });
 
+  it("returns 403 when url contains credentials", async () => {
+    const req = makeRequest(
+      `https://worker.dev/api/r2-asset?url=${encodeURIComponent("https://user:secret@picsum.photos/200/300")}`,
+    );
+    const res = await handleR2Asset(req, makeEnv());
+    expect(res.status).toBe(403);
+    const body = (await res.json()) as { ok: boolean; error: string };
+    expect(body.error).toBe("origin_not_allowed");
+  });
+
+  it("returns 403 when url uses a non-default HTTPS port", async () => {
+    const req = makeRequest(
+      `https://worker.dev/api/r2-asset?url=${encodeURIComponent("https://picsum.photos:8443/200/300")}`,
+    );
+    const res = await handleR2Asset(req, makeEnv());
+    expect(res.status).toBe(403);
+    const body = (await res.json()) as { ok: boolean; error: string };
+    expect(body.error).toBe("origin_not_allowed");
+  });
+
   it("returns 403 when host is not in the allowlist", async () => {
     const req = makeRequest(
       `https://worker.dev/api/r2-asset?url=${encodeURIComponent("https://evil.example.com/img.jpg")}`,
@@ -202,6 +222,53 @@ describe("handleR2Asset — R2 miss, origin fetch", () => {
     const res = await handleR2Asset(req, env);
 
     expect(res.status).toBe(404);
+    vi.unstubAllGlobals();
+  });
+
+  it("rejects redirects instead of following them", async () => {
+    const bucket = makeR2Bucket(undefined);
+    const env = makeEnv({ R2_ASSETS: bucket as unknown as Env["R2_ASSETS"] });
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(null, {
+        status: 302,
+        headers: { Location: "https://evil.example.com/asset.jpg" },
+      }),
+    );
+    vi.stubGlobal("fetch", mockFetch);
+
+    const req = makeRequest(
+      `https://worker.dev/api/r2-asset?url=${encodeURIComponent("https://picsum.photos/200/300")}`,
+    );
+    const res = await handleR2Asset(req, env);
+
+    expect(res.status).toBe(502);
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://picsum.photos/200/300",
+      expect.objectContaining({ redirect: "error" }),
+    );
+    vi.unstubAllGlobals();
+  });
+
+  it("rejects an oversized origin response from its declared length", async () => {
+    const bucket = makeR2Bucket(undefined);
+    const env = makeEnv({ R2_ASSETS: bucket as unknown as Env["R2_ASSETS"] });
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response("small", {
+        status: 200,
+        headers: { "Content-Length": String(10 * 1024 * 1024 + 1) },
+      }),
+    );
+    vi.stubGlobal("fetch", mockFetch);
+
+    const req = makeRequest(
+      `https://worker.dev/api/r2-asset?url=${encodeURIComponent("https://picsum.photos/200/300")}`,
+    );
+    const res = await handleR2Asset(req, env);
+
+    expect(res.status).toBe(413);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toBe("asset_too_large");
+    expect(bucket.put).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
   });
 });

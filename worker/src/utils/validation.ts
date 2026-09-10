@@ -107,5 +107,11 @@ export function requireHttpsUrl(url: URL, name: string): URL {
     throw new ValidationError(name, `Invalid URL for parameter: ${name}`);
   }
   if (parsed.protocol !== "https:") throw new ValidationError(name, `Only HTTPS URLs are allowed`);
+  if (parsed.username || parsed.password) {
+    throw new ValidationError(name, `URL credentials are not allowed`);
+  }
+  if (parsed.port && parsed.port !== "443") {
+    throw new ValidationError(name, `Only the default HTTPS port is allowed`);
+  }
   return parsed;
 }

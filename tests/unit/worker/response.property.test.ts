@@ -13,7 +13,13 @@
 
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
-import { jsonResponse, workerEnvelope, proxyResponse } from "../../../worker/src/utils/response";
+import {
+  jsonResponse,
+  workerEnvelope,
+  proxyResponse,
+  readBodyWithLimit,
+  readTextWithLimit,
+} from "../../../worker/src/utils/response";
 
 // ── WR1: jsonResponse status ─────────────────────────────────────────────────
 
@@ -114,5 +120,55 @@ describe("response — WR7: proxyResponse status", () => {
       }),
       { numRuns: 3 },
     );
+  });
+});
+
+describe("response — bounded upstream bodies", () => {
+  it("rejects a declared body larger than the limit before reading it", async () => {
+    const response = new Response("small", {
+      headers: { "Content-Length": "100" },
+    });
+    await expect(readBodyWithLimit(response, 10)).resolves.toEqual({
+      ok: false,
+      reason: "too_large",
+    });
+  });
+
+  it("detects a streamed body that exceeds the limit", async () => {
+    const response = new Response(
+      new ReadableStream({
+        start(controller) {
+          controller.enqueue(new Uint8Array([1, 2, 3]));
+          controller.enqueue(new Uint8Array([4, 5, 6]));
+          controller.close();
+        },
+      }),
+    );
+    await expect(readBodyWithLimit(response, 5)).resolves.toEqual({
+      ok: false,
+      reason: "too_large",
+    });
+  });
+
+  it("returns a read error when the upstream stream fails", async () => {
+    const response = new Response(
+      new ReadableStream({
+        start(controller) {
+          controller.error(new Error("upstream read failed"));
+        },
+      }),
+    );
+    await expect(readBodyWithLimit(response, 100)).resolves.toEqual({
+      ok: false,
+      reason: "read_error",
+    });
+  });
+
+  it("decodes bounded text only after the body passes the limit", async () => {
+    const response = new Response("calendar");
+    await expect(readTextWithLimit(response, 100)).resolves.toEqual({
+      ok: true,
+      text: "calendar",
+    });
   });
 });

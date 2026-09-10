@@ -22,6 +22,7 @@
 
 import type { Env } from "../types";
 import { r2Get, r2Put } from "../utils/r2-cache";
+import { readBodyWithLimit } from "../utils/response";
 
 // ── Allowlist ─────────────────────────────────────────────────────────────────
 
@@ -41,6 +42,7 @@ const ALLOWED_ASSET_HOSTS = new Set([
 
 /** Maximum allowed length for the `url` query parameter. */
 const MAX_URL_LEN = 512;
+const MAX_ASSET_BYTES = 10 * 1024 * 1024;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -120,6 +122,12 @@ export async function handleR2Asset(request: Request, env: Env): Promise<Respons
       headers: { "Content-Type": "application/json" },
     });
   }
+  if (targetUrl.username || targetUrl.password || (targetUrl.port && targetUrl.port !== "443")) {
+    return new Response(JSON.stringify({ ok: false, error: "origin_not_allowed" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   // Allowlist check (SSRF guard)
   if (!ALLOWED_ASSET_HOSTS.has(targetUrl.hostname)) {
@@ -151,6 +159,7 @@ export async function handleR2Asset(request: Request, env: Env): Promise<Respons
   let originRes: Response;
   try {
     originRes = await fetch(targetUrl.href, {
+      redirect: "error",
       headers: { "User-Agent": "FamilyDashBoard/1.0 (background-cache)" },
       signal: AbortSignal.timeout(8000),
     });
@@ -168,16 +177,28 @@ export async function handleR2Asset(request: Request, env: Env): Promise<Respons
     });
   }
 
-  // Read the body so we can store it in R2 and serve it
-  let body: ArrayBuffer;
-  try {
-    body = await originRes.arrayBuffer();
-  } catch {
-    return new Response(JSON.stringify({ ok: false, error: "read_error" }), {
-      status: 502,
+  const declaredLength = Number(originRes.headers.get("Content-Length"));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_ASSET_BYTES) {
+    return new Response(JSON.stringify({ ok: false, error: "asset_too_large" }), {
+      status: 413,
       headers: { "Content-Type": "application/json" },
     });
   }
+
+  const body = await readBodyWithLimit(originRes, MAX_ASSET_BYTES);
+  if (!body.ok) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: body.reason === "too_large" ? "asset_too_large" : "read_error",
+      }),
+      {
+        status: body.reason === "too_large" ? 413 : 502,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+  const bodyBuffer = body.bytes.slice().buffer;
 
   const contentType =
     originRes.headers.get("Content-Type")?.split(";")[0]?.trim() ?? guessContentType(rawUrl);
@@ -185,13 +206,13 @@ export async function handleR2Asset(request: Request, env: Env): Promise<Respons
 
   // Store in R2 (best-effort — never block the response on cache write)
   if (env.R2_ASSETS) {
-    void r2Put(env.R2_ASSETS, key, body, {
+    void r2Put(env.R2_ASSETS, key, bodyBuffer, {
       contentType,
       ...(contentEncoding !== undefined ? { contentEncoding } : {}),
     });
   }
 
-  return new Response(body, {
+  return new Response(bodyBuffer, {
     status: 200,
     headers: {
       "Content-Type": contentType,
