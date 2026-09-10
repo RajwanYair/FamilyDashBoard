@@ -111,6 +111,13 @@ describe("renderFreshnessBadge", () => {
     expect(el.textContent).toBe("עכשיו");
   });
 
+  it("does not announce every periodic age tick", () => {
+    const container = document.createElement("div");
+    markFresh("quiet-status");
+    const el = renderFreshnessBadge("quiet-status", container);
+    expect(el.getAttribute("aria-live")).toBe("off");
+  });
+
   it("reuses existing badge for same card", () => {
     const container = document.createElement("div");
     markFresh("news");

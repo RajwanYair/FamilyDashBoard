@@ -44,7 +44,8 @@ export function renderFreshnessBadge(cardId: string, container: HTMLElement): HT
   if (!el) {
     el = document.createElement("time");
     el.className = "freshness-badge";
-    el.setAttribute("aria-live", "polite");
+    // Periodic age ticks are available on demand without interrupting reading.
+    el.setAttribute("aria-live", "off");
     badges.set(cardId, el);
     ensureTick();
   }
