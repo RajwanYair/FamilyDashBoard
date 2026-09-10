@@ -40,6 +40,10 @@ interface WorkerProbeResponse {
 
 let _probeTimer: ReturnType<typeof setInterval> | null = null;
 
+function describeProbeError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 /**
  * Fetch the worker health snapshot and ingest each provider result
  * into the in-session provider health model.
@@ -81,14 +85,26 @@ async function fetchAndIngest(): Promise<void> {
 }
 
 /**
+ * Keep the optional background probe from becoming an unhandled rejection.
+ * A probe must never affect dashboard startup or browser-level error handling.
+ */
+async function runProbeSafely(): Promise<void> {
+  try {
+    await fetchAndIngest();
+  } catch (error) {
+    diagLog(`[health-probe] Probe failed: ${describeProbeError(error)}`);
+  }
+}
+
+/**
  * Initialise the background health probe polling.
  * Call once during app init (after the worker URL is known to be reachable).
  * Fire one probe immediately, then every PROBE_INTERVAL_MS.
  */
 export function initHealthProbe(): void {
   if (_probeTimer !== null) return; // already started
-  void fetchAndIngest();
-  _probeTimer = setInterval(() => void fetchAndIngest(), PROBE_INTERVAL_MS);
+  void runProbeSafely();
+  _probeTimer = setInterval(() => void runProbeSafely(), PROBE_INTERVAL_MS);
   diagLog("[health-probe] Background probe polling started (5 min interval)");
 }
 

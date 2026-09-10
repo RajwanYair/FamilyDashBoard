@@ -71,6 +71,23 @@ async function seedConfigBeforeBoot(page: Page, seed: SeedConfig): Promise<void>
   );
 }
 
+/** Keep browser gates deterministic by preventing unavailable public APIs from leaking engine-specific errors. */
+async function blockExternalRequests(page: Page): Promise<void> {
+  await page.route("**/*", async (route) => {
+    const requestUrl = new URL(route.request().url());
+    const isLocal =
+      requestUrl.protocol === "http:" &&
+      (requestUrl.hostname === "localhost" ||
+        requestUrl.hostname === "127.0.0.1" ||
+        requestUrl.hostname === "[::1]");
+    if (isLocal) {
+      await route.continue();
+    } else {
+      await route.abort("blockedbyclient");
+    }
+  });
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────
 
 /** Wait for at least one card shell to be present in the DOM. */
@@ -122,6 +139,7 @@ interface DashboardFixtures {
 
 export const test = base.extend<DashboardFixtures>({
   dashboardPage: async ({ page }, use) => {
+    await blockExternalRequests(page);
     page.on("pageerror", (err) => {
       if (err.message.includes("Transition was skipped")) return;
       throw new Error(`Uncaught JS error: ${err.message}`);
@@ -141,6 +159,7 @@ export { expect };
  */
 export async function gotoWithSeed(page: Page, seed: SeedConfig): Promise<void> {
   await seedConfigBeforeBoot(page, seed);
+  await blockExternalRequests(page);
   await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
   await waitForCards(page, 12_000);
 }
