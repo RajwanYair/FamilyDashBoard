@@ -79,6 +79,36 @@ first recovery step. After the prior artifact is active, verify that cached
 card data, settings, and export/import still work, then investigate the failed
 release build before retrying publication.
 
+### Release and rollback rehearsal record
+
+The release maintainer owns this checklist; the reviewer records the commit,
+tool versions, commands, result, and recovery time in the release evidence
+directory under `$env:TEMP/FamilyDashBoard/`. The operator must confirm these
+items before a tag:
+
+1. `git status --short --branch` is clean and the release commit is identified.
+2. `npm run check`, `npm run build`, `npm run build:local`, `npm run check:bundle`,
+   `npm run check:card-bundle`, and `npm --prefix worker run typecheck` pass.
+3. Branch protection requires the blocking `ci.yml` checks listed in
+   [the workflow inventory](../.github/workflows/README.md); GitHub settings
+   are recorded as an external verification when local `gh` authorization is
+   unavailable.
+4. The release keeps the previous `dist.zip`, `sw.js`, checksum, SBOM, and
+   signature bundles until the new Pages deployment and Worker compatibility
+   check are complete. GitHub Release artifacts are retained by the repository
+   policy; CI evidence uses the retention configured in its workflow.
+5. For rollback, stop promotion of the new artifact, restore the previous
+   known-good static artifact, leave browser storage untouched, and verify
+   Service Worker activation, cached cards, configuration export/import, and
+   Worker API compatibility. Record the elapsed recovery time and any
+   provider/account setting that could not be exercised locally.
+
+The 2026-09-10 local rehearsal completed the two-build reproducibility portion
+with a matching content digest. Positive Cosign/SLSA verification, GitHub
+branch-protection inspection, Pages promotion, Worker deployment, and a timed
+rollback remain external release evidence; they are not inferred from this
+local result.
+
 ## 🌐 Deploying to GitHub Pages
 
 The repository ships a `.github/workflows/release.yml` that builds and attaches
@@ -88,7 +118,7 @@ Pages).
 
 Manual trigger:
 
-1. Push a version tag: `git tag v8.1.0 ; git push origin main --tags`
+1. Push a version tag: `git tag v15.7.0 ; git push origin main --tags`
 2. The `Release` workflow builds, runs tests, and creates a GitHub Release with
    `dist.zip` attached.
 3. GitHub Pages automatically deploys from the source configured in repository settings.
@@ -132,8 +162,8 @@ the client-side proxy chain for external API data.
 ```powershell
 # From the worker/ directory
 cd worker
-npm install
-npx wrangler deploy
+npm ci --ignore-scripts
+npm exec -- wrangler deploy
 ```
 
 Set the `WORKER_URL` environment variable (or the `workerUrl` config field) to your
