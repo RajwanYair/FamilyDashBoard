@@ -16,29 +16,50 @@ interface MemEntry {
 
 const mem = new Map<string, MemEntry>();
 
+interface SerializedCacheEntry<T = unknown> {
+  data: T;
+  ts: number;
+}
+
+function _readLocalStorageEntry<T>(key: string): SerializedCacheEntry<T> | null {
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<SerializedCacheEntry<T>>;
+    if (typeof parsed.ts !== "number" || !Number.isFinite(parsed.ts)) return null;
+    return { data: parsed.data as T, ts: parsed.ts };
+  } catch {
+    return null;
+  }
+}
+
 // ── Evict stale localStorage entries ──
 export function cEvict(): void {
-  const now = Date.now();
-  const keysToRemove: string[] = [];
+  try {
+    const now = Date.now();
+    const keysToRemove: string[] = [];
 
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (!k?.startsWith(LS_PREFIX)) continue;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k?.startsWith(LS_PREFIX)) continue;
 
-    try {
-      const raw = localStorage.getItem(k);
-      if (!raw) continue;
-      const entry = JSON.parse(raw) as { ts?: number };
-      if (typeof entry.ts === "number" && now - entry.ts > LS_MAX_AGE) {
+      try {
+        const raw = localStorage.getItem(k);
+        if (!raw) continue;
+        const entry = JSON.parse(raw) as { ts?: number };
+        if (typeof entry.ts === "number" && now - entry.ts > LS_MAX_AGE) {
+          keysToRemove.push(k);
+        }
+      } catch {
         keysToRemove.push(k);
       }
-    } catch {
-      keysToRemove.push(k);
     }
-  }
 
-  for (const k of keysToRemove) {
-    localStorage.removeItem(k);
+    for (const k of keysToRemove) {
+      localStorage.removeItem(k);
+    }
+  } catch {
+    // Storage can be denied or revoked while the dashboard is running.
   }
 }
 
@@ -123,6 +144,13 @@ export async function cGetAsync<T = unknown>(key: string, ttl: number): Promise<
   // L2: IndexedDB (async — explicit tier, v7.10)
   const idbEntry = await idbGetEntry<T>(key);
   if (idbEntry && now - idbEntry.ts < ttl) {
+    const localEntry = _readLocalStorageEntry<T>(key);
+    if (localEntry && localEntry.ts > idbEntry.ts && now - localEntry.ts < ttl) {
+      mem.set(key, { data: localEntry.data, ts: localEntry.ts });
+      _recordCacheHit();
+      _setHitLayer("ls");
+      return localEntry.data;
+    }
     // Promote to memory for future sync access
     mem.set(key, { data: idbEntry.data, ts: idbEntry.ts });
     _recordCacheHit();
@@ -131,19 +159,12 @@ export async function cGetAsync<T = unknown>(key: string, ttl: number): Promise<
   }
 
   // L3: localStorage (sync fallback)
-  try {
-    const raw = localStorage.getItem(LS_PREFIX + key);
-    if (raw) {
-      const parsed = JSON.parse(raw) as { data: T; ts: number };
-      if (now - parsed.ts < ttl) {
-        mem.set(key, { data: parsed.data, ts: parsed.ts });
-        _recordCacheHit();
-        _setHitLayer("ls");
-        return parsed.data;
-      }
-    }
-  } catch {
-    // Corrupted entry — ignore
+  const localEntry = _readLocalStorageEntry<T>(key);
+  if (localEntry && now - localEntry.ts < ttl) {
+    mem.set(key, { data: localEntry.data, ts: localEntry.ts });
+    _recordCacheHit();
+    _setHitLayer("ls");
+    return localEntry.data;
   }
 
   _recordCacheMiss();
@@ -163,20 +184,18 @@ export async function cGetStaleAsync<T = unknown>(key: string): Promise<T | null
 
   // L2: IDB (any age)
   const idbEntry = await idbGetEntry<T>(key);
+  const localEntry = _readLocalStorageEntry<T>(key);
+  if (localEntry && (!idbEntry || localEntry.ts > idbEntry.ts)) {
+    mem.set(key, { data: localEntry.data, ts: localEntry.ts });
+    return localEntry.data;
+  }
   if (idbEntry) {
     mem.set(key, { data: idbEntry.data, ts: idbEntry.ts });
     return idbEntry.data;
   }
 
   // L3: LS (any age)
-  try {
-    const raw = localStorage.getItem(LS_PREFIX + key);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as { data: T };
-    return parsed.data;
-  } catch {
-    return null;
-  }
+  return localEntry?.data ?? null;
 }
 
 /**
@@ -262,11 +281,15 @@ export async function hydrateFromIdb(): Promise<number> {
  */
 export function cClear(): void {
   mem.clear();
-  for (let i = localStorage.length - 1; i >= 0; i--) {
-    const k = localStorage.key(i);
-    if (k?.startsWith(LS_PREFIX)) {
-      localStorage.removeItem(k);
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k?.startsWith(LS_PREFIX)) {
+        localStorage.removeItem(k);
+      }
     }
+  } catch {
+    // Memory and IDB still remain usable when localStorage is denied.
   }
   void idbClear();
 }
@@ -286,26 +309,30 @@ export function cDelete(key: string): void {
 
 /** F6 (v7.2): Returns age in minutes of the oldest dash_v2_ cache entry. 0 if none found. */
 export function getOldestCacheAgeMinutes(): number {
-  let oldest = Date.now();
-  let found = false;
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (!key?.startsWith(LS_PREFIX)) continue;
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) continue;
-      const parsed = JSON.parse(raw) as { ts?: number };
-      if (typeof parsed.ts === "number" && parsed.ts < oldest) {
-        oldest = parsed.ts;
-        found = true;
+  try {
+    let oldest = Date.now();
+    let found = false;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key?.startsWith(LS_PREFIX)) continue;
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        const parsed = JSON.parse(raw) as { ts?: number };
+        if (typeof parsed.ts === "number" && parsed.ts < oldest) {
+          oldest = parsed.ts;
+          found = true;
+        }
+      } catch {
+        /* skip malformed entries */
       }
-    } catch {
-      /* skip malformed entries */
     }
+    if (!found) return 0;
+    const ageMs = Date.now() - oldest;
+    return ageMs < 0 ? 0 : Math.floor(ageMs / MS_PER_MIN);
+  } catch {
+    return 0;
   }
-  if (!found) return 0;
-  const ageMs = Date.now() - oldest;
-  return ageMs < 0 ? 0 : Math.floor(ageMs / MS_PER_MIN);
 }
 
 // cache statistics ───────────────────────────────────────────────
@@ -361,34 +388,54 @@ export function resetCacheStats(): void {
  */
 export async function migrateLocalStorageToIdb(): Promise<number> {
   const FLAG = LS_PREFIX + "idb_migrated";
-  if (localStorage.getItem(FLAG)) return 0;
+  try {
+    if (localStorage.getItem(FLAG)) return 0;
+  } catch {
+    return 0;
+  }
 
-  const entries: Array<{ key: string; data: unknown; ts: number }> = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (!k?.startsWith(LS_PREFIX)) continue;
-    if (k === FLAG) continue;
+  const entries: Array<{ key: string; data: unknown; ts: number; raw: string }> = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k?.startsWith(LS_PREFIX)) continue;
+      if (k === FLAG) continue;
+      try {
+        const raw = localStorage.getItem(k);
+        if (!raw) continue;
+        const parsed = JSON.parse(raw) as { data: unknown; ts: number };
+        if (typeof parsed.ts !== "number") continue;
+        // Strip the LS_PREFIX to get the bare key used by idbSet
+        const bareKey = k.slice(LS_PREFIX.length);
+        entries.push({ key: bareKey, data: parsed.data, ts: parsed.ts, raw });
+      } catch {
+        // Skip malformed entries
+      }
+    }
+  } catch {
+    return 0;
+  }
+
+  let migrated = 0;
+  for (const e of entries) {
+    const stored = await idbSet(e.key, e.data, e.ts);
+    if (!stored) continue;
+
+    // Preserve a concurrent update from another tab instead of deleting it.
+    const currentRaw = localStorage.getItem(LS_PREFIX + e.key);
+    if (currentRaw !== e.raw) continue;
+    localStorage.removeItem(LS_PREFIX + e.key);
+    migrated++;
+  }
+
+  if (entries.length > 0 && migrated === entries.length) {
     try {
-      const raw = localStorage.getItem(k);
-      if (!raw) continue;
-      const parsed = JSON.parse(raw) as { data: unknown; ts: number };
-      if (typeof parsed.ts !== "number") continue;
-      // Strip the LS_PREFIX to get the bare key used by idbSet
-      const bareKey = k.slice(LS_PREFIX.length);
-      entries.push({ key: bareKey, data: parsed.data, ts: parsed.ts });
+      localStorage.setItem(FLAG, "1");
     } catch {
-      // Skip malformed entries
+      // IDB has the migrated values; retrying on the next load is safe.
     }
   }
-
-  for (const e of entries) {
-    await idbSet(e.key, e.data);
-  }
-
-  if (entries.length > 0) {
-    localStorage.setItem(FLAG, "1");
-  }
-  return entries.length;
+  return migrated;
 }
 
 /**

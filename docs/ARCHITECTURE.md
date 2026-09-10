@@ -168,6 +168,28 @@ Cache layers:
   L4: Service Worker cache (API endpoints, stale-while-revalidate)
 ```
 
+### Storage authority and migration contract
+
+The in-memory entry is authoritative for the current page lifetime. Persistent
+cache writes are best effort: `cSet()` updates memory first, then attempts
+localStorage and IndexedDB without discarding the previous usable value when
+storage is denied or full. Async reads reconcile the layers by timestamp so a
+newer localStorage write cannot be hidden by an older IndexedDB entry.
+
+Cache migration preserves the original retrieval timestamp, removes a
+localStorage value only after IndexedDB confirms the write, and sets the
+migration flag only when every valid entry was migrated. A raw-value check
+protects against a second tab replacing an entry during migration; the newer
+localStorage value is retained for retry. Corrupt or schema-invalid entries
+remain isolated and do not block unrelated settings. `cEvict()` and cache
+cleanup degrade to no-ops when localStorage access is denied.
+
+The Service Worker owns its versioned app/API caches and deletes only old
+FamilyDashBoard cache names during `activate`. Page-side activation is
+explicit: `SKIP_WAITING` is sent only after the update banner decision, and
+`VERSION_ACTIVATED` is informational. Service Worker cache invalidation never
+clears browser storage or household configuration.
+
 ### Freshness contract
 
 Freshness distinguishes three timestamps: an upstream observation/publication

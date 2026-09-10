@@ -465,11 +465,26 @@ describe("migrateLocalStorageToIdb", () => {
     // Place a valid dash_v2_ entry in localStorage
     const entry = { data: { price: 3.7 }, ts: Date.now() };
     localStorage.setItem("dash_v2_cur:USD", JSON.stringify(entry));
+    const idbSetSpy = vi.spyOn(idbMod, "idbSet").mockResolvedValue(true);
     const count = await migrateLocalStorageToIdb();
+    idbSetSpy.mockRestore();
     // At least one entry should have been migrated
     expect(count).toBeGreaterThan(0);
     // Migration flag must now be set
     expect(localStorage.getItem("dash_v2_idb_migrated")).toBe("1");
+  });
+
+  it("keeps valid entries when IDB is unavailable", async () => {
+    const raw = JSON.stringify({ data: { price: 3.7 }, ts: Date.now() });
+    localStorage.setItem("dash_v2_cur:USD", raw);
+    vi.stubGlobal("indexedDB", undefined);
+    idbMod._resetIdb();
+
+    const count = await migrateLocalStorageToIdb();
+
+    expect(count).toBe(0);
+    expect(localStorage.getItem("dash_v2_cur:USD")).toBe(raw);
+    expect(localStorage.getItem("dash_v2_idb_migrated")).toBeNull();
   });
 
   it("returns 0 and skips idbSet when entries array is empty (line 388 FALSE)", async () => {
@@ -477,6 +492,14 @@ describe("migrateLocalStorageToIdb", () => {
     const count = await migrateLocalStorageToIdb();
     expect(count).toBe(0);
     expect(localStorage.getItem("dash_v2_idb_migrated")).toBeNull();
+  });
+
+  it("does not throw when localStorage removal is denied", () => {
+    const removeSpy = vi.spyOn(localStorage, "removeItem").mockImplementation(() => {
+      throw new DOMException("SecurityError");
+    });
+    expect(() => cClear()).not.toThrow();
+    removeSpy.mockRestore();
   });
 });
 
@@ -1194,6 +1217,17 @@ describe("Cache — cGetAsync IDB L2 hit (L125)", () => {
     const result = await cGetAsync("idb-stale", 60_000); // TTL=60s
     expect(result).toBeNull(); // no LS entry either
   });
+
+  it("prefers a newer localStorage write over an older IDB entry", async () => {
+    const olderTs = Date.now() - 2000;
+    const newerTs = Date.now() - 1000;
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: "old", ts: olderTs });
+    localStorage.setItem("dash_v2_race-key", JSON.stringify({ data: "new", ts: newerTs }));
+
+    const result = await cGetAsync<string>("race-key", 60_000);
+
+    expect(result).toBe("new");
+  });
 });
 
 describe("Cache — cGetStaleAsync IDB L2 hit (L166)", () => {
@@ -1220,5 +1254,16 @@ describe("Cache — cGetStaleAsync IDB L2 hit (L166)", () => {
     vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue(null);
     const result = await cGetStaleAsync<number[]>("stale-idb-promote");
     expect(result).toEqual([1, 2]);
+  });
+
+  it("prefers a newer localStorage value for stale reads", async () => {
+    const olderTs = Date.now() - 2000;
+    const newerTs = Date.now() - 1000;
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: "old", ts: olderTs });
+    localStorage.setItem("dash_v2_stale-race", JSON.stringify({ data: "new", ts: newerTs }));
+
+    const result = await cGetStaleAsync<string>("stale-race");
+
+    expect(result).toBe("new");
   });
 });

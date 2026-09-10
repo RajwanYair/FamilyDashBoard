@@ -90,21 +90,23 @@ export async function idbGet<T = unknown>(key: string, ttl = 0): Promise<T | nul
  * Store data in IDB.
  * @param key - Cache key
  * @param data - Serialisable payload
+ * @param ts - Retrieval timestamp to preserve during migration
+ * @returns true when the write request succeeds, otherwise false
  */
-export async function idbSet(key: string, data: unknown): Promise<void> {
+export async function idbSet(key: string, data: unknown, ts = Date.now()): Promise<boolean> {
   const db = await openDB();
-  if (!db) return;
+  if (!db) return false;
 
-  return new Promise<void>((resolve) => {
+  return new Promise<boolean>((resolve) => {
     try {
       const tx = db.transaction(STORE_NAME, "readwrite");
-      const entry: IdbEntry = { data, ts: Date.now() };
+      const entry: IdbEntry = { data, ts: Number.isFinite(ts) ? ts : Date.now() };
       // Explicit key form: put(value, key)
       const req = tx.objectStore(STORE_NAME).put(entry, key);
-      req.onsuccess = () => resolve();
-      req.onerror = () => resolve();
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => resolve(false);
     } catch {
-      resolve();
+      resolve(false);
     }
   });
 }
@@ -285,7 +287,11 @@ export async function migrateLsToIdb(keys: string[]): Promise<number> {
       } catch {
         continue; // skip non-JSON or corrupt entries
       }
-      await idbSet(key, parsed);
+      const stored = await idbSet(key, parsed);
+      if (!stored) continue;
+
+      // Do not delete a value written by another tab while this migration ran.
+      if (localStorage.getItem(key) !== raw) continue;
       localStorage.removeItem(key);
       migrated++;
     } catch {

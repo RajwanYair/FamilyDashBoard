@@ -152,10 +152,14 @@ describe("IDB Cache — idbSet / idbGet", () => {
     expect(result).toBeNull();
   });
 
-  it("idbSet resolves silently when indexedDB is unavailable", async () => {
+  it("idbSet reports failure when indexedDB is unavailable", async () => {
     vi.stubGlobal("indexedDB", undefined);
     _resetIdb();
-    await expect(idbSet("any", 42)).resolves.toBeUndefined();
+    await expect(idbSet("any", 42)).resolves.toBe(false);
+  });
+
+  it("idbSet reports success when the write request succeeds", async () => {
+    await expect(idbSet("successful-write", 42)).resolves.toBe(true);
   });
 });
 
@@ -564,6 +568,17 @@ describe("migrateLsToIdb ", () => {
     expect(localStorage.getItem("k2")).toBeNull();
   });
 
+  it("keeps the local value when IDB is unavailable", async () => {
+    localStorage.setItem("unavailable-key", JSON.stringify({ v: 1 }));
+    vi.stubGlobal("indexedDB", undefined);
+    _resetIdb();
+
+    const count = await migrateLsToIdb(["unavailable-key"]);
+
+    expect(count).toBe(0);
+    expect(localStorage.getItem("unavailable-key")).toBe(JSON.stringify({ v: 1 }));
+  });
+
   it("returns 0 for empty keys array", async () => {
     const count = await migrateLsToIdb([]);
     expect(count).toBe(0);
@@ -642,10 +657,10 @@ describe("IDB Cache — transaction throws", () => {
     expect(result).toBeNull();
   });
 
-  it("idbSet resolves without throwing when transaction throws", async () => {
+  it("idbSet reports failure when transaction throws", async () => {
     _resetIdb();
     vi.stubGlobal("indexedDB", makeBrokenTxIdb());
-    await expect(idbSet("k", "v")).resolves.toBeUndefined();
+    await expect(idbSet("k", "v")).resolves.toBe(false);
   });
 
   it("idbDel resolves without throwing when transaction throws", async () => {
@@ -678,7 +693,7 @@ describe("IDB Cache — openDB error path", () => {
     expect(result).toBeNull();
   });
 
-  it("idbSet resolves when indexedDB.open fires onerror", async () => {
+  it("idbSet reports failure when indexedDB.open fires onerror", async () => {
     _resetIdb();
     const mockOpen = {
       result: null,
@@ -688,7 +703,7 @@ describe("IDB Cache — openDB error path", () => {
     } as unknown as IDBOpenDBRequest;
     setTimeout(() => mockOpen.onerror?.({} as Event), 0);
     vi.stubGlobal("indexedDB", { open: () => mockOpen } as unknown as IDBFactory);
-    await expect(idbSet("k", "v")).resolves.toBeUndefined();
+    await expect(idbSet("k", "v")).resolves.toBe(false);
   });
 });
 
