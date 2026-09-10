@@ -33,11 +33,13 @@ export function restoreOverlayFocus(id: string): void {
 
 function isHiddenFromKeyboard(element: HTMLElement): boolean {
   const section = element.closest(".cfg-section");
+  const closedDetails = element.closest("details:not([open])");
   return Boolean(
     element.hidden ||
     element.closest("[hidden]") !== null ||
     element.getAttribute("aria-hidden") === "true" ||
     element.closest('[aria-hidden="true"]') !== null ||
+    (closedDetails !== null && !element.matches("summary")) ||
     (section !== null && !section.classList.contains("active")),
   );
 }

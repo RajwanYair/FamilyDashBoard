@@ -62,6 +62,18 @@ describe("overlay focus helpers", () => {
     expect(getOverlayFocusableElements(overlay)).toEqual([active]);
   });
 
+  it("keeps a closed details summary focusable but excludes its contents", () => {
+    const overlay = document.createElement("div");
+    const details = document.createElement("details");
+    const summary = document.createElement("summary");
+    const hiddenControl = document.createElement("button");
+    details.append(summary, hiddenControl);
+    overlay.append(details);
+    document.body.append(overlay);
+
+    expect(getOverlayFocusableElements(overlay)).toEqual([summary]);
+  });
+
   it("wraps Tab focus in both directions", () => {
     const overlay = document.createElement("div");
     const first = document.createElement("button");
