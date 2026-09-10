@@ -2028,6 +2028,8 @@ describe("ConfigPanel — buildConfigAccordion", () => {
     expect(input2?.min).toBe("0");
     expect(input2?.max).toBe("10");
     expect(input2?.step).toBe("1");
+    expect(input1?.classList.contains("cfg-input")).toBe(true);
+    expect(input1?.closest("label")?.querySelector("span")?.dir).toBe("auto");
   });
 
   it("renders boolean field as checkbox with checked state", async () => {

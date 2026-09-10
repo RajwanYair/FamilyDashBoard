@@ -89,12 +89,14 @@
 }
 .cfg-percard-summary {
   cursor: pointer;
+  min-block-size: 2.75rem;
   padding: 7px 12px;
   font-size: 0.82em;
   font-weight: 600;
   background: rgb(255 255 255 / 0.04);
   list-style: none;
   user-select: none;
+  touch-action: manipulation;
 }
 .cfg-percard-summary::before {
   content: "▶ ";
@@ -115,25 +117,56 @@
   gap: 4px;
   flex-shrink: 0;
 }
+.cfg-field-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+.cfg-card-reset-btn {
+  min-block-size: 2.75rem;
+  padding: 4px 12px;
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  background: var(--bg-card-inner);
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.cfg-card-reset-btn:hover {
+  border-color: var(--accent);
+}
 .cfg-input {
   background: var(--bg-card-inner);
   border: 1px solid var(--accent-border);
   border-radius: 6px;
   color: var(--text-primary);
+  min-block-size: 2.75rem;
   padding: 3px 8px;
   font-size: 0.9em;
   width: 180px;
   font-family: inherit;
+  touch-action: manipulation;
+}
+.cfg-input[type="checkbox"] {
+  width: 2.75rem;
+  padding: 0;
 }
 .cfg-btn {
   background: var(--accent);
   color: var(--text-on-accent);
   border: none;
   border-radius: 6px;
+  min-block-size: 2.75rem;
   padding: 4px 12px;
   font-weight: 700;
   font-size: 0.85em;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .cfg-btn:hover {
   opacity: 0.85;

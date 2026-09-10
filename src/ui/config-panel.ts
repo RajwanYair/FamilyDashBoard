@@ -936,7 +936,11 @@ function _buildFieldRow(
   const row = document.createElement("div");
   row.className = "cfg-row";
   const label = document.createElement("label");
-  label.textContent = `${field.labelHe} / ${field.labelEn}`;
+  label.className = "cfg-label cfg-field-label";
+  const labelText = document.createElement("span");
+  labelText.dir = "auto";
+  labelText.textContent = `${field.labelHe} / ${field.labelEn}`;
+  label.appendChild(labelText);
 
   let control: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
   if (field.type === "select") {
@@ -965,6 +969,7 @@ function _buildFieldRow(
   }
 
   control.name = field.key;
+  control.classList.add("cfg-input");
   if (field.placeholder !== undefined && "placeholder" in control) {
     control.placeholder = field.placeholder;
   }
