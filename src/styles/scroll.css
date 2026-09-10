@@ -26,9 +26,6 @@
   transform: translateZ(0); /* force GPU layer */
   backface-visibility: hidden; /* skip back-face rasterization */
 }
-.stk-chart svg {
-  will-change: contents;
-}
 
 /* Animated gradient border — GPU composite */
 .card::before {

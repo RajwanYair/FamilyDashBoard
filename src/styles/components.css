@@ -976,7 +976,6 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   flex: 1 1 0;
   min-height: 24px;
   max-height: 48px;
-  will-change: contents;
 }
 .wx-forecast {
   display: grid;

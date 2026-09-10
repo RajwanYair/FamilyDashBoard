@@ -272,6 +272,8 @@ These ranges are not calendar commitments. S08 can be scheduled earlier where pr
 - **S06-02 - Work and energy budget (1-2 days).** Profile the refresh governor, animations, media, and diagnostics. Coalesce redundant updates; avoid blanket `will-change` and speculative resource hints to unused origins. Compare visible/hidden/low-motion states using CPU time, wakeups, and network activity; energy claims require actual measurement. Accept no new idle polling and no repeated layout shifts from updates.
 - **S06-03 - Endurance and fault soak (2 days plus 72 hours).** Run deterministic periodic outages, malformed payloads, reconnects, card hide/show, theme changes, and midnight rollover. Sample retained heap after comparable cleanup, listener/timer counts, cache size, and retry rate. Apply Section 0.2 thresholds and investigate trends rather than comparing arbitrary heap snapshots. Record device sleep separately from application failure.
 
+**S06-02 progress**: in progress. **Evidence**: static weather and stock chart surfaces no longer request `will-change: contents`, which is not an animatable property and can create unnecessary paint invalidation; continuously animated scroll surfaces retain targeted transform promotion. A CSS contract prevents the removed static-content promotion from returning. Remaining: paired visible/hidden/low-motion profiling with CPU, wakeup, network, and layout-shift measurements.
+
 **Validation**: bundle and benchmark gates, profiles, paired baseline runs, 72-hour report, and post-soak interaction checks. **Rollback**: revert the measured regression in isolation; do not enlarge budgets or disable animations/features globally without a scoped product decision.
 
 ### S07 - Release Provenance and Operator Readiness
