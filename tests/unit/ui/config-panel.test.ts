@@ -467,6 +467,37 @@ describe("Config Panel — importSettings", () => {
     expect(localStorage.getItem("dash_v2_config")).toBeNull();
   });
 
+  it("rejects import with an invalid theme without overwriting existing config", async () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({ theme: "blue" }));
+    document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
+    const input = document.getElementById("cfg-import-file") as HTMLInputElement;
+    vi.spyOn(input, "click").mockImplementation(() => {});
+    class InvalidThemeReader {
+      onload: ((e: ProgressEvent<FileReader>) => void) | null = null;
+      result: string | ArrayBuffer | null = null;
+      readAsText(): void {
+        this.result = '{"theme":"invalid","configVersion":1}';
+        this.onload?.({ target: this as unknown as FileReader } as ProgressEvent<FileReader>);
+      }
+    }
+    vi.stubGlobal("FileReader", InvalidThemeReader);
+
+    importSettings();
+    const mockFile = new File(['{"theme":"invalid","configVersion":1}'], "cfg.json", {
+      type: "application/json",
+    });
+    Object.defineProperty(input, "files", {
+      value: { 0: mockFile, length: 1 },
+      configurable: true,
+    });
+    input.onchange?.(new Event("change"));
+    for (let i = 0; i < 10; i += 1) await Promise.resolve();
+
+    expect(JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}")).toMatchObject({
+      theme: "blue",
+    });
+  });
+
   it("handles invalid JSON in FileReader without throwing", () => {
     document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
     const input = document.getElementById("cfg-import-file") as HTMLInputElement;

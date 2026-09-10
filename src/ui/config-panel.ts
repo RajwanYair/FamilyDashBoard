@@ -996,7 +996,13 @@ export function importSettings(): void {
           diagLog("[config-panel] import failed: missing or invalid configVersion");
           return;
         }
-        saveConfig(cfg as unknown as DashboardConfig);
+        const validation = validateImportedConfig(parsed);
+        if (!validation.ok || !validation.config) {
+          showToast(t("settingsImportFailed"), 4000);
+          diagLog(`[config-panel] import failed: ${validation.message}`);
+          return;
+        }
+        saveConfig(validation.config);
         populateForm();
         clearDirty();
         const fieldCount = Object.keys(cfg).length;
