@@ -11,6 +11,8 @@ import "./ticker.css";
 import { cGet, cGetStale, cSet } from "../core/cache";
 import { fetchWithTimeout } from "../core/fetch";
 import { diagLog } from "../core/diag";
+import { captureOverlayFocus, restoreOverlayFocus, trapOverlayTab } from "./overlay-focus";
+import { registerOverlayCloser } from "./keyboard";
 import { PROXIES, API, LS_TICKER_MSG, INTERVALS } from "../core/constants";
 import { scheduleCard } from "../cards/base-card";
 
@@ -276,58 +278,64 @@ export function getHalachaData(): HalachaData | null {
 // ── Full-text overlay ──
 let _docKeydownWired = false;
 
-function openHalachaOverlay(): void {
+function openHalachaOverlay(opener: Element): void {
   const ov = document.getElementById("halacha-overlay");
   const refEl = document.getElementById("halacha-overlay-ref");
   const txtEl = document.getElementById("halacha-overlay-text");
   if (!ov || !refEl || !txtEl || !_halachaData) return;
+  captureOverlayFocus("halacha-overlay", ov);
   refEl.textContent = _halachaData.category
     ? `${_halachaData.category} · ${_halachaData.ref}`
     : _halachaData.ref;
   txtEl.textContent = _halachaData.texts.map((t, i) => `(${i + 1}) ${t}`).join("\n\n");
   ov.classList.add("visible");
+  if (opener instanceof HTMLElement) ov.focus({ preventScroll: true });
   diagLog("[ticker] Opened halacha overlay");
 }
 
 function closeHalachaOverlay(): void {
-  document.getElementById("halacha-overlay")?.classList.remove("visible");
+  const overlay = document.getElementById("halacha-overlay");
+  overlay?.classList.remove("visible");
+  restoreOverlayFocus("halacha-overlay");
 }
 
 function wireHalachaOverlay(): void {
   // Ticker bar click (guard per-element via data-attr so cacheDom() after a
   // DOM rebuild re-wires against the fresh element).
-  if (elTicker && elTicker.dataset["overlayWired"] !== "1") {
-    elTicker.dataset["overlayWired"] = "1";
-    elTicker.addEventListener("click", () => {
-      if (_halachaData) openHalachaOverlay();
+  const ticker = elTicker;
+  if (ticker && ticker.dataset["overlayWired"] !== "1") {
+    ticker.dataset["overlayWired"] = "1";
+    ticker.addEventListener("click", () => {
+      if (_halachaData) openHalachaOverlay(ticker);
     });
-    elTicker.style.cursor = "pointer";
-    elTicker.setAttribute("role", "button");
-    elTicker.setAttribute("tabindex", "0");
-    elTicker.setAttribute("aria-label", "פתח טקסט מלא של ההלכה היומית");
-    elTicker.addEventListener("keydown", (e: KeyboardEvent) => {
+    ticker.style.cursor = "pointer";
+    ticker.setAttribute("role", "button");
+    ticker.setAttribute("tabindex", "0");
+    ticker.setAttribute("aria-label", "פתח טקסט מלא של ההלכה היומית");
+    ticker.addEventListener("keydown", (e: KeyboardEvent) => {
       if ((e.key === "Enter" || e.key === " ") && _halachaData) {
         e.preventDefault();
-        openHalachaOverlay();
+        openHalachaOverlay(ticker);
       }
     });
   }
 
   // Hebrew-cal row click — opens the in-app overlay (replaces legacy Sefaria popup).
-  if (elHcHalachaRow && elHcHalachaRow.dataset["overlayWired"] !== "1") {
-    elHcHalachaRow.dataset["overlayWired"] = "1";
-    elHcHalachaRow.setAttribute("role", "button");
-    elHcHalachaRow.setAttribute("tabindex", "0");
-    elHcHalachaRow.addEventListener("click", (e: Event) => {
+  const halachaRow = elHcHalachaRow;
+  if (halachaRow && halachaRow.dataset["overlayWired"] !== "1") {
+    halachaRow.dataset["overlayWired"] = "1";
+    halachaRow.setAttribute("role", "button");
+    halachaRow.setAttribute("tabindex", "0");
+    halachaRow.addEventListener("click", (e: Event) => {
       if (!_halachaData) return;
       e.preventDefault();
       e.stopPropagation();
-      openHalachaOverlay();
+      openHalachaOverlay(halachaRow);
     });
-    elHcHalachaRow.addEventListener("keydown", (e: KeyboardEvent) => {
+    halachaRow.addEventListener("keydown", (e: KeyboardEvent) => {
       if ((e.key === "Enter" || e.key === " ") && _halachaData) {
         e.preventDefault();
-        openHalachaOverlay();
+        openHalachaOverlay(halachaRow);
       }
     });
   }
@@ -336,7 +344,17 @@ function wireHalachaOverlay(): void {
   const ov = document.getElementById("halacha-overlay");
   if (ov && ov.dataset["overlayWired"] !== "1") {
     ov.dataset["overlayWired"] = "1";
+    ov.setAttribute("tabindex", "-1");
     ov.addEventListener("click", closeHalachaOverlay);
+    ov.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeHalachaOverlay();
+        return;
+      }
+      trapOverlayTab(event, ov);
+    });
+    registerOverlayCloser("halacha-overlay", closeHalachaOverlay);
   }
 
   // Escape key (document-level; wire once per page lifetime)

@@ -54,6 +54,7 @@ function buildFullTickerDOM(): void {
     <div id="halacha-overlay">
       <span id="halacha-overlay-ref"></span>
       <div id="halacha-overlay-text"></div>
+      <button type="button" class="halacha-overlay-close">Close</button>
     </div>
   `;
 }
@@ -104,6 +105,51 @@ describe("Ticker overlay wiring — wireHalachaOverlay with #halacha-overlay", (
     ov.classList.add("visible");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     expect(ov.classList.contains("visible")).toBe(false);
+  });
+
+  it("returns focus to the ticker after closing the overlay", () => {
+    buildFullTickerDOM();
+    vi.mocked(cGet).mockReturnValue({
+      ref: "SA.OC.6",
+      heRef: 'שו"ע ו',
+      category: "",
+      url: "",
+      texts: ["text f"],
+    });
+    initTicker();
+    const ticker = document.getElementById("halacha-ticker")!;
+    ticker.focus();
+    ticker.dispatchEvent(new Event("click"));
+    const ov = document.getElementById("halacha-overlay")!;
+
+    expect(document.activeElement).toBe(ov);
+    ov.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+
+    expect(document.activeElement).toBe(ticker);
+  });
+
+  it("keeps Tab inside the overlay close action", () => {
+    buildFullTickerDOM();
+    vi.mocked(cGet).mockReturnValue({
+      ref: "SA.OC.7",
+      heRef: 'שו"ע ז',
+      category: "",
+      url: "",
+      texts: ["text g"],
+    });
+    initTicker();
+    const ticker = document.getElementById("halacha-ticker")!;
+    ticker.focus();
+    ticker.dispatchEvent(new Event("click"));
+    const ov = document.getElementById("halacha-overlay")!;
+    const close = ov.querySelector<HTMLButtonElement>(".halacha-overlay-close")!;
+    close.focus();
+    const event = new KeyboardEvent("keydown", { key: "Tab", bubbles: true });
+    const preventDefault = vi.spyOn(event, "preventDefault");
+    ov.dispatchEvent(event);
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(document.activeElement).toBe(close);
   });
 });
 

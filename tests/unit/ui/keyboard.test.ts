@@ -124,6 +124,7 @@ describe("Keyboard — closeAllOverlays", () => {
       <div id="config-overlay" class="visible"></div>
       <div id="help-overlay" class="visible"></div>
       <div id="diag-overlay" class="visible"></div>
+      <div id="halacha-overlay" class="visible"></div>
     `;
   });
 
@@ -136,6 +137,7 @@ describe("Keyboard — closeAllOverlays", () => {
     expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(false);
     expect(document.getElementById("help-overlay")?.classList.contains("visible")).toBe(false);
     expect(document.getElementById("diag-overlay")?.classList.contains("visible")).toBe(false);
+    expect(document.getElementById("halacha-overlay")?.classList.contains("visible")).toBe(false);
   });
 
   it("does not throw when overlays are missing", () => {

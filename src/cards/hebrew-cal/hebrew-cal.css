@@ -159,6 +159,13 @@
   color: var(--text-muted);
   text-align: center;
   cursor: pointer;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  background: transparent;
+  padding: 0.5rem 1rem;
+  min-block-size: 2.75rem;
+  width: 100%;
+  touch-action: manipulation;
 }
 
 /* Maximize — large Hebrew calendar layout */

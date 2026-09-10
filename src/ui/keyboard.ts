@@ -89,7 +89,7 @@ export function initKeyboard(): void {
  */
 export function closeAllOverlays(): void {
   // <dialog> elements — use native close()
-  const dialogIds = ["config-overlay", "help-overlay", "diag-overlay"];
+  const dialogIds = ["config-overlay", "help-overlay", "diag-overlay", "halacha-overlay"];
   for (const id of dialogIds) {
     const el = document.getElementById(id);
     const isOpen =
