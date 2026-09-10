@@ -299,12 +299,16 @@
   margin-block: 4px;
 }
 .cfg-details-summary {
+  align-items: center;
   cursor: pointer;
+  display: flex;
   font-weight: 600;
   font-size: 0.85em;
   color: var(--accent);
+  min-block-size: 2.75rem;
   padding: 4px 0;
   list-style: none;
+  touch-action: manipulation;
 }
 .cfg-details-summary::before {
   content: "▶ ";

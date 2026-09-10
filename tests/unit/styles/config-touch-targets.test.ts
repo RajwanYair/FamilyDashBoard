@@ -9,5 +9,8 @@ describe("Settings tab touch-target CSS contract", () => {
     expect(configPanel).toMatch(
       /\.cfg-tab\s*\{[^}]*min-block-size:\s*2\.75rem[^}]*touch-action:\s*manipulation/s,
     );
+    expect(configPanel).toMatch(
+      /\.cfg-details-summary\s*\{[^}]*min-block-size:\s*2\.75rem[^}]*touch-action:\s*manipulation/s,
+    );
   });
 });
