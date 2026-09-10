@@ -875,6 +875,76 @@ describe("Config Panel — cards tab visibility and sizes", () => {
       expect(document.getElementById("cfg-save-btn")).not.toBeNull();
     }
   });
+
+  it("persists dynamic card schema values from select and textarea controls", async () => {
+    document.body.innerHTML = `
+      <div id="config-overlay"><div id="config-panel">
+        <div id="cfg-cards-list"></div>
+        <button id="cfg-save-btn">Save</button>
+        <button id="cfg-close-btn">Close</button>
+        <button id="cfg-gear-btn">Open</button>
+      </div></div>
+    `;
+    vi.resetModules();
+    vi.doMock("@/core/card-registry", () => ({
+      listCards: () => [{ id: "weather", titleHe: "מזג אוויר", icon: "🌤" }],
+      loadCard: async () => ({
+        configSchema: [
+          {
+            key: "weatherMode",
+            labelHe: "מצב",
+            labelEn: "Mode",
+            type: "select",
+            defaultValue: "auto",
+            options: [
+              { value: "auto", label: "Automatic" },
+              { value: "manual", label: "Manual" },
+            ],
+          },
+          {
+            key: "weatherNotes",
+            labelHe: "הערות",
+            labelEn: "Notes",
+            type: "textarea",
+            defaultValue: "",
+          },
+        ],
+      }),
+      registerCard: vi.fn(),
+      getCard: vi.fn(),
+    }));
+    const mod = (await import("@/ui/config-panel")) as CfgMod;
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    await vi.waitFor(() => {
+      expect(document.querySelector(".cfg-card-schema")).not.toBeNull();
+    });
+
+    const select = document.querySelector<HTMLSelectElement>("[name='weatherMode']");
+    const textarea = document.querySelector<HTMLTextAreaElement>("[name='weatherNotes']");
+    expect(select).not.toBeNull();
+    expect(textarea).not.toBeNull();
+    select!.value = "manual";
+    textarea!.value = "Keep this note";
+    document.querySelector<HTMLButtonElement>(".cfg-card-reset-btn")!.click();
+    expect(select!.value).toBe("auto");
+    expect(textarea!.value).toBe("");
+    select!.value = "manual";
+    textarea!.value = "Keep this note";
+    document.getElementById("cfg-save-btn")!.click();
+
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as {
+      weatherMode?: string;
+      weatherNotes?: string;
+      cards?: { weather?: { settings?: Record<string, string> } };
+    };
+    expect(saved.weatherMode).toBe("manual");
+    expect(saved.weatherNotes).toBe("Keep this note");
+    expect(saved.cards?.weather?.settings).toMatchObject({
+      weatherMode: "manual",
+      weatherNotes: "Keep this note",
+    });
+  });
 });
 
 // ── Font size slider live preview (lines 483-501) ───────────────────────────
@@ -1913,6 +1983,40 @@ describe("ConfigPanel — buildConfigAccordion", () => {
     const input = container.querySelector<HTMLInputElement>("[name='b1']");
     expect(input?.type).toBe("checkbox");
     expect(input?.checked).toBe(true);
+  });
+
+  it("renders select and textarea fields with their current values", async () => {
+    const { buildConfigAccordion } = await import("@/ui/config-panel");
+    const container = document.createElement("div");
+    buildConfigAccordion(
+      [
+        {
+          key: "mode",
+          labelHe: "מצב",
+          labelEn: "Mode",
+          type: "select",
+          defaultValue: "auto",
+          currentValue: "manual",
+          options: [
+            { value: "auto", label: "Automatic" },
+            { value: "manual", label: "Manual" },
+          ],
+        },
+        {
+          key: "notes",
+          labelHe: "הערות",
+          labelEn: "Notes",
+          type: "textarea",
+          defaultValue: "",
+          currentValue: "Saved notes",
+        },
+      ],
+      container,
+    );
+    const select = container.querySelector<HTMLSelectElement>("[name='mode']");
+    const textarea = container.querySelector<HTMLTextAreaElement>("[name='notes']");
+    expect(select?.value).toBe("manual");
+    expect(textarea?.value).toBe("Saved notes");
   });
 
   it("groups fields into <details> elements", async () => {

@@ -478,7 +478,7 @@ function populateForm(): void {
     } // end category loop
     cardsList.appendChild(frag);
     // inject per-card configSchema fields
-    void injectCardConfigSchemas(cardsList);
+    void injectCardConfigSchemas(cardsList, c);
   }
 
   applyInterfaceLanguage(c.interfaceLanguage);
@@ -726,6 +726,42 @@ function collectForm(): DashboardConfig {
     });
   c.cardSizes = cardSizes;
 
+  // Dynamic per-card schema fields
+  document.querySelectorAll<HTMLElement>(".cfg-card-schema[data-card-id]").forEach((wrapper) => {
+    const cardId = wrapper.dataset["cardId"] ?? "";
+    if (!cardId) return;
+
+    const currentCard = c.cards[cardId] ?? {};
+    const currentSettings = currentCard.settings ?? {};
+    const nextSettings = { ...currentSettings };
+
+    wrapper
+      .querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("[name]")
+      .forEach((control) => {
+        const key = control.name;
+        if (!key) return;
+
+        let value: string | number | boolean;
+        if (control instanceof HTMLInputElement && control.type === "checkbox") {
+          value = control.checked;
+        } else if (
+          control instanceof HTMLInputElement &&
+          (control.type === "number" || control.type === "range")
+        ) {
+          const numericValue = Number(control.value);
+          if (!Number.isFinite(numericValue)) return;
+          value = numericValue;
+        } else {
+          value = control.value;
+        }
+
+        Object.assign(c, { [key]: value });
+        nextSettings[key] = value;
+      });
+
+    c.cards[cardId] = { ...currentCard, settings: nextSettings };
+  });
+
   // Tasks reset hour (Advanced tab)
   const resetHourEl = g("cfg-tasks-reset-hour");
   if (resetHourEl) {
@@ -775,7 +811,27 @@ function collectForm(): DashboardConfig {
 
 // auto-inject card configSchema fields into Cards tab ────────
 
-async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
+function isConfigFieldValue(value: unknown): value is string | number | boolean {
+  return typeof value === "string" || typeof value === "number" || typeof value === "boolean";
+}
+
+function getSchemaFieldValue(
+  config: DashboardConfig,
+  cardId: string,
+  field: CardConfigField,
+): string | number | boolean {
+  const flatConfig = config as unknown as Record<string, unknown>;
+  const flatValue = flatConfig[field.key];
+  if (isConfigFieldValue(flatValue)) return flatValue;
+
+  const nestedValue = config.cards[cardId]?.settings?.[field.key];
+  return isConfigFieldValue(nestedValue) ? nestedValue : field.defaultValue;
+}
+
+async function injectCardConfigSchemas(
+  container: HTMLElement,
+  config: DashboardConfig,
+): Promise<void> {
   const runId = String(++cardConfigSchemaInjectRun);
   container.dataset["schemaRunId"] = runId;
   const defs = await getCardConfigSchemaDefs();
@@ -786,7 +842,13 @@ async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
       const wrapper = document.createElement("div");
       wrapper.className = "cfg-card-schema";
       wrapper.dataset["cardId"] = def.id;
-      buildConfigAccordion(def.fields, wrapper);
+      buildConfigAccordion(
+        def.fields.map((field) => ({
+          ...field,
+          currentValue: getSchemaFieldValue(config, def.id, field),
+        })),
+        wrapper,
+      );
 
       // per-card config reset button
       const resetBtn = document.createElement("button");
@@ -795,12 +857,14 @@ async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
       resetBtn.textContent = "↩ איפוס";
       resetBtn.addEventListener("click", () => {
         for (const field of def.fields) {
-          const input = wrapper.querySelector<HTMLInputElement>(`[name="${field.key}"]`);
-          if (!input) continue;
-          if (typeof field.defaultValue === "boolean") {
-            input.checked = field.defaultValue;
+          const control = wrapper.querySelector<
+            HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+          >(`[name="${field.key}"]`);
+          if (!control) continue;
+          if (field.type === "boolean" && control instanceof HTMLInputElement) {
+            control.checked = field.defaultValue === true;
           } else {
-            input.value = String(field.defaultValue);
+            control.value = String(field.defaultValue);
           }
         }
         markDirty();
@@ -830,7 +894,10 @@ async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
  * @param fields    - Card config field schema
  * @param container - Parent element to append the fragment into
  */
-export function buildConfigAccordion(fields: CardConfigField[], container: HTMLElement): void {
+export function buildConfigAccordion(
+  fields: Array<CardConfigField & { currentValue?: string | number | boolean }>,
+  container: HTMLElement,
+): void {
   const groupMap = new Map<string, HTMLDetailsElement>();
 
   for (const field of fields) {
@@ -844,32 +911,54 @@ export function buildConfigAccordion(fields: CardConfigField[], container: HTMLE
         groupMap.set(field.group, details);
         container.appendChild(details);
       }
-      groupMap.get(field.group)!.appendChild(_buildFieldRow(field));
+      groupMap.get(field.group)!.appendChild(_buildFieldRow(field, field.currentValue));
     } else {
-      container.appendChild(_buildFieldRow(field));
+      container.appendChild(_buildFieldRow(field, field.currentValue));
     }
   }
 }
 
 /** Build a single label+input row for a config field. */
-function _buildFieldRow(field: CardConfigField): HTMLElement {
+function _buildFieldRow(
+  field: CardConfigField,
+  currentValue: string | number | boolean = field.defaultValue,
+): HTMLElement {
   const row = document.createElement("div");
   row.className = "cfg-row";
   const label = document.createElement("label");
   label.textContent = `${field.labelHe} / ${field.labelEn}`;
-  const input = document.createElement("input");
-  input.type = field.type === "boolean" ? "checkbox" : field.type;
-  input.name = field.key;
-  if (typeof field.defaultValue === "boolean") {
-    input.checked = field.defaultValue;
+
+  let control: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+  if (field.type === "select") {
+    const select = document.createElement("select");
+    for (const option of field.options ?? []) {
+      const optionEl = document.createElement("option");
+      optionEl.value = option.value;
+      optionEl.textContent = option.label;
+      optionEl.selected = String(currentValue) === option.value;
+      select.appendChild(optionEl);
+    }
+    control = select;
+  } else if (field.type === "textarea") {
+    const textarea = document.createElement("textarea");
+    textarea.value = String(currentValue);
+    control = textarea;
   } else {
-    input.value = String(field.defaultValue);
+    const input = document.createElement("input");
+    input.type = field.type === "boolean" ? "checkbox" : field.type;
+    if (field.type === "boolean") input.checked = Boolean(currentValue);
+    else input.value = String(currentValue);
+    if (field.min !== undefined) input.min = String(field.min);
+    if (field.max !== undefined) input.max = String(field.max);
+    if (field.step !== undefined) input.step = String(field.step);
+    control = input;
   }
-  if (field.min !== undefined) input.min = String(field.min);
-  if (field.max !== undefined) input.max = String(field.max);
-  if (field.step !== undefined) input.step = String(field.step);
-  if (field.placeholder !== undefined) input.placeholder = field.placeholder;
-  label.appendChild(input);
+
+  control.name = field.key;
+  if (field.placeholder !== undefined && "placeholder" in control) {
+    control.placeholder = field.placeholder;
+  }
+  label.appendChild(control);
   row.appendChild(label);
   return row;
 }
