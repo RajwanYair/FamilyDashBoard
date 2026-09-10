@@ -2330,6 +2330,10 @@ describe("ConfigPanel — config search box filtering", () => {
           <div class="cfg-section active" data-tab="display">
             <div class="cfg-row">Temperature unit</div>
             <div class="cfg-row">Font size</div>
+            <details>
+              <summary>Advanced</summary>
+              <div class="cfg-row">Night dim level</div>
+            </details>
             <span class="cfg-group-label">Group</span>
           </div>
           <button id="cfg-save-btn">Save</button>
@@ -2354,11 +2358,19 @@ describe("ConfigPanel — config search box filtering", () => {
     // "Temperature unit" matches, "Font size" does not
     expect(rows[0]?.hasAttribute("hidden")).toBe(false);
     expect(rows[1]?.hasAttribute("hidden")).toBe(true);
+    const advanced = document.querySelector("details");
+    expect(advanced?.open).toBe(false);
+
+    searchBox.value = "night";
+    searchBox.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(advanced?.open).toBe(true);
+
     // Clear search restores all
     searchBox.value = "";
     searchBox.dispatchEvent(new Event("input", { bubbles: true }));
     expect(rows[0]?.hasAttribute("hidden")).toBe(false);
     expect(rows[1]?.hasAttribute("hidden")).toBe(false);
+    expect(advanced?.open).toBe(false);
   });
 });
 

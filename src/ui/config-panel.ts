@@ -1524,6 +1524,7 @@ export function initConfigPanel(): void {
       const allRows = overlay()?.querySelectorAll<HTMLElement>(".cfg-row");
       const allSections = overlay()?.querySelectorAll<HTMLElement>(".cfg-section");
       const allSectionHdrs = overlay()?.querySelectorAll<HTMLElement>(".cfg-group-label");
+      const allDetails = overlay()?.querySelectorAll<HTMLDetailsElement>("details");
 
       if (!allRows) return;
 
@@ -1538,6 +1539,12 @@ export function initConfigPanel(): void {
           if (!isActive) s.setAttribute("hidden", "");
           else s.removeAttribute("hidden");
         });
+        allDetails?.forEach((details) => {
+          if (details.dataset["searchOpened"] === "1") {
+            details.open = false;
+            delete details.dataset["searchOpened"];
+          }
+        });
         return;
       }
 
@@ -1550,6 +1557,21 @@ export function initConfigPanel(): void {
         const match = text.includes(q);
         if (match) row.removeAttribute("hidden");
         else row.setAttribute("hidden", "");
+      });
+
+      // Open matching advanced groups so search results are not hidden inside a
+      // collapsed disclosure; only groups opened by search are closed again.
+      allDetails?.forEach((details) => {
+        const hasVisibleMatch = Array.from(details.querySelectorAll<HTMLElement>(".cfg-row")).some(
+          (row) => !row.hasAttribute("hidden"),
+        );
+        if (hasVisibleMatch && !details.open) {
+          details.open = true;
+          details.dataset["searchOpened"] = "1";
+        } else if (!hasVisibleMatch && details.dataset["searchOpened"] === "1") {
+          details.open = false;
+          delete details.dataset["searchOpened"];
+        }
       });
     });
 
