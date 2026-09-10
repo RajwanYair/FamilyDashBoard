@@ -23,6 +23,7 @@ import { applyFontScale } from "./screen-mode";
 import { setDimLevel, updateDimIndicator, setWarmTint } from "./night-dimmer";
 import { applyTickerSpeed } from "./ticker";
 import { applyConfigAnimLevel } from "../core/anim-level";
+import { createRangeValueOutput } from "@/ui/config-auto-render";
 import {
   getConfigSettingKey,
   getConfigValue,
@@ -876,6 +877,11 @@ async function injectCardConfigSchemas(
           } else {
             control.value = String(field.defaultValue);
           }
+          if (field.type === "range") {
+            const output =
+              control.parentElement?.querySelector<HTMLOutputElement>(".cfg-range-output");
+            if (output) output.textContent = control.value;
+          }
         }
         markDirty();
       });
@@ -973,7 +979,14 @@ function _buildFieldRow(
   if (field.placeholder !== undefined && "placeholder" in control) {
     control.placeholder = field.placeholder;
   }
-  label.appendChild(control);
+  if (field.type === "range" && control instanceof HTMLInputElement) {
+    const rangeWrap = document.createElement("span");
+    rangeWrap.className = "cfg-range-wrap";
+    rangeWrap.append(control, createRangeValueOutput(control));
+    label.appendChild(rangeWrap);
+  } else {
+    label.appendChild(control);
+  }
   row.appendChild(label);
   return row;
 }

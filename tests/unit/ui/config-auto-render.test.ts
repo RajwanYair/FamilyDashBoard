@@ -76,6 +76,12 @@ describe("renderConfigField ", () => {
     expect(inp.type).toBe("range");
     expect(inp.min).toBe("0");
     expect(inp.max).toBe("30");
+    const output = div.querySelector("output.cfg-range-output") as HTMLOutputElement;
+    expect(output.textContent).toBe("5");
+    expect(output.getAttribute("for")).toBe("cfg-interval");
+    inp.value = "12";
+    inp.dispatchEvent(new Event("input"));
+    expect(output.textContent).toBe("12");
   });
 
   it("renders a textarea field", () => {

@@ -60,4 +60,16 @@ describe("buildConfigAccordion ", () => {
     expect(container.querySelectorAll("details").length).toBe(0);
     expect(container.querySelectorAll(".cfg-row").length).toBe(2);
   });
+
+  it("renders a live value output next to range fields", () => {
+    const container = document.createElement("div");
+    buildConfigAccordion(grouped, container);
+    const rangeInput = container.querySelector<HTMLInputElement>("[name='c']");
+    const output = container.querySelector<HTMLOutputElement>("output.cfg-range-output");
+    expect(rangeInput).not.toBeNull();
+    expect(output?.textContent).toBe("5");
+    rangeInput!.value = "8";
+    rangeInput!.dispatchEvent(new Event("input"));
+    expect(output?.textContent).toBe("8");
+  });
 });

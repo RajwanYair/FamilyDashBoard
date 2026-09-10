@@ -156,6 +156,21 @@
   width: 2.75rem;
   padding: 0;
 }
+@layer components {
+  .cfg-range-wrap {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.5em;
+    min-inline-size: 0;
+  }
+  .cfg-range-output {
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    min-inline-size: 2.5em;
+    text-align: center;
+  }
+}
 .cfg-btn {
   background: var(--accent);
   color: var(--text-on-accent);

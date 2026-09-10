@@ -9,6 +9,25 @@
 import type { CardConfigField, ConfigFieldType } from "../types/card";
 
 /**
+ * Create a live value readout for a native range control.
+ *
+ * Native sliders expose their value to assistive technology but do not show
+ * sighted users the current value while dragging or using arrow keys.
+ */
+export function createRangeValueOutput(input: HTMLInputElement): HTMLOutputElement {
+  const output = document.createElement("output");
+  output.className = "cfg-range-output";
+  if (input.id) output.setAttribute("for", input.id);
+
+  const update = (): void => {
+    output.textContent = input.value;
+  };
+  input.addEventListener("input", update);
+  update();
+  return output;
+}
+
+/**
  * Create a single `<label>` + control element for a CardConfigField.
  * Returns a container `<div>` with class `cfg-field`.
  */
@@ -30,6 +49,9 @@ export function renderConfigField(
   input.id = `cfg-${field.key}`;
   input.dataset.configKey = field.key;
   wrap.appendChild(input);
+  if (field.type === "range" && input instanceof HTMLInputElement) {
+    wrap.appendChild(createRangeValueOutput(input));
+  }
 
   return wrap;
 }

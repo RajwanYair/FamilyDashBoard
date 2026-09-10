@@ -909,6 +909,16 @@ describe("Config Panel — cards tab visibility and sizes", () => {
             type: "textarea",
             defaultValue: "",
           },
+          {
+            key: "weatherRefresh",
+            labelHe: "רענון",
+            labelEn: "Refresh",
+            type: "range",
+            defaultValue: 5,
+            min: 1,
+            max: 30,
+            step: 1,
+          },
         ],
       }),
       registerCard: vi.fn(),
@@ -923,13 +933,22 @@ describe("Config Panel — cards tab visibility and sizes", () => {
 
     const select = document.querySelector<HTMLSelectElement>("[name='weatherMode']");
     const textarea = document.querySelector<HTMLTextAreaElement>("[name='weatherNotes']");
+    const range = document.querySelector<HTMLInputElement>("[name='weatherRefresh']");
+    const output = document.querySelector<HTMLOutputElement>("output.cfg-range-output");
     expect(select).not.toBeNull();
     expect(textarea).not.toBeNull();
+    expect(range?.value).toBe("5");
+    expect(output?.textContent).toBe("5");
+    range!.value = "12";
+    range!.dispatchEvent(new Event("input"));
+    expect(output?.textContent).toBe("12");
     select!.value = "manual";
     textarea!.value = "Keep this note";
     document.querySelector<HTMLButtonElement>(".cfg-card-reset-btn")!.click();
     expect(select!.value).toBe("auto");
     expect(textarea!.value).toBe("");
+    expect(range!.value).toBe("5");
+    expect(output?.textContent).toBe("5");
     select!.value = "manual";
     textarea!.value = "Keep this note";
     document.getElementById("cfg-save-btn")!.click();
