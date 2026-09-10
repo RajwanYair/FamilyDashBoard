@@ -4,99 +4,99 @@
 body {
   transition: font-size 0.3s ease-out;
 }
-body.mode-tv {
+body.screen-tv {
   font-size: 28px;
   --container-pad: 10px;
   --grid-gap: 8px;
 }
 
 /* TV-distance readability floor (3m viewing distance) */
-body.mode-tv .card__body {
+body.screen-tv .card__body {
   font-size: max(0.82em, 14px);
 }
-body.mode-tv .card__header {
+body.screen-tv .card__header {
   font-size: max(0.95em, 16px);
 }
-body.mode-tv .card__footer {
+body.screen-tv .card__footer {
   font-size: max(0.78em, 12px);
 }
-body.mode-tv .stale-chip {
+body.screen-tv .stale-chip {
   font-size: max(0.72em, 11px);
 }
-body.mode-tv .metric-tile__label {
+body.screen-tv .metric-tile__label {
   font-size: max(0.72em, 11px);
 }
-body.mode-tv .metric-tile__value {
+body.screen-tv .metric-tile__value {
   font-size: max(1.3em, 18px);
 }
 
-body.mode-tablet {
+body.screen-tablet {
   font-size: 15px;
   --container-pad: 6px;
   --grid-gap: 6px;
 }
-body.mode-tablet .clock {
+body.screen-tablet .clock {
   font-size: 2.6em;
 }
-body.mode-tablet .hebrew-date {
+body.screen-tablet .hebrew-date {
   font-size: 1.05em;
 }
-body.mode-tablet .top-temp {
+body.screen-tablet .top-temp {
   font-size: 1.2em;
 }
-body.mode-tablet .header-emoji {
+body.screen-tablet .header-emoji {
   font-size: 2.4em;
 }
-body.mode-tablet .card-header {
+body.screen-tablet .card-header {
   font-size: 0.88em;
   padding: 4px 10px;
 }
-body.mode-tablet .stk-price {
+body.screen-tablet .stk-price {
   font-size: 1.15em;
 }
-body.mode-tablet .rss-item {
+body.screen-tablet .rss-item {
   font-size: 0.82em;
   padding: 4px 9px;
 }
-body.mode-tablet .wx-temp-main {
+body.screen-tablet .wx-temp-main {
   font-size: 1.15em;
 }
-body.mode-tablet .moti-text {
+body.screen-tablet .moti-text {
   font-size: 0.92em;
 }
-body.mode-tablet .ticker-bar {
+body.screen-tablet .ticker-bar {
   height: 30px;
 }
-body.mode-tablet .ticker-item {
+body.screen-tablet .ticker-item {
   font-size: 0.72em;
 }
 /* Tablet: compact metric tiles (less padding, tighter grid) */
-body.mode-tablet .metric-tile {
+body.screen-tablet .metric-tile {
   padding: 6px 8px;
 }
-body.mode-tablet .metric-tile__label {
+body.screen-tablet .metric-tile__label {
   font-size: 0.72em;
 }
-body.mode-tablet .metric-tile__value {
+body.screen-tablet .metric-tile__value {
   font-size: 1.05em;
 }
 /* Tablet: card body spacing */
-body.mode-tablet .card__body {
+body.screen-tablet .card__body {
   font-size: 0.85em;
   padding: 6px;
 }
-body.mode-tablet .card__footer {
+body.screen-tablet .card__footer {
   font-size: 0.72em;
   padding: 3px 8px;
 }
-body.mode-tablet .time-section {
+body.screen-tablet .time-section {
   padding: 4px 10px;
 }
-body.mode-tablet .container {
+body.screen-tablet .container {
   padding: var(--container-pad);
   gap: 4px;
 }
-body.mode-phone {
+body.screen-phone {
   font-size: 12px;
   --container-pad: 4px;
   --grid-gap: 4px;
@@ -104,49 +104,49 @@ body.mode-phone {
   height: auto;
   min-height: 100vh;
 }
-body.mode-phone .clock {
+body.screen-phone .clock {
   font-size: 2em;
 }
-body.mode-phone .header-emoji {
+body.screen-phone .header-emoji {
   font-size: 1.8em;
 }
-body.mode-phone .time-section {
+body.screen-phone .time-section {
   flex-wrap: wrap;
   gap: 4px;
   padding: 6px 8px;
 }
-body.mode-phone .header-left,
-body.mode-phone .header-right {
+body.screen-phone .header-left,
+body.screen-phone .header-right {
   align-items: center;
   flex: 1 1 100%;
 }
-body.mode-phone .card-header {
+body.screen-phone .card-header {
   font-size: 0.82em;
   padding: 3px 8px;
 }
-body.mode-phone .ticker-bar {
+body.screen-phone .ticker-bar {
   height: 26px;
 }
-body.mode-phone .ticker-item {
+body.screen-phone .ticker-item {
   font-size: 0.62em;
 }
 /* Phone: single column layout */
-body.mode-phone .grids-area {
+body.screen-phone .grids-area {
   grid-template-columns: 1fr;
   overflow: visible;
   height: auto;
 }
-body.mode-phone .grid-col {
+body.screen-phone .grid-col {
   overflow: visible;
   min-height: unset;
 }
 
 /* Phone: allow full-page scroll and show all card content */
-body.mode-phone .container {
+body.screen-phone .container {
   height: auto;
   overflow: visible;
 }
-body.mode-phone .card {
+body.screen-phone .card {
   overflow: visible;
   height: auto;
   flex: none;
@@ -155,25 +155,25 @@ body.mode-phone .card {
 }
 
 /* Phone: col-split (legacy — stack naturally) */
-body.mode-phone .col-split {
+body.screen-phone .col-split {
   height: auto;
   min-height: unset;
   gap: 10px;
 }
-body.mode-phone .col-split > .card {
+body.screen-phone .col-split > .card {
   flex: none;
   height: auto;
   min-height: unset;
 }
 
 /* Phone: disable paint containment + show all content */
-body.mode-phone .news-body,
-body.mode-phone .stocks-body,
-body.mode-phone .alerts-body,
-body.mode-phone .weather-body,
-body.mode-phone .currency-body,
-body.mode-phone .hebcal-body,
-body.mode-phone .moti-body {
+body.screen-phone .news-body,
+body.screen-phone .stocks-body,
+body.screen-phone .alerts-body,
+body.screen-phone .weather-body,
+body.screen-phone .currency-body,
+body.screen-phone .hebcal-body,
+body.screen-phone .moti-body {
   contain: none;
   overflow: visible;
   height: auto;
@@ -182,17 +182,17 @@ body.mode-phone .moti-body {
 }
 
 /* Phone: disable scroll fade masks (not needed when showing all content) */
-body.mode-phone .news-body,
-body.mode-phone .stocks-body,
-body.mode-phone .alerts-body {
+body.screen-phone .news-body,
+body.screen-phone .stocks-body,
+body.screen-phone .alerts-body {
   -webkit-mask-image: none;
   mask-image: none;
 }
 
 /* Phone: disable GPU layers + stop scroll loop animations */
-body.mode-phone .rss-scroll,
-body.mode-phone .stocks-scroll,
-body.mode-phone .alerts-scroll {
+body.screen-phone .rss-scroll,
+body.screen-phone .stocks-scroll,
+body.screen-phone .alerts-scroll {
   will-change: auto;
   transform: none !important;
   backface-visibility: visible;
@@ -200,19 +200,19 @@ body.mode-phone .alerts-scroll {
 }
 
 /* Phone: calendar — weekly grid stacks into single column */
-body.mode-phone .cal-wrapper {
+body.screen-phone .cal-wrapper {
   overflow: visible;
   height: auto;
   flex: none;
 }
-body.mode-phone .cal-week-grid {
+body.screen-phone .cal-week-grid {
   grid-template-columns: 1fr;
   overflow: visible;
 }
 
 /* Phone: hide cloned duplicate items (used only for the loop) */
-body.mode-phone .rss-item.clone,
-body.mode-phone .alert-item.clone,
-body.mode-phone .alert-count.clone {
+body.screen-phone .rss-item.clone,
+body.screen-phone .alert-item.clone,
+body.screen-phone .alert-count.clone {
   display: none;
 }

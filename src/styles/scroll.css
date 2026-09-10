@@ -45,11 +45,11 @@
 }
 
 /* Scroll-snap for single-column phone mode */
-body.mode-phone .grids-area {
+body.screen-phone .grids-area {
   scroll-snap-type: y proximity;
   -webkit-overflow-scrolling: touch;
 }
-body.mode-phone .card {
+body.screen-phone .card {
   scroll-snap-align: start;
   scroll-margin-top: var(--space-2, 8px);
 }
