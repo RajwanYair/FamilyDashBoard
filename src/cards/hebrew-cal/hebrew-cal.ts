@@ -723,9 +723,9 @@ function renderHalacha(item: { text: string; ref: string; url?: string | undefin
     return;
   }
   els.halacha.textContent = item.text;
+  els.halacha.title = item.text;
   if (item.url) {
     const halachaUrl = `https://www.sefaria.org/${item.url}`;
-    els.halacha.title = halachaUrl;
     els.halacha.onclick = () => window.open(halachaUrl, "_blank", "noopener,noreferrer");
     els.halacha.style.cursor = "pointer";
   }

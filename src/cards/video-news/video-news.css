@@ -27,6 +27,8 @@
     color 0.15s;
   white-space: nowrap;
   direction: rtl;
+  min-block-size: 2.75rem;
+  touch-action: manipulation;
 }
 
 .video-news__tab:hover {

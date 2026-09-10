@@ -42,4 +42,12 @@ describe("card touch-target contracts", () => {
     expect(selectorBlock(news, ".news-starred-close-btn")).toContain("height: 2.75rem");
     expect(selectorBlock(news, ".news-starred-close-btn")).toContain("touch-action: manipulation");
   });
+
+  it("keeps video channel tabs touch-sized", () => {
+    const css = readCss("cards/video-news/video-news.css");
+    const block = selectorBlock(css, ".video-news__tab");
+
+    expect(block).toContain("min-block-size: 2.75rem");
+    expect(block).toContain("touch-action: manipulation");
+  });
 });

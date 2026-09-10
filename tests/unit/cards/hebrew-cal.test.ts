@@ -1707,6 +1707,7 @@ describe("Hebrew Calendar — renderHalacha null / url wiring paths", () => {
     const halacha = document.getElementById("hc-halacha");
     expect(halacaRow?.style.display).toBe("");
     expect(halacha?.textContent).toContain("אורח חיים");
+    expect(halacha?.getAttribute("title")).toContain("אורח חיים");
   });
 });
 
