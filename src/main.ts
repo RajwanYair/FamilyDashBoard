@@ -121,6 +121,13 @@ import { scheduleVitalsReport, flushVitalsReport } from "./core/vitals-reporter"
 import { initTour } from "./core/first-run-tour";
 import { downloadSnapshot } from "./core/snapshot";
 
+function isEditableKeyTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element &&
+    target.closest("input, textarea, select, [contenteditable='true']") !== null
+  );
+}
+
 // ── Version ──
 export const VERSION = __APP_VERSION__;
 
@@ -425,7 +432,7 @@ export function init(): void {
   );
   // Ctrl+Shift+E — export diagnostic log as JSON file
   window.addEventListener("keydown", (e: KeyboardEvent) => {
-    if (e.ctrlKey && e.shiftKey && e.key === "E") {
+    if (e.ctrlKey && e.shiftKey && e.key === "E" && !isEditableKeyTarget(e.target)) {
       e.preventDefault();
       const entries = getDiagEntries(500);
       const json = JSON.stringify({ exported: nowISO(), entries }, null, 2);
@@ -440,7 +447,7 @@ export function init(): void {
   });
   // Ctrl+Shift+S — export full dashboard snapshot (X8)
   window.addEventListener("keydown", (e: KeyboardEvent) => {
-    if (e.ctrlKey && e.shiftKey && e.key === "S") {
+    if (e.ctrlKey && e.shiftKey && e.key === "S" && !isEditableKeyTarget(e.target)) {
       e.preventDefault();
       downloadSnapshot();
       showToast(document.documentElement.lang === "en" ? "Snapshot exported" : "תצלום יוצא", 2500);

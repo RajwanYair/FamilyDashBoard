@@ -635,6 +635,21 @@ describe("Main — init() Ctrl+Shift+E diagnostic export (lines 359-369)", () =>
     window.dispatchEvent(evt);
     expect(getDiagEntries).not.toHaveBeenCalled();
   });
+
+  it("does not export diagnostics while focus is inside an input", () => {
+    init();
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        ctrlKey: true,
+        shiftKey: true,
+        key: "E",
+        bubbles: true,
+      }),
+    );
+    expect(getDiagEntries).not.toHaveBeenCalled();
+  });
 });
 
 // ── init() aria-label on collapse buttons (lines 262-263) ────────────────────
