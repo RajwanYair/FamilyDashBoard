@@ -413,7 +413,8 @@ dialog.diag-overlay::backdrop {
   animation: newsScroll 60s linear infinite;
   will-change: transform;
 }
-.rss-scroll:hover {
+.rss-scroll:hover,
+.rss-scroll:focus-within {
   animation-play-state: paused;
 }
 .rss-item {
@@ -595,7 +596,8 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   will-change: transform;
   overflow-x: hidden;
 }
-.stocks-scroll:hover {
+.stocks-scroll:hover,
+.stocks-scroll:focus-within {
   animation-play-state: paused;
 }
 .stk {
@@ -1112,7 +1114,8 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   animation: alertsScroll 40s linear infinite;
   will-change: transform;
 }
-.alerts-scroll:hover {
+.alerts-scroll:hover,
+.alerts-scroll:focus-within {
   animation-play-state: paused;
 }
 @keyframes alertsScroll {

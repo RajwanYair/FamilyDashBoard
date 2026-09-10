@@ -156,7 +156,8 @@ body::before {
   animation: tickerScroll var(--ticker-duration, 30s) linear infinite;
   will-change: transform;
 }
-.ticker-content:hover {
+.ticker-content:hover,
+.ticker-content:focus-within {
   animation-play-state: paused;
 }
 .ticker-item {

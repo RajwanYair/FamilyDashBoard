@@ -23,7 +23,8 @@
   will-change: transform;
 }
 
-.tasks-list:hover {
+.tasks-list:hover,
+.tasks-list:focus-within {
   animation-play-state: paused;
 }
 
