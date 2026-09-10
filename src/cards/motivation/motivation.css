@@ -12,6 +12,8 @@
     cursor: pointer;
     font-family: inherit;
     margin-top: 6px;
+    min-block-size: 2.75rem;
+    touch-action: manipulation;
   }
   #moti-share-btn:hover {
     color: var(--accent);
@@ -29,6 +31,8 @@
     font-family: inherit;
     margin-top: 3px;
     margin-right: 4px;
+    min-block-size: 2.75rem;
+    touch-action: manipulation;
   }
   #moti-next-btn:hover {
     color: var(--accent);
@@ -43,6 +47,12 @@
     padding: 2px 4px;
     margin-inline-start: 2px;
     line-height: 1;
+    min-block-size: 2.75rem;
+    min-inline-size: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
     vertical-align: middle;
     transition: transform 0.15s ease;
   }

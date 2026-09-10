@@ -47,6 +47,12 @@
     opacity: 0.7;
     transition: opacity 0.15s;
     line-height: 1;
+    min-block-size: 2.75rem;
+    min-inline-size: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
   }
   .synth-speak-btn:hover {
     opacity: 1;

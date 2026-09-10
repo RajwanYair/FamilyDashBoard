@@ -253,13 +253,14 @@
   border: 1px solid var(--border, #444);
   color: var(--text, #e0e0e0);
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 2.75rem;
+  height: 2.75rem;
   cursor: pointer;
   font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: manipulation;
 }
 .hc-yz-close-btn:hover,
 .hc-yz-close-btn:focus-visible {
