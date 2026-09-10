@@ -4,11 +4,7 @@
         "options": {
             "shell": {
                 "executable": "pwsh.exe",
-                "args": [
-                    "-NoLogo",
-                    "-NoProfile",
-                    "-Command"
-                ]
+                "args": ["-NoLogo", "-NoProfile", "-Command"]
             }
         }
     },
@@ -22,10 +18,7 @@
                 "reveal": "always",
                 "panel": "dedicated"
             },
-            "problemMatcher": [
-                "$tsc",
-                "$eslint-stylish"
-            ]
+            "problemMatcher": ["$tsc", "$eslint-stylish"]
         },
         {
             "label": "✅ Repository Quality Gate",
@@ -39,10 +32,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": [
-                "$tsc",
-                "$eslint-stylish"
-            ]
+            "problemMatcher": ["$tsc", "$eslint-stylish"]
         },
         {
             "label": "🔬 Vitest: Run All Tests",
@@ -112,9 +102,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": [
-                "$eslint-stylish"
-            ]
+            "problemMatcher": ["$eslint-stylish"]
         },
         {
             "label": "🔧 ESLint: Fix src + tests",
@@ -125,9 +113,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": [
-                "$eslint-stylish"
-            ]
+            "problemMatcher": ["$eslint-stylish"]
         },
         {
             "label": "🏷️ TypeScript: Type Check",
@@ -138,9 +124,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": [
-                "$tsc"
-            ]
+            "problemMatcher": ["$tsc"]
         },
         {
             "label": "🏗️ Build: GitHub Pages",
@@ -151,9 +135,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": [
-                "$tsc"
-            ]
+            "problemMatcher": ["$tsc"]
         },
         {
             "label": "🏗️ Build: Local file://",
@@ -164,9 +146,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": [
-                "$tsc"
-            ]
+            "problemMatcher": ["$tsc"]
         },
         {
             "label": "📝 Markdownlint: Docs",
@@ -213,9 +193,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": [
-                "$tsc"
-            ]
+            "problemMatcher": ["$tsc"]
         },
         {
             "label": "🚀 Dev Server",
@@ -331,10 +309,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": [
-                "$tsc",
-                "$eslint-stylish"
-            ],
+            "problemMatcher": ["$tsc", "$eslint-stylish"],
             "detail": "Full production gate: typecheck + lint + test + e2e + bundle size"
         },
         {
@@ -450,9 +425,7 @@
             "type": "shell",
             "command": "$ErrorActionPreference = 'Stop'; npm exec -- eslint tests/unit/cards/video-news.test.ts --max-warnings 0; exit $LASTEXITCODE",
             "isBackground": false,
-            "problemMatcher": [
-                "$eslint-stylish"
-            ],
+            "problemMatcher": ["$eslint-stylish"],
             "group": "test"
         },
         {
@@ -466,7 +439,7 @@
         {
             "label": "S01-R2 worker audit probe",
             "type": "shell",
-            "command": "$ErrorActionPreference = 'Continue'; Push-Location worker; npm audit --audit-level=moderate; $code = $LASTEXITCODE; Pop-Location; Write-Output \"WORKER_AUDIT_EXIT=$code\"; exit 0",
+            "command": "$ErrorActionPreference = 'Stop'; Push-Location worker; npm audit --audit-level=moderate; $code = $LASTEXITCODE; Pop-Location; Write-Output \"WORKER_AUDIT_EXIT=$code\"; exit $code",
             "isBackground": false,
             "problemMatcher": [],
             "group": "test"

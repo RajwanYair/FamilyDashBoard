@@ -2,7 +2,7 @@
 
 ![Local Development](../.github/assets/local-dev.svg)
 
-> FamilyDashBoard v14.13.1 · TypeScript · Vite 8 · Hebrew RTL
+> FamilyDashBoard v15.7.0 · TypeScript · Vite 8 · Hebrew RTL
 
 Three verified workflows for running and testing the dashboard locally.
 
@@ -183,7 +183,7 @@ sequence:
 
 | Problem                       | Fix                                                                                                                                                                                                      |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm exec` cannot find a tool | Run `npm ci --ignore-scripts` from the repository root                                                                                                                                                    |
+| `npm exec` cannot find a tool | Run `npm ci --ignore-scripts` from the repository root                                                                                                                                                   |
 | Cards show "Loading…" forever | Cloudflare Worker may be down — check <https://github.com/RajwanYair/FamilyDashBoard/actions>                                                                                                            |
 | Blank screen on `file://`     | Use `npm run build:local`, not `npm run build`                                                                                                                                                           |
 | SW not updating               | DevTools → Application → Service Workers → "Update on reload"                                                                                                                                            |

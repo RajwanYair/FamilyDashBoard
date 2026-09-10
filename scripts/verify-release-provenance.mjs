@@ -56,7 +56,10 @@ export function parseChecksums(text) {
   for (const line of text.split(/\r?\n/)) {
     const match = /^([a-f0-9]{64})\s+\*?(.+?)\s*$/.exec(line);
     if (match) {
-      checksums.set(basename(match[2]), match[1]);
+      const [, digest, fileName] = match;
+      if (digest && fileName) {
+        checksums.set(basename(fileName), digest);
+      }
     }
   }
   return checksums;
@@ -71,6 +74,7 @@ export function sha256File(filePath) {
 
 /**
  * @param {unknown} value
+ * @returns {unknown}
  */
 function sortJson(value) {
   if (Array.isArray(value)) {
@@ -96,9 +100,11 @@ export function normalizeSbom(value) {
     throw new Error("SBOM must be a JSON object");
   }
 
-  const normalized = structuredClone(value);
-  if (normalized.metadata && typeof normalized.metadata === "object") {
-    delete normalized.metadata.timestamp;
+  /** @type {Record<string, unknown>} */
+  const normalized = /** @type {Record<string, unknown>} */ (structuredClone(value));
+  const metadata = normalized.metadata;
+  if (metadata !== null && typeof metadata === "object" && !Array.isArray(metadata)) {
+    delete (/** @type {Record<string, unknown>} */ (metadata).timestamp);
   }
   delete normalized.serialNumber;
   return JSON.stringify(sortJson(normalized));
@@ -159,7 +165,7 @@ export function parseArgs(argv) {
 
   for (let index = 0; index < argv.length; index += 1) {
     const raw = argv[index];
-    if (!raw.startsWith("--")) {
+    if (typeof raw !== "string" || !raw.startsWith("--")) {
       throw new Error(`Unexpected argument: ${raw}`);
     }
     const name = raw.slice(2);
@@ -296,10 +302,10 @@ function compareSbom(publishedSbomPath, expectedSbomPath) {
 function verifyChecksums(checksumPath, artifactPath, serviceWorkerPath) {
   assertFile(checksumPath, "Published checksum file");
   const checksums = parseChecksums(readFileSync(checksumPath, "utf8"));
-  for (const [filePath, label] of [
+  for (const [filePath, label] of /** @type {Array<[string, string]>} */ ([
     [artifactPath, "dist.zip"],
     [serviceWorkerPath, "sw.js"],
-  ]) {
+  ])) {
     const expected = checksums.get(label);
     if (!expected) {
       throw new Error(`Published checksum file has no ${label} entry`);
@@ -363,16 +369,20 @@ function verify(options) {
     ],
     { stdio: ["ignore", "pipe", "inherit"] },
   );
-  if (attestation.status !== 0 || !attestation.stdout) {
+  const attestationOutput =
+    typeof attestation.stdout === "string"
+      ? attestation.stdout
+      : attestation.stdout?.toString("utf8");
+  if (attestation.status !== 0 || !attestationOutput) {
     throw new Error("GitHub SLSA provenance attestation verification failed");
   }
-  const attestationResult = JSON.parse(attestation.stdout);
+  const attestationResult = JSON.parse(attestationOutput);
   if (!Array.isArray(attestationResult) || attestationResult.length === 0) {
     throw new Error("GitHub attestation verifier returned no verified provenance");
   }
   const provenanceOutput = options["provenance-output"];
   if (typeof provenanceOutput === "string") {
-    writeFileSync(resolve(provenanceOutput), attestation.stdout);
+    writeFileSync(resolve(provenanceOutput), attestationOutput);
   }
 
   if (options.negativeFixtures === true) {

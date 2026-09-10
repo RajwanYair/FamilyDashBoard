@@ -37,6 +37,7 @@ vi.mock("@/ui/theme", () => ({ initTheme: vi.fn(), checkAutoTheme: vi.fn() }));
 vi.mock("@/ui/keyboard", () => ({
   initKeyboard: vi.fn(),
   registerKey: vi.fn(),
+  registerOverlayCloser: vi.fn(),
   closeAllOverlays: vi.fn(),
   getKeyboardActions: vi.fn().mockReturnValue([
     { key: "T", description: "Theme", handler: vi.fn() },

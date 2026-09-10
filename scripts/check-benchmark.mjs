@@ -21,7 +21,7 @@
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -61,24 +61,38 @@ function runTests() {
 
     // stderr inherited so real failures surface; stdout ignored to avoid mixing
     // the JSON reporter's stdout with our progress output.
-    const npmExecutable = process.platform === "win32" ? "npm.cmd" : "npm";
-    const child = spawn(
-      npmExecutable,
-      [
-        "exec",
-        "--no",
-        "--",
-        "vitest",
-        "run",
-        "--reporter=json",
-        `--outputFile=${BENCHMARK_JSON}`,
-      ],
-      {
-        cwd: PROJECT_ROOT,
-        stdio: ["ignore", "ignore", "inherit"],
-        windowsHide: true,
-      },
-    );
+    // Node 24 rejects direct `.cmd` shims when spawned on Windows. Invoke the
+    // bundled npm CLI through the active Node executable instead.
+    const npmCliPath =
+      process.env?.npm_execpath ??
+      join(dirname(process.execPath), "node_modules", "npm", "bin", "npm-cli.js");
+    const npmExecutable = process.platform === "win32" ? process.execPath : "npm";
+    const npmArgs =
+      process.platform === "win32"
+        ? [
+            npmCliPath,
+            "exec",
+            "--no",
+            "--",
+            "vitest",
+            "run",
+            "--reporter=json",
+            `--outputFile=${BENCHMARK_JSON}`,
+          ]
+        : [
+            "exec",
+            "--no",
+            "--",
+            "vitest",
+            "run",
+            "--reporter=json",
+            `--outputFile=${BENCHMARK_JSON}`,
+          ];
+    const child = spawn(npmExecutable, npmArgs, {
+      cwd: PROJECT_ROOT,
+      stdio: ["ignore", "ignore", "inherit"],
+      windowsHide: true,
+    });
 
     const startedAt = Date.now();
     let settled = false;

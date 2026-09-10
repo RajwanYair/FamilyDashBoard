@@ -8,6 +8,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 ## [Unreleased]
 
 - 🔐 **fix(privacy)**: complete S08-01 data-flow and consent inventory — reconcile direct, Worker, proxy, telemetry, support-export, calendar, AI, media, and push disclosures; redact URL query tokens from diagnostics, telemetry, reports, snapshots, and Worker logs; isolate tokenized calendar cache keys; and enforce `worker-only`/`no-proxy` routing with regression coverage
+- 🧪 **fix(quality)**: complete the executable S01 benchmark contract — invoke npm safely under Windows Node 24, propagate Worker audit task failures, typecheck the release-provenance script, refresh the 341-file/8016-test benchmark baseline, and retain failure/signal/timeout/missing-report regression fixtures
 
 ## [15.7.0] — 2026-06-02
 
