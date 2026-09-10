@@ -55,9 +55,13 @@
   color: var(--warning);
   border-radius: 10px;
   padding: 2px 7px;
+  border: 0;
+  font-family: inherit;
   white-space: nowrap;
   display: none;
   cursor: pointer;
+  min-block-size: 2.75rem;
+  touch-action: manipulation;
   animation: pulse 2s infinite;
 }
 

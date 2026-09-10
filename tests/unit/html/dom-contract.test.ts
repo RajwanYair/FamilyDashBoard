@@ -55,6 +55,7 @@ describe("DOM Contract — Header elements", () => {
   it("has #header-event-count", () => expect(hasId("header-event-count")).toBe(true));
   it("has #notif-bell (no onclick)", () => {
     expect(hasId("notif-bell")).toBe(true);
+    expect(html).toContain('<button type="button" id="notif-bell"');
     expect(html).not.toContain('notif-bell" onclick');
   });
   it("has #header-birthday-chip (F104)", () => expect(hasId("header-birthday-chip")).toBe(true));
