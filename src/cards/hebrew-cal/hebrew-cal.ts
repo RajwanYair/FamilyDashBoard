@@ -22,6 +22,7 @@ import type { HebcalResponse, HebcalItem } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import { captureOverlayFocus, restoreOverlayFocus } from "../../ui/overlay-focus";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 import {
   nowMs,
@@ -1213,6 +1214,7 @@ export async function openYzDialog(): Promise<void> {
   if (!_yzDialog) return;
   const entries = await getYahrzeits();
   renderYzList(entries);
+  captureOverlayFocus("hc-yz-dialog", _yzDialog);
   _yzDialog.showModal();
 }
 
@@ -1233,6 +1235,9 @@ export function initYzDialog(): void {
   if (_yzDialog) {
     _yzDialog.addEventListener("click", (e) => {
       if (e.target === _yzDialog) closeYzDialog();
+    });
+    _yzDialog.addEventListener("close", () => {
+      restoreOverlayFocus("hc-yz-dialog");
     });
   }
 

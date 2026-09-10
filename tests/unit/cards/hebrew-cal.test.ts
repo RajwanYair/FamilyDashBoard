@@ -2829,6 +2829,15 @@ describe("HebrewCal — Yahrzeit Manager UI", () => {
     expect(dialog.open).toBe(false);
   });
 
+  it("returns focus to the opener when the dialog closes", async () => {
+    const opener = document.getElementById("hc-yz-btn") as HTMLButtonElement;
+    opener.focus();
+    await openYzDialog();
+    closeYzDialog();
+
+    expect(document.activeElement).toBe(opener);
+  });
+
   it("openYzDialog shows empty state when no entries", async () => {
     await openYzDialog();
     const list = document.getElementById("hc-yz-list")!;
