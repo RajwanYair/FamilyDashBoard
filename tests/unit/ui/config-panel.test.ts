@@ -986,6 +986,33 @@ describe("Config Panel — full reset confirmation", () => {
     expect(localStorage.getItem("dash_v2_config")).toBeNull();
     expect(localStorage.getItem("unrelated-setting")).toBe("keep");
   });
+
+  it("resets only the persisted card layout without discarding other settings", async () => {
+    document.body.innerHTML = `
+      <div id="config-overlay"><div id="config-panel">
+        <button id="cfg-reset-layout-btn">Reset layout</button>
+      </div></div>
+    `;
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({
+        configVersion: 12,
+        familyName: "משפחת לוי",
+        cardLayout: ["weather", "calendar"],
+      }),
+    );
+
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    document.getElementById("cfg-reset-layout-btn")!.click();
+
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as {
+      familyName?: string;
+      cardLayout?: string[] | null;
+    };
+    expect(saved.familyName).toBe("משפחת לוי");
+    expect(saved.cardLayout).toBeNull();
+  });
 });
 
 // ── Font size slider live preview (lines 483-501) ───────────────────────────
