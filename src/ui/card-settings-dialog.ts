@@ -9,6 +9,12 @@
 import type { CardConfigField } from "@/types/card";
 import { loadCard, getCard } from "@/core/card-registry";
 import { loadConfig, saveConfig } from "@/core/config";
+import {
+  getConfigSettingKey,
+  getConfigValue,
+  isConfigValue,
+  setConfigValue,
+} from "@/core/config-path";
 import { renderConfigFields, readConfigValues } from "@/ui/config-auto-render";
 import { showToast } from "@/ui/toast";
 import { t } from "@/core/i18n";
@@ -75,10 +81,8 @@ function getOrCreateDialog(): HTMLDialogElement {
     const values = readConfigValues(bodyEl);
     const cfg = loadConfig();
 
-    // Write to flat config props (what most cards read from)
-    const flatCfg = cfg as unknown as Record<string, unknown>;
     for (const [key, value] of Object.entries(values)) {
-      flatCfg[key] = value;
+      setConfigValue(cfg, key, value);
     }
 
     // Also write to the per-card namespace (ADR-004)
@@ -87,9 +91,9 @@ function getOrCreateDialog(): HTMLDialogElement {
     const cardCfg = cfg.cards[_currentCardId];
     if (cardCfg) {
       cardCfg.settings ??= {};
-      const settings = cardCfg.settings as Record<string, unknown>;
+      const settings = cardCfg.settings;
       for (const [key, value] of Object.entries(values)) {
-        settings[key] = value;
+        settings[getConfigSettingKey(key)] = value;
       }
     }
 
@@ -153,13 +157,12 @@ export async function openCardSettings(cardId: string): Promise<void> {
 
   // Populate fields with current saved values
   const cfg = loadConfig();
-  const flatCfg = cfg as unknown as Record<string, unknown>;
   const values: Record<string, string | number | boolean> = {};
   for (const f of fields) {
-    const v = flatCfg[f.key];
-    if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") {
-      values[f.key] = v;
-    }
+    const configValue = getConfigValue(cfg, f.key);
+    const nestedValue = cfg.cards[cardId]?.settings?.[getConfigSettingKey(f.key)];
+    const value = isConfigValue(configValue) ? configValue : nestedValue;
+    if (isConfigValue(value)) values[f.key] = value;
   }
 
   const bodyEl = dlg.querySelector<HTMLElement>(".csd__body");

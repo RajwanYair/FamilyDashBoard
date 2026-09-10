@@ -23,6 +23,12 @@ import { applyFontScale } from "./screen-mode";
 import { setDimLevel, updateDimIndicator, setWarmTint } from "./night-dimmer";
 import { applyTickerSpeed } from "./ticker";
 import { applyConfigAnimLevel } from "../core/anim-level";
+import {
+  getConfigSettingKey,
+  getConfigValue,
+  isConfigValue,
+  setConfigValue,
+} from "../core/config-path";
 import { openDiagOverlay } from "./diag-overlay";
 import { resetLayout } from "./layout-drag";
 import {
@@ -755,8 +761,8 @@ function collectForm(): DashboardConfig {
           value = control.value;
         }
 
-        Object.assign(c, { [key]: value });
-        nextSettings[key] = value;
+        setConfigValue(c, key, value);
+        nextSettings[getConfigSettingKey(key)] = value;
       });
 
     c.cards[cardId] = { ...currentCard, settings: nextSettings };
@@ -811,21 +817,16 @@ function collectForm(): DashboardConfig {
 
 // auto-inject card configSchema fields into Cards tab ────────
 
-function isConfigFieldValue(value: unknown): value is string | number | boolean {
-  return typeof value === "string" || typeof value === "number" || typeof value === "boolean";
-}
-
 function getSchemaFieldValue(
   config: DashboardConfig,
   cardId: string,
   field: CardConfigField,
 ): string | number | boolean {
-  const flatConfig = config as unknown as Record<string, unknown>;
-  const flatValue = flatConfig[field.key];
-  if (isConfigFieldValue(flatValue)) return flatValue;
+  const configValue = getConfigValue(config, field.key);
+  if (isConfigValue(configValue)) return configValue;
 
-  const nestedValue = config.cards[cardId]?.settings?.[field.key];
-  return isConfigFieldValue(nestedValue) ? nestedValue : field.defaultValue;
+  const nestedValue = config.cards[cardId]?.settings?.[getConfigSettingKey(field.key)];
+  return isConfigValue(nestedValue) ? nestedValue : field.defaultValue;
 }
 
 async function injectCardConfigSchemas(

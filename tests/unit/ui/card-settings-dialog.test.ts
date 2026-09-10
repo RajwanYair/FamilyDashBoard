@@ -344,6 +344,51 @@ describe("Card Settings Dialog — save button", () => {
     expect(vi.mocked(saveConfig)).toHaveBeenCalled();
   });
 
+  it("reads and saves dotted namespaced schema keys", async () => {
+    const config = {
+      cards: { "video-news": { settings: { autoplay: false, showOverlay: true } } },
+    };
+    vi.mocked(loadConfig).mockReturnValue(config as ReturnType<typeof loadConfig>);
+    vi.mocked(loadCard).mockResolvedValue({
+      ...makeCardDef("video-news", true),
+      configSchema: [
+        {
+          key: "cards.video-news.settings.autoplay",
+          labelHe: "נגן אוטומטי",
+          labelEn: "Autoplay",
+          type: "boolean",
+          defaultValue: true,
+        },
+      ],
+    });
+    vi.mocked(getCard).mockReturnValue({
+      id: "video-news",
+      icon: "📺",
+      titleHe: "חדשות וידאו",
+      titleEn: "Video News",
+      load: vi.fn(),
+    });
+    vi.mocked(readConfigValues).mockReturnValue({
+      "cards.video-news.settings.autoplay": true,
+    });
+
+    const { openCardSettings } = await import("@/ui/card-settings-dialog");
+    await openCardSettings("video-news");
+
+    expect(vi.mocked(renderConfigFields)).toHaveBeenCalledWith(
+      expect.any(Array),
+      { "cards.video-news.settings.autoplay": false },
+      expect.any(HTMLElement),
+    );
+    document.querySelector<HTMLButtonElement>(".csd__save-btn")?.click();
+
+    const saved = vi.mocked(saveConfig).mock.calls[0]?.[0];
+    expect(saved?.cards["video-news"]?.settings?.autoplay).toBe(true);
+    expect(
+      (saved as unknown as Record<string, unknown>)["cards.video-news.settings.autoplay"],
+    ).toBe(undefined);
+  });
+
   it("closes dialog after save", async () => {
     vi.mocked(loadCard).mockResolvedValue(makeCardDef("tasks", true));
     vi.mocked(getCard).mockReturnValue({
