@@ -21,6 +21,7 @@ import { cGetStale } from "../../core/cache";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { isPageVisible } from "../../core/idle";
 import { diagLog } from "../../core/diag";
+import { captureOverlayFocus, restoreOverlayFocus } from "../../ui/overlay-focus";
 import { fetchWithTimeout } from "../../core/fetch";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import { trustedHTML } from "../../core/trusted-types";
@@ -551,6 +552,22 @@ export function showAlertTakeover(events: AlertEvent[]): void {
 
   // Wire close button (idempotent)
   if (closeBtn) closeBtn.onclick = () => hideAlertTakeover();
+
+  if (!dialog.dataset["focusWired"]) {
+    dialog.dataset["focusWired"] = "1";
+    dialog.addEventListener("close", () => {
+      restoreOverlayFocus("alerts-takeover");
+      if (_takeoverTimer) {
+        clearTimeout(_takeoverTimer);
+        _takeoverTimer = null;
+      }
+      if (_takeoverInterval) {
+        clearInterval(_takeoverInterval);
+        _takeoverInterval = null;
+      }
+    });
+  }
+  if (!dialog.open) captureOverlayFocus("alerts-takeover", dialog);
 
   try {
     dialog.showModal();

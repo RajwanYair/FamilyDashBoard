@@ -1932,6 +1932,19 @@ describe("Alerts — showAlertTakeover / hideAlertTakeover ( A1)", () => {
     expect(dialog.open).toBeFalsy();
   });
 
+  it("returns focus to the opener when the takeover closes", () => {
+    const opener = document.createElement("button");
+    opener.id = "alerts-opener";
+    document.body.appendChild(opener);
+    opener.focus();
+    showAlertTakeover(sampleTakeover);
+    const dialog = document.getElementById("alerts-takeover") as HTMLDialogElement;
+    hideAlertTakeover();
+    dialog.dispatchEvent(new Event("close"));
+
+    expect(document.activeElement).toBe(opener);
+  });
+
   it("hideAlertTakeover does not throw when dialog absent", () => {
     document.body.innerHTML = "<div></div>";
     expect(() => hideAlertTakeover()).not.toThrow();
