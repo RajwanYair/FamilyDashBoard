@@ -397,7 +397,7 @@ body.shabbat-mode #shabbat-mode-banner {
   border-radius: 14px;
   padding: 20px 28px;
   max-width: 480px;
-  width: 90%;
+  width: min(90vw, 480px);
   color: var(--text-primary);
 }
 
@@ -407,11 +407,13 @@ body.shabbat-mode #shabbat-mode-banner {
    isn't enough vertical space. Browsers without anchor positioning keep the
    default centered-modal layout via the <dialog> default. */
 @supports (anchor-name: --status-bar-anchor) {
-  #help-overlay[open] #help-panel {
+  #help-overlay[open] {
     position: fixed;
     position-anchor: --status-bar-anchor;
     bottom: anchor(top);
     inset-inline-end: anchor(end);
+    width: min(90vw, 480px);
+    max-width: min(90vw, 480px);
     margin: 0 0 12px 0;
     position-try-fallbacks:
       flip-block,

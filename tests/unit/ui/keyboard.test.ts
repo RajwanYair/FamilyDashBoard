@@ -89,6 +89,16 @@ describe("Keyboard — initKeyboard built-in shortcuts", () => {
     sel.dispatchEvent(new KeyboardEvent("keydown", { key: "r", bubbles: true }));
     expect(handler).not.toHaveBeenCalled();
   });
+
+  it("allows Escape to close overlays while an input is focused", () => {
+    const handler = vi.fn();
+    registerKey("escape", "close overlay from input", handler);
+    initKeyboard();
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    expect(handler).toHaveBeenCalled();
+  });
 });
 
 describe("Keyboard — closeAllOverlays", () => {

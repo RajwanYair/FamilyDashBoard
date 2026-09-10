@@ -67,6 +67,53 @@ test.describe("Accessibility — structural checks (single mode)", () => {
     const violations = results.violations.filter((v) => v.id === "button-name");
     expect(violations, "All buttons must have accessible names").toHaveLength(0);
   });
+
+  test("configured hidden cards are removed from the visual and focus surfaces", async ({
+    page,
+  }) => {
+    await page.addInitScript((configKey) => {
+      const raw = localStorage.getItem(configKey);
+      const config = (raw ? JSON.parse(raw) : {}) as Record<string, unknown>;
+      config["hiddenCards"] = ["motivation"];
+      localStorage.setItem(configKey, JSON.stringify(config));
+    }, "dash_v2_config");
+    await gotoWithSeed(page, {});
+
+    const card = page.locator("[data-card-id='motivation']");
+    await expect(card).toBeHidden();
+    expect(
+      await page.evaluate(() => {
+        const controls = document.querySelectorAll<HTMLElement>(
+          "[data-card-id='motivation'] button, [data-card-id='motivation'] a, [data-card-id='motivation'] input",
+        );
+        return Array.from(controls).filter((control) => control.getClientRects().length > 0).length;
+      }),
+    ).toBe(0);
+  });
+
+  test("reduced-motion preference collapses animation and transition durations", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await gotoWithSeed(page, {});
+    const durations = await page.evaluate(() => {
+      const root = getComputedStyle(document.documentElement);
+      const card = document.querySelector<HTMLElement>(".card");
+      const cardStyle = card ? getComputedStyle(card) : null;
+      const toMilliseconds = (value: string): number => {
+        const parsed = parseFloat(value);
+        return value.trim().endsWith("ms") ? parsed : parsed * 1000;
+      };
+      return {
+        rootNormal: toMilliseconds(root.getPropertyValue("--duration-normal")),
+        animation: toMilliseconds(cardStyle?.animationDuration ?? "0s"),
+        transition: toMilliseconds(cardStyle?.transitionDuration ?? "0s"),
+      };
+    });
+    expect(durations.rootNormal).toBeLessThanOrEqual(0.01);
+    expect(durations.animation).toBeLessThanOrEqual(0.01);
+    expect(durations.transition).toBeLessThanOrEqual(0.01);
+  });
 });
 
 test.describe("Accessibility — WCAG 1.4.12 Text Spacing", () => {

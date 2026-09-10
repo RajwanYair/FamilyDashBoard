@@ -46,6 +46,8 @@ import { trustedHTML } from "../core/trusted-types";
 import { getGovernorStats } from "../core/refresh-governor";
 import { fromISOString, formatTimeHHMM } from "../core/temporal";
 import { getDedupStats } from "../core/feed-stats";
+import { captureOverlayFocus, restoreOverlayFocus } from "./overlay-focus";
+import { registerOverlayCloser } from "./keyboard";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -410,6 +412,7 @@ let _refreshTimer: ReturnType<typeof setInterval> | null = null;
 export function openDiagOverlay(): void {
   const ov = overlay();
   if (!ov) return;
+  captureOverlayFocus("diag-overlay", ov);
   renderLog();
   renderStats();
   renderErrors();
@@ -425,11 +428,13 @@ export function openDiagOverlay(): void {
 
 export function closeDiagOverlay(): void {
   const ov = overlay();
+  const wasOpen = ov?.open ?? false;
   if (ov?.open) ov.close();
   if (_refreshTimer !== null) {
     clearInterval(_refreshTimer);
     _refreshTimer = null;
   }
+  if (wasOpen) restoreOverlayFocus("diag-overlay");
 }
 
 export function toggleDiagOverlay(): void {
@@ -476,6 +481,7 @@ export function initDiagOverlay(): void {
     ov.addEventListener("click", (e) => {
       if (e.target === ov) closeDiagOverlay();
     });
+    registerOverlayCloser("diag-overlay", closeDiagOverlay);
   }
 
   diagLog("[diag] Overlay initialized");

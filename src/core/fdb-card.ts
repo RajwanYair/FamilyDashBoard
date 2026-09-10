@@ -341,12 +341,17 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     }
     const mins = Math.round(ageMs / 60_000);
     const label = mins < 1 ? "< 1 דק׳" : mins < 60 ? `${mins} דק׳` : `${Math.round(mins / 60)} שע׳`;
+    const accessibleLabel = `נתונים מיושנים: ${label}`;
     if (existing) {
       existing.textContent = `⏳ ${label}`;
+      existing.setAttribute("aria-label", accessibleLabel);
     } else {
       const chip = document.createElement("span");
       chip.className = "stale-chip";
-      chip.setAttribute("aria-label", `נתונים מיושנים: ${label}`);
+      // An image role exposes the text label without making every refresh a
+      // live-region announcement.
+      chip.setAttribute("role", "img");
+      chip.setAttribute("aria-label", accessibleLabel);
       chip.textContent = `⏳ ${label}`;
       this.prepend(chip);
     }

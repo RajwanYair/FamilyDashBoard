@@ -26,6 +26,13 @@ import { applyConfigAnimLevel } from "../core/anim-level";
 import { openDiagOverlay } from "./diag-overlay";
 import { resetLayout } from "./layout-drag";
 import {
+  captureOverlayFocus,
+  getOverlayFocusableElements,
+  restoreOverlayFocus,
+  trapOverlayTab,
+} from "./overlay-focus";
+import { registerOverlayCloser } from "./keyboard";
+import {
   LS_DIM_START,
   LS_DIM_END,
   LS_TICKER_MSG,
@@ -70,6 +77,7 @@ function clearDirty(): void {
 }
 
 let overlayEl: HTMLElement | null = null;
+let _focusTimer: ReturnType<typeof setTimeout> | null = null;
 let cardConfigSchemaDefsPromise: Promise<CardConfigSchemaDef[]> | null = null;
 let cardConfigSchemaInjectRun = 0;
 
@@ -871,20 +879,30 @@ function _buildFieldRow(field: CardConfigField): HTMLElement {
 export function openConfigPanel(): void {
   const ov = overlay();
   if (!ov) return;
+  if (!ov.classList.contains("visible")) clearDirty();
+  captureOverlayFocus("config-overlay", ov);
   populateForm();
+  const focusFirstControl = (): void => {
+    if (!ov.classList.contains("visible")) return;
+    const first = getOverlayFocusableElements(ov)[0];
+    first?.focus();
+  };
   const doOpen = (): void => {
     ov.classList.add("visible");
   };
   // cross-doc View Transitions for dialog open/close
   if ("startViewTransition" in document) {
-    document.startViewTransition(doOpen);
+    const transition = document.startViewTransition(doOpen);
+    void transition.ready.then(focusFirstControl, focusFirstControl);
   } else {
     doOpen();
   }
-  // Auto-focus first text input for immediate keyboard access
-  setTimeout(() => {
-    const first = ov.querySelector<HTMLElement>("input[type='text']:not([disabled])");
-    first?.focus();
+  focusFirstControl();
+  // Auto-focus the first usable control for immediate keyboard access
+  if (_focusTimer !== null) clearTimeout(_focusTimer);
+  _focusTimer = setTimeout(() => {
+    _focusTimer = null;
+    focusFirstControl();
   }, 50);
   // Wire unsaved-changes indicator on first open
   if (!ov.dataset["dirtyWired"]) {
@@ -902,6 +920,10 @@ export function closeConfigPanel(): void {
     return;
   }
   const ov = overlay();
+  if (_focusTimer !== null) {
+    clearTimeout(_focusTimer);
+    _focusTimer = null;
+  }
   const doClose = (): void => {
     ov?.classList.remove("visible");
   };
@@ -911,6 +933,7 @@ export function closeConfigPanel(): void {
     doClose();
   }
   clearDirty();
+  restoreOverlayFocus("config-overlay");
 }
 
 export function toggleConfigPanel(): void {
@@ -1164,6 +1187,10 @@ export function initConfigPanel(): void {
   if (ov) {
     ov.addEventListener("click", (e) => {
       if (e.target === ov) closeConfigPanel();
+    });
+    ov.addEventListener("keydown", (e) => trapOverlayTab(e, ov));
+    registerOverlayCloser("config-overlay", () => {
+      if (isConfigPanelOpen()) closeConfigPanel();
     });
   }
 

@@ -21,6 +21,7 @@ import {
   encryptedShareSettings,
   openEcfgImportDialog,
 } from "@/ui/config-panel";
+import { closeAllOverlays } from "@/ui/keyboard";
 
 type CfgMod = {
   openConfigPanel: () => void;
@@ -74,6 +75,26 @@ describe("Config Panel — open/close/toggle", () => {
     mod.openConfigPanel();
     mod.toggleConfigPanel();
     expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(false);
+  });
+
+  it("returns focus to the opener after closing", () => {
+    const trigger = document.getElementById("cfg-gear-btn");
+    trigger?.focus();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    mod.closeConfigPanel();
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it("Escape cleanup uses the same close path and restores focus", () => {
+    const trigger = document.getElementById("cfg-gear-btn");
+    trigger?.focus();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    document.getElementById("cfg-family-name")?.focus();
+    closeAllOverlays();
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(false);
+    expect(document.activeElement).toBe(trigger);
   });
 
   it("isConfigPanelOpen returns correct state", () => {

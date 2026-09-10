@@ -29,6 +29,21 @@ test.describe("Overlays — open/close via keyboard", () => {
       await expectOverlayClosed(dashboardPage, ov.selector);
     });
   }
+
+  test("Config panel returns focus to the gear button after Escape", async ({ dashboardPage }) => {
+    const tourDismiss = dashboardPage.locator("#tour-dismiss-btn");
+    if (await tourDismiss.isVisible().catch(() => false)) {
+      await tourDismiss.click();
+    }
+    const gear = dashboardPage.locator("#cfg-gear-btn");
+    await gear.focus();
+    await dashboardPage.keyboard.press("Enter");
+    await expect(dashboardPage.locator(SEL.configPanel)).toBeVisible();
+    await dashboardPage.locator("#cfg-search-box").focus();
+    await dashboardPage.keyboard.press("Escape");
+    await expectOverlayClosed(dashboardPage, SEL.configPanel);
+    await expect(gear).toBeFocused();
+  });
 });
 
 // ── Font size shortcuts ────────────────────────────────────────────────────

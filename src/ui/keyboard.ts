@@ -14,6 +14,7 @@ export interface KeyboardAction {
 }
 
 const actions: KeyboardAction[] = [];
+const overlayClosers = new Map<string, () => void>();
 
 /**
  * Register a keyboard shortcut.
@@ -30,6 +31,16 @@ export function getKeyboardActions(): readonly KeyboardAction[] {
 }
 
 /**
+ * Register module-specific cleanup for an overlay.
+ *
+ * This lets Escape use the same cleanup path as an explicit close button
+ * (for example, stopping a diagnostics refresh timer and restoring focus).
+ */
+export function registerOverlayCloser(id: string, closer: () => void): void {
+  overlayClosers.set(id, closer);
+}
+
+/**
  * Initialize keyboard listeners with built-in shortcuts.
  */
 export function initKeyboard(): void {
@@ -42,11 +53,13 @@ export function initKeyboard(): void {
 
   // The global keydown dispatcher
   document.addEventListener("keydown", (e: KeyboardEvent) => {
-    // Ignore when typing in inputs/textareas
-    const tag = (e.target as HTMLElement).tagName;
-    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-
     const key = e.key.toLowerCase();
+    // Escape is a global overlay command even when focus is inside a form
+    // control. Other shortcuts remain ignored while typing.
+    if (key !== "escape") {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+    }
     for (const action of actions) {
       if (action.key === key) {
         e.preventDefault();
@@ -69,7 +82,16 @@ export function closeAllOverlays(): void {
   // <dialog> elements — use native close()
   const dialogIds = ["config-overlay", "help-overlay", "diag-overlay"];
   for (const id of dialogIds) {
-    const el = document.getElementById(id) as HTMLDialogElement | null;
+    const el = document.getElementById(id);
+    const isOpen =
+      el instanceof HTMLDialogElement ? el.open : el?.classList.contains("visible") === true;
+    if (!isOpen) continue;
+
+    const closer = overlayClosers.get(id);
+    if (closer) {
+      closer();
+      continue;
+    }
     if (el instanceof HTMLDialogElement && el.open) {
       el.close();
     } else {

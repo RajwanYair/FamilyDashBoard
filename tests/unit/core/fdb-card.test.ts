@@ -692,6 +692,14 @@ describe("FdbCard — staleChip ", () => {
     const chips = card.querySelectorAll(".stale-chip");
     expect(chips).toHaveLength(1);
     expect(chips[0]!.textContent).toContain("10 דק׳");
+    expect(chips[0]!.getAttribute("aria-label")).toContain("10 דק׳");
+  });
+
+  it("exposes stale status without a repeated live announcement", () => {
+    card.staleChip(300_000);
+    const chip = card.querySelector(".stale-chip");
+    expect(chip?.getAttribute("role")).toBe("img");
+    expect(chip?.getAttribute("aria-live")).toBeNull();
   });
 
   it("removes the chip when ageMs <= 0", () => {

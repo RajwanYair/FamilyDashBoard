@@ -37,7 +37,13 @@ import { state } from "./core/state";
 
 // ── UI ──
 import { initTheme, checkAutoTheme } from "./ui/theme";
-import { initKeyboard, registerKey, closeAllOverlays, getKeyboardActions } from "./ui/keyboard";
+import {
+  initKeyboard,
+  registerKey,
+  registerOverlayCloser,
+  closeAllOverlays,
+  getKeyboardActions,
+} from "./ui/keyboard";
 import { buildHelpRows, sortKeyEntries } from "./core/keymap";
 import { initHeader, toggleClockSeconds } from "./ui/header";
 import { initCardMaximize, initCardCollapse } from "./ui/maximize";
@@ -78,6 +84,7 @@ import { initScrollShadows } from "./ui/scroll";
 import { mountRegisteredCards } from "./core/card-registry";
 import { initCardSettingsButtons } from "./ui/card-settings-dialog";
 import { copyFocusedCardPayload } from "./core/semantic-clipboard";
+import { captureOverlayFocus, restoreOverlayFocus } from "./ui/overlay-focus";
 
 // ── Cards ──
 import { initWeatherCard, toggleTempUnit } from "./cards/weather/weather";
@@ -367,7 +374,9 @@ export function init(): void {
     if (!dlg) return;
     if (dlg.open) {
       dlg.close();
+      restoreOverlayFocus("help-overlay");
     } else {
+      captureOverlayFocus("help-overlay", dlg);
       // Populate dynamic shortcuts from keymap registry
       const dynamicEl = document.getElementById("help-dynamic-keys");
       if (dynamicEl) {
@@ -378,6 +387,11 @@ export function init(): void {
       dlg.showModal();
     }
   };
+  registerOverlayCloser("help-overlay", () => {
+    const dlg = document.getElementById("help-overlay") as HTMLDialogElement | null;
+    if (dlg?.open) dlg.close();
+    restoreOverlayFocus("help-overlay");
+  });
   registerKey("h", document.documentElement.lang === "en" ? "Help" : "עזרה", _toggleHelp);
   registerKey("?", document.documentElement.lang === "en" ? "Help" : "עזרה", _toggleHelp);
   registerKey(
