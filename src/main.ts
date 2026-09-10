@@ -26,7 +26,7 @@ import "./cards/countdown/countdown.css";
 // ── Core ──
 import { diagLog, getDiagEntries } from "./core/diag";
 import { cEvict, hydrateFromIdb, migrateLocalStorageToIdb, cEvictIdb } from "./core/cache";
-import { initVisibility } from "./core/idle";
+import { initVisibility, onVisibilityChange, shouldWakeRefresh } from "./core/idle";
 import { registerSW, unregisterSW } from "./core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
 import { ECFG_PREFIX } from "./core/config-crypto";
@@ -213,6 +213,7 @@ export function applySeasonClass(): void {
 }
 
 let countdownInitPromise: Promise<() => void> | null = null;
+let refreshBurstPending = false;
 
 function getCountdownInit(): Promise<() => void> {
   countdownInitPromise ??= import("./cards/countdown/countdown").then(
@@ -223,6 +224,11 @@ function getCountdownInit(): Promise<() => void> {
 
 /** Refresh every card individually with 350 ms stagger — never reloads the page. */
 export function refreshAllCardsStaggered(): void {
+  if (refreshBurstPending) {
+    diagLog("[refresh] coalesced overlapping refresh burst");
+    return;
+  }
+  refreshBurstPending = true;
   resetGovernor(); // Allow all cards to re-render regardless of cached hash
   const inits: Array<() => void | Promise<void>> = [
     initWeatherCard,
@@ -239,7 +245,18 @@ export function refreshAllCardsStaggered(): void {
   ];
   inits.forEach((fn, i) => {
     setTimeout(() => {
-      void fn();
+      let result: void | Promise<void>;
+      try {
+        result = fn();
+      } catch (error) {
+        if (i === inits.length - 1) refreshBurstPending = false;
+        throw error;
+      }
+      if (i === inits.length - 1) {
+        void Promise.resolve(result).finally(() => {
+          refreshBurstPending = false;
+        });
+      }
     }, i * 350);
   });
 }
@@ -267,6 +284,9 @@ export function init(): void {
   void cEvictIdb();
   applySeasonClass();
   initVisibility();
+  onVisibilityChange((visible) => {
+    if (visible && shouldWakeRefresh()) refreshAllCardsStaggered();
+  });
 
   // UI modules
   initTheme();

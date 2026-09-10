@@ -215,6 +215,31 @@ describe("Idle — shouldWakeRefresh", () => {
     // After coming back, lastHiddenAt is reset to null
     expect(shouldWakeRefresh()).toBe(false);
   });
+
+  it("requests one refresh after a long hidden interval", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1_000);
+    const { shouldWakeRefresh, initVisibility } = await freshIdle();
+    initVisibility();
+
+    Object.defineProperty(document, "hidden", {
+      value: true,
+      writable: true,
+      configurable: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+    vi.setSystemTime(1_000 + 30 * 60 * 1000 + 1);
+    Object.defineProperty(document, "hidden", {
+      value: false,
+      writable: true,
+      configurable: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+
+    expect(shouldWakeRefresh()).toBe(true);
+    expect(shouldWakeRefresh()).toBe(false);
+    vi.useRealTimers();
+  });
 });
 
 describe("Idle — initVisibility", () => {

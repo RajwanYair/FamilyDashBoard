@@ -15,7 +15,11 @@ vi.mock("@/core/cache", () => ({
   migrateLocalStorageToIdb: vi.fn().mockResolvedValue(0),
   cEvictIdb: vi.fn().mockResolvedValue(0),
 }));
-vi.mock("@/core/idle", () => ({ initVisibility: vi.fn() }));
+vi.mock("@/core/idle", () => ({
+  initVisibility: vi.fn(),
+  onVisibilityChange: vi.fn(),
+  shouldWakeRefresh: vi.fn().mockReturnValue(false),
+}));
 vi.mock("@/core/sw-register", () => ({
   registerSW: vi.fn().mockResolvedValue(undefined),
   unregisterSW: vi.fn().mockResolvedValue(0),
@@ -120,11 +124,18 @@ vi.mock("@/core/vitals-reporter", () => ({
 }));
 vi.mock("@/core/mcp-bridge", () => ({ initMcpBridge: vi.fn() }));
 
-import { applySeasonClass, applyHiddenCards, applyCardLayout, applyCardSizes, init } from "@/main";
+import {
+  applySeasonClass,
+  applyHiddenCards,
+  applyCardLayout,
+  applyCardSizes,
+  init,
+  refreshAllCardsStaggered,
+} from "@/main";
 import { diagLog, getDiagEntries } from "@/core/diag";
 import { flushVitalsReport } from "@/core/vitals-reporter";
 import { cEvict, hydrateFromIdb, migrateLocalStorageToIdb } from "@/core/cache";
-import { initVisibility } from "@/core/idle";
+import { initVisibility, onVisibilityChange, shouldWakeRefresh } from "@/core/idle";
 import { registerSW } from "@/core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "@/core/config";
 import { initTheme, checkAutoTheme } from "@/ui/theme";
@@ -244,6 +255,36 @@ describe("Main — init() core setup", () => {
       theme: "warm-dark",
     } as ReturnType<typeof loadConfig>);
     document.body.innerHTML = "";
+  });
+
+  describe("Main — refreshAllCardsStaggered", () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.clearAllTimers();
+      vi.useRealTimers();
+    });
+
+    it("coalesces overlapping refresh bursts", async () => {
+      refreshAllCardsStaggered();
+      refreshAllCardsStaggered();
+      expect(diagLog).toHaveBeenCalledWith("[refresh] coalesced overlapping refresh burst");
+
+      await vi.runAllTimersAsync();
+
+      expect(initWeatherCard).toHaveBeenCalledOnce();
+      expect(initNewsCard).toHaveBeenCalledOnce();
+      expect(initStocksCard).toHaveBeenCalledOnce();
+    });
+
+    it("wires long-resume refresh to the visibility callback", () => {
+      init();
+      expect(onVisibilityChange).toHaveBeenCalledWith(expect.any(Function));
+      expect(shouldWakeRefresh).not.toHaveBeenCalled();
+    });
   });
 
   afterEach(() => {

@@ -24,6 +24,7 @@ const _pageVisible = signal<boolean>(true);
 /** Reactive read-only view of `document.visibilityState !== "hidden"`. */
 export const pageVisibleSignal: ReadonlySignal<boolean> = _pageVisible;
 let lastHiddenAt: number | null = null;
+let wakeRefreshPending = false;
 const visibilityCallbacks: Array<(visible: boolean) => void> = [];
 let visibilityInitialized = false;
 
@@ -38,7 +39,9 @@ export function onVisibilityChange(cb: (visible: boolean) => void): void {
 }
 
 export function shouldWakeRefresh(): boolean {
-  return lastHiddenAt !== null && Date.now() - lastHiddenAt > WAKE_REFRESH_MS;
+  const shouldRefresh = wakeRefreshPending;
+  wakeRefreshPending = false;
+  return shouldRefresh;
 }
 
 function handleVisibilityChange(): void {
@@ -52,6 +55,8 @@ function handleVisibilityChange(): void {
     const wasAway =
       lastHiddenAt !== null ? `(away ${Math.round((Date.now() - lastHiddenAt) / 1000)}s)` : "";
     diagLog(`[visibility] Page visible ${wasAway}`);
+    wakeRefreshPending =
+      lastHiddenAt !== null && Date.now() - lastHiddenAt > WAKE_REFRESH_MS;
     lastHiddenAt = null;
   }
 
