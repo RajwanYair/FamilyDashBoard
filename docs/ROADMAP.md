@@ -320,7 +320,7 @@ These are not prerequisites for a best-in-class core release. A go/no-go decisio
 
 **Owner**: frontend maintainer. **Entry**: S04, S05, S09; product approves specific links. **Anchor**: [existing registry](../src/core/links.ts) and [tests](../tests/unit/core/links.test.ts).
 
-- **E02-01 (1 day)**: audit registrations/callers; specify payload types, missing-target behavior, disabled mode, resolver failure, unregister semantics, and no circular imports. Accept lifecycle tests through mount/destroy/remount.
+- **E02-01 (Done; 1 day)**: the audit found no runtime registrations/callers and no product-approved interaction, so no cross-card workflow was added. The registry now specifies string-or-null payloads, returns null for missing or disabled directions, isolates resolver failures with diagnostic logging, and exposes deterministic unregister semantics without importing the card registry. Focused lifecycle/property validation passed 32 tests; E02-02 remains gated on S04, S05, S09, and product approval.
 - **E02-02 (1-2 days)**: implement one approved interaction first, such as calendar event to countdown. Define event identity, timezone, edited/deleted events, and confirmation before creating persisted data. Accept keyboard/touch use with an absent or hidden target card.
 - **E02-03 (1-2 days)**: add stocks-to-news and holiday-to-motivation only after the first flow demonstrates value. Define matching quality and empty results; avoid forced relationships. Accept focused integration and accessibility tests with zero new runtime dependencies.
 

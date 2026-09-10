@@ -3,10 +3,21 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { registerLink, getLinks, clearLinks } from "@/core/links";
+import {
+  registerLink,
+  getLink,
+  getLinks,
+  resolveLink,
+  unregisterLink,
+  clearLinks,
+} from "@/core/links";
+import { diagLog } from "@/core/diag";
 
 vi.mock("@/core/config", () => ({
   loadConfig: vi.fn(() => ({ semanticLinksEnabled: true })),
+}));
+vi.mock("@/core/diag", () => ({
+  diagLog: vi.fn(),
 }));
 import { loadConfig } from "@/core/config";
 
@@ -46,6 +57,61 @@ describe("Semantic links — registerLink / getLinks ", () => {
     const links = getLinks("stocks");
     expect(links).toHaveLength(1);
     expect(links[0]?.resolver).toBe(res2);
+  });
+
+  it("getLink returns the registered direction or null when it is missing", () => {
+    const resolver = () => "payload";
+    registerLink("calendar", "countdown", resolver);
+
+    expect(getLink("calendar", "countdown")?.resolver).toBe(resolver);
+    expect(getLink("calendar", "weather")).toBeNull();
+  });
+
+  it("getLink is disabled together with the collection API", () => {
+    registerLink("calendar", "countdown", () => "payload");
+    vi.mocked(loadConfig).mockReturnValue({ semanticLinksEnabled: false } as never);
+
+    expect(getLink("calendar", "countdown")).toBeNull();
+    expect(getLinks("calendar")).toEqual([]);
+  });
+
+  it("resolveLink returns the current payload and supports an empty result", () => {
+    const emptyLink = { fromCardId: "calendar", toCardId: "countdown", resolver: () => null };
+    const dataLink = { fromCardId: "calendar", toCardId: "weather", resolver: () => "payload" };
+
+    expect(resolveLink(emptyLink)).toBeNull();
+    expect(resolveLink(dataLink)).toBe("payload");
+  });
+
+  it("resolveLink isolates resolver failures and records a diagnostic", () => {
+    const link = {
+      fromCardId: "calendar",
+      toCardId: "countdown",
+      resolver: () => {
+        throw new Error("resolver failure");
+      },
+    };
+
+    expect(resolveLink(link)).toBeNull();
+    expect(diagLog).toHaveBeenCalledWith("[links] Resolver failed for calendar→countdown");
+  });
+
+  it("resolveLink does not invoke a resolver while links are disabled", () => {
+    const resolver = vi.fn(() => "payload");
+    const link = { fromCardId: "calendar", toCardId: "countdown", resolver };
+    vi.mocked(loadConfig).mockReturnValue({ semanticLinksEnabled: false } as never);
+
+    expect(resolveLink(link)).toBeNull();
+    expect(resolver).not.toHaveBeenCalled();
+  });
+
+  it("unregisterLink removes one direction without affecting others", () => {
+    registerLink("calendar", "countdown", () => "first");
+    registerLink("calendar", "weather", () => "second");
+
+    expect(unregisterLink("calendar", "countdown")).toBe(true);
+    expect(unregisterLink("calendar", "countdown")).toBe(false);
+    expect(getLinks("calendar").map((link) => link.toCardId)).toEqual(["weather"]);
   });
 
   it("clearLinks removes all registered links", () => {
