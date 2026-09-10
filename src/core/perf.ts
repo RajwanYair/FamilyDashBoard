@@ -86,6 +86,7 @@ export function rateVital(
 }
 
 let _initialized = false;
+const _observers: PerformanceObserver[] = [];
 
 /**
  * Start PerformanceObserver instances for all supported vitals.
@@ -106,6 +107,7 @@ export function initPerfObserver(): void {
       if (last) _vitals.lcp = (last.renderTime ?? last.loadTime ?? 0) || last.startTime;
     });
     obs.observe({ type: "largest-contentful-paint", buffered: true });
+    _observers.push(obs);
   } catch {
     /* browser may not support */
   }
@@ -120,6 +122,7 @@ export function initPerfObserver(): void {
       _vitals.cls = _clsAccumulator;
     });
     obs.observe({ type: "layout-shift", buffered: true });
+    _observers.push(obs);
   } catch {
     /* browser may not support */
   }
@@ -134,6 +137,7 @@ export function initPerfObserver(): void {
       }
     });
     obs.observe({ type: "event", buffered: true });
+    _observers.push(obs);
   } catch {
     /* browser may not support */
   }
@@ -148,6 +152,7 @@ export function initPerfObserver(): void {
       }
     });
     obs.observe({ type: "paint", buffered: true });
+    _observers.push(obs);
   } catch {
     /* browser may not support */
   }
@@ -164,15 +169,25 @@ export function initPerfObserver(): void {
         if (nav) _vitals.ttfb = nav.responseStart - nav.requestStart;
       });
       obs.observe({ type: "navigation", buffered: true });
+      _observers.push(obs);
     }
   } catch {
     /* browser may not support */
   }
 }
 
+/** Disconnect all observers so repeated drills or hot reloads cannot retain them. */
+export function stopPerfObserver(): void {
+  for (const observer of _observers) {
+    if (typeof observer.disconnect === "function") observer.disconnect();
+  }
+  _observers.length = 0;
+  _initialized = false;
+}
+
 /** Reset observer state (test helper). */
 export function _resetPerfObserver(): void {
-  _initialized = false;
+  stopPerfObserver();
   _vitals.lcp = null;
   _vitals.cls = null;
   _vitals.inp = null;

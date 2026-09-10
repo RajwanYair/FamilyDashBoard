@@ -30,6 +30,43 @@ npm run build:local
 
 ---
 
+## 🔐 Reproducibility and Rollback Drill
+
+Before publishing a release, compare two clean builds from the same commit.
+Keep the evidence outside the repository so generated reports do not become
+working-tree changes:
+
+```powershell
+$evidence = Join-Path $env:TEMP "FamilyDashBoard\s07-r2"
+$env:SOURCE_DATE_EPOCH = (git show -s --format=%ct HEAD).Trim()
+New-Item -ItemType Directory -Force $evidence | Out-Null
+Remove-Item -LiteralPath "dist" -Recurse -Force -ErrorAction SilentlyContinue
+npm run build
+Copy-Item -LiteralPath "dist" -Destination (Join-Path $evidence "build-a") -Recurse -Force
+Remove-Item -LiteralPath "dist" -Recurse -Force
+npm run build
+Copy-Item -LiteralPath "dist" -Destination (Join-Path $evidence "build-b") -Recurse -Force
+node scripts/check-reproducible.mjs --compare `
+  (Join-Path $evidence "build-a") (Join-Path $evidence "build-b")
+Remove-Item Env:SOURCE_DATE_EPOCH
+```
+
+The fixed commit timestamp makes the build-time diagnostic value deterministic.
+Release packaging also normalizes extracted-file timestamps and sorts the
+archive input list, so the published `dist.zip` can be compared with an
+independent rebuild. The directory comparison is content-based, sorts paths,
+and ignores only generated reproducibility manifests. A mismatch is a release
+blocker; do not update a baseline or publish an artifact to make the hashes
+agree. Verify the release `dist.zip` and `sw.js` Sigstore bundles with the
+exact repository and workflow identity before accepting the result.
+
+For rollback, retain the last known-good `dist.zip`, publish that artifact to
+the static host, and confirm the Service Worker update path. Do not clear
+`localStorage`, delete IndexedDB, or ask operators to reset configuration as a
+first recovery step. After the prior artifact is active, verify that cached
+card data, settings, and export/import still work, then investigate the failed
+release build before retrying publication.
+
 ## 🌐 Deploying to GitHub Pages
 
 The repository ships a `.github/workflows/release.yml` that builds and attaches

@@ -226,6 +226,20 @@ describe("Idle — initVisibility", () => {
     }).not.toThrow();
   });
 
+  it("registers one document listener across repeated calls", async () => {
+    const { initVisibility } = await freshIdle();
+    const addEventListener = vi.spyOn(document, "addEventListener");
+
+    initVisibility();
+    initVisibility();
+
+    const registrations = addEventListener.mock.calls.filter(
+      ([type]) => type === "visibilitychange",
+    );
+    expect(registrations).toHaveLength(1);
+    addEventListener.mockRestore();
+  });
+
   it("handles visibilitychange to visible without prior hide", async () => {
     const { initVisibility, isPageVisible } = await freshIdle();
     initVisibility();

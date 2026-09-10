@@ -19,6 +19,7 @@ import {
   recordCardInitTime,
   getCardTimings,
   downloadPerfJSON,
+  stopPerfObserver,
 } from "@/core/perf";
 
 beforeEach(() => {
@@ -117,6 +118,14 @@ describe("initPerfObserver", () => {
       initPerfObserver();
       initPerfObserver();
     }).not.toThrow();
+  });
+});
+
+describe("stopPerfObserver", () => {
+  it("is safe before initialization and allows a fresh initialization", () => {
+    expect(() => stopPerfObserver()).not.toThrow();
+    expect(() => initPerfObserver()).not.toThrow();
+    expect(() => stopPerfObserver()).not.toThrow();
   });
 });
 

@@ -86,6 +86,22 @@ describe("deduplicateBySimHash", () => {
     expect(result).toHaveLength(3);
   });
 
+  it("keeps materially different Hebrew updates in a mixed-language corpus", () => {
+    const items = [
+      { title: "משרד הבריאות: נפתח מרכז חירום חדש בצפון" },
+      { title: "משרד הבריאות: נפתח מרכז חירום חדש בדרום" },
+      { title: "Israel cabinet approves a new budget plan" },
+      { title: "Israel cabinet approves a new budget plan" },
+    ];
+
+    const result = deduplicateBySimHash(items, (item) => item.title, 8);
+
+    expect(result).toContain(items[0]);
+    expect(result).toContain(items[1]);
+    expect(result).toContain(items[2]);
+    expect(result).not.toContain(items[3]);
+  });
+
   it("returns empty array for empty input", () => {
     expect(deduplicateBySimHash([], (i: string) => i, 4)).toHaveLength(0);
   });

@@ -37,6 +37,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set reproducible build epoch
+        run: echo "SOURCE_DATE_EPOCH=$(git show -s --format=%ct HEAD)" >> "$GITHUB_ENV"
+
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
@@ -74,8 +77,14 @@ jobs:
       - name: Release readiness report (V13-OPS)
         run: node scripts/release-report.mjs --no-gates | tee -a "$GITHUB_STEP_SUMMARY"
 
+      - name: Generate rebuilder manifest
+        run: node scripts/check-reproducible.mjs
+
+      - name: Normalize archive timestamps
+        run: find dist -exec touch -d "@$SOURCE_DATE_EPOCH" {} +
+
       - name: Package dist
-        run: zip -r dist.zip dist/ -x "dist/**/*.map"
+        run: find dist -type f ! -name "*.map" -print | LC_ALL=C sort | zip -X -q dist.zip -@
 
       - name: Generate SBOM (CycloneDX)
         run: |
@@ -128,9 +137,6 @@ jobs:
           echo "=== Cosign bundle summary ===" >> "$GITHUB_STEP_SUMMARY"
           echo "dist.zip signed: dist.zip.bundle" >> "$GITHUB_STEP_SUMMARY"
           echo "sw.js signed: sw.js.bundle" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Generate rebuilder manifest
-        run: node scripts/check-reproducible.mjs
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.3.2

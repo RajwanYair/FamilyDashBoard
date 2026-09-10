@@ -15,9 +15,8 @@
 #      one (input fingerprints match).
 #
 # Security: read-only permissions; no secrets required; attestation is
-# public.  Failure creates a GitHub check annotation but does NOT auto-fail
-# the release — it fires a repository issue via the GITHUB_TOKEN so humans
-# review before the next patch cycle.
+# public. A mismatch is release-blocking and also opens a repository issue
+# for investigation. The rebuild evidence is uploaded before the job exits.
 # =============================================================================
 name: Rebuilder Verify (D15)
 
@@ -78,6 +77,9 @@ jobs:
           ref: ${{ steps.resolve.outputs.tag }}
           fetch-depth: 0
 
+      - name: Set reproducible build epoch
+        run: echo "SOURCE_DATE_EPOCH=$(git show -s --format=%ct HEAD)" >> "$GITHUB_ENV"
+
       # ── 3. Hermetic Node setup ─────────────────────────────────────────────
       - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
         with:
@@ -93,9 +95,8 @@ jobs:
       # ── 5. Create dist.zip (same method as release.yml) ───────────────────
       - name: Create dist.zip
         run: |
-          cd dist
-          zip -r ../dist-rebuild.zip .
-          cd ..
+          find dist -exec touch -d "@$SOURCE_DATE_EPOCH" {} +
+          find dist -type f ! -name "*.map" -print | LC_ALL=C sort | zip -X -q dist-rebuild.zip -@
           sha256sum dist-rebuild.zip | awk '{print $1}' > dist-rebuild.zip.sha256
 
       # ── 6. Download official dist.zip from release ────────────────────────
@@ -119,6 +120,8 @@ jobs:
 
           curl -sS -L -o dist-official.zip "$DIST_URL"
           sha256sum dist-official.zip | awk '{print $1}' > dist-official.zip.sha256
+          mkdir -p official-dist
+          unzip -q dist-official.zip -d official-dist
 
           echo "official=$(cat dist-official.zip.sha256)" >> "$GITHUB_OUTPUT"
           echo "rebuild=$(cat dist-rebuild.zip.sha256)" >> "$GITHUB_OUTPUT"
@@ -132,6 +135,10 @@ jobs:
 
           echo "Official: $OFFICIAL"
           echo "Rebuild:  $REBUILD"
+          {
+            echo "Official: $OFFICIAL"
+            echo "Rebuild:  $REBUILD"
+          } | tee rebuild-compare.txt
 
           if [[ "$OFFICIAL" == "$REBUILD" ]]; then
             echo "✅ Reproducible: SHA-256 match" >> "$GITHUB_STEP_SUMMARY"
@@ -141,15 +148,27 @@ jobs:
             echo "Official: $OFFICIAL" >> "$GITHUB_STEP_SUMMARY"
             echo "Rebuild:  $REBUILD" >> "$GITHUB_STEP_SUMMARY"
             echo "match=false" >> "$GITHUB_OUTPUT"
+            exit 1
           fi
+
+      - name: Upload reproducibility diff
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: rebuild-verification-evidence
+          path: rebuild-compare.txt
+          if-no-files-found: ignore
 
       # ── 8. Generate rebuilder manifest for comparison ─────────────────────
       - name: Generate rebuilder manifest
         run: node scripts/check-reproducible.mjs
 
+      - name: Verify published rebuilder manifest
+        run: node scripts/check-reproducible.mjs --verify official-dist/dist/rebuilder-manifest.json
+
       # ── 9. Open GitHub issue on mismatch (for human review) ───────────────
       - name: Open issue on SHA-256 mismatch
-        if: steps.compare.outputs.match == 'false'
+        if: always() && steps.compare.outputs.match == 'false'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |

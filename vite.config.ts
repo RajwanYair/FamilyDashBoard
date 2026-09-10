@@ -24,6 +24,20 @@ const isLocalBuild = (() => {
   return idx !== -1 && process.argv[idx + 1] === "./";
 })();
 
+// Honour SOURCE_DATE_EPOCH for reproducible release and rebuilder builds while
+// keeping ordinary local diagnostics useful by showing the current build time.
+const sourceDateEpoch = process.env["SOURCE_DATE_EPOCH"];
+const buildTime =
+  sourceDateEpoch === undefined
+    ? new Date().toISOString()
+    : (() => {
+        const epochSeconds = Number(sourceDateEpoch);
+        if (!Number.isInteger(epochSeconds) || epochSeconds < 0) {
+          throw new Error("SOURCE_DATE_EPOCH must be a non-negative integer");
+        }
+        return new Date(epochSeconds * 1000).toISOString();
+      })();
+
 /**
  * Compile sw.ts → dist/sw.js via scripts/build-sw.mjs.
  * TypeScript's transpileModule strips type annotations; the script injects __APP_VERSION__.
@@ -191,7 +205,7 @@ export default defineConfig(({ command }) => ({
 
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
-    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    __BUILD_TIME__: JSON.stringify(buildTime),
     // Proxy chain retained in all builds as safety net for unreachable Worker.
     // Runtime control: localStorage `dash_network_mode` — see constants.ts.
     __USE_PROXIES__: JSON.stringify(true),
@@ -262,7 +276,7 @@ export default defineConfig(({ command }) => ({
         define: {
           "import.meta": "{}",
           __APP_VERSION__: JSON.stringify(appVersion),
-          __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+          __BUILD_TIME__: JSON.stringify(buildTime),
           __USE_PROXIES__: JSON.stringify(true),
         },
       }

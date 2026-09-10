@@ -240,14 +240,14 @@ export function readingTimeMinutes(text: string): number {
  * Returns true when the item is likely "breaking news":
  * published within the past 30 minutes or title contains a breaking keyword.
  */
-export function isBreaking(title: string, pubDate: string): boolean {
+export function isBreaking(title: string, pubDate: string, now = nowMs()): boolean {
   const BREAKING_KEYWORDS = ["בזק", "דחוף", "breaking", "urgent", "flash"];
   const lc = title.toLowerCase();
   if (BREAKING_KEYWORDS.some((kw) => lc.includes(kw))) return true;
   if (!pubDate) return false;
   const ms = parseEpochMs(pubDate);
   if (isNaN(ms)) return false;
-  const ageMs = nowMs() - ms;
+  const ageMs = now - ms;
   return ageMs >= 0 && ageMs < 30 * 60 * 1000;
 }
 
@@ -332,7 +332,7 @@ export function isVisited(key: string): boolean {
 /** P3: Mark all currently-rendered news items as visited and refresh the view. */
 export function markAllRead(): void {
   for (const item of _lastItems) {
-    markVisited(getBookmarkKey(item.title));
+    markVisited(getNewsItemIdentity(item));
   }
   renderNews(_lastItems);
 }
@@ -427,8 +427,14 @@ export interface StarredArticle {
 }
 
 /** Derive a stable id from a NewsItem. */
-export function getStarId(item: Pick<NewsItem, "link" | "title">): string {
-  return (item.link || item.title).trim().substring(0, 120);
+export function getStarId(
+  item: Pick<NewsItem, "link" | "title"> & Partial<Pick<NewsItem, "source">>,
+): string {
+  const link = item.link.trim();
+  if (link) return link.substring(0, 120);
+  const title = item.title.trim();
+  const source = item.source?.trim();
+  return (source ? `source:${source}\u001f${title}` : title).substring(0, 120);
 }
 
 /** Persist an article to the IDB read-later store. */
@@ -809,15 +815,22 @@ export function getSourcePriority(source: string): 1 | 2 | 3 {
   return _srcPriorityMap.get(source) ?? 2;
 }
 
-export function newsRankScore(item: {
-  title: string;
-  pubDate: string;
-  source?: string | undefined;
-  category?: string | undefined;
-}): number {
-  const now = nowMs();
-  const pubMs = item.pubDate ? parseEpochMs(item.pubDate) : 0;
-  const validPub = !isNaN(pubMs) && pubMs > 0 ? pubMs : 0;
+function publishedAtOrNull(pubDate: string, now: number): number | null {
+  if (!pubDate) return null;
+  const parsed = parseEpochMs(pubDate);
+  return Number.isFinite(parsed) && parsed > 0 && parsed <= now ? parsed : null;
+}
+
+export function newsRankScore(
+  item: {
+    title: string;
+    pubDate: string;
+    source?: string | undefined;
+    category?: string | undefined;
+  },
+  now = nowMs(),
+): number {
+  const validPub = publishedAtOrNull(item.pubDate, now) ?? 0;
 
   // Base score: timestamp in minutes from epoch (avoids large numbers)
   let score = validPub / 60_000;
@@ -831,7 +844,7 @@ export function newsRankScore(item: {
   }
 
   // Breaking news bonus (+30 min equivalent)
-  if (isBreaking(item.title, item.pubDate)) {
+  if (isBreaking(item.title, item.pubDate, now)) {
     score += 30;
   }
 
@@ -858,6 +871,58 @@ export function newsRankScore(item: {
   return score;
 }
 
+/** Return a collision-resistant identity for read-state and ranking tie-breaks. */
+export function getNewsItemIdentity(item: Pick<NewsItem, "link" | "title" | "source">): string {
+  const link = item.link.trim();
+  if (link) return `url:${link}`;
+  return `source:${item.source.trim()}\u001f${item.title.trim()}`;
+}
+
+/**
+ * Rank feed items without losing materially different updates.
+ *
+ * Valid publication dates always precede missing, malformed, or future dates.
+ * Every remaining tie uses source priority and a stable item identity instead
+ * of depending on the input order returned by concurrent feeds.
+ */
+export function rankNewsItems(items: NewsItem[], now = nowMs()): NewsItem[] {
+  return items
+    .map((item, index) => ({
+      item,
+      index,
+      publishedAt: publishedAtOrNull(item.pubDate, now),
+    }))
+    .sort((left, right) => {
+      const leftHasDate = left.publishedAt !== null;
+      const rightHasDate = right.publishedAt !== null;
+      if (leftHasDate !== rightHasDate) return leftHasDate ? -1 : 1;
+
+      const scoreDifference = newsRankScore(right.item, now) - newsRankScore(left.item, now);
+      if (scoreDifference !== 0) return scoreDifference;
+
+      if (left.publishedAt !== null && right.publishedAt !== null) {
+        const publicationDifference = right.publishedAt - left.publishedAt;
+        if (publicationDifference !== 0) return publicationDifference;
+      }
+
+      const priorityDifference =
+        getSourcePriority(left.item.source) - getSourcePriority(right.item.source);
+      if (priorityDifference !== 0) return priorityDifference;
+
+      const sourceDifference = left.item.source.localeCompare(right.item.source, "he");
+      if (sourceDifference !== 0) return sourceDifference;
+
+      const identityDifference = getNewsItemIdentity(left.item).localeCompare(
+        getNewsItemIdentity(right.item),
+        "he",
+      );
+      if (identityDifference !== 0) return identityDifference;
+
+      return left.index - right.index;
+    })
+    .map(({ item }) => item);
+}
+
 // ── Fetch all feeds concurrently ──
 async function fetchAllNews(): Promise<NewsItem[]> {
   const feeds = getActiveFeeds();
@@ -876,7 +941,7 @@ async function fetchAllNews(): Promise<NewsItem[]> {
   const unique = deduplicateBySimHash(allItems, (item) => item.title, threshold);
 
   // Recency-weighted ranking (P3 Feed Intelligence)
-  unique.sort((a, b) => newsRankScore(b) - newsRankScore(a));
+  const ranked = rankNewsItems(unique);
 
   const renderedCount = Math.min(unique.length, 50);
 
@@ -890,7 +955,7 @@ async function fetchAllNews(): Promise<NewsItem[]> {
     `FDB-P3-DEDUP: fetched=${totalFetched} unique=${unique.length} deduped=${totalFetched - unique.length} ratio=${unique.length > 0 ? ((1 - unique.length / totalFetched) * 100).toFixed(1) : "0"}%`,
   );
 
-  return unique.slice(0, 50);
+  return ranked.slice(0, 50);
 }
 
 // ── Render news items to scroll container ──
@@ -944,8 +1009,10 @@ export function renderNews(items: NewsItem[]): void {
     let itemIdx = 0;
     for (const item of displayItems) {
       const div = document.createElement("div");
-      const key0 = getBookmarkKey(item.title);
-      const visitedCls = !isClone && _visited.has(key0) ? " visited" : "";
+      const readId = getNewsItemIdentity(item);
+      const legacyReadId = getBookmarkKey(item.title);
+      const visitedCls =
+        !isClone && (_visited.has(readId) || _visited.has(legacyReadId)) ? " visited" : "";
       // P1 Info Hierarchy — first top headline is the featured (primary) item
       const featuredCls = !isClone && itemIdx === 0 ? " rss-item--featured" : "";
       div.className = "rss-item" + (isClone ? " clone" : "") + visitedCls + featuredCls;
@@ -994,7 +1061,7 @@ export function renderNews(items: NewsItem[]): void {
       // Mark as visited when opening
       if (!isClone) {
         titleEl.addEventListener("click", () => {
-          markVisited(getBookmarkKey(item.title));
+          markVisited(readId);
           div.classList.add("visited");
         });
       }

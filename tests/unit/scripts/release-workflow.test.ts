@@ -48,4 +48,14 @@ describe("release workflow", () => {
       "sbom.json",
     ]);
   });
+
+  it("normalizes and sorts archive inputs before packaging", () => {
+    const archiveIndex = steps.findIndex((step) => step.name === "Package dist");
+    const normalizeIndex = steps.findIndex((step) => step.name === "Normalize archive timestamps");
+    expect(normalizeIndex).toBeGreaterThanOrEqual(0);
+    expect(archiveIndex).toBeGreaterThan(normalizeIndex);
+    expect(steps[normalizeIndex]?.run).toContain("SOURCE_DATE_EPOCH");
+    expect(steps[archiveIndex]?.run).toContain("LC_ALL=C sort");
+    expect(steps[archiveIndex]?.run).toContain("zip -X -q dist.zip -@");
+  });
 });

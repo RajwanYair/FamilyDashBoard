@@ -36,6 +36,7 @@ import {
   clearAllBookmarks,
   _resetNewsForTest,
   getStarId,
+  getNewsItemIdentity,
   starArticle,
   unstarArticle,
   isStarred,
@@ -50,6 +51,7 @@ import {
   getShadowVectorizeLog,
   newsConfigSchema,
   newsRankScore,
+  rankNewsItems,
   getSourcePriority,
 } from "@/cards/news/news";
 import { _idbClearFallback, idbGetAll } from "@/core/idb-store";
@@ -631,6 +633,22 @@ describe("News — visited articles", () => {
     markVisited("k2");
     expect(isVisited("k1")).toBe(true);
     expect(isVisited("k2")).toBe(true);
+  });
+
+  it("renders same-title articles from different sources with independent read state", () => {
+    const first = {
+      title: "כותרת משותפת",
+      link: "",
+      pubDate: "",
+      source: "מקור ראשון",
+    };
+    const second = { ...first, source: "גלובס" };
+    markVisited(getNewsItemIdentity(first));
+    renderNews([first, second]);
+
+    const rendered = document.querySelectorAll(".rss-item:not(.clone)");
+    expect(rendered[0]?.classList.contains("visited")).toBe(true);
+    expect(rendered[1]?.classList.contains("visited")).toBe(false);
   });
 });
 
@@ -2823,6 +2841,72 @@ describe("newsRankScore", () => {
   });
 });
 
+describe("rankNewsItems — S09-R1 feed relevance", () => {
+  const now = Date.parse("2026-09-10T12:00:00Z");
+
+  it("keeps materially different updates and places future or missing dates last", () => {
+    const items = [
+      {
+        title: "עדכון עתידי",
+        link: "https://example.com/future",
+        pubDate: "2026-09-10T13:00:00Z",
+        source: "כאן חדשות",
+      },
+      {
+        title: "עדכון חדש",
+        link: "https://example.com/new",
+        pubDate: "2026-09-10T11:55:00Z",
+        source: "כאן חדשות",
+      },
+      {
+        title: "עדכון ללא תאריך",
+        link: "https://example.com/missing",
+        pubDate: "",
+        source: "גלובס",
+      },
+      {
+        title: "עדכון ישן אך אמיתי",
+        link: "https://example.com/old",
+        pubDate: "2026-09-10T09:00:00Z",
+        source: "רוטר סקופים",
+      },
+    ];
+
+    const ranked = rankNewsItems(items, now);
+
+    expect(ranked.slice(0, 2).map((item) => item.title)).toEqual([
+      "עדכון חדש",
+      "עדכון ישן אך אמיתי",
+    ]);
+    expect(new Set(ranked.slice(2).map((item) => item.title))).toEqual(
+      new Set(["עדכון עתידי", "עדכון ללא תאריך"]),
+    );
+    expect(new Set(ranked.map((item) => item.link)).size).toBe(items.length);
+  });
+
+  it("uses a stable identity tie-break independent of feed arrival order", () => {
+    const items = [
+      {
+        title: "Alpha update",
+        link: "https://example.com/a",
+        pubDate: "2026-09-10T10:00:00Z",
+        source: "Unknown",
+      },
+      {
+        title: "Beta update",
+        link: "https://example.com/b",
+        pubDate: "2026-09-10T10:00:00Z",
+        source: "Unknown",
+      },
+    ];
+
+    const orderA = rankNewsItems(items, now).map((item) => item.link);
+    const orderB = rankNewsItems([...items].reverse(), now).map((item) => item.link);
+
+    expect(orderA).toEqual(orderB);
+  });
+});
+
 // ── getSourcePriority ──────────────────────────────────────────────────────────
 describe("getSourcePriority", () => {
   it("returns 1 for premium sources", () => {
@@ -2843,5 +2927,29 @@ describe("getSourcePriority", () => {
 
   it("defaults to 2 for unknown sources", () => {
     expect(getSourcePriority("NonExistentSource")).toBe(2);
+  });
+});
+
+describe("News — stable article identities", () => {
+  it("separates linkless articles with the same title from different sources", () => {
+    const first = getNewsItemIdentity({
+      title: "כותרת משותפת",
+      link: "",
+      source: "מקור ראשון",
+    });
+    const second = getNewsItemIdentity({
+      title: "כותרת משותפת",
+      link: "",
+      source: "גלובס",
+    });
+
+    expect(first).not.toBe(second);
+  });
+
+  it("keeps linkless starred IDs distinct by source", () => {
+    const first = getStarId({ title: "כותרת משותפת", link: "", source: "מקור ראשון" });
+    const second = getStarId({ title: "כותרת משותפת", link: "", source: "גלובס" });
+
+    expect(first).not.toBe(second);
   });
 });

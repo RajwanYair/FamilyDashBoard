@@ -25,6 +25,7 @@ const _pageVisible = signal<boolean>(true);
 export const pageVisibleSignal: ReadonlySignal<boolean> = _pageVisible;
 let lastHiddenAt: number | null = null;
 const visibilityCallbacks: Array<(visible: boolean) => void> = [];
+let visibilityInitialized = false;
 
 export function isPageVisible(): boolean {
   // Use peek() so callers that happen to be inside an active effect do NOT
@@ -60,5 +61,7 @@ function handleVisibilityChange(): void {
 }
 
 export function initVisibility(): void {
+  if (visibilityInitialized) return;
+  visibilityInitialized = true;
   document.addEventListener("visibilitychange", handleVisibilityChange);
 }

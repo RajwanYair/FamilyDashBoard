@@ -15,6 +15,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 - 🔧 **chore(docs)**: bump version in workspace.instructions.md, AGENTS.md, copilot-instructions.md, ARCHITECTURE.md, security.md, CITATION.cff, README.md
 - 🔧 **chore(docs)**: bump version in SVG assets (banner, architecture, data-sources, preview)
 - 🔧 **chore(sw)**: bump version comment in sw.ts and sw.js
+- 🔐 **feat(reproducibility)**: complete S07-R2 reproducibility and rollback drill — deterministic build epoch, strict v2 manifest comparison, normalized release archives, rebuild verification, and operator rollback guidance
+- 📰 **feat(news)**: complete S09-R1 feed relevance hardening — deterministic ranking, future/missing-date handling, mixed-language dedup fixtures, and collision-safe read/starred identities
+- ⚡ **perf(lifecycle)**: bound repeated visibility and PerformanceObserver wiring for the S06-R1 endurance track; target-device soak evidence remains pending
 
 ---
 
