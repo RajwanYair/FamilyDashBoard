@@ -42,5 +42,7 @@
   border: none;
   cursor: pointer;
   font-weight: 700;
+  min-block-size: 2.75rem;
+  touch-action: manipulation;
   box-shadow: 0 2px 12px rgb(96 165 250 / 0.4);
 }

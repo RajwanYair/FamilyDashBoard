@@ -2097,6 +2097,8 @@ body.slideshow-fade::after {
   cursor: pointer;
   font-size: 0.9em;
   font-weight: 700;
+  min-block-size: 2.75rem;
+  touch-action: manipulation;
 }
 @media (prefers-reduced-motion: no-preference) {
   #sw-update-banner[data-sw-state="downloading"] #sw-update-status,
