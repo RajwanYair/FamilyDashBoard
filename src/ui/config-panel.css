@@ -196,13 +196,16 @@
   background: var(--bg-card-inner);
   border: 1px solid var(--accent-border);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.1em;
   cursor: pointer;
+  touch-action: manipulation;
   opacity: 0.5;
   transition: opacity 0.2s;
 }

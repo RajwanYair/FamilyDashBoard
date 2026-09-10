@@ -18,5 +18,8 @@ describe("Settings tab touch-target CSS contract", () => {
     expect(configPanel).toMatch(
       /\.cfg-card-label\s*\{[^}]*min-block-size:\s*2\.75rem[^}]*touch-action:\s*manipulation/s,
     );
+    expect(configPanel).toMatch(
+      /#cfg-gear-btn\s*\{[^}]*width:\s*2\.75rem[^}]*height:\s*2\.75rem[^}]*touch-action:\s*manipulation/s,
+    );
   });
 });
