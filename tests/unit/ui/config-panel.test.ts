@@ -948,6 +948,46 @@ describe("Config Panel — cards tab visibility and sizes", () => {
   });
 });
 
+describe("Config Panel — full reset confirmation", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  it("keeps data when reset is cancelled and reloads only after confirmation", async () => {
+    document.body.innerHTML = `
+      <div id="config-overlay"><div id="config-panel">
+        <button id="cfg-reset-all-btn">Reset</button>
+      </div></div>
+    `;
+    localStorage.setItem("dash_v2_config", '{"configVersion":12}');
+    localStorage.setItem("unrelated-setting", "keep");
+    const reload = vi.fn();
+    const confirmReset = vi.fn().mockReturnValue(false);
+    vi.stubGlobal("location", { reload });
+    vi.stubGlobal("confirm", confirmReset);
+
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    document.getElementById("cfg-reset-all-btn")!.click();
+
+    expect(confirmReset).toHaveBeenCalledOnce();
+    expect(reload).not.toHaveBeenCalled();
+    expect(localStorage.getItem("dash_v2_config")).toBe('{"configVersion":12}');
+    expect(localStorage.getItem("unrelated-setting")).toBe("keep");
+
+    confirmReset.mockReturnValue(true);
+    document.getElementById("cfg-reset-all-btn")!.click();
+
+    expect(reload).toHaveBeenCalledOnce();
+    expect(localStorage.getItem("dash_v2_config")).toBeNull();
+    expect(localStorage.getItem("unrelated-setting")).toBe("keep");
+  });
+});
+
 // ── Font size slider live preview (lines 483-501) ───────────────────────────
 
 describe("Config Panel — font size slider live preview", () => {

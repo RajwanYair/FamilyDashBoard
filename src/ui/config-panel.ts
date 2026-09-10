@@ -1477,9 +1477,10 @@ export function initConfigPanel(): void {
   // F4 (v7.2): Reset all defaults
   document.getElementById("cfg-reset-all-btn")?.addEventListener("click", () => {
     if (!confirm("מחיקת כל ההגדרות ואיפוס לברירות המחדל?")) return;
-    Object.keys(localStorage)
-      .filter((k) => k.startsWith("dash"))
-      .forEach((k) => localStorage.removeItem(k));
+    for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+      const key = localStorage.key(i);
+      if (key?.startsWith("dash")) localStorage.removeItem(key);
+    }
     location.reload();
   });
 
