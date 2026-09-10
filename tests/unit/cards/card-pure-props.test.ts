@@ -31,6 +31,7 @@ vi.mock("@/core/constants", () => ({
   LS_PREFIX: "dash_v2_",
   LS_MAX_AGE: 7 * 86_400_000,
   MS_PER_MIN: 60_000,
+  MS_PER_HOUR: 3_600_000,
   PROXIES: [],
 }));
 vi.mock("@/core/cache", () => ({
@@ -55,8 +56,11 @@ vi.mock("@/core/i18n", () => ({ t: vi.fn((k: string) => k) }));
 vi.mock("@/ui/toast", () => ({ showToast: vi.fn() }));
 vi.mock("@/core/history", () => ({
   historyAppend: vi.fn(),
+  historyAppendSampled: vi.fn(),
   historyGet: vi.fn(() => []),
+  historyGetPoints: vi.fn(() => []),
   sparklineSvg: vi.fn(() => "<svg/>"),
+  sparklineSvgPoints: vi.fn(() => "<svg/>"),
 }));
 vi.mock("@/core/trusted-types", () => ({
   trustedHTML: vi.fn((s: string) => s),

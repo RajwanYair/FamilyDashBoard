@@ -63,8 +63,11 @@ vi.mock("@/core/i18n", () => ({ t: vi.fn((k: string) => k) }));
 vi.mock("@/ui/toast", () => ({ showToast: vi.fn() }));
 vi.mock("@/core/history", () => ({
   historyAppend: vi.fn(),
+  historyAppendSampled: vi.fn(),
   historyGet: vi.fn(() => []),
+  historyGetPoints: vi.fn(() => []),
   sparklineSvg: vi.fn(() => "<svg/>"),
+  sparklineSvgPoints: vi.fn(() => "<svg/>"),
 }));
 vi.mock("@/core/trusted-types", () => ({
   trustedHTML: vi.fn((s: string) => s),

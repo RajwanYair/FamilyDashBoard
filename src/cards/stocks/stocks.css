@@ -124,6 +124,18 @@
   opacity: 0.7;
 }
 
+.stk-stale-badge {
+  display: inline-block;
+  margin-inline-start: 0.3rem;
+  padding: 0.05rem 0.3rem;
+  border: 1px solid var(--warning);
+  border-radius: 0.25rem;
+  background: var(--bg-card-inner);
+  color: var(--warning);
+  font-size: 0.75em;
+  font-weight: 700;
+}
+
 /* Feature 68: Market open/close countdown chip */
 #stk-mkt-countdown {
   font-size: 0.62em;

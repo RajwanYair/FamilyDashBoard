@@ -17,6 +17,7 @@ import {
   API,
   LS_STOCK_ALERTS,
   LS_PORTFOLIO,
+  MS_PER_HOUR,
 } from "../../core/constants";
 import { cGet, cGetStale, cSetAsync } from "../../core/cache";
 import { fetchJSONWithWorker, runConcurrent, acquireLock, releaseLock } from "../../core/fetch";
@@ -27,7 +28,7 @@ import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
 import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
-import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
+import { historyAppendSampled, historyGetPoints, sparklineSvgPoints } from "../../core/history";
 import { idbGet, idbSet, idbDelete } from "../../core/idb-store";
 import type { YahooChartResponse, CoinGeckoResponse } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
@@ -284,6 +285,34 @@ let _statusMarketChip: HTMLElement | null = null;
 let _marketBadgeInterval: number | null = null;
 let _marketCountdownInterval: number | null = null;
 let _stocksRefreshInterval: number | null = null;
+const STOCK_HISTORY_SAMPLE_MS = MS_PER_HOUR;
+const STOCK_HISTORY_POINTS = 7 * 24;
+
+function setStockStaleState(blk: Element, sym: string, stale: boolean): void {
+  const element = blk as HTMLElement;
+  const meta = STOCK_META[sym];
+  const baseLabel = `${meta?.he ?? sym} — ${meta?.sym ?? sym}`;
+  const staleBadge = blk.querySelector<HTMLElement>(".stk-stale-badge");
+
+  if (stale) {
+    element.dataset["stale"] = "true";
+    const badge =
+      staleBadge ??
+      Object.assign(document.createElement("span"), {
+        className: "stk-stale-badge",
+        textContent: "נתונים ישנים",
+      });
+    badge.setAttribute("role", "status");
+    badge.title = "נתונים ישנים — לא התקבל עדכון חדש";
+    const timeEl = blk.querySelector(".stk-time");
+    (timeEl ?? blk).appendChild(badge);
+    element.setAttribute("aria-label", `${baseLabel} — נתונים ישנים`);
+  } else {
+    delete element.dataset["stale"];
+    staleBadge?.remove();
+    element.setAttribute("aria-label", baseLabel);
+  }
+}
 
 export function updateMarketBadge(): void {
   if (!_marketBadgeEl?.isConnected) {
@@ -337,7 +366,7 @@ function bezierChart(prices: number[], color: string): string {
     const cp = (cur.x - prev.x) / 2;
     path += ` C${prev.x + cp},${prev.y} ${cur.x - cp},${cur.y} ${cur.x},${cur.y}`;
   }
-  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><path d="${path}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${path}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/></svg>`;
 }
 
 // ── Update 52-week range bar ──
@@ -449,6 +478,7 @@ export function renderStocksShell(): void {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("class", "stk-chart");
     svg.setAttribute("viewBox", "0 0 200 22");
+    svg.setAttribute("aria-hidden", "true");
 
     const timeDiv = document.createElement("div");
     timeDiv.className = "stk-time";
@@ -517,7 +547,12 @@ export function renderStocksShell(): void {
 }
 
 // ── Render a single stock block ──
-export function renderStock(blk: Element, data: YahooChartResponse, sym: string): void {
+export function renderStock(
+  blk: Element,
+  data: YahooChartResponse,
+  sym: string,
+  isStale = false,
+): void {
   const result = data.chart?.result?.[0];
   if (!result) return;
   const meta = result.meta;
@@ -669,12 +704,12 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
   }
 
   // 7-day IDB history sparkline
-  if (cur != null && isFinite(cur)) {
+  if (!isStale && cur != null && isFinite(cur)) {
     void updateStockHistory(blk, sym, cur);
   }
   // 7-day volume sparkline
   const vol = meta.regularMarketVolume;
-  if (vol > 0 && isFinite(vol)) {
+  if (!isStale && vol > 0 && isFinite(vol)) {
     void updateStockVolumeHistory(blk, sym, vol);
   }
 }
@@ -685,14 +720,16 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
  */
 async function updateStockHistory(blk: Element, sym: string, price: number): Promise<void> {
   try {
-    await historyAppend(`stk:${sym}`, price);
-    const values = await historyGet(`stk:${sym}`, 7);
-    if (values.length < 2) return;
+    await historyAppendSampled(`stk:${sym}`, price, STOCK_HISTORY_SAMPLE_MS);
+    const points = await historyGetPoints(`stk:${sym}`, STOCK_HISTORY_POINTS);
+    if (points.length < 2) return;
     const sparkEl = blk.querySelector(".stk-ph-spark");
     if (!sparkEl) return;
-    const positive = price >= (values[0] ?? price);
-    const color = positive ? "var(--positive, #34d399)" : "var(--negative, #f87171)";
-    sparkEl.innerHTML = trustedHTML(sparklineSvg(values, color, 44, 12));
+    const positive = price >= (points[0]?.v ?? price);
+    const color = positive ? "var(--positive)" : "var(--negative)";
+    sparkEl.innerHTML = trustedHTML(
+      sparklineSvgPoints(points, color, 44, 12, STOCK_HISTORY_SAMPLE_MS),
+    );
   } catch {
     /* IDB unavailable in some environments — ignore */
   }
@@ -704,12 +741,14 @@ async function updateStockHistory(blk: Element, sym: string, price: number): Pro
  */
 async function updateStockVolumeHistory(blk: Element, sym: string, vol: number): Promise<void> {
   try {
-    await historyAppend(`stk:vol:${sym}`, vol);
-    const values = await historyGet(`stk:vol:${sym}`, 7);
-    if (values.length < 2) return;
+    await historyAppendSampled(`stk:vol:${sym}`, vol, STOCK_HISTORY_SAMPLE_MS);
+    const points = await historyGetPoints(`stk:vol:${sym}`, STOCK_HISTORY_POINTS);
+    if (points.length < 2) return;
     const sparkEl = blk.querySelector(".stk-vol-spark");
     if (!sparkEl) return;
-    sparkEl.innerHTML = trustedHTML(sparklineSvg(values, "var(--accent-2, var(--accent))", 44, 12));
+    sparkEl.innerHTML = trustedHTML(
+      sparklineSvgPoints(points, "var(--accent)", 44, 12, STOCK_HISTORY_SAMPLE_MS),
+    );
   } catch {
     /* IDB unavailable in some environments — ignore */
   }
@@ -786,14 +825,17 @@ async function loadStockSingle(sym: string): Promise<boolean> {
     if (data.chart?.result?.[0]) {
       await cSetAsync(key, data);
       renderStock(blk, data, sym);
-      delete (blk as HTMLElement).dataset["stale"];
+      setStockStaleState(blk, sym, false);
       diagLog(`FDB-044: [stocks] ${sym} OK`);
       return true;
     }
   } catch (err) {
     diagLog(`FDB-045: [stocks] ${sym} failed: ${String(err)}`);
     const stale = cGetStale<YahooChartResponse>(key);
-    if (!stale) {
+    if (stale) {
+      renderStock(blk, stale, sym, true);
+      setStockStaleState(blk, sym, true);
+    } else {
       const priceEl = blk.querySelector<HTMLElement>(".stk-price");
       if (priceEl) {
         priceEl.textContent = "N/A";
@@ -819,12 +861,12 @@ export async function loadAllStocks(): Promise<void> {
     const fresh = cGet<YahooChartResponse>(`stk-${sym}`, ttl);
     if (fresh) {
       renderStock(blk, fresh, sym);
-      delete (blk as HTMLElement).dataset["stale"];
+      setStockStaleState(blk, sym, false);
     } else {
       const stale = cGetStale<YahooChartResponse>(`stk-${sym}`);
       if (stale) {
-        renderStock(blk, stale, sym);
-        (blk as HTMLElement).dataset["stale"] = "true";
+        renderStock(blk, stale, sym, true);
+        setStockStaleState(blk, sym, true);
       }
       uncached.push(sym);
     }

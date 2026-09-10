@@ -41,8 +41,14 @@ const mockAppend = vi.fn().mockResolvedValue(undefined);
 const mockGet = vi.fn().mockResolvedValue([]);
 vi.mock("@/core/history", () => ({
   historyAppend: (...args: unknown[]) => mockAppend(...args),
+  historyAppendSampled: (...args: unknown[]) => mockAppend(...args),
   historyGet: (...args: unknown[]) => mockGet(...args),
+  historyGetPoints: (...args: unknown[]) =>
+    mockGet(...args).then((values: number[]) =>
+      values.map((value, index) => ({ key: String(args[0]), ts: index, v: value })),
+    ),
   sparklineSvg: vi.fn().mockReturnValue('<polyline points="0,10 10,5 20,8"/>'),
+  sparklineSvgPoints: vi.fn().mockReturnValue('<polyline points="0,10 10,5 20,8"/>'),
   _resetHistoryDb: vi.fn(),
 }));
 

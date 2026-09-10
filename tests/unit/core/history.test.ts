@@ -7,8 +7,11 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   _resetHistoryDb,
   historyAppend,
+  historyAppendSampled,
   historyGet,
+  historyGetPoints,
   sparklineSvg,
+  sparklineSvgPoints,
 } from "../../../src/core/history";
 
 // ── Minimal in-memory IDB mock ────────────────────────────────────────────────
@@ -139,6 +142,23 @@ describe("sparklineSvg", () => {
     expect(svg).not.toContain("NaN");
     expect(svg).toContain("<polyline");
   });
+
+  it("breaks the line across timestamp gaps", () => {
+    const svg = sparklineSvgPoints(
+      [
+        { key: "stk:AAPL", ts: 0, v: 100 },
+        { key: "stk:AAPL", ts: 60 * 60_000, v: 101 },
+        { key: "stk:AAPL", ts: 4 * 60 * 60_000, v: 102 },
+      ],
+      "var(--accent)",
+      44,
+      12,
+      60 * 60_000,
+    );
+
+    expect(svg.match(/<polyline/g)?.length).toBe(1);
+    expect(svg).toContain("<circle");
+  });
 });
 
 describe("historyGet — without IDB (IDB unavailable)", () => {
@@ -185,7 +205,7 @@ describe("historyAppend — without IDB (IDB unavailable)", () => {
   });
 
   it("resolves without throwing when IDB is unavailable", async () => {
-    await expect(historyAppend("test:key", 42)).resolves.toBeUndefined();
+    await expect(historyAppend("test:key", 42)).resolves.toBe(false);
   });
 });
 
@@ -220,6 +240,20 @@ describe("historyAppend + historyGet — with mock IDB", () => {
     }
     const vals = await historyGet("test:series", 3);
     expect(vals.length).toBeLessThanOrEqual(3);
+  });
+
+  it("returns timestamped points in chronological order", async () => {
+    await historyAppend("sample:key", 1);
+    await historyAppend("sample:key", 2);
+    const points = await historyGetPoints("sample:key");
+    expect(points.map((point) => point.v)).toEqual([1, 2]);
+    expect(points[0]!.ts).toBeLessThanOrEqual(points[1]!.ts);
+  });
+
+  it("skips repeated samples inside the minimum interval", async () => {
+    expect(await historyAppendSampled("sample:key", 1, 60 * 60_000)).toBe(true);
+    expect(await historyAppendSampled("sample:key", 2, 60 * 60_000)).toBe(false);
+    await expect(historyGet("sample:key")).resolves.toEqual([1]);
   });
 });
 

@@ -3086,5 +3086,7 @@ describe("Stocks — loadAllStocks stale cache render path", () => {
     const blk = document.querySelector('[data-symbol="AAPL"]') as HTMLElement;
     // renderStock was called with stale data → dataset.stale must be "true"
     expect(blk.dataset["stale"]).toBe("true");
+    expect(blk.querySelector(".stk-stale-badge")?.textContent).toBe("נתונים ישנים");
+    expect(blk.getAttribute("aria-label")).toContain("נתונים ישנים");
   });
 });

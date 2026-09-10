@@ -15,14 +15,16 @@ import {
   API,
   LS_CUR_HISTORY,
   MS_PER_MIN,
+  MS_PER_HOUR,
   WORKER_BASE_URL,
 } from "../../core/constants";
 import { diagLog } from "../../core/diag";
 import { fetchJSONWithWorker, acquireLock, releaseLock } from "../../core/fetch";
 import { cGet, cGetStale, cSet } from "../../core/cache";
+import { readStorageValue, writeStorageValue } from "../../core/persistent-storage";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { isPageVisible } from "../../core/idle";
-import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
+import { historyAppendSampled, historyGetPoints, sparklineSvgPoints } from "../../core/history";
 import { trustedHTML } from "../../core/trusted-types";
 import { loadConfig } from "../../core/config";
 import type { CurrencyResponse, YahooChartResponse, CoinGeckoResponse } from "../../types/api";
@@ -70,39 +72,84 @@ let _lastFetchTime: Date | null = null;
 
 // LS_CUR_HISTORY imported from constants
 const CUR_HISTORY_MAX_DAYS = 30;
+const CUR_SPARKLINE_SAMPLE_MS = MS_PER_HOUR;
+const CUR_SPARKLINE_POINTS = 7 * 24;
 
 interface CurHistoryEntry {
   date: string; // YYYY-MM-DD
   rates: Record<string, number>; // raw rates (ILS-based, same format as API)
 }
 
+function isCurrencyHistoryEntry(value: unknown): value is CurHistoryEntry {
+  if (value === null || typeof value !== "object") return false;
+  const entry = value as Record<string, unknown>;
+  if (
+    typeof entry.date !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}$/u.test(entry.date) ||
+    !Number.isFinite(parsePlainDateMs(entry.date)) ||
+    entry.rates === null ||
+    typeof entry.rates !== "object"
+  ) {
+    return false;
+  }
+  return Object.values(entry.rates as Record<string, unknown>).some(
+    (rate) => typeof rate === "number" && Number.isFinite(rate) && rate > 0,
+  );
+}
+
+function normalizeCurrencyHistory(value: unknown): CurHistoryEntry[] {
+  if (!Array.isArray(value)) return [];
+  const byDate = new Map<string, CurHistoryEntry>();
+  for (const candidate of value) {
+    if (!isCurrencyHistoryEntry(candidate)) continue;
+    const rates = Object.fromEntries(
+      Object.entries(candidate.rates).filter(
+        ([, rate]) => typeof rate === "number" && Number.isFinite(rate) && rate > 0,
+      ),
+    ) as Record<string, number>;
+    if (Object.keys(rates).length > 0) {
+      byDate.set(candidate.date, { date: candidate.date, rates });
+    }
+  }
+  return [...byDate.values()]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-CUR_HISTORY_MAX_DAYS);
+}
+
 /** Load the currency rate history from localStorage (up to 30 entries). */
 export function loadCurrencyHistory(): CurHistoryEntry[] {
   try {
-    const raw = localStorage.getItem(LS_CUR_HISTORY);
+    const raw = readStorageValue("local", LS_CUR_HISTORY);
     if (!raw) return [];
-    return JSON.parse(raw) as CurHistoryEntry[];
+    return normalizeCurrencyHistory(JSON.parse(raw) as unknown);
   } catch {
+    diagLog("[currency] stored history is invalid");
     return [];
   }
 }
 
 /** Store today's rates snapshot into the 30-day rolling history. */
 export function storeCurrencyHistory(rates: Record<string, number>): void {
+  const validRates = Object.fromEntries(
+    Object.entries(rates).filter(
+      ([, rate]) => typeof rate === "number" && Number.isFinite(rate) && rate > 0,
+    ),
+  ) as Record<string, number>;
+  if (Object.keys(validRates).length === 0) return;
+
   const now = today();
   const todayStr = toISODateString(now.getFullYear(), now.getMonth() + 1, now.getDate());
   let history = loadCurrencyHistory();
   // Replace today's entry if already present, or append
   history = history.filter((e) => e.date !== todayStr);
-  history.push({ date: todayStr, rates });
+  history.push({ date: todayStr, rates: validRates });
+  history.sort((a, b) => a.date.localeCompare(b.date));
   // Keep only the last 30 entries
   if (history.length > CUR_HISTORY_MAX_DAYS) {
     history = history.slice(-CUR_HISTORY_MAX_DAYS);
   }
-  try {
-    localStorage.setItem(LS_CUR_HISTORY, JSON.stringify(history));
-  } catch {
-    /* quota */
+  if (!writeStorageValue("local", LS_CUR_HISTORY, JSON.stringify(history))) {
+    diagLog("[currency] history storage write failed");
   }
 }
 
@@ -116,14 +163,24 @@ export function get7DayTrend(
   key: string,
   history: CurHistoryEntry[],
 ): { pct: number; arrow: "↑" | "↓" | "→" } | null {
-  if (history.length < 2) return null;
+  const orderedHistory = normalizeCurrencyHistory(history);
+  if (orderedHistory.length < 2) return null;
   // Find the oldest available entry (≤ 30 days ago)
-  const oldest = history[0];
-  const newest = history[history.length - 1];
+  const oldest = orderedHistory[0];
+  const newest = orderedHistory[orderedHistory.length - 1];
   if (!oldest || !newest) return null;
   const oldRate = oldest.rates[key];
   const newRate = newest.rates[key];
-  if (!oldRate || !newRate || oldRate === 0) return null;
+  if (
+    typeof oldRate !== "number" ||
+    typeof newRate !== "number" ||
+    !Number.isFinite(oldRate) ||
+    !Number.isFinite(newRate) ||
+    oldRate <= 0 ||
+    newRate <= 0
+  ) {
+    return null;
+  }
   // To ILS per foreign unit
   const oldVal = 1 / oldRate;
   const newVal = 1 / newRate;
@@ -142,11 +199,12 @@ export function getCurrencyTrend(
   history: CurHistoryEntry[],
   days: number,
 ): { pct: number; arrow: "↑" | "↓" | "→" } | null {
-  if (history.length < 2) return null;
-  const newest = history[history.length - 1];
+  const orderedHistory = normalizeCurrencyHistory(history);
+  if (orderedHistory.length < 2) return null;
+  const newest = orderedHistory[orderedHistory.length - 1];
   if (!newest) return null;
   const newRate = newest.rates[key];
-  if (!newRate || newRate === 0) return null;
+  if (typeof newRate !== "number" || !Number.isFinite(newRate) || newRate <= 0) return null;
   const newVal = 1 / newRate;
 
   const cutoffDate = addDays(fromEpochMs(parsePlainDateMs(newest.date)), -days);
@@ -158,8 +216,8 @@ export function getCurrencyTrend(
 
   // Find the most recent entry that is at or before the cutoff
   let ref: CurHistoryEntry | undefined;
-  for (let i = history.length - 2; i >= 0; i--) {
-    const entry = history[i];
+  for (let i = orderedHistory.length - 2; i >= 0; i--) {
+    const entry = orderedHistory[i];
     if (entry && entry.date <= cutoff) {
       ref = entry;
       break;
@@ -167,7 +225,7 @@ export function getCurrencyTrend(
   }
   if (!ref) return null;
   const oldRate = ref.rates[key];
-  if (!oldRate || oldRate === 0) return null;
+  if (typeof oldRate !== "number" || !Number.isFinite(oldRate) || oldRate <= 0) return null;
   const oldVal = 1 / oldRate;
   const pct = ((newVal - oldVal) / oldVal) * 100;
   const arrow: "↑" | "↓" | "→" = Math.abs(pct) < 0.1 ? "→" : pct > 0 ? "↑" : "↓";
@@ -434,36 +492,43 @@ const SPARK_EL: Record<string, string> = {
 };
 
 /**
- * Write today's ILS value per tile to IDB history and re-render sparklines.
+ * Optionally write a fresh ILS observation per tile and re-render sparklines.
+ * Stale-cache renders only read existing history; they never create samples.
  * Runs asynchronously — never blocks the synchronous render path.
  */
-async function renderCurrencySparklines(rates: Record<string, number>): Promise<void> {
+async function renderCurrencySparklines(
+  rates: Record<string, number>,
+  recordSample: boolean,
+): Promise<void> {
   const writes = Object.entries(SPARK_EL).map(async ([key, svgId]) => {
     const rawRate = rates[key];
     if (!rawRate || rawRate <= 0) return;
     const ilsValue = 1 / rawRate;
 
-    // Persist to IDB history
-    await historyAppend(`cur:${key}`, ilsValue);
+    // Only fresh observations may extend the trend history.
+    if (recordSample) {
+      await historyAppendSampled(`cur:${key}`, ilsValue, CUR_SPARKLINE_SAMPLE_MS);
+    }
 
-    // Fetch the 30-day window and render
-    const values = await historyGet(`cur:${key}`, 30);
-    if (values.length < 2) return;
+    // Fetch the seven-day sampled window and render
+    const points = await historyGetPoints(`cur:${key}`, CUR_SPARKLINE_POINTS);
+    if (points.length < 2) return;
 
     const svgEl = document.getElementById(svgId);
     if (!svgEl) return;
-
-    const positive = ilsValue >= (values[0] ?? ilsValue);
+    const positive = ilsValue >= (points[0]?.v ?? ilsValue);
     const color = positive ? "var(--positive)" : "var(--negative)";
-    svgEl.innerHTML = trustedHTML(sparklineSvg(values, color));
+    svgEl.innerHTML = trustedHTML(
+      sparklineSvgPoints(points, color, 60, 22, CUR_SPARKLINE_SAMPLE_MS),
+    );
   });
   await Promise.allSettled(writes);
 }
 
 // ── Render currency tiles ──
-export function renderCurrency(rates: Record<string, number>): void {
-  // persist today's snapshot before rendering
-  storeCurrencyHistory(rates);
+export function renderCurrency(rates: Record<string, number>, isStale = false): void {
+  // Stale cache values are display-only and must not become a new observation.
+  if (!isStale) storeCurrencyHistory(rates);
   const history = loadCurrencyHistory();
 
   // keep calc rates up-to-date
@@ -554,12 +619,21 @@ export function renderCurrency(rates: Record<string, number>): void {
 
   // Update last-fetch timestamp chip
   if (curEls.lastFetch) {
-    curEls.lastFetch.textContent = _lastFetchTime.toLocaleTimeString("he-IL", {
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: "Asia/Jerusalem",
-    });
-    curEls.lastFetch.title = `עדכון אחרון: ${formatRelativeTime(_lastFetchTime)}`;
+    if (isStale) {
+      curEls.lastFetch.textContent = "נתונים ישנים";
+      curEls.lastFetch.title = "נתונים ישנים — מקור שערי המטבע אינו זמין";
+      curEls.lastFetch.setAttribute("aria-label", "נתונים ישנים — מקור שערי המטבע אינו זמין");
+      curEls.lastFetch.classList.add("cur-updated--stale");
+    } else {
+      curEls.lastFetch.textContent = _lastFetchTime.toLocaleTimeString("he-IL", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Asia/Jerusalem",
+      });
+      curEls.lastFetch.title = `עדכון אחרון: ${formatRelativeTime(_lastFetchTime)}`;
+      curEls.lastFetch.removeAttribute("aria-label");
+      curEls.lastFetch.classList.remove("cur-updated--stale");
+    }
   }
 
   // Flash data-fresh animation
@@ -570,7 +644,7 @@ export function renderCurrency(rates: Record<string, number>): void {
   }
 
   // IDB history + sparklines (async — non-blocking)
-  void renderCurrencySparklines(rates);
+  void renderCurrencySparklines(rates, !isStale);
 
   // apply hidden-pair visibility after each render
   applyPairVisibility();
@@ -610,7 +684,7 @@ export async function loadCurrency(): Promise<void> {
   }
 
   const stale = cGetStale<Record<string, number>>("cur");
-  if (stale !== null) renderCurrency(stale);
+  if (stale !== null) renderCurrency(stale, true);
 
   try {
     const data = await fetchCurrency();

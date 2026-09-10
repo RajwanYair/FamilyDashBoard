@@ -57,6 +57,10 @@
     text-align: center;
     margin-top: 4px;
   }
+  .cur-updated--stale {
+    color: var(--warning);
+    font-weight: 700;
+  }
 } /* end @layer components */
 
 /* Maximize — large currency card layout */

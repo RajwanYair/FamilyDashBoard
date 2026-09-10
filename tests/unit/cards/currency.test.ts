@@ -639,6 +639,14 @@ describe("Currency — renderCurrency updates last-fetch chip", () => {
     const chip = document.getElementById("cur-last-fetch")!;
     expect(chip.title).toContain("עדכון אחרון");
   });
+
+  it("labels stale cached rates instead of presenting them as a fresh fetch", () => {
+    renderCurrency(MOCK_RATES, true);
+    const chip = document.getElementById("cur-last-fetch")!;
+    expect(chip.textContent).toBe("נתונים ישנים");
+    expect(chip.title).toContain("מקור שערי המטבע אינו זמין");
+    expect(chip.classList.contains("cur-updated--stale")).toBe(true);
+  });
 });
 
 // ── 7-day rate history / (C4): extended to 30-day ──────
@@ -683,6 +691,28 @@ describe("Currency — storeCurrencyHistory / loadCurrencyHistory ( / )", () => 
     }
     const history = loadCurrencyHistory();
     expect(history.length).toBeLessThanOrEqual(30);
+  });
+
+  it("drops malformed entries and sorts duplicate dates deterministically", () => {
+    localStorage.setItem(
+      "dash_v2_cur_history",
+      JSON.stringify([
+        { date: "not-a-date", rates: { USD: 0.2 } },
+        { date: "2024-01-02", rates: { USD: 0.3 } },
+        { date: "2024-01-01", rates: { USD: 0.2 } },
+        { date: "2024-01-02", rates: { USD: 0.25 } },
+        { date: "2024-01-03", rates: { USD: Number.NaN } },
+      ]),
+    );
+    expect(loadCurrencyHistory()).toEqual([
+      { date: "2024-01-01", rates: { USD: 0.2 } },
+      { date: "2024-01-02", rates: { USD: 0.25 } },
+    ]);
+  });
+
+  it("does not persist a snapshot when every rate is invalid", () => {
+    storeCurrencyHistory({ USD: Number.NaN, EUR: -1 });
+    expect(localStorage.getItem("dash_v2_cur_history")).toBeNull();
   });
 });
 
@@ -730,6 +760,14 @@ describe("Currency — get7DayTrend ", () => {
       { date: "2024-01-07", rates: { EUR: 0.25 } },
     ];
     expect(get7DayTrend("USD", history)).toBeNull();
+  });
+
+  it("orders unsorted history by date before calculating the trend", () => {
+    const history = [
+      { date: "2024-01-07", rates: { USD: 0.26 } },
+      { date: "2024-01-01", rates: { USD: 0.28 } },
+    ];
+    expect(get7DayTrend("USD", history)?.arrow).toBe("↑");
   });
 });
 
