@@ -1,11 +1,11 @@
 # Shared Vitest Presets
 
 > Vendored into this repo for CI self-sufficiency.
-> Source of truth: `MyScripts/tooling/vitest/`
+> Source of truth: this repository's `tooling/vitest/`
 > Keep files in sync when upgrading Vitest.
 
 These three presets are the building blocks for every `vitest.config.ts` under
-`MyScripts/`. Each exports a plain object that is spread into `defineConfig`.
+the repository. Each exports a plain object that is spread into `defineConfig`.
 
 ---
 
@@ -112,7 +112,7 @@ any test that must not have a DOM environment.
 2. Export a single config object named `shared<Name>TestConfig`.
 3. Add an entry to the table at the top of this README.
 4. Update `tooling/README.md` to reflect the new file.
-5. Sync the file to `MyScripts/tooling/vitest/` (source of truth).
+5. Keep the file in this repository's `tooling/vitest/` directory as the source of truth.
 
 ---
 

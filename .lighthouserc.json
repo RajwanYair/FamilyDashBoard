@@ -2,7 +2,7 @@
     "ci": {
         "collect": {
             "numberOfRuns": 1,
-            "startServerCommand": "npx vite preview --port 3010",
+            "startServerCommand": "npm exec --no -- vite preview --port 3010",
             "startServerReadyPattern": "Local.*3010",
             "startServerReadyTimeout": 30000,
             "url": ["http://localhost:3010/"]

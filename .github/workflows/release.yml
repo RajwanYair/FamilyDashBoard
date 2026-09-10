@@ -79,8 +79,7 @@ jobs:
 
       - name: Generate SBOM (CycloneDX)
         run: |
-          npm install --package-lock-only --ignore-scripts --silent
-          npx @cyclonedx/cyclonedx-npm --output-format JSON --output-file sbom.json --package-lock-only --ignore-npm-errors
+          npm exec --no -- cyclonedx-npm --output-format JSON --output-file sbom.json --package-lock-only --ignore-npm-errors
           if [ ! -f sbom.json ]; then
             echo "::error::SBOM generation failed — sbom.json not found"
             exit 1

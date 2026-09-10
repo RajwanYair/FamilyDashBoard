@@ -46,9 +46,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "24"
-      - name: Generate lockfile for audit
-        # Must run BEFORE install-tools.sh — see ci.yml security job comment.
-        run: npm install --package-lock-only --ignore-scripts
       - name: Run npm audit (moderate+)
         run: npm audit --audit-level=moderate
       - name: Audit Worker dependency scope (moderate+)

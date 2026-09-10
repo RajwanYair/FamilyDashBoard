@@ -7,7 +7,7 @@ description: "Project context and file map for FamilyDashBoard."
 
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.6 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 7 themes · 3 screen modes · 12 cards
 
-> **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`. Shared tooling configs are vendored into `tooling/` (tsconfig/, eslint/, vitest/).
+> **Local deps**: Root tools resolve from this repository's `node_modules/`. Run `npm ci` here; Worker dependencies remain in `worker/`. Root and Worker lockfiles are committed. CI uses `.github/ci/install-tools.sh`. Shared tooling configs are vendored into `tooling/` (tsconfig/, eslint/, vitest/).
 > **Validation**: `npm run check` is the canonical full gate. Use focused commands only when narrowing a local slice.
 > **Coverage thresholds**: see `vitest.config.ts`
 
@@ -55,7 +55,7 @@ Key extensions installed: ESLint, Stylelint, markdownlint, Spell Checker (EN+HE)
 
 ## Shared Tooling
 
-Common reusable tooling can live in the parent `MyScripts/tooling/` directory.
+Common reusable tooling for this project lives in the repository's `tooling/` directory.
 
 - Put shared ESLint, TypeScript base, Stylelint, and Vitest base config there.
 - Keep repository-specific aliases, include patterns, setup files, coverage settings, and path assumptions here in the workspace.

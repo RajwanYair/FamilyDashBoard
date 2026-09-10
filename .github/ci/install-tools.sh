@@ -2,64 +2,48 @@
 # =============================================================================
 # CI Toolchain Installer — FamilyDashBoard
 #
-# Installs all build/test/lint tools for CI without a local package-lock.json.
-# Source of truth for tool versions in CI.
+# Installs the repository-local root and Worker toolchains from their committed
+# lockfiles. The package manifests and lockfiles are the source of truth.
 #
 # Usage (from repo root):
 #   bash .github/ci/install-tools.sh
 #
-# Local development: tools are provided by the parent MyScripts/node_modules/.
-# Run `npm install` from MyScripts/ — never from this project directory.
+# Local development uses the same root `npm ci`/`npm install` workflow.
 #
 # Vendored shared configs live in tooling/ (tsconfig/, eslint/, vitest/).
-# Keep versions here in sync with MyScripts/tooling/ after upgrades.
+# Vendored shared configs remain repository-local and independent of installation.
 # =============================================================================
 set -euo pipefail
 
 echo "→ Installing CI toolchain…"
 
-# Sprint 158 (SLSA L3 hermetic build): --ignore-scripts added to both npm
-# install calls to prevent arbitrary postinstall scripts from running in CI.
-# Actions are already SHA-pinned in .github/workflows/ci.yml.
-npm install --no-save --no-package-lock --ignore-scripts \
-  "typescript@^6.0.3" \
-  "vite@^8.0.9" \
-  "vitest@^4.1.5" \
-  "@vitest/coverage-v8@^4.1.5" \
-  "eslint@^10.2.1" \
-  "oxlint@^1.61.0" \
-  "typescript-eslint@^8.59.0" \
-  "@eslint/js@^10.0.1" \
-  "happy-dom@^20.9.0" \
-  "prettier@3.8.3" \
-  "stylelint@^17.11.1" \
-  "markdownlint-cli2@^0.22.0" \
-  "yaml@^2.9.0" \
-  "zod@^3.24.0" \
-  "@cloudflare/workers-types@^5.20260722.1" \
-  "fast-check@^4.7.0" \
-  "valibot@^1.3.1" \
-  "@lhci/cli@^0.14.0"
+if [[ ! -f package-lock.json ]]; then
+  echo "package-lock.json is required at the repository root" >&2
+  exit 1
+fi
 
-echo "→ Installing worker runtime + type deps (for worker typecheck + worker tests)…"
+echo "-> Installing root dependencies from package-lock.json..."
+npm ci --ignore-scripts
+
+echo "-> Installing Worker dependencies from worker/package-lock.json..."
 # Worker source imports `hono` and `valibot`; both need to resolve from
 # worker/node_modules when running `tsc --project worker/tsconfig.json`.
-# `@cloudflare/workers-types` provides the runtime ambient types referenced
-# in worker/tsconfig.json `"types"` field. Versions kept in sync with
-# worker/package.json — bump in both places.
+# Worker package.json and worker/package-lock.json own those dependencies.
 (
   cd worker
   npm ci --ignore-scripts
 )
 
-echo "-> Verifying installed CLI entry points..."
-npm exec -- tsc --version >/dev/null
-npm exec -- vite --version >/dev/null
-npm exec -- vitest --version >/dev/null
-npm exec -- eslint --version >/dev/null
-npm exec -- stylelint --version >/dev/null
-npm exec -- markdownlint-cli2 --version >/dev/null
-npm exec -- oxlint --version >/dev/null
-npm exec -- prettier --version >/dev/null
+echo "-> Verifying repository-local CLI entry points..."
+for binary in \
+  tsc vite vitest eslint stylelint markdownlint-cli2 oxlint prettier \
+  cyclonedx-npm lhci license-checker markdown-link-check serve changeset \
+  commitlint playwright stryker; do
+  if [[ ! -x "./node_modules/.bin/$binary" ]]; then
+    echo "Missing local CLI: $binary" >&2
+    exit 1
+  fi
+  "./node_modules/.bin/$binary" --version >/dev/null
+done
 
 echo "✅ CI toolchain installed"

@@ -6,8 +6,8 @@
 # ensures all jobs share the same Node version and install procedure.
 #
 # Harvested from Wedding parallel project — adapted for FamilyDashBoard:
-#   · Uses parent-level package-lock.json for npm cache key
-#   · Runs .github/ci/install-tools.sh for shared-toolchain installation
+#   · Uses this repository's package-lock.json for the npm cache key
+#   · Runs .github/ci/install-tools.sh for the repository-local installation
 #   · Supports optional node-version and install-args inputs
 # =============================================================================
 name: "Node Setup"
@@ -34,7 +34,7 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         cache: "npm"
-        cache-dependency-path: "../package-lock.json"
+        cache-dependency-path: "package-lock.json"
 
     - name: Install CI toolchain
       shell: bash

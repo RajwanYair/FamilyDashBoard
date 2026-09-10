@@ -1,6 +1,6 @@
 /**
  * Shared ESLint config factory for vanilla JavaScript browser apps.
- * Source of truth: MyScripts/tooling/eslint/js-browser-app.mjs
+ * Source of truth: FamilyDashBoard/tooling/eslint/js-browser-app.mjs
  * Keep in sync when upgrading ESLint.
  *
  * Usage:

@@ -1,6 +1,6 @@
 /**
  * Shared ESLint config factory for Node.js / Cloudflare Worker TypeScript apps.
- * Source of truth: MyScripts/tooling/eslint/node-ts-app.mjs
+ * Source of truth: FamilyDashBoard/tooling/eslint/node-ts-app.mjs
  * Keep in sync when upgrading ESLint / typescript-eslint.
  *
  * Usage:

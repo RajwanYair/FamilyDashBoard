@@ -7,7 +7,7 @@ inputs:
   node-version:
     description: "Node.js version to use"
     required: false
-    default: "22"
+    default: "24"
   working-directory:
     description: "Repo root (where package.json lives)"
     required: false
@@ -37,13 +37,13 @@ runs:
     - name: "TypeScript typecheck"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: npx tsc --noEmit
+      run: npm exec --no -- tsc --noEmit
 
     # ── 2. Lint ───────────────────────────────────────────────────────────────
     - name: "ESLint (zero warnings)"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: npx eslint src tests --max-warnings 0
+      run: npm exec --no -- eslint src tests --max-warnings 0
 
     # ── 3. Markdown lint ──────────────────────────────────────────────────────
     - name: "Markdownlint"
@@ -57,7 +57,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        npx vitest run
+        npm exec --no -- vitest run
         echo "exit-code=0" >> "$GITHUB_OUTPUT"
 
     # ── 5. Build (optional) ───────────────────────────────────────────────────

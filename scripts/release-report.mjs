@@ -98,9 +98,12 @@ process.stderr.write(
 );
 
 const gates = [
-  { label: "TypeScript (tsc --noEmit)", result: gate("npx tsc --noEmit") },
-  { label: "ESLint (0 warnings)", result: gate("npx eslint src tests --max-warnings 0") },
-  { label: "Vitest unit tests", result: gate("npx vitest run") },
+  { label: "TypeScript (tsc --noEmit)", result: gate("npm exec --no -- tsc --noEmit") },
+  {
+    label: "ESLint (0 warnings)",
+    result: gate("npm exec --no -- eslint src tests --max-warnings 0"),
+  },
+  { label: "Vitest unit tests", result: gate("npm exec --no -- vitest run") },
   { label: "Bundle size check", result: gate("node scripts/check-bundle-size.mjs") },
   { label: "SW version check", result: gate("node scripts/check-sw-version.mjs") },
 ];

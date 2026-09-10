@@ -45,7 +45,7 @@ jobs:
         run: bash .github/ci/install-tools.sh
 
       - name: Run coverage
-        run: npx vitest run --coverage --coverage.reportsDirectory=./coverage-output
+        run: npm exec --no -- vitest run --coverage --coverage.reportsDirectory=./coverage-output
 
       - name: Locate coverage-summary.json
         id: locate

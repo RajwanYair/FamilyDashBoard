@@ -1,7 +1,7 @@
 /**
  * Shared ESLint config factory for TypeScript web apps — vendored into this
  * repo for CI self-sufficiency.
- * Source of truth: MyScripts/tooling/eslint/web-ts-app.mjs
+ * Source of truth: this repository's tooling/eslint/web-ts-app.mjs
  * Keep in sync when upgrading ESLint / typescript-eslint.
  */
 import js from "@eslint/js";

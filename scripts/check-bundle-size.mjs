@@ -17,7 +17,7 @@
  * Usage:
  *   node scripts/check-bundle-size.mjs
  *
- * Prerequisite: run `npx vite build` first.
+ * Prerequisite: run `npm exec --no -- vite build` first.
  */
 
 import { readdirSync, readFileSync, statSync, existsSync } from "node:fs";
@@ -47,7 +47,9 @@ function checkAssets(ext, budgetKb) {
   try {
     files = readdirSync(DIST_ASSETS).filter((f) => f.endsWith(ext));
   } catch {
-    console.error(`\u274C  dist/assets/ not found — run 'npx vite build' first`);
+    console.error(
+      `\u274C  dist/assets/ not found — run 'npm exec --no -- vite build' first`,
+    );
     process.exit(1);
   }
 

@@ -4,7 +4,7 @@
  * Isolated card harness for development and visual review.
  * Not listed in rollupOptions.input — excluded from production builds.
  *
- * Usage:  npx vite  →  http://localhost:3000/FamilyDashBoard/preview.html?card=news
+ * Usage:  npm exec --no -- vite  →  http://localhost:3000/FamilyDashBoard/preview.html?card=news
  *
  * URL params:
  *   ?card=<id>   — card to mount on load (default: "news")

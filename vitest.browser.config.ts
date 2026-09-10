@@ -4,11 +4,11 @@
  * activated browser-mode testing with real Chromium.
  * Tests in tests/browser/ run in headless Chromium via @vitest/browser-playwright.
  *
- * Requirements (installed in MyScripts/package.json):
+ * Requirements (installed in this repository's package.json):
  *   @vitest/browser@^4.1.5   @vitest/browser-playwright@^4.1.5
- *   npx playwright install chromium
+ *   npm exec --no -- playwright install chromium
  *
- * Run: npx vitest --config vitest.browser.config.ts
+ * Run: npm exec --no -- vitest --config vitest.browser.config.ts
  */
 
 import { defineConfig } from "vitest/config";

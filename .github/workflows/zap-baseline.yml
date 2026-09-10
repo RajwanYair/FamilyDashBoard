@@ -10,7 +10,7 @@
 #
 # Harvested from Wedding parallel project — adapted for FamilyDashBoard:
 #   · Builds with --base / for local HTTP serving (not --base ./FamilyDashBoard/)
-#   · Served on port 4173 via npx serve
+#   · Served on port 4173 via the repository-local serve binary
 #   · No .zap/rules.tsv yet — add one to suppress known false positives
 #
 # Run: weekly Sunday 05:37 UTC + manual dispatch
@@ -43,11 +43,11 @@ jobs:
         run: bash .github/ci/install-tools.sh
 
       - name: Build (base / for local HTTP serving)
-        run: npx vite build --base /
+        run: npm exec --no -- vite build --base /
 
       - name: Serve dist on port 4173
         run: |
-          npx --yes serve -l 4173 dist &
+          npm exec --no -- serve -l 4173 dist &
           # Wait until the server is ready (up to 20 seconds)
           for i in $(seq 1 10); do
             if curl -fsS http://127.0.0.1:4173/ > /dev/null 2>&1; then

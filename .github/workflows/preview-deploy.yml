@@ -45,7 +45,7 @@ jobs:
         run: bash .github/ci/install-tools.sh
 
       - name: Build (GitHub Pages base)
-        run: npx vite build
+        run: npm exec --no -- vite build
         working-directory: ${{ github.workspace }}
         env:
           NODE_ENV: production

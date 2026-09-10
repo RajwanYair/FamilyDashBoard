@@ -1,6 +1,6 @@
 /**
  * Shared Vitest base config — vendored into this repo for CI self-sufficiency.
- * Source of truth: MyScripts/tooling/vitest/base.mjs
+ * Source of truth: FamilyDashBoard/tooling/vitest/base.mjs
  * Keep in sync when upgrading Vitest.
  *
  * pool=forks with dynamic fork count targets < 30 s for 3265 tests.

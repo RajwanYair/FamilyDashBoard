@@ -23,9 +23,9 @@ Closes #
 
 ## Testing
 
-- [ ] `npx vitest run` — 0 failures
-- [ ] `npx tsc --noEmit` — 0 errors
-- [ ] `npx eslint src tests --max-warnings 0` — 0 warnings
+- [ ] `npm exec --no -- vitest run` — 0 failures
+- [ ] `npm exec --no -- tsc --noEmit` — 0 errors
+- [ ] `npm exec --no -- eslint src tests --max-warnings 0` — 0 warnings
 - [ ] Tested in Chrome (desktop full-screen, 1920×1080)
 - [ ] RTL Hebrew layout verified
 - [ ] All relevant cards load correctly
@@ -43,7 +43,7 @@ Closes #
 - [ ] New cards registered in `src/core/card-registry.ts`
 - [ ] New overlays use `<dialog>` + `showModal()` / `close()`
 - [ ] New CSS rules go in the correct `@layer` (tokens/themes/base/layout/components/animations)
-- [ ] Dev deps go in `MyScripts/package.json`, never in `FamilyDashBoard/package.json`
+- [ ] Root-only dev deps go in `FamilyDashBoard/package.json`; browser runtime deps remain forbidden
 - [ ] No `eslint-disable`, `@ts-ignore`, or `@ts-expect-error` added
 
 ## Screenshots

@@ -42,22 +42,12 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Generate lock file (required by @cyclonedx/cyclonedx-npm)
-        # Must run BEFORE installing devtools so the lock file only reflects
-        # actual package.json dependencies (zero for FamilyDashBoard).
-        # @cyclonedx/cyclonedx-npm --package-lock-only requires a lock file.
-        run: npm install --package-lock-only --ignore-scripts
-
-      - name: Install CI toolchain (production deps only)
-        run: |
-          # FamilyDashBoard shares node_modules from parent MyScripts/
-          # In CI we install just what we need for SBOM generation
-          npm install --no-save --no-package-lock --ignore-scripts \
-            "@cyclonedx/cyclonedx-npm"
+      - name: Install root dependencies
+        run: npm ci --ignore-scripts
 
       - name: Generate SBOM (JSON)
         run: |
-          npx --yes @cyclonedx/cyclonedx-npm \
+          npm exec --no -- cyclonedx-npm \
             --output-format JSON \
             --output-file sbom.cdx.json \
             --omit dev \
@@ -65,7 +55,7 @@ jobs:
 
       - name: Generate SBOM (XML)
         run: |
-          npx --yes @cyclonedx/cyclonedx-npm \
+          npm exec --no -- cyclonedx-npm \
             --output-format XML \
             --output-file sbom.cdx.xml \
             --omit dev \

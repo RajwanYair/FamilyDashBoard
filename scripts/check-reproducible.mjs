@@ -106,7 +106,7 @@ const manifest = {
     steps: [
       "1. Clone the repository at the exact commit above.",
       "2. Run: bash .github/ci/install-tools.sh",
-      "3. Run: npm run build (from MyScripts/ parent directory, then cd FamilyDashBoard)",
+      "3. Run: npm run build from the repository root",
       "4. Run: node scripts/build-sw.mjs",
       "5. Run: zip -r dist.zip dist/ -x 'dist/**/*.map'",
       "6. Compute: sha256sum dist.zip",

@@ -3,8 +3,8 @@ version: 2
 #   - GitHub Actions updates (root) — owned by Dependabot.
 #   - Cloudflare Worker npm deps (/worker) — owned by Dependabot (real prod deps).
 #   - Root npm deps — owned by Renovate (see renovate.json) for richer grouping
-#     (TypeScript+@types, Vite+Vitest, ESLint family, etc.). Devs run npm install
-#     from parent MyScripts/, so the root package.json holds metadata + scripts.
+#     (TypeScript+@types, Vite+Vitest, ESLint family, etc.). Root dependencies
+#     and package-lock.json are committed in this repository.
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"

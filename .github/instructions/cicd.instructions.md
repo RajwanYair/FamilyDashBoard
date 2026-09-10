@@ -11,9 +11,9 @@ description: "Use when: editing CI/CD workflows, GitHub Actions, or any YAML con
 - Node.js version in CI: **24** — set via `node-version: '24'` in `actions/setup-node@v4`.
 - Use the dedicated Pages and Release action majors already present in this repo unless a workflow change explicitly requires otherwise.
 - Set `permissions: contents: read` (least privilege)
-- **No `npm ci` / no `cache: "npm"` / no `package-lock.json`** in this project (worker/ is the exception — it has its own lock file)
+- Root CI uses the committed `package-lock.json`; `worker/` uses its own committed lockfile
 - All workflows install tools via `bash .github/ci/install-tools.sh`
-- CI runs: `npx tsc --noEmit` → `npx eslint src tests --max-warnings 0` → `npx markdownlint-cli2 "**/*.md"` → `npx vitest run` → `npx vite build`
+- CI runs local binaries through `npm exec --no --`: `tsc` → `eslint` → `markdownlint-cli2` → `vitest` → `vite build`
 - Bundle size violations must `exit 1` — never use `::warning::` for size budget failures
 - Deploy via GitHub Pages on push to `main` (`deploy.yml`)
 - Release: `release.yml` auto-attaches artifacts on tags (`vX.Y.Z`)
@@ -36,15 +36,15 @@ Keep `.github/workflows/README.md` aligned with any workflow changes.
 
 | Context             | How tools are provided                                                        |
 | ------------------- | ----------------------------------------------------------------------------- |
-| Local dev           | `npm install` in `MyScripts/` (parent) — Node walks up to find `node_modules` |
-| CI (GitHub Actions) | `.github/ci/install-tools.sh` — `npm install --no-save --no-package-lock`     |
+| Local dev           | `npm ci --ignore-scripts` from this repository                         |
+| CI (GitHub Actions) | `.github/ci/install-tools.sh` — root and Worker `npm ci --ignore-scripts` |
 
-> To update tool versions: edit **both** `MyScripts/package.json` AND `.github/ci/install-tools.sh`.
+> To update tool versions: edit `package.json` and regenerate the committed `package-lock.json`.
 
 ## Shared Tooling Layout
 
-- Shared Node-based tools live in `MyScripts/node_modules/`
-- Shared reusable config can live in `MyScripts/tooling/`
+- Repository-local Node-based tools live in `node_modules/`
+- Shared reusable config for this project lives in `tooling/`
 - Repository-specific workflow logic stays in this workspace
 - Do not move project-only paths, aliases, includes, or coverage rules into shared tooling without proving they are reusable
 

@@ -45,8 +45,8 @@
  * Screenshots are stored in tests/e2e/__screenshots__/ and compared
  * on subsequent runs via Playwright's built-in snapshot comparison.
  *
- * Run locally:  npx playwright test tests/e2e/visual-regression.spec.ts
- * Update refs:  npx playwright test tests/e2e/visual-regression.spec.ts --update-snapshots
+ * Run locally:  npm exec --no -- playwright test tests/e2e/visual-regression.spec.ts
+ * Update refs:  npm exec --no -- playwright test tests/e2e/visual-regression.spec.ts --update-snapshots
  *
  * Themes: black · blue · matrix · amber · purple · rose
  * Modes:  default (normal) · compact (2-col) · focus (1-col)

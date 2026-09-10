@@ -1,6 +1,6 @@
 /**
  * Vitest Node.js preset — for server-side / Worker / pure-TS unit tests.
- * Source of truth: MyScripts/tooling/vitest/node.mjs
+ * Source of truth: FamilyDashBoard/tooling/vitest/node.mjs
  * Keep in sync when upgrading Vitest.
  *
  * Usage in vitest.config.ts:

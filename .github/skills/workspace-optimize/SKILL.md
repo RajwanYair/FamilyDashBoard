@@ -19,7 +19,7 @@ argument-hint: "Describe the audit scope: 'full', 'generated-files', 'vscode-set
 ## Prerequisites
 
 - PowerShell terminal
-- Node.js installed (via parent `MyScripts/node_modules/`)
+- Node.js installed and root dependencies installed from `package-lock.json`
 
 ## Steps
 

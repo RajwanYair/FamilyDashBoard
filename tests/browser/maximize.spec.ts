@@ -5,7 +5,7 @@
  * They cover behaviours that require actual layout (getBoundingClientRect)
  * and browser APIs (View Transitions) unavailable in happy-dom.
  *
- * Run: npx vitest --config vitest.browser.config.ts
+ * Run: npm exec --no -- vitest --config vitest.browser.config.ts
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";

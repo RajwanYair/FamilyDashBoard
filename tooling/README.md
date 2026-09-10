@@ -1,10 +1,10 @@
 # Shared Tooling Configs
 
 > Version: 9.4.0 · Vendored into FamilyDashBoard for CI self-sufficiency.
-> Source of truth: FamilyDashBoard `tooling/` (evolved beyond parent stubs) → sync back to `MyScripts/tooling/` for sibling adoption.
+> Source of truth: FamilyDashBoard `tooling/`. These configs are vendored so this repository remains independently buildable.
 
-All TypeScript/JavaScript projects under `MyScripts/` share a single `node_modules/` install.
-Each project extends these shared configs and adds only project-specific overrides.
+The repository owns its root `node_modules/` install and package lockfile. Each
+project config extends these vendored presets and adds only project-specific overrides.
 
 ## Sync Status (audited v14.22.0)
 

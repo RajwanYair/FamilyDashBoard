@@ -66,7 +66,6 @@
         "@container",
         "light-dark"
     ],
-
     // ── Files ──
     "files.eol": "\n",
     "files.insertFinalNewline": true,
@@ -74,23 +73,19 @@
     "files.associations": {
         "*.html": "html"
     },
-
     // ── HTML ──
     "html.format.wrapLineLength": 120,
     "html.format.indentInnerHtml": true,
     "html.autoClosingTags": true,
-
     // ── Emmet ──
     "emmet.includeLanguages": {
         "html": "html"
     },
-
     // ── Git ──
     "git.autofetch": "all",
     "git.autofetchPeriod": 300,
     "git.enableSmartCommit": true,
     "git.confirmSync": false,
-
     // ── GitHub Copilot ──
     "github.copilot.enable": {
         "*": true,
@@ -117,7 +112,6 @@
     "chat.skillsFilesLocations": {
         ".github/skills": true
     },
-
     // ── Spell Check ──
     "cSpell.words": [
         "rajwan",
@@ -131,7 +125,6 @@
         "PLTR",
         "familydashboard"
     ],
-
     // ── Search ──
     "search.exclude": {
         "**/node_modules": true,
@@ -140,10 +133,8 @@
         "**/coverage": true,
         "**/test-results": true
     },
-
     // ── Markdownlint — exclude auto-generated Playwright artefacts ──
     "markdownlint.ignore": ["test-results/**", "dist/**", "coverage/**", "**/node_modules/**"],
-
     // ── Terminal Performance ──
     "terminal.integrated.gpuAcceleration": "on",
     "terminal.integrated.smoothScrolling": false,
@@ -166,7 +157,6 @@
             "icon": "terminal-powershell"
         }
     },
-
     // ── Testing — use terminal only, not VS Code test explorer ──
     "nodejs-testing.enable": false,
     "vitest.enable": false,
@@ -282,5 +272,11 @@
         "**/coverage/**": true,
         "**/test-results/**": true,
         "**/.git/objects/**": true
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
     }
 }

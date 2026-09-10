@@ -1,6 +1,6 @@
 /**
  * Vitest happy-dom preset — for DOM-heavy browser unit tests.
- * Source of truth: MyScripts/tooling/vitest/happy-dom.mjs
+ * Source of truth: FamilyDashBoard/tooling/vitest/happy-dom.mjs
  * Keep in sync when upgrading Vitest or happy-dom.
  *
  * Usage in vitest.config.ts:

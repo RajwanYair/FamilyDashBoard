@@ -19,8 +19,8 @@ Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.m
 | Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                                      |
 | CSS approach     | **Vanilla CSS** with `@layer`, design tokens, `color-mix()`                                                | No preprocessor; cascade-aware; container queries                    |
 | Module format    | **ES Modules** native `import`/`export`                                                                    |                                                                      |
-| npm model        | Tools installed at parent **`MyScripts/`**; shared configs vendored into `tooling/`; no local lock file    | Single-root install for all scripts in the monorepo                  |
-| CI               | `.github/ci/install-tools.sh` — no `npm ci` or lock file needed; `tooling/` is self-contained              |                                                                      |
+| npm model        | Root development tools are pinned in `package.json` + `package-lock.json`; Worker has its own lockfile      | Independent repository-local installs                                  |
+| CI               | `.github/ci/install-tools.sh` runs root and Worker `npm ci --ignore-scripts`; configs are vendored in `tooling/` |                                                                      |
 | Tooling ESLint   | `tooling/eslint/web-ts-app.mjs` (browser TS) · `node-ts-app.mjs` (Node/Worker) · `js-browser-app.mjs` (JS) | Shared factory functions; project-specific overrides only            |
 | Tooling Vitest   | `tooling/vitest/base.mjs` · `happy-dom.mjs` (DOM) · `node.mjs` (server)                                    | Layered presets; projects extend the relevant preset                 |
 | Tooling tsconfig | `tooling/tsconfig/base-typescript.json` (browser/bundler) · `base-node.json` (Node/Worker)                 | All TS projects extend one of these bases                            |

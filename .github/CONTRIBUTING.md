@@ -29,18 +29,15 @@ Thank you for your interest in contributing! This guide covers everything you ne
 
 ## Setup
 
-All dev tools live in the **parent** `MyScripts/` directory, not in this project.
+Development tools live in this repository's root `devDependencies` and are locked by `package-lock.json`.
 
 ```powershell
-# From the parent MyScripts/ directory:
-npm install
-
-# Then you can run commands from FamilyDashBoard/:
-cd FamilyDashBoard
-npx vite          # dev server at http://localhost:5173
+# From the FamilyDashBoard/ directory:
+npm ci --ignore-scripts
+npm run dev       # dev server at http://localhost:5173
 ```
 
-> **Important**: Never run `npm install` inside `FamilyDashBoard/`. There is no local `package-lock.json` — this is intentional. All dependencies resolve from `MyScripts/node_modules/`.
+> **Important**: Keep the root `package-lock.json` committed. Worker dependencies are installed separately from `worker/package-lock.json`.
 
 ---
 
@@ -48,25 +45,25 @@ npx vite          # dev server at http://localhost:5173
 
 ```powershell
 # Type-check
-npx tsc --noEmit
+npm exec --no -- tsc --noEmit
 
 # Lint (must be 0 errors, 0 warnings)
-npx eslint src tests --max-warnings 0
+npm exec --no -- eslint src tests --max-warnings 0
 
 # Markdown lint
-npx markdownlint-cli2 "**/*.md"
+npm exec --no -- markdownlint-cli2 "**/*.md"
 
 # Run all tests
-npx vitest run
+npm exec --no -- vitest run
 
 # Run tests with coverage
-npx vitest run --coverage
+npm exec --no -- vitest run --coverage
 
 # Build for GitHub Pages
-npx vite build
+npm exec --no -- vite build
 
 # Build for local file:// access
-npx vite build --base ./
+npm exec --no -- vite build --base ./
 
 # Run everything (full quality gate)
 npm run check

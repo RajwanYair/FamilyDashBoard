@@ -83,7 +83,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install tools (parent MyScripts/)
+      - name: Install repository-local tools
         run: bash .github/ci/install-tools.sh --ignore-scripts
 
       # ── 4. Clean build ─────────────────────────────────────────────────────

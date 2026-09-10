@@ -2,11 +2,9 @@
  * Stryker mutation testing configuration (V12-TESTING ).
  *
  * Targets the SimHash utility and its property invariants.
- * Run with: npx stryker run scripts/stryker.config.mjs
+ * Run with: npm exec --no -- stryker run scripts/stryker.config.mjs
  *
- * Install Stryker in the MyScripts parent before running:
- *   npm install -D @stryker-mutator/core @stryker-mutator/vitest-runner
- *   (from MyScripts/ directory — never add devDeps to FamilyDashBoard/package.json)
+ * Stryker is installed in this repository's devDependencies.
  *
  * Score targets ( + V13 + + + + + + additions):
  *   - simhash.ts            : mutation score ≥ 85%

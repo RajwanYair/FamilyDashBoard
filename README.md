@@ -154,8 +154,7 @@ best experience, open in **full-screen mode** (F11) and connect your display
 to a large TV.
 
 > **Note:** Some browsers restrict `file://` access for service-worker features.
-> For full offline support, serve the folder via a local server:
-> `npx serve dist` from the unzipped folder.
+> For full offline support, serve the folder with an existing local HTTP server.
 
 ---
 
@@ -165,29 +164,25 @@ to a large TV.
 # 1. Clone the repo
 git clone https://github.com/RajwanYair/FamilyDashBoard.git
 
-# 2. Install tools from the parent directory
-cd MyScripts
-npm install
+# 2. Install the repository-local toolchain
+cd FamilyDashBoard
+npm ci --ignore-scripts
 
 # 3. Start dev server
-cd FamilyDashBoard
-npx vite        # → http://localhost:3000/FamilyDashBoard/
+npm run dev        # → http://localhost:5173/
 ```
 
-> **Monorepo note:** `FamilyDashBoard` is a sub-project of `MyScripts/`. There is intentionally **no local `package-lock.json`** and no local `devDependencies`. All dev tools (`typescript`, `vite`, `vitest`, `eslint`, `prettier`, …) resolve from the parent `MyScripts/node_modules/`. The CI pipeline installs them via `.github/ci/install-tools.sh`.
->
-> - **Never** run `npm install` inside `FamilyDashBoard/`.
-> - Run `npm install` from `MyScripts/` to set up the shared toolchain.
+> **Toolchain note:** Root development tools are declared in `package.json` and locked in `package-lock.json`. The Worker retains a separate `worker/package-lock.json`; browser runtime dependencies remain zero.
 
 ### Available Commands
 
 ```powershell
-npx vite                              # Dev server
-npx tsc --noEmit                      # Type-check (0 errors)
-npx eslint src tests --max-warnings 0 # Lint (0 errors, 0 warnings)
-npx prettier --check .                # Format check (0 issues)
-npx vitest run                        # Run all tests
-npx vite build                        # Production build → dist/
+npm run dev                           # Dev server
+npm exec --no -- tsc --noEmit        # Type-check (0 errors)
+npm exec --no -- eslint src tests --max-warnings 0 # Lint (0 errors, 0 warnings)
+npm exec --no -- prettier --check .  # Format check (0 issues)
+npm exec --no -- vitest run           # Run all tests
+npm exec --no -- vite build           # Production build → dist/
 npm run check                         # All quality gates
 ```
 
@@ -392,7 +387,7 @@ See [ROADMAP.md](docs/ROADMAP.md) for the full strategic plan and stream priorit
 
 | Symptom                                         | Likely cause                             | Fix                                                           |
 | ----------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------- |
-| `npm install` fails inside `FamilyDashBoard/`   | All deps live in the parent `MyScripts/` | `cd ..` then `npm install`                                    |
+| Local tool is missing                         | Root dependencies are not installed     | `npm ci --ignore-scripts`                                     |
 | A card shows the red sync indicator             | Direct fetch + 3 proxies failed          | Press **D** to open diagnostics; reload to retry              |
 | Stale data after refresh                        | `cGet` hit a stale cache layer           | Press **D**, click "Clear cache", or wait for next interval   |
 | Build complains about per-card warn-cap (38 KB) | A card grew past the budget              | Refactor; warn-cap is informational, hard-cap is 80 KB        |

@@ -59,15 +59,26 @@ function runTests() {
       }
     }
 
-    const cmd = `npx vitest run --reporter=json --outputFile="${BENCHMARK_JSON}"`;
     // stderr inherited so real failures surface; stdout ignored to avoid mixing
     // the JSON reporter's stdout with our progress output.
-    const child = spawn(cmd, [], {
-      cwd: PROJECT_ROOT,
-      stdio: ["ignore", "ignore", "inherit"],
-      shell: true,
-      windowsHide: true,
-    });
+    const npmExecutable = process.platform === "win32" ? "npm.cmd" : "npm";
+    const child = spawn(
+      npmExecutable,
+      [
+        "exec",
+        "--no",
+        "--",
+        "vitest",
+        "run",
+        "--reporter=json",
+        `--outputFile=${BENCHMARK_JSON}`,
+      ],
+      {
+        cwd: PROJECT_ROOT,
+        stdio: ["ignore", "ignore", "inherit"],
+        windowsHide: true,
+      },
+    );
 
     const startedAt = Date.now();
     let settled = false;

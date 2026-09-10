@@ -1,9 +1,9 @@
 # GitHub Copilot Instructions — FamilyDashBoard v15.7.0
 
 > TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 7 Themes · 12 Cards · Vite 8 + TS 6.0.3 + Vitest 4.1.6
-> **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
-> No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`. Shared configs vendored into `tooling/`.
-> Validation: `npm run check` for the canonical repository gate; `npx vitest run` and `npx eslint src tests --max-warnings 0` for focused checks
+> **All tools are installed locally** — run `npm ci` from this repository after cloning
+> Root `package-lock.json` and `devDependencies` are committed. Shared configs are vendored into `tooling/`.
+> Validation: `npm run check` for the canonical repository gate; use `npm exec --no -- vitest run` and `npm exec --no -- eslint src tests --max-warnings 0` for focused checks
 > Coverage thresholds: see `vitest.config.ts`
 
 ## Mandatory Rules
@@ -22,7 +22,7 @@
 12. `_tempUnit` = `'C'`/`'F'` (NOT `_useFahrenheit`)
 13. Stock columns: `width` + `flex-shrink: 0` (NOT `min-width`)
 14. Grep `id="X"` in `index.html` before keeping any loader — dead elements = dead code
-15. Dev deps go in `MyScripts/package.json` (parent) — **never** add `devDependencies` to `FamilyDashBoard/package.json`
+15. Root-only development tools go in `FamilyDashBoard/package.json`; browser runtime dependencies remain forbidden
 
 ## Key Names & Gotchas
 

@@ -98,7 +98,7 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 - CI explicitly installs the YAML parser used by workflow regression tests and pins Prettier 3.8.3 to the verified shared formatter. Upgrade formatting locally and in CI together; a floating range produced inconsistent formatting failures with 3.9.6.
 - Scorecard is pinned to upstream v2.4.4, which uses GHCR instead of the GCR image that failed with a registry billing error.
 - Windows workspace tasks explicitly select `pwsh.exe`; PowerShell failure checks must not execute under `cmd`.
-- Copilot setup targets Node 24 without npm caching against a nonexistent root lockfile; installation remains owned by the shared CI installer.
+- Copilot setup targets Node 24 and uses the committed root lockfile through the repository-local CI installer.
 - A successful historical release does not validate a new commit. Record CI, Pages, security, and tagged-release results against their exact SHAs.
 - Existing checkout/setup-node v4 pins still emit Node runtime deprecation notices on hosted runners. A verified runtime-native action migration requires revising the repository's explicit v4 policy; forcing Node 24 alone does not resolve these notices.
 

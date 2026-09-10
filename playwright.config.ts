@@ -6,8 +6,8 @@ import { tmpdir } from "node:os";
  * FamilyDashBoard — Playwright Configuration
  *
  * E2E tests live in tests/e2e/.
- * Run locally: npx playwright test
- * Run in CI:   npx playwright test --reporter=github
+ * Run locally: npm exec --no -- playwright test
+ * Run in CI:   npm exec --no -- playwright test --reporter=github
  *
  * Intermediate artefacts (test-results/, playwright-report/) are written to
  * $TEMP/fdb-dev/playwright so the project directory stays clean.
@@ -137,7 +137,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: "npx vite",
+    command: "npm exec --no -- vite",
     url: "http://localhost:3000/FamilyDashBoard/",
     reuseExistingServer: !process.env["CI"],
     timeout: 30_000,

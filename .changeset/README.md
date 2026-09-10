@@ -34,4 +34,4 @@ FamilyDashBoard is a static PWA with no npm package publication. The `access: "r
 
 ## Setup
 
-`@changesets/cli` is installed in the **parent** `MyScripts/` workspace. Run `npm install` from there if the `changeset` command is missing.
+`@changesets/cli` is installed in this repository's devDependencies. Run `npm ci --ignore-scripts` after cloning if the `changeset` command is missing.

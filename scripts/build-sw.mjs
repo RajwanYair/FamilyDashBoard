@@ -5,8 +5,8 @@
  * Usage (called by vite.config.ts injectSwVersion plugin after build):
  *   node scripts/build-sw.mjs <version>
  *
- * TypeScript is resolved from the parent node_modules (MyScripts/node_modules).
- * No extra dependencies — typescript is already a dev dep via the monorepo.
+ * TypeScript is resolved from this repository's node_modules.
+ * No extra dependencies — typescript is already a local dev dependency.
  */
 import { createRequire } from "node:module";
 import { readFileSync, writeFileSync } from "node:fs";
@@ -22,14 +22,9 @@ if (!version) {
   process.exit(1);
 }
 
-// Resolve typescript from local node_modules first (CI), then parent monorepo (dev).
+// Resolve TypeScript from the repository-local dependency graph.
 const require = createRequire(import.meta.url);
-let ts;
-try {
-  ts = require("typescript");
-} catch {
-  ts = require("../../node_modules/typescript");
-}
+const ts = require("typescript");
 
 const swTs = readFileSync(resolve(ROOT, "sw.ts"), "utf-8");
 

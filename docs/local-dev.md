@@ -10,17 +10,16 @@ Three verified workflows for running and testing the dashboard locally.
 
 ## 📦 Prerequisites
 
-All dev tools live in the **parent** `MyScripts/` directory:
+All development tools are installed in this repository and pinned by
+`package-lock.json`:
 
 ```powershell
-# Run ONCE from the parent directory
-cd "C:\Users\ryair\OneDrive - Intel Corporation\Documents\MyScripts"
-npm install
+# Run once after cloning, from FamilyDashBoard/
+npm ci --ignore-scripts
 ```
 
-> **Never run `npm install` inside `FamilyDashBoard/`.**
-> There is no `package-lock.json` here — all dependencies resolve from
-> `MyScripts/node_modules/`.
+> Keep the root `package-lock.json` committed. Worker dependencies are
+> installed separately with `npm ci --ignore-scripts` from `worker/`.
 
 ---
 
@@ -28,7 +27,7 @@ npm install
 
 ```powershell
 cd FamilyDashBoard
-npx vite
+npm run dev
 ```
 
 Open <http://localhost:5173> in Chrome.
@@ -51,7 +50,7 @@ Use this to verify the exact production build before tagging a release.
 ```powershell
 cd FamilyDashBoard
 npm run build        # tsc -b && vite build --base /FamilyDashBoard/
-npx vite preview     # serves dist/ at http://localhost:4173
+npm run preview      # serves dist/ at http://localhost:4173
 ```
 
 Open <http://localhost:4173/FamilyDashBoard/>.
@@ -144,7 +143,7 @@ sequence:
 
    ```powershell
    cd FamilyDashBoard
-   npx vite
+   npm run dev
    ```
 
    The `stripDevCsp` Vite plugin (see `vite.config.ts`, `apply: "serve"`) removes
@@ -184,7 +183,7 @@ sequence:
 
 | Problem                       | Fix                                                                                                                                                                                                      |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npx: not found`              | Run from `MyScripts/` first: `cd ..\; npm install`                                                                                                                                                       |
+| `npm exec` cannot find a tool | Run `npm ci --ignore-scripts` from the repository root                                                                                                                                                    |
 | Cards show "Loading…" forever | Cloudflare Worker may be down — check <https://github.com/RajwanYair/FamilyDashBoard/actions>                                                                                                            |
 | Blank screen on `file://`     | Use `npm run build:local`, not `npm run build`                                                                                                                                                           |
 | SW not updating               | DevTools → Application → Service Workers → "Update on reload"                                                                                                                                            |
@@ -198,7 +197,7 @@ sequence:
 All common workflows are wired as VS Code tasks (`Ctrl+Shift+B`):
 
 - **✅ Check All** — `npm run check` (full quality gate)
-- **🚀 Dev Server** — `npx vite`
-- **🔬 Vitest: Run All Tests** — `npx vitest run`
+- **🚀 Dev Server** — `npm run dev`
+- **🔬 Vitest: Run All Tests** — `npm exec --no -- vitest run`
 - **🏗️ Build: GitHub Pages** — `npm run build`
 - **🏗️ Build: Local file://** — `npm run build:local`

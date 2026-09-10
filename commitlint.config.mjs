@@ -4,7 +4,7 @@
  * Enforces Conventional Commits format:
  *   <type>(<scope>): <subject>
  *
- * Install (in parent MyScripts/):
+ * Install in this repository:
  *   npm install --save-dev @commitlint/cli @commitlint/config-conventional
  *
  * Activate (in package.json scripts):

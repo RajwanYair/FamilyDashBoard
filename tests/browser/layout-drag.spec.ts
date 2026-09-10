@@ -4,7 +4,7 @@
  * Tests drag-and-drop layout state using real Chromium DOM APIs.
  * Requires @vitest/browser + @vitest/browser-playwright (installed ).
  *
- * Run: npx vitest --config vitest.browser.config.ts
+ * Run: npm exec --no -- vitest --config vitest.browser.config.ts
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";

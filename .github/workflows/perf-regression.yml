@@ -59,7 +59,7 @@ jobs:
 
       # ── PR branch build ──────────────────────────────────────────────────────
       - name: Build PR branch
-        run: npx vite build
+        run: npm exec --no -- vite build
 
       - name: Measure PR bundle size
         id: pr_size
@@ -77,7 +77,7 @@ jobs:
           git stash --include-untracked 2>/dev/null || true
           git checkout ${{ github.event.pull_request.base.sha }}
           bash .github/ci/install-tools.sh
-          npx vite build
+          npm exec --no -- vite build
         continue-on-error: true
 
       - name: Measure base bundle size
@@ -103,11 +103,10 @@ jobs:
       - name: Run Lighthouse for Web Vitals
         id: lighthouse
         run: |
-          npm install -g @lhci/cli@0.14.x --silent --ignore-scripts
-          npx vite preview --port 4173 &
+          npm exec --no -- vite preview --port 4173 &
           PREVIEW_PID=$!
           sleep 4
-          lhci collect --url=http://localhost:4173/ --settings.preset=desktop --numberOfRuns=1 || true
+          npm exec --no -- lhci collect --url=http://localhost:4173/ --settings.preset=desktop --numberOfRuns=1 || true
           kill "$PREVIEW_PID" 2>/dev/null || true
           if [ -f ".lighthouseci/lhr-0.json" ]; then
             LCP=$(jq '.audits["largest-contentful-paint"].numericValue // 0' .lighthouseci/lhr-0.json)

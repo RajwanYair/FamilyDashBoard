@@ -37,13 +37,14 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Install root dependencies
+        run: npm ci --ignore-scripts
+
       - name: Run markdown-link-check
         id: lc
         continue-on-error: true
         run: |
           set -euo pipefail
-          npm install --no-save --no-package-lock markdown-link-check@^3.13.0 >/dev/null
-
           echo "→ Scanning .md files (excluding node_modules, dist, coverage)…"
           FAILED=0
           REPORT=""
@@ -56,7 +57,7 @@ jobs:
             -not -path "./test-results/*")
 
           for f in "${FILES[@]}"; do
-            OUT=$(npx markdown-link-check --quiet --config .github/link-check.config.json "$f" 2>&1 || true)
+            OUT=$(npm exec --no -- markdown-link-check --quiet --config .github/link-check.config.json "$f" 2>&1 || true)
             if echo "$OUT" | grep -qE "ERROR:|✖"; then
               REPORT+="### $f"$'\n```\n'"$OUT"$'\n```\n\n'
               FAILED=1

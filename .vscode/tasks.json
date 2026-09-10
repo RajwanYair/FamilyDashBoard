@@ -4,7 +4,11 @@
         "options": {
             "shell": {
                 "executable": "pwsh.exe",
-                "args": ["-NoLogo", "-NoProfile", "-Command"]
+                "args": [
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-Command"
+                ]
             }
         }
     },
@@ -18,7 +22,10 @@
                 "reveal": "always",
                 "panel": "dedicated"
             },
-            "problemMatcher": ["$tsc", "$eslint-stylish"]
+            "problemMatcher": [
+                "$tsc",
+                "$eslint-stylish"
+            ]
         },
         {
             "label": "✅ Repository Quality Gate",
@@ -32,7 +39,10 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": ["$tsc", "$eslint-stylish"]
+            "problemMatcher": [
+                "$tsc",
+                "$eslint-stylish"
+            ]
         },
         {
             "label": "🔬 Vitest: Run All Tests",
@@ -102,7 +112,9 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": ["$eslint-stylish"]
+            "problemMatcher": [
+                "$eslint-stylish"
+            ]
         },
         {
             "label": "🔧 ESLint: Fix src + tests",
@@ -113,7 +125,9 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": ["$eslint-stylish"]
+            "problemMatcher": [
+                "$eslint-stylish"
+            ]
         },
         {
             "label": "🏷️ TypeScript: Type Check",
@@ -124,7 +138,9 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": ["$tsc"]
+            "problemMatcher": [
+                "$tsc"
+            ]
         },
         {
             "label": "🏗️ Build: GitHub Pages",
@@ -135,7 +151,9 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": ["$tsc"]
+            "problemMatcher": [
+                "$tsc"
+            ]
         },
         {
             "label": "🏗️ Build: Local file://",
@@ -146,7 +164,9 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": ["$tsc"]
+            "problemMatcher": [
+                "$tsc"
+            ]
         },
         {
             "label": "📝 Markdownlint: Docs",
@@ -193,7 +213,9 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": ["$tsc"]
+            "problemMatcher": [
+                "$tsc"
+            ]
         },
         {
             "label": "🚀 Dev Server",
@@ -309,7 +331,10 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": ["$tsc", "$eslint-stylish"],
+            "problemMatcher": [
+                "$tsc",
+                "$eslint-stylish"
+            ],
             "detail": "Full production gate: typecheck + lint + test + e2e + bundle size"
         },
         {
@@ -373,9 +398,9 @@
             "detail": "Run coverage with output to $TEMP (not in workspace)"
         },
         {
-            "label": "🔧 Repair Shared Toolchain Resolution",
+            "label": "🔧 Repair Local Toolchain",
             "type": "shell",
-            "command": "$ErrorActionPreference = 'Stop'; $repo = (Get-Location).Path; $shared = Join-Path $HOME 'OneDrive - Intel Corporation\\Documents\\MyScripts\\node_modules'; $local = Join-Path $repo 'node_modules'; if (-not (Test-Path $shared)) { throw \"Shared node_modules not found: $shared\" }; if (-not (Test-Path $local)) { New-Item -ItemType Junction -Path $local -Target $shared | Out-Null }; Write-Host \"Resolution junction: $local -> $shared\"; npm exec -- tsc --noEmit; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npm exec -- vitest run tests/unit/core/freshness.test.ts --reporter=dot; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
+            "command": "$ErrorActionPreference = 'Stop'; npm ci --ignore-scripts; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npm exec --no -- tsc --noEmit; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npm exec --no -- vitest run tests/unit/core/freshness.test.ts --reporter=dot; exit $LASTEXITCODE",
             "isBackground": false,
             "problemMatcher": [],
             "group": "build"
@@ -392,6 +417,88 @@
             "label": "🔬 Freshness Test Threads",
             "type": "shell",
             "command": "npm exec -- vitest run tests/unit/core/freshness.test.ts --pool=threads --reporter=dot",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "S01-R1 focused video-news validation",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; npm exec -- vitest run tests/unit/cards/video-news.test.ts --pool=threads --maxWorkers=1 --reporter=dot; exit $LASTEXITCODE",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "S01-R1 formatting and state check",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; npm exec -- prettier --check tests/unit/cards/video-news.test.ts docs/local-dev.md docs/ROADMAP.md; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; git status --short --branch; git diff --check; gh issue list --state open --search 'S01-R1 no-live-network' --limit 5 --json number,title,state,url; gh branch --help | Out-Null",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "S01-R1 create tracking",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; $issue = gh issue create --title 'S01-R1: add no-live-network video fixture' --body 'Implement the S01-R1 determinism fixture for video-news initialization. Prove that channel iframe URLs are represented without triggering live network navigation, preserve existing channel behavior, and document the focused validation evidence. Acceptance: no external iframe requests during the focused suite, no unexpected console errors, and existing video-news assertions remain intact.'; Write-Output $issue; git switch -c test/s01-r1-video-network-fixture; git status --short --branch",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "S01-R1 focused lint",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; npm exec -- eslint tests/unit/cards/video-news.test.ts --max-warnings 0; exit $LASTEXITCODE",
+            "isBackground": false,
+            "problemMatcher": [
+                "$eslint-stylish"
+            ],
+            "group": "test"
+        },
+        {
+            "label": "S01-R1 roadmap formatting",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; npm exec -- prettier --check docs/ROADMAP.md; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; git diff --check; exit $LASTEXITCODE",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "S01-R2 worker audit probe",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Continue'; Push-Location worker; npm audit --audit-level=moderate; $code = $LASTEXITCODE; Pop-Location; Write-Output \"WORKER_AUDIT_EXIT=$code\"; exit 0",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "S01-R2 repair Worker audit lock",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; Push-Location worker; npm audit fix --package-lock-only --ignore-scripts; if ($LASTEXITCODE -ne 0) { $code = $LASTEXITCODE; Pop-Location; exit $code }; npm ci --ignore-scripts; if ($LASTEXITCODE -ne 0) { $code = $LASTEXITCODE; Pop-Location; exit $code }; npm audit --audit-level=moderate; $code = $LASTEXITCODE; Pop-Location; Write-Output \"WORKER_AUDIT_EXIT=$code\"; exit $code",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "S01-R2 validate Worker audit scope",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; Push-Location worker; npm install --package-lock-only --ignore-scripts; if ($LASTEXITCODE -ne 0) { $code = $LASTEXITCODE; Pop-Location; exit $code }; npm ci --ignore-scripts; if ($LASTEXITCODE -ne 0) { $code = $LASTEXITCODE; Pop-Location; exit $code }; npm audit --audit-level=moderate; if ($LASTEXITCODE -ne 0) { $code = $LASTEXITCODE; Pop-Location; exit $code }; npm exec -- tsc --noEmit; if ($LASTEXITCODE -ne 0) { $code = $LASTEXITCODE; Pop-Location; exit $code }; Pop-Location; npm exec -- vitest run tests/unit/ops/security-doc.test.ts --pool=threads --maxWorkers=1 --reporter=dot; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npm exec -- prettier --check worker/package.json worker/package-lock.json .github/workflows/security.yml .github/workflows/README.md tests/unit/ops/security-doc.test.ts; exit $LASTEXITCODE",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "S01-R2 format security fixture",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; npm exec -- prettier --write tests/unit/ops/security-doc.test.ts; exit $LASTEXITCODE",
+            "isBackground": false,
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "S01-R2 rerun Worker validation",
+            "type": "shell",
+            "command": "$ErrorActionPreference = 'Stop'; Push-Location worker; npm audit --audit-level=moderate; if ($LASTEXITCODE -ne 0) { $code = $LASTEXITCODE; Pop-Location; exit $code }; npm exec -- tsc --noEmit; if ($LASTEXITCODE -ne 0) { $code = $LASTEXITCODE; Pop-Location; exit $code }; Pop-Location; npm exec -- vitest run tests/unit/ops/security-doc.test.ts --pool=threads --maxWorkers=1 --reporter=dot; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npm exec -- prettier --check worker/package.json worker/package-lock.json .github/workflows/security.yml .github/workflows/README.md tests/unit/ops/security-doc.test.ts; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; git diff --check; exit $LASTEXITCODE",
             "isBackground": false,
             "problemMatcher": [],
             "group": "test"

@@ -73,13 +73,7 @@ jobs:
           node-version: "24"
 
       - name: npm audit (high+ severity, production deps)
-        # Must run BEFORE install-tools.sh so that npm install --package-lock-only
-        # only resolves actual package.json deps (zero for FamilyDashBoard).
-        # Running after install-tools.sh contaminates the lock file with
-        # devtool transitive deps (e.g. @lhci/cli → cookie/tmp/uuid).
-        run: |
-          npm install --package-lock-only --ignore-scripts --silent
-          npm audit --omit=dev --audit-level=high
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
@@ -91,7 +85,7 @@ jobs:
 
       - name: License compliance check
         run: |
-          npx --yes license-checker --production \
+          npm exec --no -- license-checker --production \
             --failOn "GPL-3.0-only;AGPL-3.0-only;GPL-3.0-or-later;AGPL-3.0-or-later" \
             --summary || {
             echo "::error::Found disallowed licenses in production dependencies (GPL-3.0/AGPL-3.0)"
@@ -100,10 +94,8 @@ jobs:
 
       # Worker has its own lock file — audit it separately
       - name: Worker npm audit
-        run: |
-          cd worker
-          npm install --package-lock-only --ignore-scripts --silent
-          npm audit --omit=dev --audit-level=high
+        working-directory: worker
+        run: npm audit --omit=dev --audit-level=high
 
       # On scheduled weekly runs: open a GitHub Issue if any check above failed
       - name: Create security issue on scheduled failure

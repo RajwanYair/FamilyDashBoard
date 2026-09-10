@@ -145,7 +145,7 @@ No secrets are committed to the repository. GitHub native secret scanning is ena
 | ------------- | --------------------------------- | --------------------------------------- |
 | Client        | **0 runtime deps**                | No npm audit surface                    |
 | Worker        | `hono`, `valibot` (validation)    | `npm audit --audit-level=high` in CI    |
-| Dev toolchain | Multiple (in parent `MyScripts/`) | Dependabot monthly; reviewed in release |
+| Dev toolchain | Root `devDependencies` pinned by `package-lock.json` | Dependabot monthly; reviewed in release |
 
 `npm audit --audit-level=high` runs in the CI `security` job. Current status: **0 high+ vulnerabilities**.
 
@@ -217,7 +217,7 @@ Since SRI is N/A for bundled build artifacts, the equivalent supply-chain integr
 | Control                 | Implementation                                                                   |
 | ----------------------- | -------------------------------------------------------------------------------- |
 | Source integrity        | All commits signed via GitHub; branch protection requires PR review              |
-| Build reproducibility   | Vite build is deterministic per `package-lock.json` at `MyScripts/` parent       |
+| Build reproducibility   | Vite build is deterministic per the repository-root `package-lock.json`         |
 | Dependency pinning      | Dependabot opens PRs for `package.json` updates (`.github/dependabot.yml`)       |
 | Dependency audit        | `npm audit --audit-level=high` runs in CI on every push                          |
 | SBOM                    | `npm sbom --sbom-format cyclonedx` can be run per ADR-027                        |

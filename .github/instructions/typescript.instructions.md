@@ -79,7 +79,7 @@ description: "Use when: writing or reviewing TypeScript source files in src/. Ru
 - No hardcoded colors — CSS custom properties only
 - No `self.skipWaiting()` in SW install handler — only via `SKIP_WAITING` message
 - No external JS/CSS libraries — zero runtime dependencies
-- No `devDependencies` in `FamilyDashBoard/package.json` — all go in `MyScripts/package.json`
+- Root-only development tools belong in `FamilyDashBoard/package.json`; browser runtime dependencies remain forbidden
 
 ## Service Worker (sw.ts)
 
@@ -88,7 +88,7 @@ description: "Use when: writing or reviewing TypeScript source files in src/. Ru
 - **Version injection**: `declare const __APP_VERSION__: string;` at top — never hardcode a version string in sw.ts
 - **SyncEvent**: declared inline — `interface SyncEvent extends ExtendableEvent { readonly tag: string; readonly lastChance: boolean; }`
 - **tsconfig**: `tsconfig.sw.json` uses `lib: ["ES2020","WebWorker"]` — run `npm run typecheck:sw` to verify
-- **Build script**: `node scripts/build-sw.mjs <version>` — uses TypeScript `transpileModule` from parent `node_modules`
+- **Build script**: `node scripts/build-sw.mjs <version>` — uses TypeScript `transpileModule` from local `node_modules`
 - Never use `esbuild` directly — it is embedded in Vite and not available as a standalone package in this monorepo
 
 ## Extension Integration

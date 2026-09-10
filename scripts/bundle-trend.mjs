@@ -14,7 +14,7 @@
  *   node scripts/bundle-trend.mjs --ci            # output JSON to stdout only (no file write)
  *   node scripts/bundle-trend.mjs --ci [version]
  *
- * Prerequisite: run `npx vite build` first (dist/assets must exist).
+ * Prerequisite: run `npm exec --no -- vite build` first (dist/assets must exist).
  *
  * Output: scripts/bundle-trend.json (created if absent, appended otherwise)
  *         With --ci, writes JSON to stdout and exits without modifying the file.
@@ -44,7 +44,9 @@ function toKb(bytes) {
 // ── Collect sizes from dist/assets ─────────────────────────────────────────
 
 if (!existsSync(DIST_ASSETS)) {
-  console.error('[bundle-trend] dist/assets not found — run "npx vite build" first.');
+  console.error(
+    '[bundle-trend] dist/assets not found — run "npm exec --no -- vite build" first.',
+  );
   process.exit(1);
 }
 

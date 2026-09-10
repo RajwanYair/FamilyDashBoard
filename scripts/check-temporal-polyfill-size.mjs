@@ -44,10 +44,9 @@ function totalSize(dir) {
   return total;
 }
 
-// Check if the polyfill is installed (in parent node_modules per project convention)
+// Check if the optional polyfill is installed in the repository-local toolchain.
 const candidates = [
   join(root, "node_modules", "@js-temporal", "polyfill"),
-  join(root, "..", "node_modules", "@js-temporal", "polyfill"),
 ];
 
 const polyDir = candidates.find((c) => existsSync(c));
