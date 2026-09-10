@@ -19,6 +19,7 @@ import { renderConfigFields, readConfigValues } from "@/ui/config-auto-render";
 import { showToast } from "@/ui/toast";
 import { t } from "@/core/i18n";
 import { diagLog } from "@/core/diag";
+import { captureOverlayFocus, restoreOverlayFocus } from "@/ui/overlay-focus";
 import "./card-settings-dialog.css";
 
 // ── Singleton dialog ───────────────────────────────────────────────────────
@@ -120,6 +121,7 @@ function getOrCreateDialog(): HTMLDialogElement {
 
   dlg.addEventListener("close", () => {
     _currentCardId = null;
+    restoreOverlayFocus("card-settings-dialog");
   });
 
   document.body.appendChild(dlg);
@@ -168,6 +170,7 @@ export async function openCardSettings(cardId: string): Promise<void> {
   const bodyEl = dlg.querySelector<HTMLElement>(".csd__body");
   if (bodyEl) renderConfigFields(fields, values, bodyEl);
 
+  captureOverlayFocus("card-settings-dialog", dlg);
   dlg.showModal();
 }
 

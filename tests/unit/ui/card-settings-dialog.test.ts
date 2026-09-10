@@ -250,6 +250,28 @@ describe("Card Settings Dialog — openCardSettings", () => {
     expect(dlg?.hasAttribute("open")).toBe(true);
   });
 
+  it("returns focus to the opening control when the dialog closes", async () => {
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    document.body.appendChild(trigger);
+    trigger.focus();
+    vi.mocked(loadCard).mockResolvedValue(makeCardDef("calendar", true));
+    vi.mocked(getCard).mockReturnValue({
+      id: "calendar",
+      icon: "📅",
+      titleHe: "לוח שנה",
+      titleEn: "Calendar",
+      load: vi.fn(),
+    });
+
+    const { openCardSettings } = await import("@/ui/card-settings-dialog");
+    await openCardSettings("calendar");
+    const dlg = document.getElementById("card-settings-dialog") as HTMLDialogElement;
+    dlg.close();
+
+    expect(document.activeElement).toBe(trigger);
+  });
+
   it("sets dialog title to card icon + titleHe", async () => {
     vi.mocked(loadCard).mockResolvedValue(makeCardDef("hebrew-cal", true));
     vi.mocked(getCard).mockReturnValue({
