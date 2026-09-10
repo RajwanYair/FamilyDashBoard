@@ -216,7 +216,7 @@
 
 /* F110: Visited articles dimming */
 .rss-item.visited {
-  opacity: 0.45;
+  border-inline-end-color: var(--text-muted);
 }
 .rss-item.visited .rss-title {
   text-decoration: line-through;
@@ -251,13 +251,13 @@
 
 /* F136: News article age tinting */
 .rss-item.stale-half {
-  opacity: 0.8;
+  border-inline-end-color: var(--warning);
 }
 .rss-item.stale-day {
-  opacity: 0.6;
+  border-inline-end-color: var(--text-muted);
 }
 .rss-item.stale-old {
-  opacity: 0.35;
+  border-inline-end-color: var(--text-secondary);
 }
 
 /* F144: News category badges */
