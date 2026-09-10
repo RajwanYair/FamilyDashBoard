@@ -40,7 +40,7 @@ import {
   addDays,
   startOfDayMs,
 } from "../../core/temporal";
-import { markFresh, renderFreshnessBadge } from "../../core/freshness";
+import { markFresh, removeFreshnessBadge, renderFreshnessBadge } from "../../core/freshness";
 
 // X15: cached snapshot of next event for the semantic-clipboard producer.
 let _nextEventSnapshot: { title: string; startMs: number; isAllDay: boolean } | null = null;
@@ -594,7 +594,7 @@ async function loadCalendar(): Promise<void> {
   if (fresh !== null) {
     const events = [...parseICS(fresh, 0), ...loadExtraEventsFromCache(urls)];
     renderCalendar(events);
-    setSync("cal", "ok");
+    setSync("cal", "ok", { fresh: false });
     releaseLock("cal");
     return;
   }
@@ -670,6 +670,7 @@ export function destroyCalendarCard(): void {
     clearInterval(_calScheduleId);
     _calScheduleId = null;
   }
+  removeFreshnessBadge("cal");
 }
 
 // configSchema ────────────────────────────────────────────────

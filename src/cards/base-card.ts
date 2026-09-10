@@ -45,7 +45,7 @@ export function createCardLoader<T>(
     if (fresh) {
       hideCardSkeleton(opts.id);
       renderData(fresh);
-      setSync(opts.id, "ok");
+      setSync(opts.id, "ok", { fresh: false });
       releaseLock(opts.id);
       _firstLoad = false;
       return;
@@ -66,7 +66,8 @@ export function createCardLoader<T>(
       if (validate && !validate(data)) {
         diagLog(`[${opts.id}] API response failed validation — using stale cache`);
         hideCardSkeleton(opts.id);
-        setSync(opts.id, stale ? "ok" : "error");
+        if (stale) setSync(opts.id, "ok", { fresh: false });
+        else setSync(opts.id, "error");
         recordFailure(opts.id);
         return;
       }
@@ -83,7 +84,8 @@ export function createCardLoader<T>(
     } catch (err) {
       diagLog(`[${opts.id}] Load failed: ${String(err)}`);
       hideCardSkeleton(opts.id);
-      setSync(opts.id, stale ? "ok" : "error");
+      if (stale) setSync(opts.id, "ok", { fresh: false });
+      else setSync(opts.id, "error");
       recordFailure(opts.id);
     } finally {
       _firstLoad = false;
@@ -124,7 +126,7 @@ export function createAsyncCardLoader<T>(
     if (fresh !== null) {
       hideCardSkeleton(opts.id);
       renderData(fresh);
-      setSync(opts.id, "ok");
+      setSync(opts.id, "ok", { fresh: false });
       releaseLock(opts.id);
       _firstLoad = false;
       return;
@@ -145,7 +147,8 @@ export function createAsyncCardLoader<T>(
       if (validate && !validate(data)) {
         diagLog(`[${opts.id}] API response failed validation — using stale cache`);
         hideCardSkeleton(opts.id);
-        setSync(opts.id, stale !== null ? "ok" : "error");
+        if (stale !== null) setSync(opts.id, "ok", { fresh: false });
+        else setSync(opts.id, "error");
         recordFailure(opts.id);
         return;
       }
@@ -162,7 +165,8 @@ export function createAsyncCardLoader<T>(
     } catch (err) {
       diagLog(`[${opts.id}] Load failed: ${String(err)}`);
       hideCardSkeleton(opts.id);
-      setSync(opts.id, stale !== null ? "ok" : "error");
+      if (stale !== null) setSync(opts.id, "ok", { fresh: false });
+      else setSync(opts.id, "error");
       recordFailure(opts.id);
     } finally {
       _firstLoad = false;

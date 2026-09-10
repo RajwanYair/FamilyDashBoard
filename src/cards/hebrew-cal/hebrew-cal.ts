@@ -35,7 +35,7 @@ import {
   addDays,
   nowISO,
 } from "../../core/temporal";
-import { markFresh, renderFreshnessBadge } from "../../core/freshness";
+import { markFresh, removeFreshnessBadge, renderFreshnessBadge } from "../../core/freshness";
 
 // Pure Hebrew-cal utility functions ───────────────────────────
 
@@ -328,6 +328,12 @@ let _candlesTime: Date | null = null;
 let _havdalaTime: Date | null = null;
 let _countdownInterval: ReturnType<typeof setInterval> | null = null;
 let _hebCalScheduleId: number | null = null;
+let _networkFetchObserved = false;
+
+function markHebCalNetworkFetch(): void {
+  _networkFetchObserved = true;
+  markFresh("hebcal");
+}
 
 // X15: semantic-clipboard producer for hebrew-cal.
 function buildHebrewCalPayload(): SemanticPayload | null {
@@ -406,6 +412,7 @@ async function loadCandlesHavdala(): Promise<void> {
   const d = await fetchJSONWithWorker<HebcalResponse>(
     `${API.HEBCAL}/shabbat?cfg=json&geonameid=${geonameid}&M=on`,
   );
+  markHebCalNetworkFetch();
   if (d.items) {
     await cSetAsync(key, d);
     renderCandlesHavdala(d.items);
@@ -444,6 +451,7 @@ async function loadHoliday(): Promise<void> {
   const d = await fetchJSONWithWorker<HebcalResponse>(
     `${API.HEBCAL}?v=1&cfg=json&maj=on&min=on&year=${now.getFullYear()}&month=x`,
   );
+  markHebCalNetworkFetch();
   if (d.items) {
     await cSetAsync(key, d);
     renderHoliday(d.items, now);
@@ -558,6 +566,7 @@ async function loadOmer(): Promise<void> {
   const d = await fetchJSONWithWorker<HebcalResponse>(
     `${API.HEBCAL}?v=1&cfg=json&omer=on&maj=off&min=off&ss=off&mf=off&year=${yr}&month=${mo}&day=${dy}`,
   );
+  markHebCalNetworkFetch();
   const item = d.items?.find((i) => i.category === "omer") ?? null;
   // Only cache positive omer results — never cache null, so a failed/off-season
   // fetch doesn't permanently suppress the row until the key expires.
@@ -661,6 +670,7 @@ async function loadDafYomi(): Promise<void> {
         url?: string | undefined;
       }>;
     }>(API.SEFARIA_CALENDAR);
+    markHebCalNetworkFetch();
     const daf = d.calendar_items?.find((i) => i.title?.en?.toLowerCase().includes("daf yomi"));
     const item = daf ? { ref: daf.ref, heRef: daf.title.he, url: daf.url } : null;
     await cSetAsync(key, item);
@@ -760,6 +770,7 @@ export function startCountdown(): void {
 
 // ── Main load function ──
 async function loadHebCal(): Promise<void> {
+  _networkFetchObserved = false;
   setSync("hebcal", "loading");
   try {
     // Start all async loads eagerly — fresh-cache paths resolve synchronously,
@@ -775,10 +786,11 @@ async function loadHebCal(): Promise<void> {
     // post-settlement dedup re-check below.
     await loadHoliday();
     await settled;
-    setSync("hebcal", "ok");
-    syncBurst("hebcal");
-    recordSuccess("hebcal");
-    markFresh("hebcal");
+    setSync("hebcal", "ok", { fresh: _networkFetchObserved });
+    if (_networkFetchObserved) {
+      syncBurst("hebcal");
+      recordSuccess("hebcal");
+    }
     // Post-settlement dedup: if loadOmer's fetch raced ahead of loadHoliday,
     // the special row might duplicate the holiday row.  Correct it now that
     // _lastHolidayName is guaranteed to be set.
@@ -904,6 +916,7 @@ async function loadZmanim(): Promise<void> {
   const url = `${API.ZMANIM}?cfg=json&geonameid=${geonameid}&date=${todayStr}&tzid=Asia%2FJerusalem`;
   try {
     const data = await fetchJSONWithWorker<ZmanimResponse>(url);
+    markHebCalNetworkFetch();
     if (data?.times) {
       await cSetAsync(key, data);
       renderZmanim(data.times);
@@ -1019,6 +1032,7 @@ export function destroyHebrewCalCard(): void {
     clearInterval(_countdownInterval);
     _countdownInterval = null;
   }
+  removeFreshnessBadge("hebcal");
 }
 
 /** Render pending family tasks as a compact strip inside the heb-cal card. */

@@ -23,14 +23,13 @@ function buildStatusBarDOM(): void {
   document.body.innerHTML = `
     <div id="version-badge"></div>
     <div id="refresh-stamp"></div>
-    <div id="sync-weather" class="sync-dot"></div>
+    <div id="sync-wx" class="sync-dot"></div>
     <div id="sync-news" class="sync-dot"></div>
-    <div id="sync-stocks" class="sync-dot"></div>
-    <div id="sync-currency" class="sync-dot"></div>
+    <div id="sync-stk" class="sync-dot"></div>
+    <div id="sync-cur" class="sync-dot"></div>
     <div id="sync-alerts" class="sync-dot"></div>
     <div id="sync-hebcal" class="sync-dot"></div>
     <div id="sync-cal" class="sync-dot"></div>
-    <div id="sync-moti" class="sync-dot"></div>
   `;
 }
 
@@ -150,14 +149,13 @@ describe("Status Bar — version badge format", () => {
 
   it("all sync dots remain in DOM after initStatusBar", () => {
     const ids = [
-      "sync-weather",
+      "sync-wx",
       "sync-news",
-      "sync-stocks",
-      "sync-currency",
+      "sync-stk",
+      "sync-cur",
       "sync-alerts",
       "sync-hebcal",
       "sync-cal",
-      "sync-moti",
     ];
     for (const id of ids) {
       expect(document.getElementById(id)).not.toBeNull();
@@ -177,7 +175,7 @@ describe("Status Bar — registerSyncDots partial DOM", () => {
     document.body.innerHTML = `
       <div id="version-badge"></div>
       <div id="refresh-stamp"></div>
-      <div id="sync-weather" class="sync-dot"></div>
+      <div id="sync-wx" class="sync-dot"></div>
       <div id="sync-news" class="sync-dot"></div>
     `;
     vi.resetModules();

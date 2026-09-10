@@ -35,7 +35,7 @@ import type { NewsItem } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
-import { renderFreshnessBadge } from "../../core/freshness";
+import { removeFreshnessBadge, renderFreshnessBadge } from "../../core/freshness";
 import { deduplicateBySimHash } from "../../core/simhash";
 import { recordDedupStats } from "../../core/feed-stats";
 import {
@@ -1587,6 +1587,7 @@ export function destroyNewsCard(): void {
     _newsRefreshInterval = null;
   }
   detachPersistenceListeners();
+  removeFreshnessBadge("news");
 }
 
 // configSchema ────────────────────────────────────────────────

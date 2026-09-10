@@ -36,7 +36,7 @@ import { getLastCurrencyRates } from "../currency/currency";
 import { fetchTASE, isTASETicker } from "./tase-adapter";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
-import { markFresh, renderFreshnessBadge } from "../../core/freshness";
+import { markFresh, removeFreshnessBadge, renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 import { today, fromDateString } from "../../core/temporal";
 
@@ -853,6 +853,7 @@ export async function loadAllStocks(): Promise<void> {
 
   const ttl = getStockTTL();
   const uncached: string[] = [];
+  let hasCachedData = false;
 
   // Phase 1: Serve cached data immediately
   for (const sym of STOCK_SYMBOLS) {
@@ -862,11 +863,13 @@ export async function loadAllStocks(): Promise<void> {
     if (fresh) {
       renderStock(blk, fresh, sym);
       setStockStaleState(blk, sym, false);
+      hasCachedData = true;
     } else {
       const stale = cGetStale<YahooChartResponse>(`stk-${sym}`);
       if (stale) {
         renderStock(blk, stale, sym, true);
         setStockStaleState(blk, sym, true);
+        hasCachedData = true;
       }
       uncached.push(sym);
     }
@@ -885,14 +888,12 @@ export async function loadAllStocks(): Promise<void> {
       recordSuccess("stocks");
       markFresh("stocks");
     } else {
-      setSync("stocks", uncached.length === STOCK_SYMBOLS.length ? "error" : "ok");
+      if (hasCachedData) setSync("stocks", "ok", { fresh: false });
+      else setSync("stocks", "error");
       recordFailure("stocks");
     }
   } else {
-    setSync("stocks", "ok");
-    syncBurst("stocks");
-    recordSuccess("stocks");
-    markFresh("stocks");
+    setSync("stocks", "ok", { fresh: false });
   }
 
   releaseLock("stocks");
@@ -1197,6 +1198,7 @@ export function destroyStocksCard(): void {
     clearTimeout(_stocksRefreshInterval);
     _stocksRefreshInterval = null;
   }
+  removeFreshnessBadge("stocks");
 }
 
 // configSchema ────────────────────────────────────────────────

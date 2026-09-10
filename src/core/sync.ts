@@ -10,6 +10,10 @@ import { diagLog } from "./diag";
 
 export type SyncState = "ok" | "loading" | "error";
 export type FreshnessLevel = "fresh" | "aging" | "stale";
+export interface SyncOptions {
+  /** Set false when displaying cached data without a successful retrieval. */
+  fresh?: boolean;
+}
 
 const syncDots = new Map<string, HTMLElement>();
 const _lastOkTime = new Map<string, number>();
@@ -29,13 +33,13 @@ export function registerSyncDot(name: string, el: HTMLElement): void {
 /**
  * Update a sync dot's visual state.
  */
-export function setSync(name: string, state: SyncState): void {
+export function setSync(name: string, state: SyncState, options: SyncOptions = {}): void {
   const dot = syncDots.get(name);
   if (!dot) return;
   dot.className = "sync-dot";
   if (state !== "ok") dot.classList.add(state);
   // S59: Record last successful fetch time for freshness tracking
-  if (state === "ok") _lastOkTime.set(name, Date.now());
+  if (state === "ok" && options.fresh !== false) _lastOkTime.set(name, Date.now());
   const labels: Record<SyncState, string> = {
     ok: "סנכרון תקין",
     loading: "טוען...",

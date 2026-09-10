@@ -17,7 +17,7 @@ import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../core/semantic-clipboard";
 import type { CardConfigField } from "../../types/card";
 import { formatTimeHHMM } from "../../core/temporal";
-import { markFresh, renderFreshnessBadge } from "../../core/freshness";
+import { markFresh, removeFreshnessBadge, renderFreshnessBadge } from "../../core/freshness";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -139,7 +139,7 @@ async function loadAiSynthesisData(): Promise<void> {
   if (!cfg.synthesisEnabled) {
     renderDisabled();
     setCardSignal("ai-synthesis", "synthesis", null); // X12: clear signal when disabled
-    setSync("ai-synthesis", "ok");
+    setSync("ai-synthesis", "ok", { fresh: false });
     return;
   }
 
@@ -150,7 +150,7 @@ async function loadAiSynthesisData(): Promise<void> {
   if (cached?.synthesis) {
     renderSynthesis(cached.synthesis, "cached");
     setCardSignal("ai-synthesis", "synthesis", { text: cached.synthesis }); // X12
-    setSync("ai-synthesis", "ok");
+    setSync("ai-synthesis", "ok", { fresh: false });
     return;
   }
 
@@ -250,6 +250,7 @@ export function destroyAiSynthesisCard(): void {
   _elText = null;
   _elMeta = null;
   _elSpeakBtn = null;
+  removeFreshnessBadge("ai-synthesis");
 }
 
 /** Reset module-level state — for unit tests only. */

@@ -1982,7 +1982,7 @@ describe("Stocks — loadAllStocks partial failure sets sync ok (line 530 FALSE 
     initStocksCard();
     for (let i = 0; i < 100; i++) await Promise.resolve();
     // setSync("stocks", "ok") should have been called (partial failure = ok, not error)
-    expect(vi.mocked(setSync)).toHaveBeenCalledWith("stocks", "ok");
+    expect(vi.mocked(setSync)).toHaveBeenCalledWith("stocks", "ok", { fresh: false });
   });
 });
 

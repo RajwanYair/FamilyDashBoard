@@ -945,7 +945,7 @@ describe("FdbCard.loadData ", () => {
     };
     await card["loadData"]("dt4", 60_000);
     expect(card.renderCalls).toContainEqual("stale-data");
-    expect(setSync).toHaveBeenCalledWith("dt4", "ok");
+    expect(setSync).toHaveBeenCalledWith("dt4", "ok", { fresh: false });
   });
 
   it("sets sync to error when fetchCardData returns null and no stale (line 550)", async () => {

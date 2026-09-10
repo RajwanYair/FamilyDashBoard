@@ -84,7 +84,7 @@ describe("Base Card — createCardLoader fresh cache hit", () => {
 
     expect(fetchData).not.toHaveBeenCalled();
     expect(renderData).toHaveBeenCalledWith(cachedData);
-    expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok");
+    expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok", { fresh: false });
   });
 });
 
@@ -144,7 +144,7 @@ describe("Base Card — createCardLoader fetch error", () => {
     const load = createCardLoader(OPTS, fetchData, renderData);
     await load();
 
-    expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok");
+    expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok", { fresh: false });
     expect(freshnessMod.markFresh).not.toHaveBeenCalled();
   });
 });
@@ -363,7 +363,7 @@ describe("createAsyncCardLoader", () => {
     await load();
     expect(renderFn).toHaveBeenCalledWith({ v: 1 });
     expect(fetchFn).not.toHaveBeenCalled();
-    expect(syncMod.setSync).toHaveBeenCalledWith("test-card", "ok");
+    expect(syncMod.setSync).toHaveBeenCalledWith("test-card", "ok", { fresh: false });
   });
 
   it("fetches when async cache misses", async () => {
@@ -393,7 +393,7 @@ describe("createAsyncCardLoader", () => {
     const load = createAsyncCardLoader(OPTS, fetchFn, renderFn);
     await load();
     expect(renderFn).toHaveBeenCalledWith("stale");
-    expect(syncMod.setSync).toHaveBeenCalledWith("test-card", "ok");
+    expect(syncMod.setSync).toHaveBeenCalledWith("test-card", "ok", { fresh: false });
     expect(freshnessMod.markFresh).not.toHaveBeenCalled();
   });
 
@@ -431,7 +431,7 @@ describe("createAsyncCardLoader", () => {
     const validate = (_d: unknown): _d is number => typeof _d === "number";
     const load = createAsyncCardLoader(OPTS, fetchFn, renderFn, validate);
     await load();
-    expect(syncMod.setSync).toHaveBeenCalledWith("test-card", "ok");
+    expect(syncMod.setSync).toHaveBeenCalledWith("test-card", "ok", { fresh: false });
     expect(syncMod.recordFailure).toHaveBeenCalledWith("test-card");
   });
 });
@@ -460,7 +460,7 @@ describe("Base Card — createCardLoader validate callback", () => {
     const load = createCardLoader(OPTS, fetchData, renderData, validate);
     await load();
 
-    expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok");
+    expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok", { fresh: false });
     expect(syncMod.recordFailure).toHaveBeenCalledWith(OPTS.id);
   });
 });

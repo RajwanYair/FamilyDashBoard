@@ -31,7 +31,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { fromEpochSec } from "../../core/temporal";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
-import { markFresh, renderFreshnessBadge } from "../../core/freshness";
+import { markFresh, removeFreshnessBadge, renderFreshnessBadge } from "../../core/freshness";
 
 // X15: cached snapshot of active alerts for the semantic-clipboard producer.
 let _activeAlertsSnapshot: { count: number; areas: string[]; latestTs: number } | null = null;
@@ -425,12 +425,14 @@ export async function loadAlerts(): Promise<void> {
       _haveActive = validData.some((ev) => ev.alerts?.some((a) => now - a.time < 600));
     } else {
       _haveActive = false;
-      setSync("alerts", stale ? "ok" : "error");
+      if (stale) setSync("alerts", "ok", { fresh: false });
+      else setSync("alerts", "error");
       recordFailure("alerts");
     }
   } catch (err) {
     diagLog(`FDB-021: [alerts] Error: ${String(err)}`);
-    setSync("alerts", stale ? "ok" : "error");
+    if (stale) setSync("alerts", "ok", { fresh: false });
+    else setSync("alerts", "error");
     recordFailure("alerts");
   }
 
@@ -671,6 +673,7 @@ export function destroyAlertsCard(): void {
     _timer = null;
   }
   destroyAlertsSSE();
+  removeFreshnessBadge("alerts");
 }
 
 // configSchema ────────────────────────────────────────────────

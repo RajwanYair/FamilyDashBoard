@@ -10,7 +10,7 @@ import { trustedHTML } from "../../core/trusted-types";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
-import { renderFreshnessBadge } from "../../core/freshness";
+import { removeFreshnessBadge, renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 import "./weather.css";
 import {
@@ -950,6 +950,7 @@ export function destroyWeatherCard(): void {
   }
   _tempUnitEffect?.();
   _tempUnitEffect = null;
+  removeFreshnessBadge("wx");
 }
 
 // configSchema ────────────────────────────────────────────────

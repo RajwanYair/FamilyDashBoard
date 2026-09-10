@@ -20,7 +20,7 @@
  */
 
 import { diagLog } from "./diag";
-import { setSync, type SyncState } from "./sync";
+import { setSync, type SyncOptions, type SyncState } from "./sync";
 import { cGet, cGetStale, cSet } from "./cache";
 import { isPageVisible } from "./idle";
 import { showSkeleton, hideSkeleton } from "./skeleton";
@@ -503,9 +503,11 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
    *
    * @param state - "ok" | "loading" | "error"
    */
-  setSyncState(state: SyncState): void {
+  setSyncState(state: SyncState, options?: SyncOptions): void {
     const id = this.cardId;
-    if (id) setSync(id, state);
+    if (!id) return;
+    if (options) setSync(id, state, options);
+    else setSync(id, state);
   }
 
   // ── Render Primitives ( — 133) ──────────────────────────────────
@@ -547,7 +549,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     const fresh = cGet(cacheKey, ttl);
     if (fresh !== null) {
       this.renderCardData(fresh);
-      this.setSyncState("ok");
+      this.setSyncState("ok", { fresh: false });
       return;
     }
 
@@ -562,12 +564,14 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
         this.renderCardData(data);
         this.setSyncState("ok");
       } else {
-        this.setSyncState(stale !== null ? "ok" : "error");
+        if (stale !== null) this.setSyncState("ok", { fresh: false });
+        else this.setSyncState("error");
       }
     } catch (err) {
       diagLog(`FDB-062: [${this.cardId}] loadData failed: ${String(err)}`);
       this.onError(err instanceof Error ? err : new Error(String(err)));
-      this.setSyncState(stale !== null ? "ok" : "error");
+      if (stale !== null) this.setSyncState("ok", { fresh: false });
+      else this.setSyncState("error");
     }
   }
 

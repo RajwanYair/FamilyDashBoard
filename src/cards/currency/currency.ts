@@ -31,7 +31,7 @@ import type { CurrencyResponse, YahooChartResponse, CoinGeckoResponse } from "..
 import type { CardConfigField } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
-import { markFresh, renderFreshnessBadge } from "../../core/freshness";
+import { markFresh, removeFreshnessBadge, renderFreshnessBadge } from "../../core/freshness";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 import {
   today,
@@ -678,7 +678,7 @@ export async function loadCurrency(): Promise<void> {
   const fresh = cGet<Record<string, number>>("cur", ttl);
   if (fresh !== null) {
     renderCurrency(fresh);
-    setSync("cur", "ok");
+    setSync("cur", "ok", { fresh: false });
     releaseLock("cur");
     return;
   }
@@ -696,7 +696,8 @@ export async function loadCurrency(): Promise<void> {
     markFresh("cur");
   } catch (err) {
     diagLog(`[currency] Load failed: ${String(err)}`);
-    setSync("cur", stale !== null ? "ok" : "error");
+    if (stale !== null) setSync("cur", "ok", { fresh: false });
+    else setSync("cur", "error");
     recordFailure("cur");
   } finally {
     releaseLock("cur");
@@ -755,6 +756,7 @@ export function destroyCurrencyCard(): void {
     clearTimeout(_curScheduleId);
     _curScheduleId = null;
   }
+  removeFreshnessBadge("cur");
 }
 
 // configSchema ────────────────────────────────────────────────

@@ -423,6 +423,13 @@ describe("Sync — getFreshness (S59)", () => {
     expect(getFreshness("wx")).toBe("aging");
   });
 
+  it("does not reset age when cached data is rendered", () => {
+    setSync("wx", "ok");
+    vi.advanceTimersByTime(6 * 60 * 1000);
+    setSync("wx", "ok", { fresh: false });
+    expect(getFreshness("wx")).toBe("aging");
+  });
+
   it("returns 'stale' after 31 minutes", () => {
     setSync("wx", "ok");
     vi.advanceTimersByTime(31 * 60 * 1000);

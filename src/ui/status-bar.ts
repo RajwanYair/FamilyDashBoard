@@ -23,14 +23,13 @@ import { showToast } from "./toast";
 // ── Sync Pane Definitions ──
 // Each pane name maps to an HTML element ID for its sync indicator.
 const SYNC_PANES: Array<{ name: string; dotId: string }> = [
-  { name: "weather", dotId: "sync-weather" },
+  { name: "wx", dotId: "sync-wx" },
   { name: "news", dotId: "sync-news" },
-  { name: "stocks", dotId: "sync-stocks" },
-  { name: "currency", dotId: "sync-currency" },
+  { name: "stocks", dotId: "sync-stk" },
+  { name: "cur", dotId: "sync-cur" },
   { name: "alerts", dotId: "sync-alerts" },
   { name: "hebcal", dotId: "sync-hebcal" },
   { name: "cal", dotId: "sync-cal" },
-  { name: "moti", dotId: "sync-moti" },
 ];
 
 // ── DOM cache ──
