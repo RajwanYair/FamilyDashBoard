@@ -36,6 +36,9 @@ vi.mock("@/core/refresh-governor", () => ({
   shouldSkipRender: vi.fn().mockReturnValue(false),
   markRendered: vi.fn(),
 }));
+vi.mock("@/core/freshness", () => ({
+  markFresh: vi.fn(),
+}));
 
 import {
   createCardLoader,
@@ -52,6 +55,7 @@ import * as idleMod from "@/core/idle";
 import * as fetchMod from "@/core/fetch";
 import * as cacheMod from "@/core/cache";
 import * as syncMod from "@/core/sync";
+import * as freshnessMod from "@/core/freshness";
 
 const OPTS = { id: "test-card", ttl: 60_000, interval: 300_000 };
 
@@ -141,6 +145,24 @@ describe("Base Card — createCardLoader fetch error", () => {
     await load();
 
     expect(syncMod.setSync).toHaveBeenCalledWith(OPTS.id, "ok");
+    expect(freshnessMod.markFresh).not.toHaveBeenCalled();
+  });
+});
+
+describe("Base Card — stale fallback preserves retrieval age", () => {
+  it("marks only a newly fetched result as fresh", async () => {
+    const fetchData = vi.fn().mockResolvedValue({ fresh: true });
+    const renderData = vi.fn();
+    await createCardLoader(OPTS, fetchData, renderData)();
+    expect(freshnessMod.markFresh).toHaveBeenCalledOnce();
+  });
+
+  it("does not mark stale data as freshly retrieved", async () => {
+    vi.mocked(cacheMod.cGetStale).mockReturnValue({ stale: true });
+    const fetchData = vi.fn().mockRejectedValue(new Error("offline"));
+    const renderData = vi.fn();
+    await createCardLoader(OPTS, fetchData, renderData)();
+    expect(freshnessMod.markFresh).not.toHaveBeenCalled();
   });
 });
 
@@ -372,6 +394,14 @@ describe("createAsyncCardLoader", () => {
     await load();
     expect(renderFn).toHaveBeenCalledWith("stale");
     expect(syncMod.setSync).toHaveBeenCalledWith("test-card", "ok");
+    expect(freshnessMod.markFresh).not.toHaveBeenCalled();
+  });
+
+  it("marks a newly fetched async result as fresh", async () => {
+    const fetchFn = vi.fn<() => Promise<number>>().mockResolvedValue(42);
+    const renderFn = vi.fn();
+    await createAsyncCardLoader(OPTS, fetchFn, renderFn)();
+    expect(freshnessMod.markFresh).toHaveBeenCalledOnce();
   });
 
   it("skips when page not visible", async () => {

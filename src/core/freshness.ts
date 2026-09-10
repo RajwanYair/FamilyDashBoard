@@ -86,6 +86,24 @@ export function freshnessState(elapsedMs: number, ttlMs: number): "fresh" | "agi
   return "stale";
 }
 
+export type FreshnessClass = "unknown" | "fresh" | "aging" | "stale";
+
+/**
+ * Classify a successful retrieval without conflating it with local rendering.
+ * Provider/card callers own the TTL; stale-cache rendering must not call
+ * markFresh(), so the retrieval timestamp continues to age honestly.
+ */
+export function classifyFreshness(
+  retrievedAtMs: number | null,
+  currentMs: number,
+  ttlMs: number,
+): FreshnessClass {
+  if (retrievedAtMs === null || !Number.isFinite(retrievedAtMs)) return "unknown";
+  const elapsedMs = currentMs - retrievedAtMs;
+  if (elapsedMs < 0) return "unknown";
+  return freshnessState(elapsedMs, ttlMs);
+}
+
 // ── Internals ──────────────────────────────────────────────────────────────────
 
 function updateBadge(cardId: string, el: HTMLElement): void {
@@ -96,11 +114,18 @@ function updateBadge(cardId: string, el: HTMLElement): void {
     el.removeAttribute("data-state");
     return;
   }
-  const elapsed = nowMs() - ts;
-  el.textContent = formatRelativeTime(elapsed);
+  const currentMs = nowMs();
+  const state = classifyFreshness(ts, currentMs, 15 * MS_PER_MIN);
+  if (state === "unknown") {
+    el.textContent = "";
+    el.removeAttribute("datetime");
+    el.dataset["state"] = state;
+    return;
+  }
+  el.textContent = formatRelativeTime(currentMs - ts);
   el.setAttribute("datetime", fromEpochMs(ts).toISOString());
   // Default TTL for badge coloring: 15 min (can be overridden per-card in future)
-  el.dataset["state"] = freshnessState(elapsed, 15 * MS_PER_MIN);
+  el.dataset["state"] = state;
 }
 
 function tickAll(): void {

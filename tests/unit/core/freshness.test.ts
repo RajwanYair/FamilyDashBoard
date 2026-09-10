@@ -10,6 +10,7 @@ import {
   markFresh,
   formatRelativeTime,
   freshnessState,
+  classifyFreshness,
   renderFreshnessBadge,
   removeFreshnessBadge,
   getLastFetchMs,
@@ -65,6 +66,27 @@ describe("freshnessState", () => {
   });
 });
 
+describe("classifyFreshness", () => {
+  const NOW = 1_000_000;
+  const TTL = 15 * 60_000;
+
+  it("returns unknown when no retrieval timestamp exists", () => {
+    expect(classifyFreshness(null, NOW, TTL)).toBe("unknown");
+    expect(classifyFreshness(Number.NaN, NOW, TTL)).toBe("unknown");
+  });
+
+  it("returns unknown for a future retrieval timestamp", () => {
+    expect(classifyFreshness(NOW + 1, NOW, TTL)).toBe("unknown");
+  });
+
+  it("preserves the TTL and twice-TTL boundaries", () => {
+    expect(classifyFreshness(NOW - TTL, NOW, TTL)).toBe("fresh");
+    expect(classifyFreshness(NOW - TTL - 1, NOW, TTL)).toBe("aging");
+    expect(classifyFreshness(NOW - 2 * TTL, NOW, TTL)).toBe("aging");
+    expect(classifyFreshness(NOW - 2 * TTL - 1, NOW, TTL)).toBe("stale");
+  });
+});
+
 describe("markFresh / getLastFetchMs", () => {
   it("records timestamp on markFresh", () => {
     vi.setSystemTime(new Date("2025-06-01T12:00:00Z"));
@@ -104,6 +126,17 @@ describe("renderFreshnessBadge", () => {
     vi.setSystemTime(new Date("2025-06-01T12:20:00Z")); // 20 min later — aging (> 15 min TTL, < 30 min)
     const el = renderFreshnessBadge("currency", container);
     expect(el.dataset["state"]).toBe("aging");
+  });
+
+  it("does not present a future retrieval timestamp as fresh", () => {
+    const container = document.createElement("div");
+    vi.setSystemTime(new Date("2025-06-01T12:00:00Z"));
+    markFresh("future");
+    vi.setSystemTime(new Date("2025-06-01T11:00:00Z"));
+    const el = renderFreshnessBadge("future", container);
+    expect(el.textContent).toBe("");
+    expect(el.dataset["state"]).toBe("unknown");
+    expect(el.hasAttribute("datetime")).toBe(false);
   });
 });
 

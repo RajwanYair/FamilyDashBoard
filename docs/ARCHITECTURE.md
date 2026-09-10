@@ -168,6 +168,16 @@ Cache layers:
   L4: Service Worker cache (API endpoints, stale-while-revalidate)
 ```
 
+### Freshness contract
+
+Freshness distinguishes three timestamps: an upstream observation/publication
+time supplied by the payload, the successful local retrieval time recorded by
+[`freshness.ts`](../src/core/freshness.ts), and the later local render time.
+Each card owns its provider TTL and passes it to the classifier. Rendering
+`cGetStale` data never records a new retrieval, so an outage cannot make old
+data appear fresh. Missing, non-finite, or future timestamps are reported as
+unknown rather than being treated as fresh.
+
 ![Cache layers](../.github/assets/cache-layers.svg)
 
 ## 🔄 Data Flow — Mermaid Overview
