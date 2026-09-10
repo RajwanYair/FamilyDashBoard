@@ -18,6 +18,7 @@ import { kvGetStale, kvPut } from "../utils/kv";
 const AI_DISABLED_RESPONSE = { ok: false, error: "ai_disabled" } as const;
 const AI_MODEL = "@cf/meta/llama-3.3-70b-instruct";
 const AI_CACHE_TTL = 3600; // 1 hour
+const AI_SYNTHESIS_CACHE_TTL = 4 * 3600; // 4 hours
 
 /** Extract text from AI output (non-streaming only). */
 function extractText(output: AiTextGenerationOutput | ReadableStream): string | null {
@@ -220,7 +221,7 @@ export async function handleAiSynthesis(env: Env): Promise<Response> {
       });
     }
     const data = { synthesis: text };
-    await kvPut(env.CACHE_KV, cacheKey, data, AI_CACHE_TTL);
+    await kvPut(env.CACHE_KV, cacheKey, data, AI_SYNTHESIS_CACHE_TTL);
     return new Response(JSON.stringify({ ok: true, data, source: "ai" }), {
       status: 200,
       headers: { "Content-Type": "application/json" },

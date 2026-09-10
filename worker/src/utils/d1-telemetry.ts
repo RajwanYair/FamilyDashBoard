@@ -63,6 +63,8 @@ async function ensureLatencySchema(db: D1Database): Promise<void> {
 
 /** Number of days to retain latency samples. */
 const LATENCY_RETENTION_DAYS = 7;
+/** Number of days to retain route-hit counters. */
+export const HIT_RETENTION_DAYS = 30;
 
 /**
  * Increment the hit counter for `route` on today's UTC date.
@@ -82,6 +84,12 @@ export async function recordHit(db: D1Database, route: string): Promise<void> {
       )
       .bind(route, day)
       .run();
+    const cutoff = utcDay(Date.now() - HIT_RETENTION_DAYS * 86_400_000);
+    void db
+      .prepare(`DELETE FROM route_hits WHERE day < ?`)
+      .bind(cutoff)
+      .run()
+      .catch(() => undefined);
   } catch {
     // Telemetry errors must never surface to callers
   }
@@ -105,7 +113,11 @@ export async function recordLatency(db: D1Database, route: string, ms: number): 
       .bind(route, day, Math.round(ms))
       .run();
     // Prune stale samples (fire-and-forget — non-critical)
-    void db.prepare(`DELETE FROM route_latency WHERE day < ?`).bind(cutoff).run();
+    void db
+      .prepare(`DELETE FROM route_latency WHERE day < ?`)
+      .bind(cutoff)
+      .run()
+      .catch(() => undefined);
   } catch {
     // Telemetry errors must never surface to callers
   }

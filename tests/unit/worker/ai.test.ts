@@ -338,8 +338,9 @@ describe("handleAiSynthesis — AI enabled with binding", () => {
     });
     await handleAiSynthesis(env);
     expect(mockPut).toHaveBeenCalledOnce();
-    const [key] = mockPut.mock.calls[0] as [string, ...unknown[]];
+    const [key, , options] = mockPut.mock.calls[0] as [string, string, { expirationTtl?: number }];
     expect(key).toMatch(/^ai:synthesis:\d{4}-\d{2}-\d{2}:\d+$/);
+    expect(options.expirationTtl).toBe(4 * 3600);
   });
 
   it("serves from KV cache when cached entry exists", async () => {

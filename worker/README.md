@@ -19,6 +19,57 @@ Before deployment:
 
 API cache lifetimes are controlled by route response headers and KV TTLs, not an unsupported `[cache].default_ttl` Wrangler setting. A successful typecheck does not validate account bindings or prove deployment readiness.
 
+## Operational budgets and safe shutdown
+
+The Worker keeps optional services bounded and independently disableable. These
+limits are operational guardrails, not a promise that a Cloudflare free tier
+will absorb every workload:
+
+| Budget                    | Current guardrail                                                                                                                              | Alert or shutdown signal                                                                                |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Requests                  | 120 requests/minute/IP, with `429` and `Retry-After: 60`                                                                                       | Monitor 429 rate; reduce traffic or disable the affected optional route                                 |
+| Upstream work             | 8 s timeout on dynamic news/calendar/R2 requests; synthetic provider probes cache for 5 minutes                                                | `provider-health` reports `degraded`/`down`; disable probes at the route layer if quota or terms change |
+| Response memory           | RSS 1 MiB, ICS 2 MiB, R2 assets 10 MiB; oversized bodies return `413`                                                                          | Alert on repeated `413` responses; reject the provider or lower the route scope                         |
+| Error storage             | 20 entries/request, 1000 persisted entries/day, 7-day KV TTL                                                                                   | `POST /api/errors` remains `204` but stops persisting after the daily cap                               |
+| Browser reports           | 50 reports/request, D1 retention 30 days                                                                                                       | `POST /api/reports` truncates excess input; the daily cron prunes old rows                              |
+| Telemetry                 | Route-hit counters retain 30 days; latency samples retain 7 days                                                                               | D1 failures are non-fatal; inspect `/api/metrics` with its secret                                       |
+| Push                      | Disabled unless `VAPID_ENABLED=true`; subscriptions expire after 90 days and can be deleted explicitly                                         | Unset `VAPID_ENABLED` to stop registration and sending without affecting the dashboard                  |
+| Workers AI                | Disabled unless `AI_ENABLED=true`; text-generation calls are cached (1 hour, or 4 hours for synthesis) and capped at 150/200/250 output tokens | Unset `AI_ENABLED` to return the documented `503 ai_disabled` fallback                                  |
+| Optional telemetry/export | OTel requires both `OTEL_ENABLED=true` and an HTTPS endpoint; metrics/reports exports require separate secrets                                 | Unset the feature flag or secret to fail closed                                                         |
+
+The synthetic provider probes use fixed public URLs and coordinates only; they
+never receive household configuration. KV cache corruption or unavailability
+falls back to an isolate-local five-minute snapshot, so a cache fault does not
+turn each health request into a new seven-provider fan-out. The daily cron
+warms only fixed, low-volume routes and deliberately excludes per-household
+weather and news aggregation.
+
+### Limit and retention drill
+
+The repeatable local drill is:
+
+```powershell
+npm exec --no -- vitest run tests/unit/worker/middleware.property.test.ts tests/unit/worker/errors-route.property.test.ts tests/unit/worker/reports.test.ts tests/unit/worker/health-probes.test.ts
+```
+
+The expected evidence is a `429` after the configured request window, `413`
+for oversized error batches, report truncation at 50 items, and one probe
+batch per five-minute cache window even when KV fails.
+
+Stored optional data has an explicit deletion path:
+
+| Data                 | Retention/deletion walkthrough                                                                                                          |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Client error entries | Verify the 7-day KV TTL, then use the token-gated export only for today’s review; the daily counter and entries expire automatically    |
+| Browser reports      | Verify the 30-day D1 query window and run the daily prune; `pruneOldReports(db, 30)` deletes older rows                                 |
+| Route telemetry      | Verify 30-day hit-counter and 7-day latency pruning; unset `METRICS_TOKEN` to disable the metrics view                                  |
+| Push subscriptions   | Send `DELETE /api/push/subscribe` with the endpoint, or unset `VAPID_ENABLED`; expired subscriptions are removed after a `410` response |
+| AI/probe caches      | Allow their 1-hour/4-hour and 5-minute TTLs to expire; unset `AI_ENABLED` or remove the Worker binding for immediate shutdown           |
+
+The operational owner reviews quota errors, 429/413 rates, provider-health
+failures, D1/R2/KV usage, and optional-feature flags before enabling any
+additional provider or paid binding.
+
 ## Overview
 
 The Worker acts as a secure CORS proxy and data aggregator for the FamilyDashBoard.
