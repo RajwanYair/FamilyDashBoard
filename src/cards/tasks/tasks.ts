@@ -330,7 +330,10 @@ function buildTaskRow(
   row.setAttribute("role", "listitem");
   row.addEventListener("keydown", (e: KeyboardEvent) => {
     if (e.target !== row) return;
-    const rows = Array.from(row.parentElement?.querySelectorAll<HTMLElement>(".tasks-row") ?? []);
+    const list = row.closest<HTMLElement>(".tasks-list, #tasks-list");
+    const rows = Array.from(list?.querySelectorAll<HTMLElement>(".tasks-row") ?? []).filter(
+      (candidate) => candidate.closest(".tasks-subtask-group.collapsed") === null,
+    );
     const currentIndex = rows.indexOf(row);
     if (currentIndex < 0) return;
 

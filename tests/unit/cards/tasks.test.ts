@@ -1750,12 +1750,14 @@ describe("Tasks — row ArrowDown/ArrowUp keyboard navigation ", () => {
 
   beforeEach(() => {
     document.body.innerHTML = `<div id="tasks-list"></div>`;
+    document.body.className = "";
     localStorage.setItem("dash_chores", JSON.stringify(chores));
     localStorage.removeItem("dash_tasks_done");
     localStorage.removeItem("dash_tasks_reset_date");
   });
   afterEach(() => {
     document.body.innerHTML = "";
+    document.body.className = "";
     localStorage.clear();
     vi.restoreAllMocks();
   });
@@ -1843,6 +1845,61 @@ describe("Tasks — row ArrowDown/ArrowUp keyboard navigation ", () => {
       new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true }),
     );
     expect(focusSpy).not.toHaveBeenCalled();
+  });
+
+  it("navigates through nested rows across all supported screen modes", () => {
+    const parent: ChoreItem = { person: "עמרי", chore: "ניקיון" };
+    const items = addSubtask(
+      `${parent.person}::${parent.chore}`,
+      { person: "עמרי", chore: "מטבח" },
+      [parent, { person: "עמרי", chore: "קניות" }],
+    );
+
+    for (const mode of ["screen-tv", "screen-tablet", "screen-phone"]) {
+      document.body.className = mode;
+      setupDOM(JSON.stringify(items));
+      renderTasksCard();
+      const rows = document.querySelectorAll<HTMLElement>(".tasks-row");
+      expect(rows).toHaveLength(3);
+
+      const parentDownSpy = vi.spyOn(rows[1]!, "focus");
+      rows[0]!.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }),
+      );
+      expect(parentDownSpy).toHaveBeenCalled();
+
+      const siblingDownSpy = vi.spyOn(rows[2]!, "focus");
+      rows[1]!.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }),
+      );
+      expect(siblingDownSpy).toHaveBeenCalled();
+
+      document.body.replaceChildren(document.createElement("div"));
+    }
+  });
+
+  it("skips collapsed subtasks during remote-key navigation", () => {
+    const parent: ChoreItem = { person: "עמרי", chore: "ניקיון" };
+    const items = addSubtask(
+      `${parent.person}::${parent.chore}`,
+      { person: "עמרי", chore: "מטבח" },
+      [parent, { person: "עמרי", chore: "קניות" }],
+    );
+    setupDOM(JSON.stringify(items));
+    renderTasksCard();
+
+    const rows = document.querySelectorAll<HTMLElement>(".tasks-row");
+    const toggle = document.querySelector<HTMLButtonElement>(".tasks-subtask-toggle");
+    expect(toggle).not.toBeNull();
+    toggle?.click();
+
+    const nextVisibleSpy = vi.spyOn(rows[2]!, "focus");
+    const collapsedSpy = vi.spyOn(rows[1]!, "focus");
+    rows[0]!.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }),
+    );
+    expect(nextVisibleSpy).toHaveBeenCalled();
+    expect(collapsedSpy).not.toHaveBeenCalled();
   });
 });
 
