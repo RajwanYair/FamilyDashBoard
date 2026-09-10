@@ -22,6 +22,7 @@ import {
 } from "@/cards/calendar/calendar";
 import { cSet, cClear } from "@/core/cache";
 import * as fetchCore from "@/core/fetch";
+import { LS_NETWORK_MODE } from "@/core/constants";
 
 vi.mock("@/cards/base-card", () => ({
   scheduleCard: vi.fn(),
@@ -685,6 +686,33 @@ describe("Calendar — loadCalendar paths", () => {
     initCalendarCard();
     await new Promise<void>((r) => setTimeout(r, 150));
     expect(callIdx).toBeGreaterThan(0);
+  });
+
+  it("honors worker-only mode without falling back to direct or public proxies", async () => {
+    localStorage.setItem(LS_NETWORK_MODE, "worker-only");
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    vi.mocked(fetchCore.fetchWithTimeout).mockRejectedValue(new Error("worker unavailable"));
+
+    initCalendarCard();
+    await new Promise<void>((resolve) => setTimeout(resolve, 50));
+
+    expect(fetchCore.fetchWithTimeout).toHaveBeenCalledTimes(1);
+    const calls = vi.mocked(fetchCore.fetchWithTimeout).mock.calls;
+    expect(String(calls[0]?.[0])).toContain("/api/calendar");
+  });
+
+  it("honors no-proxy mode after the Worker and direct attempts fail", async () => {
+    localStorage.setItem(LS_NETWORK_MODE, "no-proxy");
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    vi.mocked(fetchCore.fetchWithTimeout).mockRejectedValue(new Error("network unavailable"));
+
+    initCalendarCard();
+    await new Promise<void>((resolve) => setTimeout(resolve, 50));
+
+    expect(fetchCore.fetchWithTimeout).toHaveBeenCalledTimes(2);
+    const calls = vi.mocked(fetchCore.fetchWithTimeout).mock.calls;
+    expect(String(calls[0]?.[0])).toContain("/api/calendar");
+    expect(String(calls[1]?.[0])).toContain("calendar.google.com");
   });
 
   it("covers stale cache render path in loadCalendar (lines 564-565)", async () => {

@@ -11,6 +11,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 // Mock diagLog to keep output clean
 vi.mock("@/core/diag", () => ({
   diagLog: vi.fn(),
+  redactUrl: (url: string) => {
+    const parsed = new URL(url);
+    return `${parsed.origin}${parsed.pathname}`;
+  },
 }));
 
 import {
@@ -19,7 +23,8 @@ import {
   resetWorkerEnabledCache,
   LS_NETWORK_MODE,
 } from "@/core/constants";
-import { fetchJSON, fetchViaWorker, resetWorkerBreaker } from "@/core/fetch";
+import { fetchJSON, fetchJSONWithWorker, fetchViaWorker, resetWorkerBreaker } from "@/core/fetch";
+import { diagLog } from "@/core/diag";
 
 describe("getNetworkMode (v13.4)", () => {
   afterEach(() => {
@@ -152,6 +157,27 @@ describe("fetchJSON — network mode gating (v13.4)", () => {
 
     const result = await fetchJSON<{ got: string }>("https://example.com/api");
     expect(result.got).toBe("proxy");
+  });
+
+  it("does not expose calendar query tokens in fetch errors or diagnostics", async () => {
+    localStorage.setItem(LS_NETWORK_MODE, "no-proxy");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 } as Response));
+    const url = "https://calendar.google.com/family.ics?token=calendar-secret";
+
+    await expect(fetchJSON(url)).rejects.toThrow(/calendar\.google\.com\/family\.ics/);
+    expect(() => JSON.stringify(vi.mocked(diagLog).mock.calls)).not.toThrow();
+    expect(JSON.stringify(vi.mocked(diagLog).mock.calls)).not.toContain("calendar-secret");
+  });
+
+  it("fails closed for Worker-aware routes in worker-only mode", async () => {
+    localStorage.setItem(LS_NETWORK_MODE, "worker-only");
+    const fetchSpy = vi.fn().mockRejectedValue(new Error("worker unavailable"));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    await expect(
+      fetchJSONWithWorker("https://query1.finance.yahoo.com/v8/finance/chart/AAPL"),
+    ).rejects.toThrow(/Worker fetch failed/);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 });
 

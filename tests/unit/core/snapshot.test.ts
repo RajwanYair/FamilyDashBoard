@@ -4,6 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { buildSnapshot, downloadSnapshot } from "@/core/snapshot";
+import { diagLog } from "@/core/diag";
 
 describe("buildSnapshot ", () => {
   beforeEach(() => {
@@ -50,6 +51,28 @@ describe("buildSnapshot ", () => {
     const val = snap.localStorageSummary["dash_v2_long"];
     expect(val).not.toBeNull();
     expect((val ?? "").length).toBeLessThan(400);
+  });
+
+  it("redacts calendar and custom-proxy URLs from support snapshots", () => {
+    const calendarUrl =
+      "https://calendar.google.com/calendar/ical/family/basic.ics?token=calendar-secret";
+    const proxyUrl = "https://proxy.example.test/fetch?token=proxy-secret";
+    localStorage.setItem("dash_ics_url", calendarUrl);
+    localStorage.setItem("dash_custom_proxy", proxyUrl);
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ calendarUrls: [calendarUrl], customProxy: proxyUrl }),
+    );
+    diagLog(`calendar error ${calendarUrl}`);
+
+    const snap = buildSnapshot();
+    expect(snap.localStorageSummary["dash_ics_url"]).toBe("[redacted private URL]");
+    expect(snap.localStorageSummary["dash_custom_proxy"]).toBe("[redacted private URL]");
+    expect(snap.localStorageSummary["dash_v2_config"]).not.toContain("calendar-secret");
+    expect(snap.localStorageSummary["dash_v2_config"]).not.toContain("proxy-secret");
+    expect(snap.config.calendarUrls).toEqual(["[redacted calendar URL]"]);
+    expect(snap.config.customProxy).toBe("[redacted custom proxy]");
+    expect(snap.diagLog.join("\n")).not.toContain("calendar-secret");
   });
 
   it("diagLog is an array of strings", () => {

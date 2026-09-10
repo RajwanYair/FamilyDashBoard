@@ -17,12 +17,13 @@ import {
   MS_PER_MIN,
   WORKER_BASE_URL,
   isWorkerEnabled,
+  getNetworkMode,
 } from "../../core/constants";
 import { loadConfig } from "../../core/config";
 import { cGetStale, cGetAsync, cGetStaleAsync, cSetAsync } from "../../core/cache";
 import { fetchWithTimeout } from "../../core/fetch";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
-import { diagLog } from "../../core/diag";
+import { diagLog, redactUrl } from "../../core/diag";
 import { acquireLock, releaseLock } from "../../core/fetch";
 import type { CalendarEvent, HebcalItem } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
@@ -511,6 +512,7 @@ function getICSUrls(): string[] {
 }
 
 async function fetchICS(url: string): Promise<string | null> {
+  const mode = getNetworkMode();
   // 0. Cloudflare Worker — server-side ICS proxy, no CORS or network-proxy dependency
   if (isWorkerEnabled()) {
     const workerUrl = `${WORKER_BASE_URL}/api/calendar?url=${encodeURIComponent(url)}`;
@@ -524,8 +526,13 @@ async function fetchICS(url: string): Promise<string | null> {
         }
       }
     } catch (e) {
-      diagLog(`FDB-022E: [calendar] worker ERR: ${String(e)}`);
+      diagLog(`FDB-022E: [calendar] worker ERR: ${e instanceof Error ? e.name : "unknown"}`);
     }
+  }
+
+  if (mode === "worker-only") {
+    diagLog("FDB-022E: [calendar] worker-only mode failed");
+    return null;
   }
 
   // 1. Direct fetch
@@ -539,7 +546,12 @@ async function fetchICS(url: string): Promise<string | null> {
       }
     }
   } catch (e) {
-    diagLog(`FDB-024: [calendar] direct ERR: ${String(e)}`);
+    diagLog(`FDB-024: [calendar] direct ERR: ${e instanceof Error ? e.name : "unknown"}`);
+  }
+
+  if (mode === "no-proxy") {
+    diagLog("FDB-026: [calendar] public proxy chain disabled");
+    return null;
   }
 
   // 2. CORS proxy chain
@@ -560,11 +572,11 @@ async function fetchICS(url: string): Promise<string | null> {
         return text;
       }
     } catch (e) {
-      diagLog(`FDB-026: [calendar] proxy ${proxy} ERR: ${String(e)}`);
+      diagLog(`FDB-026: [calendar] proxy ${proxy} ERR: ${e instanceof Error ? e.name : "unknown"}`);
     }
   }
 
-  diagLog(`FDB-027: [calendar] all sources failed for ${url}`);
+  diagLog(`FDB-027: [calendar] all sources failed for ${redactUrl(url)}`);
   return null;
 }
 
@@ -614,7 +626,9 @@ async function loadCalendar(): Promise<void> {
       recordFailure("cal");
     }
   } catch (err) {
-    diagLog(`FDB-028: [calendar] loadCalendar error: ${String(err)}`);
+    diagLog(
+      `FDB-028: [calendar] loadCalendar error: ${err instanceof Error ? err.name : "unknown"}`,
+    );
     setSync("cal", "error");
     recordFailure("cal");
   } finally {

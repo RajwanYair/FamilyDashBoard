@@ -1,6 +1,6 @@
 # 📡 Data Sources
 
-> Last updated: v15.5.0
+> Last updated: v15.7.0
 
 This document describes every external data source used by FamilyDashBoard, its
 caching strategy, worker route, and known failure modes.
@@ -11,9 +11,26 @@ caching strategy, worker route, and known failure modes.
 
 ## 🏗️ Architecture Overview
 
-All production data flows through the Cloudflare Worker at
-`https://fdb.rajwanyair.workers.dev`. The worker validates upstream responses
-with **Valibot** schemas and normalises them before returning them to the client.
+Production pages use the Cloudflare Worker at
+`https://fdb.rajwanyair.workers.dev` first when the Worker is enabled. The client
+retains direct and public-proxy fallbacks for offline development, `file://`
+previews, and explicit network-mode overrides. The worker validates upstream
+responses with **Valibot** schemas and normalises them before returning them to
+the client.
+
+### Network-path and recipient rules
+
+| Path                   | Trigger                                                            | Recipient sees                                                                                                                        | Privacy boundary                                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Worker-first           | Default on an online HTTP(S) page                                  | Worker receives route parameters; the selected upstream receives the fields required by that route                                    | Worker request logs keep the path only; query values are not logged. Calendar cache keys are opaque hashes of the complete feed URL. |
+| Direct                 | Worker unavailable, `no-worker`, or a route without Worker support | The upstream provider receives the request and the device's network address                                                           | Direct requests are not anonymous. Provider terms and retention apply.                                                               |
+| Custom/public proxy    | Direct request fails and proxy fallback is allowed                 | The configured proxy or public proxy receives the encoded target URL and the device's network address                                 | A proxy is not an anonymity service. Do not use a public proxy for a private calendar feed.                                          |
+| Worker-only / no-proxy | User-selected network mode                                         | `worker-only` fails closed for Worker-aware routes when the Worker fails; `no-proxy` permits direct requests but skips public proxies | These settings change availability, not the data fields sent to a successful recipient.                                              |
+
+The client-side cache (localStorage, IndexedDB, and memory) is separate from
+Worker KV/D1/R2 storage. Clearing site storage removes local configuration and
+cached data; remote provider or Worker retention follows the route-specific
+TTL and operator deletion procedures documented in `worker/README.md`.
 
 ```mermaid
 sequenceDiagram
@@ -46,7 +63,7 @@ sequenceDiagram
     end
 ```
 
-Fallback chain (dev / file:// only — `__USE_PROXIES__=true`):
+Fallback chain when the route permits public proxies (`__USE_PROXIES__=true`):
 Direct → allorigins → codetabs → corsproxy.io
 
 ---
@@ -150,16 +167,16 @@ Finance crypto quotes are unreliable in browser CORS contexts.
 
 ### 🗓 Calendar — Google ICS
 
-| Property     | Value                                                                                                                                           |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Provider     | Google Calendar (ICS export)                                                                                                                    |
-| Worker route | `GET /api/calendar?url=<encoded-ics-url>` — tried **first** before direct/proxy chain                                                           |
-| Upstream     | ICS URL (allowlisted origins: `google.com`, `apple.com`, etc.)                                                                                  |
-| Cache TTL    | 15 min (`INTERVALS.CALENDAR`)                                                                                                                   |
-| Cache key    | `cal-ics-<index>`                                                                                                                               |
-| Validation   | Server validates `BEGIN:VCALENDAR` presence                                                                                                     |
-| Boundary     | HTTPS only; exact allowlisted origin; URL credentials and non-default ports rejected; redirects disabled; 8 s timeout; response capped at 2 MiB |
-| Failure mode | Worker returns 403 if origin not in `ALLOWED_CALENDAR_ORIGINS`, 502 if not valid ICS                                                            |
+| Property     | Value                                                                                                                                                                                                   |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Provider     | Google Calendar (ICS export)                                                                                                                                                                            |
+| Worker route | `GET /api/calendar?url=<encoded-ics-url>` — tried **first** before direct/proxy chain                                                                                                                   |
+| Upstream     | ICS URL (allowlisted origins: `google.com`, `apple.com`, etc.)                                                                                                                                          |
+| Cache TTL    | 15 min (`INTERVALS.CALENDAR`)                                                                                                                                                                           |
+| Cache key    | Browser: `cal-ics-<index>`; Worker KV: `calendar:<hostname>:<sha256-prefix>` (the full URL is hashed, never stored in the key)                                                                          |
+| Validation   | Server validates `BEGIN:VCALENDAR` presence                                                                                                                                                             |
+| Boundary     | HTTPS only; exact allowlisted origin; URL credentials and non-default ports rejected; redirects disabled; 8 s timeout; response capped at 2 MiB; query tokens are omitted from logs and support exports |
+| Failure mode | Worker returns 403 if origin not in `ALLOWED_CALENDAR_ORIGINS`, 502 if not valid ICS                                                                                                                    |
 
 ---
 

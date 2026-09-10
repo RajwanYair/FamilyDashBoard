@@ -4,7 +4,7 @@
  * Properties under test:
  *  LG1. logRequest never throws for any valid HTTP method / status combination.
  *  LG2. The path in the log entry always starts with '/'.
- *  LG3. Query strings longer than 80 chars are truncated to at most 80 chars.
+ *  LG3. Query strings are never included in request logs.
  *  LG4. durationMs is always ≥ 0 for a start time in the past.
  *  LG5. logRequest captures the response status verbatim.
  */
@@ -85,10 +85,10 @@ describe("log — LG2: logged line contains response status", () => {
   });
 });
 
-// ── LG3: long query strings are truncated ─────────────────────────────────────
+// ── LG3: query strings are excluded ────────────────────────────────────────────
 
-describe("log — LG3: query strings longer than 80 chars are truncated", () => {
-  it("path segment captured in log does not exceed 80-char query limit", () => {
+describe("log — LG3: query strings are excluded", () => {
+  it("does not echo bearer-like query values", () => {
     const lines: string[] = [];
     const spy = vi.spyOn(console, "log").mockImplementation((...args) => {
       lines.push(String(args[0]));
@@ -97,30 +97,15 @@ describe("log — LG3: query strings longer than 80 chars are truncated", () => 
     try {
       fc.assert(
         fc.property(
-          fc
-            .array(
-              fc.constantFrom(
-                ..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789=&",
-              ),
-              {
-                minLength: 81,
-                maxLength: 200,
-              },
-            )
-            .map((chars) => chars.join("")),
-          (longQuery) => {
+          fc.string({ minLength: 1, maxLength: 200 }).filter((query) => !query.includes(" ")),
+          (query) => {
             lines.length = 0;
-            const url = `https://api.example.com/data?${longQuery}`;
+            const secret = `calendar-secret-${query}`;
+            const url = `https://calendar.google.com/data?token=${encodeURIComponent(secret)}`;
             logRequest(makeRequest("GET", url), makeResponse(200), Date.now() - 1, "::1");
-            // The logged path should contain at most 80 chars of query string
             const line = lines[0] ?? "";
-            const qIdx = line.indexOf("?");
-            if (qIdx !== -1) {
-              const queryInLog = line.slice(qIdx + 1);
-              // Strip trailing parts after spaces / arrows in the log line
-              const queryPart = queryInLog.split(" ")[0] ?? "";
-              expect(queryPart.length).toBeLessThanOrEqual(80);
-            }
+            expect(line).not.toContain("?");
+            expect(line).not.toContain("calendar-secret-");
           },
         ),
         { numRuns: 30 },

@@ -5,6 +5,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [Unreleased]
+
+- 🔐 **fix(privacy)**: complete S08-01 data-flow and consent inventory — reconcile direct, Worker, proxy, telemetry, support-export, calendar, AI, media, and push disclosures; redact URL query tokens from diagnostics, telemetry, reports, snapshots, and Worker logs; isolate tokenized calendar cache keys; and enforce `worker-only`/`no-proxy` routing with regression coverage
+
 ## [15.7.0] — 2026-06-02
 
 > **DX pipeline hardening · ROADMAP v13.0 · version bump**

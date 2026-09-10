@@ -9,8 +9,9 @@
  */
 
 import { loadConfig } from "../core/config";
-import { getDiagEntries } from "../core/diag";
+import { getDiagEntries, redactDiagnosticText } from "../core/diag";
 import { nowISO } from "../core/temporal";
+import { LS_CONFIG, LS_CUSTOM_PROXY, LS_ICS_URL } from "./constants";
 
 interface DashboardSnapshot {
   version: string;
@@ -33,13 +34,52 @@ function collectLocalStorageSummary(): Record<string, string | null> {
       const isRelevant = SNAPSHOT_LS_PREFIXES.some((p) => key.startsWith(p));
       if (!isRelevant) continue;
       const raw = localStorage.getItem(key);
+      const safe = sanitizeStoredValue(key, raw);
       // Truncate large values (e.g. cached API data) to 300 chars
-      out[key] = raw && raw.length > 300 ? `${raw.slice(0, 300)}…` : raw;
+      out[key] = safe && safe.length > 300 ? `${safe.slice(0, 300)}…` : safe;
     }
   } catch {
     out["_error"] = "localStorage inaccessible";
   }
   return out;
+}
+
+function isPrivateUrlKey(key: string): boolean {
+  return key === LS_CUSTOM_PROXY || key === LS_ICS_URL || key.startsWith(`${LS_ICS_URL}_`);
+}
+
+function sanitizeStoredValue(key: string, raw: string | null): string | null {
+  if (!raw) return raw;
+  if (isPrivateUrlKey(key)) return "[redacted private URL]";
+
+  if (key === LS_CONFIG) {
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      if (typeof parsed === "object" && parsed !== null) {
+        const config = parsed as Record<string, unknown>;
+        if (Array.isArray(config.calendarUrls)) {
+          config.calendarUrls = config.calendarUrls.map(() => "[redacted calendar URL]");
+        }
+        if (typeof config.customProxy === "string" && config.customProxy.length > 0) {
+          config.customProxy = "[redacted custom proxy]";
+        }
+        return JSON.stringify(config);
+      }
+    } catch {
+      // Fall through to generic URL redaction for malformed config values.
+    }
+  }
+
+  return redactDiagnosticText(raw);
+}
+
+function sanitizeConfig(): ReturnType<typeof loadConfig> {
+  const config = loadConfig();
+  return {
+    ...config,
+    calendarUrls: config.calendarUrls.map(() => "[redacted calendar URL]"),
+    customProxy: config.customProxy ? "[redacted custom proxy]" : "",
+  };
 }
 
 /** Build the snapshot object. */
@@ -48,7 +88,7 @@ export function buildSnapshot(): DashboardSnapshot {
     version: __APP_VERSION__,
     timestamp: nowISO(),
     userAgent: navigator.userAgent,
-    config: loadConfig(),
+    config: sanitizeConfig(),
     localStorageSummary: collectLocalStorageSummary(),
     diagLog: getDiagEntries().map((e) => `[${e.ts}] ${e.msg}`),
   };

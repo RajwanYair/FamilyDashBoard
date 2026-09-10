@@ -505,6 +505,30 @@ describe("Worker — handleErrors route", () => {
     expect(res.status).toBe(204);
   });
 
+  it("redacts URL query tokens before logging and persisting errors", async () => {
+    const secret = "calendar-secret";
+    const putSpy = vi.fn().mockResolvedValue(undefined);
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const env: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, put: putSpy } as unknown as KVStore,
+    };
+
+    const req = post([
+      {
+        ts: Date.now(),
+        message: `fetch failed https://calendar.google.com/family.ics?token=${secret}`,
+        source: `https://app.example.test/main.js?token=${secret}`,
+      },
+    ]);
+    const res = await handleErrors(req, env);
+
+    expect(res.status).toBe(204);
+    expect(errorSpy.mock.calls.flat().join(" ")).not.toContain(secret);
+    expect(putSpy.mock.calls.flat().join(" ")).not.toContain(secret);
+    errorSpy.mockRestore();
+  });
+
   it("empty array returns 400 (no valid entries)", async () => {
     const req = post([]);
     const res = await handleErrors(req);
@@ -2109,6 +2133,33 @@ describe("Worker — handleCalendar route", () => {
     const res = await handleCalendar(url, envWithKv);
     expect(res.status).toBe(200);
     expect(res.headers.get("X-Cache")).toBe("kv-stale");
+  });
+
+  it("uses opaque distinct cache keys for calendar query tokens", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("error", { status: 503 }));
+    const kvGet = vi.fn().mockResolvedValue(null);
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+
+    const first = encodeURIComponent(
+      "https://calendar.google.com/cal.ics?token=first-calendar-secret",
+    );
+    const second = encodeURIComponent(
+      "https://calendar.google.com/cal.ics?token=second-calendar-secret",
+    );
+    await handleCalendar(new URL(`https://worker.dev/api/calendar?url=${first}`), envWithKv);
+    await handleCalendar(new URL(`https://worker.dev/api/calendar?url=${second}`), envWithKv);
+
+    expect(kvGet).toHaveBeenCalledTimes(2);
+    const firstKey = String(kvGet.mock.calls[0]?.[0]);
+    const secondKey = String(kvGet.mock.calls[1]?.[0]);
+    expect(firstKey).toMatch(/^calendar:calendar\.google\.com:[0-9a-f]{32}$/);
+    expect(secondKey).toMatch(/^calendar:calendar\.google\.com:[0-9a-f]{32}$/);
+    expect(firstKey).not.toBe(secondKey);
+    expect(firstKey).not.toContain("calendar-secret");
+    expect(secondKey).not.toContain("calendar-secret");
   });
 });
 

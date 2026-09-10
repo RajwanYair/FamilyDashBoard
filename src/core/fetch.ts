@@ -18,7 +18,7 @@ import {
   isWorkerEnabled,
   getNetworkMode,
 } from "./constants";
-import { diagLog } from "./diag";
+import { diagLog, redactUrl } from "./diag";
 import { cGet, cSet, cGetStale } from "./cache";
 
 function buildWorkerRoute(url: string): string | null {
@@ -125,7 +125,8 @@ export async function fetchWithTimeout(
  *   - "no-worker"       — direct → proxies as normal (worker is skipped by isWorkerEnabled)
  */
 export async function fetchJSON<T = unknown>(url: string): Promise<T> {
-  const short = url.length > 60 ? url.slice(0, 57) + "..." : url;
+  const safeUrl = redactUrl(url);
+  const short = safeUrl.length > 60 ? safeUrl.slice(0, 57) + "..." : safeUrl;
   const mode = getNetworkMode();
 
   // 1. Try direct
@@ -251,12 +252,14 @@ export async function fetchViaWorker<T = unknown>(url: string): Promise<T | null
   }
   const workerUrl = buildWorkerRoute(url);
   if (!workerUrl) {
+    const safeUrl = redactUrl(url);
     diagLog(
-      `FDB-015A: fetchViaWorker no route: ${url.length > 60 ? url.slice(0, 57) + "..." : url}`,
+      `FDB-015A: fetchViaWorker no route: ${safeUrl.length > 60 ? safeUrl.slice(0, 57) + "..." : safeUrl}`,
     );
     return null;
   }
-  const short = url.length > 60 ? url.slice(0, 57) + "..." : url;
+  const safeUrl = redactUrl(url);
+  const short = safeUrl.length > 60 ? safeUrl.slice(0, 57) + "..." : safeUrl;
   try {
     const r = await fetchWithTimeout(workerUrl, FETCH_TIMEOUT_MS);
     if (!r.ok) {
@@ -281,6 +284,9 @@ export async function fetchViaWorker<T = unknown>(url: string): Promise<T | null
 export async function fetchJSONWithWorker<T = unknown>(url: string): Promise<T> {
   const workerResult = await fetchViaWorker<T>(url);
   if (workerResult !== null) return workerResult;
+  if (getNetworkMode() === "worker-only") {
+    throw new Error(`Worker fetch failed for ${redactUrl(url)}`);
+  }
   return fetchJSON<T>(url);
 }
 
@@ -303,7 +309,7 @@ const _inflightRequests = new Map<string, Promise<unknown>>();
 export async function fetchJSONDeduped<T = unknown>(url: string): Promise<T> {
   const existing = _inflightRequests.get(url);
   if (existing !== undefined) {
-    diagLog(`FDB-018: [fetch] dedup reuse: ${url.slice(0, 60)}`);
+    diagLog(`FDB-018: [fetch] dedup reuse: ${redactUrl(url).slice(0, 60)}`);
     return existing as Promise<T>;
   }
   const p = fetchJSON<T>(url).finally(() => {

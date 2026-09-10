@@ -388,8 +388,14 @@ export async function handleCalendar(url: URL, env: Env): Promise<Response> {
     return jsonResponse({ error: "Calendar origin not permitted", param: "url" }, 403);
   }
 
-  // KV key: cap to 80 chars to stay within KV key limits
-  const kvKey = `calendar:${parsed.hostname}${parsed.pathname}`.slice(0, 80);
+  // Keep the complete feed identity without persisting a bearer-like query
+  // token in the KV key. A path-only key could serve one household's feed to
+  // another household using the same calendar path with a different token.
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(parsed.toString()));
+  const digestHex = Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+  const kvKey = `calendar:${parsed.hostname}:${digestHex.slice(0, 32)}`;
   const staleCalendar = async (): Promise<Response | null> => {
     const stale = await kvGetStale<{ ics: string }>(env.CACHE_KV, kvKey);
     if (!stale?.ics) return null;

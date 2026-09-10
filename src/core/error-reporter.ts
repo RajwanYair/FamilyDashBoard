@@ -14,6 +14,7 @@
 
 import { WORKER_BASE_URL, isWorkerEnabled } from "./constants";
 import type { ErrorEntry } from "./error-tracker";
+import { redactDiagnosticText } from "./diag";
 
 const REPORT_DEBOUNCE_MS = 5_000;
 const ERRORS_ROUTE = "/api/errors";
@@ -32,7 +33,12 @@ export function reportErrors(errors: ErrorEntry[]): void {
   if (errors.length === 0) return;
 
   // Merge new errors into pending, deduplicate by ts+message
-  for (const e of errors) {
+  for (const raw of errors) {
+    const e: ErrorEntry = {
+      ...raw,
+      message: redactDiagnosticText(raw.message),
+      ...(raw.source !== undefined ? { source: redactDiagnosticText(raw.source) } : {}),
+    };
     const dup = _pending.some((p) => p.ts === e.ts && p.message === e.message);
     if (!dup) _pending.push(e);
   }

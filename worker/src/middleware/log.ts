@@ -3,6 +3,9 @@
  *
  * Emits structured console logs for every request (visible in `wrangler tail`).
  * Format: [METHOD] /path → status ms
+ *
+ * Query strings are deliberately excluded because routes can receive
+ * bearer-like calendar URLs and other user-configured values.
  */
 
 export interface LogEntry {
@@ -24,7 +27,7 @@ export function logRequest(
   const url = new URL(request.url);
   const entry: LogEntry = {
     method: request.method,
-    path: url.pathname + (url.search ? url.search.slice(0, 80) : ""),
+    path: url.pathname,
     status: response.status,
     durationMs: Date.now() - startMs,
     ip,

@@ -14,11 +14,32 @@ export interface DiagEntry {
 
 const buffer: DiagEntry[] = [];
 
+const URL_PATTERN = /https?:\/\/[^\s"'<>]+/gi;
+
+/**
+ * Remove query strings and fragments from a URL before it enters diagnostics.
+ * Query values can contain bearer-like calendar tokens or user-specific proxy
+ * configuration, so diagnostics retain only the public origin and path.
+ */
+export function redactUrl(value: string): string {
+  try {
+    const url = new URL(value);
+    return `${url.origin}${url.pathname}`;
+  } catch {
+    return "[redacted-url]";
+  }
+}
+
+/** Redact URL query strings embedded in arbitrary diagnostic text. */
+export function redactDiagnosticText(value: string): string {
+  return value.replace(URL_PATTERN, (candidate) => redactUrl(candidate));
+}
+
 /**
  * Log a diagnostic message to the ring buffer.
  */
 export function diagLog(msg: string): void {
-  buffer.push({ ts: Date.now(), msg });
+  buffer.push({ ts: Date.now(), msg: redactDiagnosticText(msg) });
   if (buffer.length > DIAG_BUFFER_SIZE) {
     buffer.shift();
   }

@@ -12,6 +12,8 @@ import {
   buildDiagExport,
   exportDiagJson,
   DIAG_EXPORT_SCHEMA_VERSION,
+  redactUrl,
+  redactDiagnosticText,
 } from "@/core/diag";
 
 describe("DiagLog", () => {
@@ -32,6 +34,23 @@ describe("DiagLog", () => {
     const entries = getDiagEntries();
     expect(entries[0]?.msg).toBe("second");
     expect(entries[1]?.msg).toBe("first");
+  });
+
+  it("redacts URL query strings before storing diagnostics", () => {
+    diagLog(
+      "calendar failed: https://calendar.google.com/calendar/ical/family/basic.ics?token=secret123",
+    );
+    const message = getDiagEntries()[0]?.msg ?? "";
+    expect(message).toContain("https://calendar.google.com/calendar/ical/family/basic.ics");
+    expect(message).not.toContain("secret123");
+    expect(message).not.toContain("token=");
+  });
+
+  it("redacts URL text and invalid URL values safely", () => {
+    expect(redactDiagnosticText("url=https://example.com/path?secret=1")).toBe(
+      "url=https://example.com/path",
+    );
+    expect(redactUrl("not a URL")).toBe("[redacted-url]");
   });
 
   it("clears all entries", () => {

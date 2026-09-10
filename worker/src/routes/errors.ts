@@ -16,6 +16,7 @@
 import { jsonResponse, CORS_HEADERS } from "../utils/response";
 import type { Env, KVStore, ErrorQueueMessage } from "../types";
 import * as v from "valibot";
+import { redactUrlText } from "../utils/privacy";
 
 /** Valibot schema for a single error entry sent by the client. */
 const ErrorPayloadSchema = v.object({
@@ -113,8 +114,9 @@ export async function handleErrors(request: Request, env?: Env): Promise<Respons
     if (result.success) {
       valid.push({
         ts: result.output.ts,
-        message: result.output.message.slice(0, MAX_MESSAGE_LENGTH),
-        source: result.output.source,
+        message: redactUrlText(result.output.message).slice(0, MAX_MESSAGE_LENGTH),
+        source:
+          result.output.source !== undefined ? redactUrlText(result.output.source) : undefined,
         lineno: result.output.lineno,
       });
     }

@@ -316,7 +316,7 @@ export const LS_CONFIG = "dash_v2_config";
  * machine has no access to public CORS proxies, etc.).
  *
  *   "auto"         — default: worker-first → direct → proxy chain (circuit-breaker protected)
- *   "worker-only"  — only worker; fail if worker is unreachable (fastest in prod when worker is healthy)
+ *   "worker-only"  — Worker-aware routes fail if worker is unreachable (fastest in prod when healthy)
  *   "no-worker"    — skip worker entirely (use direct + proxy chain) — best behind a firewall that blocks workers.dev
  *   "no-proxy"     — skip public CORS proxies (worker + direct only)
  */

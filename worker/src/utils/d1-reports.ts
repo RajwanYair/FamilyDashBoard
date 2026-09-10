@@ -5,8 +5,8 @@
  * Reporting API (https://www.w3.org/TR/reporting-1/) into Cloudflare D1.
  *
  * Privacy: Only the report type, stripped document URL (no query string), and
- * the sanitised body (free of any user-identifying fields) are persisted.
- * No IP addresses, no User-Agent strings, no cookies, no PII.
+ * the sanitised body (with User-Agent and URL query values removed) are
+ * persisted. No IP address is written by this helper.
  *
  * Retention: rows older than 30 days are pruned by the daily cron trigger.
  *
@@ -16,7 +16,7 @@
  *     ts      INTEGER NOT NULL,   -- Unix timestamp ms
  *     type    TEXT    NOT NULL,   -- "csp-violation" | "deprecation" | "intervention"
  *     url     TEXT    NOT NULL,   -- document base URL (no query string)
- *     detail  TEXT    NOT NULL,   -- JSON body blob (sanitised, no PII)
+ *     detail  TEXT    NOT NULL,   -- JSON body blob (sanitised)
  *     day     TEXT    NOT NULL    -- ISO date "YYYY-MM-DD" UTC
  *   );
  *
@@ -24,6 +24,7 @@
  */
 
 import type { D1Database } from "../types";
+import { redactUrlText } from "./privacy";
 
 /** ISO date string "YYYY-MM-DD" in UTC. */
 function utcDay(ts = Date.now()): string {
@@ -39,6 +40,17 @@ function stripUrl(raw: string | undefined): string {
   } catch {
     return "";
   }
+}
+
+function sanitizeReportValue(value: unknown): unknown {
+  if (typeof value === "string") return redactUrlText(value);
+  if (Array.isArray(value)) return value.map((item) => sanitizeReportValue(item));
+  if (typeof value === "object" && value !== null) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nested]) => [key, sanitizeReportValue(nested)]),
+    );
+  }
+  return value;
 }
 
 /** Ensure the browser_reports table exists. */
@@ -93,7 +105,7 @@ export async function storeReport(
     const { userAgent: _ua, ...safeBody } = body as Record<string, unknown> & {
       userAgent?: unknown;
     };
-    const detail = JSON.stringify(safeBody);
+    const detail = JSON.stringify(sanitizeReportValue(safeBody));
     await db
       .prepare(`INSERT INTO browser_reports (ts, type, url, detail, day) VALUES (?, ?, ?, ?, ?)`)
       .bind(ts, type, safeUrl, detail, utcDay(ts))

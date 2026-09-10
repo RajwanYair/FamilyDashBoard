@@ -118,6 +118,19 @@ describe("d1-reports — storeReport", () => {
     expect(db._stored[0]!.detail).toContain("blockedURL");
   });
 
+  it("removes URL query tokens from stored report details", async () => {
+    const db = makeD1Stub() as D1Database & { _stored: ReportRow[] };
+    const secret = "calendar-secret";
+    await storeReport(db, "csp-violation", "https://example.com/page", {
+      blockedURL: `https://calendar.google.com/family.ics?token=${secret}`,
+      nested: { sourceFile: `https://app.example.test/main.js?token=${secret}` },
+    });
+
+    expect(db._stored[0]!.detail).not.toContain(secret);
+    expect(db._stored[0]!.detail).toContain("https://calendar.google.com/family.ics");
+    expect(db._stored[0]!.detail).toContain("https://app.example.test/main.js");
+  });
+
   it("handles empty body gracefully", async () => {
     const db = makeD1Stub() as D1Database & { _stored: ReportRow[] };
     await storeReport(db, "deprecation", "", {});

@@ -108,20 +108,25 @@ The Cloudflare Worker implements in-memory per-IP rate limiting:
 
 ---
 
-## 7. 👁️ Error Telemetry Privacy
+## 7. 👁️ Error and Performance Telemetry Privacy
 
-The error reporting system (`error-reporter.ts` → `POST /api/errors`) collects:
+The default client uses the `error-reporter.ts` pipeline for numeric Web Vitals
+after page settle or when the page becomes hidden. A runtime error remains in
+the bounded in-memory tracker unless another integration explicitly submits it
+to `POST /api/errors`. Accepted error entries contain:
 
 - JavaScript error messages (truncated to 500 chars)
 - Source file name and line number
 - Timestamp
 
-It does **not** collect:
+Before queueing or persistence, URL query strings are removed from error
+messages and source fields. The Worker also sanitizes incoming report fields.
+The endpoint does **not** intentionally collect:
 
-- IP addresses (not stored server-side; only seen in CF logs)
 - User-entered data (family name, calendar URL, city names)
 - Browsing history or navigation events
-- Any PII
+- A persistent IP address (the address may be visible in transient Cloudflare
+  request logs for rate limiting)
 
 The export endpoint (`GET /api/errors/export?token=<SECRET>`) is token-gated. The token is stored
 as a Cloudflare Worker secret (`wrangler secret put ERROR_REPORTING_TOKEN`).

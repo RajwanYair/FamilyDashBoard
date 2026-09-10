@@ -63,6 +63,20 @@ describe("Error Reporter — reportErrors", () => {
     expect(_getPending()).toHaveLength(2);
   });
 
+  it("redacts URL query tokens before queuing telemetry", () => {
+    reportErrors([
+      {
+        ts: 1000,
+        message: "calendar failed https://calendar.google.com/family.ics?token=secret",
+        source: "https://app.example.test/main.js?token=source-secret",
+      },
+    ]);
+    const pending = _getPending()[0];
+    expect(pending?.message).not.toContain("secret");
+    expect(pending?.source).not.toContain("source-secret");
+    expect(pending?.message).toContain("https://calendar.google.com/family.ics");
+  });
+
   it("flushes via fetch after debounce timer fires", async () => {
     reportErrors([{ ts: 1000, message: "err" }]);
     expect(globalThis.fetch).not.toHaveBeenCalled();
