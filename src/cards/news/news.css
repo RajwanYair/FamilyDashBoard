@@ -98,6 +98,12 @@
   color: var(--accent);
   background: var(--bg-card-inner);
 }
+.news-copy:focus-visible,
+.news-share:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 .news-copy.copied {
   color: var(--positive) !important;
   opacity: 1;

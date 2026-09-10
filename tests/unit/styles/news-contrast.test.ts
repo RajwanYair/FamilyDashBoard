@@ -29,4 +29,10 @@ describe("news age and visited state contrast", () => {
     );
     expect(css).not.toMatch(/\.rss-item\.stale-(?:half|day|old)\s*\{[^}]*opacity\s*:/s);
   });
+
+  it("keeps hover-revealed article actions visible to keyboard users", () => {
+    expect(css).toMatch(
+      /\.news-copy:focus-visible,\s*\.news-share:focus-visible\s*\{[^}]*opacity:\s*1[^}]*outline:\s*2px\s+solid\s+var\(--accent\)/s,
+    );
+  });
 });
