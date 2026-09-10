@@ -236,7 +236,11 @@
   margin-bottom: 10px;
 }
 .cfg-tab {
+  align-items: center;
+  display: inline-flex;
   font-size: 0.76em;
+  justify-content: center;
+  min-block-size: 2.75rem;
   padding: 4px 10px;
   border-radius: 6px;
   background: var(--bg-card-inner);
@@ -244,6 +248,7 @@
   border: 1px solid var(--accent-border);
   cursor: pointer;
   font-family: inherit;
+  touch-action: manipulation;
   transition: all 0.15s;
 }
 .cfg-tab.active {
