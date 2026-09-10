@@ -513,8 +513,10 @@ describe("News — bookmark popover wiring", () => {
     document.body.innerHTML = `
       <div id="rss-scroll"></div>
       <button id="news-bkm-pill"></button>
-      <button id="news-bkm-exit"></button>
-      <button id="news-bkm-clear"></button>
+      <div id="news-bkm-popover" popover role="menu">
+        <button id="news-bkm-exit" role="menuitem"></button>
+        <button id="news-bkm-clear" role="menuitem"></button>
+      </div>
     `;
     _resetNewsForTest();
     cacheDom();
@@ -539,6 +541,28 @@ describe("News — bookmark popover wiring", () => {
     expect(getBookmarks().size).toBe(2);
     document.getElementById("news-bkm-clear")!.click();
     expect(getBookmarks().size).toBe(0);
+  });
+
+  it("supports menu keyboard navigation and returns focus on Escape", () => {
+    const pill = document.getElementById("news-bkm-pill")!;
+    const popover = document.getElementById("news-bkm-popover")!;
+    const items = popover.querySelectorAll<HTMLButtonElement>('[role="menuitem"]');
+    const toggleEvent = new Event("toggle");
+    Object.defineProperty(toggleEvent, "newState", { value: "open" });
+    popover.dispatchEvent(toggleEvent);
+
+    expect(pill.getAttribute("aria-haspopup")).toBe("menu");
+    expect(pill.getAttribute("aria-expanded")).toBe("true");
+    expect(document.activeElement).toBe(items[0]);
+
+    items[0]?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+    expect(document.activeElement).toBe(items[1]);
+    items[1]?.dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true }));
+    expect(document.activeElement).toBe(items[0]);
+
+    popover.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    expect(pill.getAttribute("aria-expanded")).toBe("false");
+    expect(document.activeElement).toBe(pill);
   });
 });
 

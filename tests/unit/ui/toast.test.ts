@@ -28,6 +28,14 @@ describe("Toast — showToast", () => {
     expect(document.getElementById("toast")?.classList.contains("visible")).toBe(true);
   });
 
+  it("exposes an atomic polite status for screen readers", () => {
+    showToast("status message");
+    const toast = document.getElementById("toast");
+    expect(toast?.getAttribute("role")).toBe("status");
+    expect(toast?.getAttribute("aria-live")).toBe("polite");
+    expect(toast?.getAttribute("aria-atomic")).toBe("true");
+  });
+
   it("removes visible class after duration", () => {
     showToast("fade me", 1000);
     vi.advanceTimersByTime(1001);

@@ -14,6 +14,9 @@ export function showToast(message: string, durationMs = 3000): void {
   if (!toastEl?.isConnected) toastEl = document.getElementById("toast");
   if (!toastEl) return;
 
+  toastEl.setAttribute("role", "status");
+  toastEl.setAttribute("aria-live", "polite");
+  toastEl.setAttribute("aria-atomic", "true");
   // Restart the progress bar animation by toggling the class off/on
   toastEl.classList.remove("visible");
   toastEl.style.setProperty("--toast-dur", `${durationMs / 1000}s`);

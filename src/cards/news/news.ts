@@ -105,6 +105,7 @@ export const NEWS_FEEDS: NewsFeed[] = [
 let elRssScroll: HTMLElement | null = null;
 let elNewsTicker: HTMLElement | null = null;
 let elBkmPill: HTMLElement | null = null;
+let elBkmPopover: (HTMLElement & { hidePopover?: () => void }) | null = null;
 let elSearchInput: HTMLInputElement | null = null;
 let elSearchClear: HTMLElement | null = null;
 let elSearchCount: HTMLElement | null = null;
@@ -563,6 +564,45 @@ export function toggleBookmarkMode(): void {
   renderNews(_lastItems);
 }
 
+function getBookmarkMenuItems(): HTMLButtonElement[] {
+  return elBkmPopover
+    ? Array.from(elBkmPopover.querySelectorAll<HTMLButtonElement>('[role="menuitem"]'))
+    : [];
+}
+
+function closeBookmarkPopover(): void {
+  if (elBkmPopover?.hidePopover) {
+    elBkmPopover.hidePopover();
+  } else {
+    elBkmPopover?.removeAttribute("open");
+  }
+  elBkmPill?.setAttribute("aria-expanded", "false");
+  elBkmPill?.focus({ preventScroll: true });
+}
+
+function handleBookmarkPopoverKeydown(event: KeyboardEvent): void {
+  const items = getBookmarkMenuItems();
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeBookmarkPopover();
+    return;
+  }
+  if (items.length === 0) return;
+
+  const current = items.findIndex((item) => item === document.activeElement);
+  let nextIndex: number | null = null;
+  if (event.key === "ArrowDown") nextIndex = current < 0 ? 0 : (current + 1) % items.length;
+  if (event.key === "ArrowUp") {
+    nextIndex = current < 0 ? items.length - 1 : (current - 1 + items.length) % items.length;
+  }
+  if (event.key === "Home") nextIndex = 0;
+  if (event.key === "End") nextIndex = items.length - 1;
+  if (nextIndex === null) return;
+
+  event.preventDefault();
+  items[nextIndex]?.focus({ preventScroll: true });
+}
+
 export function getBookmarks(): Set<string> {
   return _bookmarks;
 }
@@ -843,6 +883,7 @@ export function cacheDom(): void {
   }
   elNewsTicker = document.getElementById("news-ticker");
   elBkmPill = document.getElementById("news-bkm-pill");
+  elBkmPopover = document.getElementById("news-bkm-popover");
   elSearchInput = document.getElementById("news-search") as HTMLInputElement | null;
   elSearchClear = document.getElementById("news-search-clear");
   elSearchCount = document.getElementById("news-search-count");
@@ -851,8 +892,37 @@ export function cacheDom(): void {
   // D11: Popover API bookmark menu
   const bkmExitBtn = document.getElementById("news-bkm-exit");
   const bkmClearBtn = document.getElementById("news-bkm-clear");
-  if (bkmExitBtn) bkmExitBtn.addEventListener("click", () => toggleBookmarkMode());
-  if (bkmClearBtn) bkmClearBtn.addEventListener("click", () => clearAllBookmarks());
+  if (elBkmPill) {
+    elBkmPill.setAttribute("aria-haspopup", "menu");
+    elBkmPill.setAttribute("aria-controls", "news-bkm-popover");
+    elBkmPill.setAttribute("aria-expanded", "false");
+  }
+  if (elBkmPopover && elBkmPopover.dataset["menuWired"] !== "1") {
+    elBkmPopover.dataset["menuWired"] = "1";
+    elBkmPopover.addEventListener("keydown", handleBookmarkPopoverKeydown);
+    elBkmPopover.addEventListener("toggle", (event: Event) => {
+      const newState = (event as Event & { newState?: string }).newState;
+      if (newState === "open") {
+        elBkmPill?.setAttribute("aria-expanded", "true");
+        getBookmarkMenuItems()[0]?.focus({ preventScroll: true });
+      } else if (newState === "closed") {
+        elBkmPill?.setAttribute("aria-expanded", "false");
+        elBkmPill?.focus({ preventScroll: true });
+      }
+    });
+  }
+  if (bkmExitBtn) {
+    bkmExitBtn.addEventListener("click", () => {
+      toggleBookmarkMode();
+      closeBookmarkPopover();
+    });
+  }
+  if (bkmClearBtn) {
+    bkmClearBtn.addEventListener("click", () => {
+      clearAllBookmarks();
+      closeBookmarkPopover();
+    });
+  }
   // N-Star-UI: read-later drawer
   elStarBtn = document.getElementById("news-star-btn");
   elStarDialog = document.getElementById("news-starred-dialog") as HTMLDialogElement | null;
@@ -1785,6 +1855,7 @@ export function _resetNewsForTest(): void {
   elRssScroll = null;
   elNewsTicker = null;
   elBkmPill = null;
+  elBkmPopover = null;
   elSearchInput = null;
   elSearchClear = null;
   elSearchCount = null;
