@@ -52,7 +52,7 @@ describe("idle — fast-check properties (IDP1-IDP3 )", () => {
     );
   });
 
-  it("IDP3: shouldWakeRefresh becomes true only after the page has been hidden longer than WAKE_REFRESH_MS", () => {
+  it("IDP3: queues one wake refresh when the page resumes after WAKE_REFRESH_MS", () => {
     vi.useFakeTimers();
     try {
       const start = new Date("2026-04-30T12:00:00Z").getTime();
@@ -62,11 +62,11 @@ describe("idle — fast-check properties (IDP1-IDP3 )", () => {
       // Just before the threshold — should NOT trigger wake
       vi.setSystemTime(start + WAKE_REFRESH_MS - 100);
       expect(shouldWakeRefresh()).toBe(false);
-      // Just past the threshold — SHOULD trigger wake
+      // Passing the threshold while hidden does not consume or queue a refresh.
       vi.setSystemTime(start + WAKE_REFRESH_MS + 100);
-      expect(shouldWakeRefresh()).toBe(true);
-      // Once visible again, lastHiddenAt is cleared → no wake required
       setVisibility("visible");
+      expect(shouldWakeRefresh()).toBe(true);
+      // The pending refresh is consumed exactly once.
       expect(shouldWakeRefresh()).toBe(false);
     } finally {
       vi.useRealTimers();

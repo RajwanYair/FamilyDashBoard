@@ -306,6 +306,14 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
     expect(html).toContain('aria-live="polite"');
   });
 
+  it("offline banner exposes an atomic polite status", () => {
+    const bannerIdx = html.indexOf('id="offline-banner"');
+    const nearbyHtml = html.slice(Math.max(0, bannerIdx - 40), bannerIdx + 180);
+    expect(nearbyHtml).toContain('role="status"');
+    expect(nearbyHtml).toContain('aria-live="polite"');
+    expect(nearbyHtml).toContain('aria-atomic="true"');
+  });
+
   it("news ticker has aria-live=polite", () => {
     expect(html).toContain('id="news-ticker"');
     // news-ticker is inside the news card and has aria-live="polite"

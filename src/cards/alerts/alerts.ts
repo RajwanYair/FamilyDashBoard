@@ -21,7 +21,7 @@ import { cGetStale } from "../../core/cache";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { isPageVisible } from "../../core/idle";
 import { diagLog } from "../../core/diag";
-import { captureOverlayFocus, restoreOverlayFocus } from "../../ui/overlay-focus";
+import { captureOverlayFocus, restoreOverlayFocus } from "@/core/overlay-focus";
 import { fetchWithTimeout } from "../../core/fetch";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import { trustedHTML } from "../../core/trusted-types";
