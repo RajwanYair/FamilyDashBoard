@@ -866,6 +866,7 @@ describe("Config Panel — cards tab visibility and sizes", () => {
 
     const sel = document.querySelector<HTMLSelectElement>(".cfg-card-size-sel");
     if (sel) {
+      expect(sel.getAttribute("aria-label")).toBeTruthy();
       sel.value = "lg";
       document.getElementById("cfg-save-btn")!.click();
       const weatherWidget = document.querySelector<HTMLElement>('[data-card-id="weather"]')!;

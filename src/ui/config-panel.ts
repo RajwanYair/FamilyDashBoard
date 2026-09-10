@@ -458,12 +458,18 @@ function populateForm(): void {
         // Size selector
         const sizeDiv = document.createElement("div");
         sizeDiv.className = "cfg-card-size-wrap";
+        const sizeLabel = t("cardSizeLabel", undefined, c.interfaceLanguage);
         const sizeLbl = document.createElement("span");
         sizeLbl.className = "cfg-label";
-        sizeLbl.textContent = t("cardSizeLabel", undefined, c.interfaceLanguage);
+        sizeLbl.textContent = sizeLabel;
         const sel = document.createElement("select");
         sel.className = "cfg-input cfg-card-size-sel";
         sel.dataset["cardId"] = entry.id;
+        sel.setAttribute(
+          "aria-label",
+          `${getLocalizedCardTitle(entry, c.interfaceLanguage)} — ${sizeLabel}`,
+        );
+        sel.title = sizeLabel;
         sel.style.cssText = "width:70px;font-size:0.75em;padding:1px 3px";
         for (const [val, lText] of [
           ["sm", c.interfaceLanguage === "en" ? "Small" : "קטן"],
