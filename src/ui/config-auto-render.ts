@@ -99,8 +99,13 @@ export function readConfigValues(
 
     if (el instanceof HTMLInputElement) {
       if (el.type === "checkbox") values[key] = el.checked;
-      else if (el.type === "number" || el.type === "range") values[key] = Number(el.value);
-      else values[key] = el.value;
+      else if (el.type === "number" || el.type === "range") {
+        const rawValue = el.value.trim();
+        if (rawValue !== "") {
+          const numericValue = Number(rawValue);
+          if (Number.isFinite(numericValue)) values[key] = numericValue;
+        }
+      } else values[key] = el.value;
     } else if (el instanceof HTMLSelectElement) {
       values[key] = el.value;
     } else if (el instanceof HTMLTextAreaElement) {

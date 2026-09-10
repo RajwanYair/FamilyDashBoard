@@ -165,6 +165,20 @@ describe("readConfigValues ", () => {
     expect(vals["count"]).toBe(10);
     expect(vals["unit"]).toBe("F");
   });
+
+  it("skips an empty numeric control instead of returning NaN", () => {
+    const container = document.createElement("div");
+    renderConfigFields(
+      [{ key: "count", labelHe: "מספר", labelEn: "Count", type: "number", defaultValue: 5 }],
+      { count: 5 },
+      container,
+    );
+    const input = container.querySelector<HTMLInputElement>("[data-config-key='count']");
+    expect(input).not.toBeNull();
+    input!.value = "";
+
+    expect(readConfigValues(container)).toEqual({});
+  });
 });
 
 // ── readConfigValues — textarea branch ──────────────────────
