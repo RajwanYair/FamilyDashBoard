@@ -386,6 +386,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 25. **Cross-card signal protocol (X12)** — `src/core/card-signal-protocol.ts` exposes `setCardSignal` / `getCardSignal` / `onCardSignal`. Values are deep-frozen, subscribers fire via microtask. Cards publish under `(cardId, key)`; consumers subscribe without coupling. See ADR-067 + ADR-071.
 26. **Semantic clipboard (X15)** — `src/core/semantic-clipboard.ts` + `Y` (yank) keystroke. Cards opt in by calling `registerSemanticProducer(cardId, fn)` returning `SemanticPayload` (text + JSON-LD). `ClipboardItem` write with text-only fallback. See ADR-070 + ADR-071.
 27. **Refresh/resume discipline** — Card loaders keep visibility guards and per-card locks. `refreshAllCardsStaggered()` coalesces overlapping manual, reconnect, and Service Worker recovery bursts; long hidden intervals request one refresh through `onVisibilityChange()`, while short hides wait for the normal card schedule. The final stagger slot releases the burst lock only after its loader settles, so resume cannot create duplicate provider requests.
+28. **Config backup safety** — IndexedDB config snapshots are best-effort and never reported as saved unless `idbSet()` confirms success. Reads validate each snapshot through `validateImportedConfig()`, which applies schema migration and sanitization before a restore can reach the UI; malformed and future-version entries are ignored without discarding usable snapshots.
 
 ## ♿ Accessibility Compliance
 

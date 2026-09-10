@@ -84,6 +84,32 @@ describe("SW Register — no ServiceWorker support", () => {
   });
 });
 
+describe("SW Register — local file capability boundary", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("skips registration on file://", async () => {
+    stubServiceWorker();
+    const originalLocation = window.location;
+    Object.defineProperty(window, "location", {
+      value: { protocol: "file:", search: "" },
+      configurable: true,
+    });
+
+    try {
+      const mod = await freshMod();
+      await mod.registerSW();
+      expect(navigator.serviceWorker.register).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(window, "location", {
+        value: originalLocation,
+        configurable: true,
+      });
+    }
+  });
+});
+
 // ── Successful registration ──
 
 describe("SW Register — successful registration", () => {

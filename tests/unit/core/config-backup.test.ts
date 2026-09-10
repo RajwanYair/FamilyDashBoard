@@ -11,12 +11,14 @@ import {
   stopConfigAutoBackup,
 } from "@/core/config-backup";
 import * as idbCache from "@/core/idb-cache";
+import { CONFIG_VERSION } from "@/types/config";
 
 vi.mock("@/core/idb-cache", () => {
   let store: Record<string, unknown> = {};
   return {
     idbSet: vi.fn(async (key: string, data: unknown) => {
       store[key] = data;
+      return true;
     }),
     idbGet: vi.fn(async (key: string) => store[key] ?? null),
     idbGetEntry: vi.fn(async () => null),
@@ -38,7 +40,10 @@ describe("Config Auto-Backup (S60)", () => {
     (idbCache as unknown as { _resetStore: () => void })._resetStore();
     stopConfigAutoBackup();
     // Set up localStorage with a config
-    localStorage.setItem("dash_v2_config", JSON.stringify({ theme: "blue", configVersion: 15 }));
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ theme: "blue", configVersion: CONFIG_VERSION }),
+    );
   });
 
   afterEach(() => {
@@ -77,6 +82,28 @@ describe("Config Auto-Backup (S60)", () => {
   it("restoreConfigFromIdb returns null when no backups", async () => {
     const restored = await restoreConfigFromIdb();
     expect(restored).toBeNull();
+  });
+
+  it("skips malformed backups and restores the newest valid config", async () => {
+    const rawBackups = [
+      { config: { theme: "not-a-theme" }, ts: 3000 },
+      { config: { theme: "blue", configVersion: CONFIG_VERSION }, ts: 2000 },
+      { config: { theme: "amber" }, ts: Number.NaN },
+    ] as never;
+    vi.mocked(idbCache.idbGet).mockResolvedValueOnce(rawBackups).mockResolvedValueOnce(rawBackups);
+
+    const backups = await getConfigBackups();
+    expect(backups).toHaveLength(1);
+    expect(backups[0]?.config.theme).toBe("blue");
+    expect((await restoreConfigFromIdb())?.theme).toBe("blue");
+  });
+
+  it("does not report a failed IDB write as a saved backup", async () => {
+    vi.mocked(idbCache.idbSet).mockResolvedValueOnce(false);
+
+    await backupConfigToIdb();
+
+    expect(await getConfigBackups()).toHaveLength(0);
   });
 
   it("startConfigAutoBackup creates periodic interval", async () => {

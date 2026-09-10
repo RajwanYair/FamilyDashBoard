@@ -7,7 +7,7 @@
  */
 
 import { idbSet, idbGet } from "./idb-cache";
-import { loadConfig } from "./config";
+import { loadConfig, validateImportedConfig } from "./config";
 import { diagLog } from "./diag";
 import type { DashboardConfig } from "../types/config";
 
@@ -26,10 +26,14 @@ export interface ConfigBackupEntry {
 export async function backupConfigToIdb(): Promise<void> {
   try {
     const config = loadConfig();
-    const existing = (await idbGet<ConfigBackupEntry[]>(IDB_BACKUP_KEY)) ?? [];
+    const existing = await getConfigBackups();
     const entry: ConfigBackupEntry = { config, ts: Date.now() };
     const updated = [entry, ...existing].slice(0, MAX_BACKUPS);
-    await idbSet(IDB_BACKUP_KEY, updated);
+    const persisted = await idbSet(IDB_BACKUP_KEY, updated);
+    if (!persisted) {
+      diagLog("[config-backup] Failed to persist backup to IDB");
+      return;
+    }
     diagLog("[config-backup] Snapshot saved to IDB");
   } catch {
     diagLog("[config-backup] Failed to backup config");
@@ -42,7 +46,22 @@ export async function backupConfigToIdb(): Promise<void> {
  */
 export async function getConfigBackups(): Promise<ConfigBackupEntry[]> {
   try {
-    return (await idbGet<ConfigBackupEntry[]>(IDB_BACKUP_KEY)) ?? [];
+    const raw = await idbGet<unknown>(IDB_BACKUP_KEY);
+    if (!Array.isArray(raw)) return [];
+
+    return raw.flatMap((candidate: unknown): ConfigBackupEntry[] => {
+      if (typeof candidate !== "object" || candidate === null || Array.isArray(candidate)) {
+        return [];
+      }
+      const item = candidate as { config?: unknown; ts?: unknown };
+      if (typeof item.ts !== "number" || !Number.isFinite(item.ts) || item.ts < 0) {
+        return [];
+      }
+      const validated = validateImportedConfig(item.config);
+      return validated.ok && validated.config
+        ? [{ config: validated.config, ts: item.ts }]
+        : [];
+    });
   } catch {
     return [];
   }
