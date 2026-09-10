@@ -61,6 +61,17 @@ export function toggleCardMaximize(card: HTMLElement): void {
   }
 }
 
+function updateMaximizeButton(card: HTMLElement, expanded: boolean): void {
+  const button = card.querySelector<HTMLButtonElement>(".card-maximize-btn");
+  if (!button) return;
+  button.setAttribute("aria-expanded", String(expanded));
+  button.setAttribute(
+    "aria-label",
+    expanded ? "הקטן כרטיסייה — Restore card" : "הגדל כרטיסייה — Maximize card",
+  );
+  button.title = expanded ? "הקטן כרטיסייה — Restore card" : "הגדל כרטיסייה — Maximize card";
+}
+
 /**
  * Compute the adaptive font scale: ratio of expanded area to collapsed area,
  * clamped to [1, 4] so fonts are never smaller than normal and never absurdly large.
@@ -134,6 +145,7 @@ function expandCard(card: HTMLElement): void {
 
   card.setAttribute("aria-expanded", "true");
   maximizedCard = card;
+  updateMaximizeButton(card, true);
   diagLog(
     `[maximize] Expanded card via ${"startViewTransition" in document ? "ViewTransition" : "FLIP"}`,
   );
@@ -191,6 +203,7 @@ function collapseCard(card: HTMLElement): void {
   }
 
   card.setAttribute("aria-expanded", "false");
+  updateMaximizeButton(card, false);
   maximizedCard = null;
   diagLog("[maximize] Collapsed card");
 }
@@ -200,9 +213,35 @@ function collapseCard(card: HTMLElement): void {
  */
 export function initCardMaximize(): void {
   document.querySelectorAll<HTMLElement>(".card-header").forEach((hdr) => {
+    const card = hdr.closest<HTMLElement>(".card");
+    if (card && !hdr.querySelector(".card-maximize-btn")) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "card-maximize-btn";
+      button.textContent = "⛶";
+      button.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleCardMaximize(card);
+      });
+      const endSlot = hdr.querySelector<HTMLElement>(".card__hd-end");
+      const collapseBtn = hdr.querySelector(".card-collapse-btn");
+      if (endSlot) {
+        endSlot.insertBefore(button, collapseBtn);
+      } else {
+        hdr.insertBefore(button, collapseBtn);
+      }
+      updateMaximizeButton(card, false);
+    }
+
     hdr.addEventListener("click", (e: Event) => {
-      // Ignore clicks on the collapse button — handled by initCardCollapse
-      if ((e.target as HTMLElement).closest(".card-collapse-btn")) return;
+      // Ignore clicks on nested controls; their own handlers own the action.
+      const target = e.target;
+      if (
+        target instanceof Element &&
+        target.closest("button, a, input, select, textarea, [contenteditable='true']")
+      ) {
+        return;
+      }
       const card = hdr.closest<HTMLElement>(".card");
       if (!card) return;
       e.stopPropagation();

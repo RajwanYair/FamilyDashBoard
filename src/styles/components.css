@@ -2137,7 +2137,8 @@ body.slideshow-fade::after {
 }
 
 /* Card collapse toggle (F159) */
-.card-collapse-btn {
+.card-collapse-btn,
+.card-maximize-btn {
   background: none;
   border: none;
   color: var(--text-muted);
@@ -2145,14 +2146,19 @@ body.slideshow-fade::after {
   font-size: 0.75em;
   padding: 0 2px;
   margin-inline-end: 4px;
-  min-width: 24px;
-  min-height: 24px;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
   transition:
     transform 0.25s ease,
     color 0.2s;
   line-height: 1;
 }
-.card-collapse-btn:hover {
+.card-collapse-btn:hover,
+.card-maximize-btn:hover {
   color: var(--accent);
 }
 .card.collapsed .card-collapse-btn {

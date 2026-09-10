@@ -252,6 +252,35 @@ describe("Maximize — initCardMaximize", () => {
     expect(card.classList.contains("maximized")).toBe(false);
   });
 
+  it("adds a keyboard-operable maximize button with stateful labeling", () => {
+    mod.initCardMaximize();
+    const card = document.querySelector<HTMLElement>(".card")!;
+    const button = card.querySelector<HTMLButtonElement>(".card-maximize-btn");
+
+    expect(button?.type).toBe("button");
+    expect(button?.getAttribute("aria-label")).toContain("Maximize");
+    expect(button?.getAttribute("aria-expanded")).toBe("false");
+
+    button?.click();
+
+    expect(card.classList.contains("maximized")).toBe(true);
+    expect(button?.getAttribute("aria-label")).toContain("Restore");
+    expect(button?.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("does not maximize when another header control is clicked", () => {
+    const card = makeCard("interactive-card");
+    const header = card.querySelector<HTMLElement>(".card-header")!;
+    const action = document.createElement("button");
+    action.type = "button";
+    header.appendChild(action);
+
+    mod.initCardMaximize();
+    action.click();
+
+    expect(card.classList.contains("maximized")).toBe(false);
+  });
+
   it("does not throw when no card headers exist", async () => {
     document.body.innerHTML = "";
     const emptyMod = await freshMax();
