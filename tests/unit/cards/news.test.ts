@@ -31,6 +31,7 @@ import {
   newsCard,
   filterBySearch,
   getBookmarkKey,
+  getBookmarkId,
   getBookmarks,
   isBookmarkMode,
   clearAllBookmarks,
@@ -41,6 +42,9 @@ import {
   unstarArticle,
   isStarred,
   getStarredArticles,
+  clearStarredArticles,
+  clearVisited,
+  exportNewsPersistence,
   openStarredDrawer,
   closeStarredDrawer,
   ageFreshness,
@@ -54,7 +58,8 @@ import {
   rankNewsItems,
   getSourcePriority,
 } from "@/cards/news/news";
-import { _idbClearFallback, idbGetAll } from "@/core/idb-store";
+import { _idbClearFallback, idbGetAll, idbSet } from "@/core/idb-store";
+import { LS_NEWS_STARRED, LS_NEWS_VISITED } from "@/core/constants";
 import { getSemanticPayload } from "@/core/semantic-clipboard";
 
 describe("News — detectCategory", () => {
@@ -290,6 +295,94 @@ describe("News — getBookmarkKey", () => {
 
   it("handles empty string", () => {
     expect(getBookmarkKey("")).toBe("");
+  });
+});
+
+describe("News — canonical bookmark identity", () => {
+  it("distinguishes two articles with the same title from different sources", () => {
+    const first = getBookmarkId({
+      title: "כותרת זהה",
+      link: "",
+      source: "מקור א",
+    });
+    const second = getBookmarkId({
+      title: "כותרת זהה",
+      link: "",
+      source: "מקור ב",
+    });
+    expect(first).not.toBe(second);
+  });
+
+  it("uses the complete link so long URLs cannot collide by truncation", () => {
+    const prefix = "https://example.com/article/".padEnd(140, "a");
+    const first = getStarId({ title: "א", link: `${prefix}1` });
+    const second = getStarId({ title: "ב", link: `${prefix}2` });
+    expect(first).not.toBe(second);
+  });
+});
+
+describe("News — legacy bookmark compatibility", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `
+      <div id="rss-scroll"></div>
+      <span id="news-bkm-pill"></span>`;
+    _resetNewsForTest();
+    cacheDom();
+  });
+
+  afterEach(() => {
+    _resetNewsForTest();
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("renders a legacy title bookmark as active", () => {
+    const item = {
+      title: "Legacy title",
+      link: "https://example.com/legacy",
+      pubDate: "",
+      source: "src",
+    };
+    toggleBookmark(getBookmarkKey(item.title));
+    renderNews([item]);
+    expect(document.querySelector(".news-bkm-btn")?.classList.contains("active")).toBe(true);
+    expect(getBookmarks().has(getBookmarkKey(item.title))).toBe(false);
+    expect(getBookmarks().has(getBookmarkId(item))).toBe(true);
+  });
+
+  it("removes the legacy title key when toggling the matching article", () => {
+    const item = {
+      title: "Legacy title",
+      link: "https://example.com/legacy",
+      pubDate: "",
+      source: "src",
+    };
+    toggleBookmark(getBookmarkKey(item.title));
+    renderNews([item]);
+    document.querySelector<HTMLButtonElement>(".news-bkm-btn")?.click();
+    expect(getBookmarks().has(getBookmarkKey(item.title))).toBe(false);
+  });
+
+  it("does not apply one legacy title bookmark to same-title articles from two sources", () => {
+    const items = [
+      {
+        title: "Same legacy title",
+        link: "https://example.com/one",
+        pubDate: "",
+        source: "source-one",
+      },
+      {
+        title: "Same legacy title",
+        link: "https://example.com/two",
+        pubDate: "",
+        source: "source-two",
+      },
+    ];
+    toggleBookmark(getBookmarkKey(items[0]!.title));
+    renderNews(items);
+    expect(document.querySelectorAll(".news-bkm-btn.active")).toHaveLength(0);
+    expect(getBookmarks().has(getBookmarkKey(items[0]!.title))).toBe(true);
   });
 });
 
@@ -2340,6 +2433,15 @@ describe("News — renderNews mute filter ", () => {
 describe("News — star/read-later IDB ", () => {
   beforeEach(() => {
     _idbClearFallback();
+    localStorage.removeItem(LS_NEWS_STARRED);
+    sessionStorage.removeItem(LS_NEWS_VISITED);
+  });
+
+  afterEach(() => {
+    _idbClearFallback();
+    localStorage.removeItem(LS_NEWS_STARRED);
+    sessionStorage.removeItem(LS_NEWS_VISITED);
+    _resetNewsForTest();
   });
 
   it("getStarId returns trimmed link", () => {
@@ -2368,6 +2470,93 @@ describe("News — star/read-later IDB ", () => {
 
   it("isStarred returns false for unknown id", async () => {
     expect(await isStarred("no-such-id")).toBe(false);
+  });
+
+  it("recovers starred articles from localStorage when the IDB layer is unavailable", async () => {
+    const item = { title: "Fallback", link: "https://x.com/fallback", pubDate: "", source: "test" };
+    await starArticle(item);
+    _idbClearFallback();
+    expect(await isStarred(getStarId(item))).toBe(true);
+    await expect(getStarredArticles()).resolves.toEqual([
+      expect.objectContaining({ title: "Fallback", id: getStarId(item) }),
+    ]);
+  });
+
+  it("ignores malformed fallback records", async () => {
+    localStorage.setItem(
+      LS_NEWS_STARRED,
+      JSON.stringify([
+        { id: "bad", title: "missing fields" },
+        { id: "ok", title: "valid" },
+      ]),
+    );
+    expect(await getStarredArticles()).toEqual([]);
+  });
+
+  it("clearStarredArticles removes both IDB and fallback records", async () => {
+    await starArticle({
+      title: "Clear me",
+      link: "https://x.com/clear",
+      pubDate: "",
+      source: "test",
+    });
+    await clearStarredArticles();
+    expect(await getStarredArticles()).toEqual([]);
+    expect(localStorage.getItem(LS_NEWS_STARRED)).toBe("[]");
+  });
+
+  it("exports a versioned local-only persistence document", async () => {
+    markVisited("read-id");
+    await starArticle({
+      title: "Export me",
+      link: "https://x.com/export",
+      pubDate: "",
+      source: "test",
+    });
+    const exported = JSON.parse(await exportNewsPersistence()) as {
+      schemaVersion: number;
+      visited: string[];
+      starred: Array<{ title: string }>;
+    };
+    expect(exported.schemaVersion).toBe(1);
+    expect(exported.visited).toContain("read-id");
+    expect(exported.starred).toEqual([expect.objectContaining({ title: "Export me" })]);
+  });
+
+  it("clearVisited removes read state from memory, session storage, and IDB", async () => {
+    markVisited("clear-read-id");
+    await Promise.resolve();
+    await clearVisited();
+    expect(isVisited("clear-read-id")).toBe(false);
+    expect(sessionStorage.getItem(LS_NEWS_VISITED)).toBeNull();
+    await expect(idbGetAll("fdb-news-read", "read")).resolves.toEqual([]);
+  });
+
+  it("removes read-state entries older than the seven-day retention window", async () => {
+    await idbSet("fdb-news-read", "read", "stale-read-id", {
+      id: "stale-read-id",
+      ts: Date.now() - 8 * 24 * 60 * 60_000,
+    });
+    sessionStorage.setItem(LS_NEWS_VISITED, JSON.stringify(["stale-read-id"]));
+    document.body.innerHTML = '<div id="rss-scroll"></div>';
+    cacheDom();
+    await vi.waitFor(() => expect(isVisited("stale-read-id")).toBe(false));
+    expect(JSON.parse(sessionStorage.getItem(LS_NEWS_VISITED) ?? "[]")).not.toContain(
+      "stale-read-id",
+    );
+    await expect(idbGetAll("fdb-news-read", "read")).resolves.toEqual([]);
+  });
+
+  it("updates read state from a cross-tab storage event", () => {
+    document.body.innerHTML = '<div id="rss-scroll"></div>';
+    cacheDom();
+    window.dispatchEvent(
+      new StorageEvent("storage", {
+        key: LS_NEWS_VISITED,
+        newValue: JSON.stringify(["cross-tab-read"]),
+      }),
+    );
+    expect(isVisited("cross-tab-read")).toBe(true);
   });
 });
 

@@ -165,7 +165,11 @@
       <div class="news-starred-inner">
         <div class="news-starred-header">
           <h2 id="news-starred-dialog-title">⭐ כתבות שמורות</h2>
-          <button type="button" id="news-starred-close" class="news-starred-close-btn" aria-label="סגור חלון כתבות שמורות">✕</button>
+          <div class="news-starred-actions">
+            <button type="button" id="news-starred-export" class="news-starred-action" aria-label="ייצוא כתבות שמורות">ייצוא</button>
+            <button type="button" id="news-starred-clear" class="news-starred-action news-starred-action--danger" aria-label="נקה כתבות שמורות">נקה</button>
+            <button type="button" id="news-starred-close" class="news-starred-close-btn" aria-label="סגור חלון כתבות שמורות">✕</button>
+          </div>
         </div>
         <div class="news-starred-list" role="list"></div>
       </div>

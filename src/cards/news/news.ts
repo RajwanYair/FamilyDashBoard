@@ -19,11 +19,18 @@ import {
   MS_PER_DAY,
   WORKER_BASE_URL,
   isWorkerEnabled,
+  LS_NEWS_STARRED,
 } from "../../core/constants";
 import { runConcurrent, fetchWithTimeout } from "../../core/fetch";
 import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
 import { idbGet, idbSet, idbDelete, idbGetAll } from "../../core/idb-store";
+import { saveTextFile } from "../../core/fs-access";
+import {
+  readStorageValue,
+  writeStorageValue,
+  removeStorageValue,
+} from "../../core/persistent-storage";
 import type { NewsItem } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
@@ -103,7 +110,26 @@ let elSearchCount: HTMLElement | null = null;
 let elNewsCount: HTMLElement | null = null;
 let elStarBtn: HTMLElement | null = null;
 let elStarDialog: HTMLDialogElement | null = null;
+let elStarExportBtn: HTMLElement | null = null;
+let elStarClearBtn: HTMLElement | null = null;
 let _newsRefreshInterval: number | null = null;
+let _visitedHydrationGeneration = 0;
+let _persistenceListenersAttached = false;
+let _newsPersistenceChannel: BroadcastChannel | null = null;
+
+const NEWS_READ_RETENTION_MS = 7 * 24 * 60 * 60_000;
+
+type NewsPersistenceMessage =
+  | { type: "read"; id: string }
+  | { type: "read-cleared" }
+  | { type: "starred-changed" };
+
+function isNewsPersistenceMessage(value: unknown): value is NewsPersistenceMessage {
+  if (value === null || typeof value !== "object") return false;
+  const message = value as Record<string, unknown>;
+  if (message.type === "starred-changed" || message.type === "read-cleared") return true;
+  return message.type === "read" && typeof message.id === "string";
+}
 
 // ── Search ──
 let _searchQuery = "";
@@ -288,41 +314,128 @@ export function sanitizeNewsTitle(title: string, maxLen = 120): string {
   return out;
 }
 
+function renderPersistedNewsState(): void {
+  if (_lastItems.length > 0) renderNews(_lastItems);
+}
+
+function broadcastNewsPersistence(message: NewsPersistenceMessage): void {
+  try {
+    _newsPersistenceChannel?.postMessage(message);
+  } catch {
+    diagLog("[news] persistence broadcast unavailable");
+  }
+}
+
+function handleNewsPersistenceMessage(message: NewsPersistenceMessage): void {
+  if (message.type === "read") {
+    _visited.add(message.id);
+    renderPersistedNewsState();
+    return;
+  }
+  if (message.type === "read-cleared") {
+    _visited.clear();
+    renderPersistedNewsState();
+    return;
+  }
+  if (elStarDialog?.open) void openStarredDrawer();
+}
+
+function handleNewsStorage(event: StorageEvent): void {
+  if (event.key === LS_NEWS_VISITED) {
+    _visited = parseVisitedStorage(event.newValue);
+    renderPersistedNewsState();
+  } else if (event.key === LS_NEWS_BOOKMARKS) {
+    loadBookmarks();
+    renderPersistedNewsState();
+  } else if (event.key === LS_NEWS_STARRED && elStarDialog?.open) {
+    void openStarredDrawer();
+  }
+}
+
+function attachPersistenceListeners(): void {
+  if (_persistenceListenersAttached || typeof window === "undefined") return;
+  _persistenceListenersAttached = true;
+  window.addEventListener("storage", handleNewsStorage);
+  if (typeof BroadcastChannel !== "undefined") {
+    try {
+      _newsPersistenceChannel = new BroadcastChannel("fdb-news-persistence");
+      _newsPersistenceChannel.addEventListener(
+        "message",
+        (event: MessageEvent<NewsPersistenceMessage>) => {
+          if (isNewsPersistenceMessage(event.data)) handleNewsPersistenceMessage(event.data);
+        },
+      );
+    } catch {
+      diagLog("[news] persistence channel unavailable");
+      _newsPersistenceChannel = null;
+    }
+  }
+}
+
+function detachPersistenceListeners(): void {
+  if (!_persistenceListenersAttached || typeof window === "undefined") return;
+  window.removeEventListener("storage", handleNewsStorage);
+  _newsPersistenceChannel?.close();
+  _newsPersistenceChannel = null;
+  _persistenceListenersAttached = false;
+}
+
+function parseVisitedStorage(raw: string | null): Set<string> {
+  if (raw === null) return new Set();
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) throw new TypeError("read-state storage is not an array");
+    return new Set(parsed.filter((value): value is string => typeof value === "string"));
+  } catch {
+    diagLog("[news] read-state storage value invalid");
+    return new Set();
+  }
+}
+
+async function hydrateVisited(generation: number): Promise<void> {
+  try {
+    const entries = (await idbGetAll<ReadStateEntry>(IDB_READ_DB, IDB_READ_STORE)).filter(
+      isReadStateEntry,
+    );
+    if (generation !== _visitedHydrationGeneration) return;
+    const cutoff = nowMs() - NEWS_READ_RETENTION_MS;
+    const staleEntries = entries.filter((entry) => entry.ts < cutoff);
+    const retainedEntries = entries.filter((entry) => entry.ts >= cutoff);
+    await Promise.all(
+      staleEntries.map((entry) => idbDelete(IDB_READ_DB, IDB_READ_STORE, entry.id)),
+    );
+    for (const entry of staleEntries) _visited.delete(entry.id);
+    for (const entry of retainedEntries) _visited.add(entry.id);
+    if (staleEntries.length > 0) {
+      if (!writeStorageValue("session", LS_NEWS_VISITED, JSON.stringify([..._visited]))) {
+        diagLog("[news] read-state stale cleanup failed");
+      }
+    }
+    renderPersistedNewsState();
+  } catch {
+    diagLog("[news] read-state hydration failed");
+  }
+}
+
 function loadVisited(): void {
   // Load from IDB (async); in-memory set available immediately from session cache
-  try {
-    const s = sessionStorage.getItem(LS_NEWS_VISITED) ?? "[]";
-    _visited = new Set(JSON.parse(s) as string[]);
-  } catch {
-    _visited = new Set();
-  }
-  // Async IDB hydration — merges persisted read state into memory
-  idbGetAll<{ id: string; ts: number }>(IDB_READ_DB, IDB_READ_STORE)
-    .then((entries) => {
-      const cutoff = Date.now() - 7 * 24 * 60 * 60_000; // 7-day retention
-      for (const e of entries) {
-        if (e.ts >= cutoff) _visited.add(e.id);
-      }
-    })
-    .catch(() => {
-      /* IDB unavailable — session fallback is fine */
-    });
+  const stored = readStorageValue("session", LS_NEWS_VISITED);
+  _visited = parseVisitedStorage(stored);
+  const generation = ++_visitedHydrationGeneration;
+  void hydrateVisited(generation);
 }
 
 export function markVisited(key: string): void {
   _visited.add(key);
-  try {
-    sessionStorage.setItem(LS_NEWS_VISITED, JSON.stringify([..._visited]));
-  } catch {
-    /* quota */
+  if (!writeStorageValue("session", LS_NEWS_VISITED, JSON.stringify([..._visited]))) {
+    diagLog("[news] read-state session storage write failed");
   }
   // Persist to IDB for cross-session retention
   idbSet<{ id: string; ts: number }>(IDB_READ_DB, IDB_READ_STORE, key, {
     id: key,
-    ts: Date.now(),
-  }).catch(() => {
-    /* best-effort */
-  });
+    ts: nowMs(),
+  }).catch(() => diagLog("[news] read-state persistence failed"));
+  broadcastNewsPersistence({ type: "read", id: key });
 }
 
 export function isVisited(key: string): boolean {
@@ -341,6 +454,7 @@ export function markAllRead(): void {
 let _bkmMode = false;
 let _lastItems: NewsItem[] = [];
 let _bookmarks: Set<string> = new Set();
+let _ambiguousLegacyBookmarks: Set<string> = new Set();
 
 function loadBookmarks(): void {
   try {
@@ -349,6 +463,7 @@ function loadBookmarks(): void {
   } catch {
     _bookmarks = new Set();
   }
+  _ambiguousLegacyBookmarks = new Set();
   updateBkmCount();
 }
 
@@ -375,6 +490,58 @@ function updateBkmCount(): void {
 
 export function getBookmarkKey(title: string): string {
   return title.trim().substring(0, 60);
+}
+
+/** Return the canonical bookmark identity while retaining legacy title keys. */
+export function getBookmarkId(item: Pick<NewsItem, "link" | "title" | "source">): string {
+  return getNewsItemIdentity(item);
+}
+
+function migrateLegacyBookmarks(items: NewsItem[]): void {
+  const matchingItems = new Map<string, NewsItem[]>();
+  for (const item of items) {
+    const legacyId = getBookmarkKey(item.title);
+    const matches = matchingItems.get(legacyId) ?? [];
+    matches.push(item);
+    matchingItems.set(legacyId, matches);
+  }
+
+  const migratedIds: string[] = [];
+  _ambiguousLegacyBookmarks = new Set();
+  for (const [legacyId, matches] of matchingItems) {
+    if (!_bookmarks.has(legacyId)) continue;
+    if (matches.length === 1) {
+      _bookmarks.add(getBookmarkId(matches[0]!));
+      _bookmarks.delete(legacyId);
+      migratedIds.push(legacyId);
+    } else {
+      _ambiguousLegacyBookmarks.add(legacyId);
+    }
+  }
+  if (migratedIds.length > 0) saveBookmarks();
+}
+
+function isBookmarked(item: NewsItem): boolean {
+  const legacyId = getBookmarkKey(item.title);
+  return (
+    _bookmarks.has(getBookmarkId(item)) ||
+    (_bookmarks.has(legacyId) && !_ambiguousLegacyBookmarks.has(legacyId))
+  );
+}
+
+function toggleNewsItemBookmark(item: NewsItem): void {
+  const canonicalId = getBookmarkId(item);
+  const legacyId = getBookmarkKey(item.title);
+  if (_bookmarks.has(canonicalId)) {
+    _bookmarks.delete(canonicalId);
+  } else if (_bookmarks.has(legacyId)) {
+    _bookmarks.delete(legacyId);
+    _bookmarks.add(canonicalId);
+  } else {
+    _bookmarks.add(canonicalId);
+  }
+  saveBookmarks();
+  renderNews(_lastItems);
 }
 
 export function toggleBookmark(key: string): void {
@@ -426,15 +593,65 @@ export interface StarredArticle {
   starredAt: string; // ISO-8601
 }
 
+interface ReadStateEntry {
+  id: string;
+  ts: number;
+}
+
+function isReadStateEntry(value: unknown): value is ReadStateEntry {
+  if (value === null || typeof value !== "object") return false;
+  const entry = value as Record<string, unknown>;
+  return typeof entry.id === "string" && Number.isFinite(entry.ts);
+}
+
+function isStarredArticle(value: unknown): value is StarredArticle {
+  if (value === null || typeof value !== "object") return false;
+  const article = value as Record<string, unknown>;
+  return (
+    typeof article.id === "string" &&
+    typeof article.title === "string" &&
+    typeof article.link === "string" &&
+    typeof article.source === "string" &&
+    typeof article.starredAt === "string"
+  );
+}
+
+function loadStarredFallback(): StarredArticle[] {
+  try {
+    const stored = JSON.parse(readStorageValue("local", LS_NEWS_STARRED) ?? "[]") as unknown;
+    if (!Array.isArray(stored)) return [];
+    return stored.filter(isStarredArticle);
+  } catch {
+    diagLog("[news] starred fallback read failed");
+    return [];
+  }
+}
+
+function saveStarredFallback(articles: StarredArticle[]): void {
+  if (!writeStorageValue("local", LS_NEWS_STARRED, JSON.stringify(articles))) {
+    diagLog("[news] starred fallback write failed");
+  }
+}
+
+function upsertStarredFallback(article: StarredArticle): void {
+  const articles = new Map(loadStarredFallback().map((entry) => [entry.id, entry]));
+  articles.set(article.id, article);
+  saveStarredFallback([...articles.values()]);
+}
+
+function removeStarredFallback(id: string): void {
+  saveStarredFallback(loadStarredFallback().filter((article) => article.id !== id));
+}
+
 /** Derive a stable id from a NewsItem. */
 export function getStarId(
   item: Pick<NewsItem, "link" | "title"> & Partial<Pick<NewsItem, "source">>,
 ): string {
   const link = item.link.trim();
-  if (link) return link.substring(0, 120);
+  if (link) return link;
   const title = item.title.trim();
   const source = item.source?.trim();
-  return (source ? `source:${source}\u001f${title}` : title).substring(0, 120);
+  return source ? `source:${source}\u001f${title}` : title;
 }
 
 /** Persist an article to the IDB read-later store. */
@@ -448,23 +665,81 @@ export async function starArticle(item: NewsItem): Promise<void> {
     starredAt: fromEpochMs(nowMs()).toISOString(),
   };
   await idbSet<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE, id, entry);
+  upsertStarredFallback(entry);
+  broadcastNewsPersistence({ type: "starred-changed" });
 }
 
 /** Remove an article from the IDB read-later store. */
 export async function unstarArticle(id: string): Promise<void> {
   await idbDelete(IDB_NEWS_DB, IDB_STARRED_STORE, id);
+  removeStarredFallback(id);
+  broadcastNewsPersistence({ type: "starred-changed" });
 }
 
 /** Check whether a specific article is starred. */
 export async function isStarred(id: string): Promise<boolean> {
   const entry = await idbGet<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE, id);
-  return entry !== null;
+  return (
+    (entry !== null && isStarredArticle(entry)) ||
+    loadStarredFallback().some((article) => article.id === id)
+  );
 }
 
 /** Retrieve all saved read-later articles, newest first. */
 export async function getStarredArticles(): Promise<StarredArticle[]> {
-  const all = await idbGetAll<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE);
-  return all.sort((a, b) => b.starredAt.localeCompare(a.starredAt));
+  const all = new Map(loadStarredFallback().map((entry) => [entry.id, entry]));
+  for (const entry of await idbGetAll<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE)) {
+    if (isStarredArticle(entry)) all.set(entry.id, entry);
+  }
+  return [...all.values()].sort((a, b) => b.starredAt.localeCompare(a.starredAt));
+}
+
+/** Delete every read-later article from IDB and the durable fallback. */
+export async function clearStarredArticles(): Promise<void> {
+  const stored = (await idbGetAll<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE)).filter(
+    isStarredArticle,
+  );
+  await Promise.all(stored.map((entry) => idbDelete(IDB_NEWS_DB, IDB_STARRED_STORE, entry.id)));
+  saveStarredFallback([]);
+  broadcastNewsPersistence({ type: "starred-changed" });
+}
+
+/** Serialize read-later state for an operator-controlled local export. */
+export async function exportNewsPersistence(): Promise<string> {
+  return JSON.stringify(
+    {
+      schemaVersion: 1,
+      exportedAt: fromEpochMs(nowMs()).toISOString(),
+      visited: [..._visited],
+      starred: await getStarredArticles(),
+    },
+    null,
+    2,
+  );
+}
+
+/** Download read/starred state without sending it to a server. */
+export async function downloadNewsPersistence(): Promise<boolean> {
+  return saveTextFile(await exportNewsPersistence(), {
+    suggestedName: "familydashboard-news-persistence.json",
+    mimeType: "application/json",
+    extensions: [".json"],
+    description: "FamilyDashBoard news persistence",
+  });
+}
+
+/** Delete all persisted read-state entries while retaining current feed data. */
+export async function clearVisited(): Promise<void> {
+  const stored = (await idbGetAll<ReadStateEntry>(IDB_READ_DB, IDB_READ_STORE)).filter(
+    isReadStateEntry,
+  );
+  await Promise.all(stored.map((entry) => idbDelete(IDB_READ_DB, IDB_READ_STORE, entry.id)));
+  _visited.clear();
+  if (!removeStorageValue("session", LS_NEWS_VISITED)) {
+    diagLog("[news] read-state fallback clear failed");
+  }
+  broadcastNewsPersistence({ type: "read-cleared" });
+  renderPersistedNewsState();
 }
 
 // Read-later viewer drawer ─────────────────────
@@ -550,7 +825,7 @@ export async function openStarredDrawer(): Promise<void> {
     }
   }
 
-  elStarDialog.showModal();
+  if (!elStarDialog.open) elStarDialog.showModal();
 }
 
 export function cacheDom(): void {
@@ -575,6 +850,8 @@ export function cacheDom(): void {
   // N-Star-UI: read-later drawer
   elStarBtn = document.getElementById("news-star-btn");
   elStarDialog = document.getElementById("news-starred-dialog") as HTMLDialogElement | null;
+  elStarExportBtn = document.getElementById("news-starred-export");
+  elStarClearBtn = document.getElementById("news-starred-clear");
   if (elStarBtn) {
     elStarBtn.addEventListener("click", () => {
       void openStarredDrawer();
@@ -584,11 +861,26 @@ export function cacheDom(): void {
   if (closeBtn) {
     closeBtn.addEventListener("click", closeStarredDrawer);
   }
+  if (elStarExportBtn) {
+    bindOnce(elStarExportBtn, "click", "fdbNewsClickBound", () => {
+      void downloadNewsPersistence().catch(() => {
+        diagLog("[news] persistence export failed");
+      });
+    });
+  }
+  if (elStarClearBtn) {
+    bindOnce(elStarClearBtn, "click", "fdbNewsClickBound", () => {
+      void clearStarredArticles()
+        .then(() => openStarredDrawer())
+        .catch(() => diagLog("[news] starred clear failed"));
+    });
+  }
   if (elStarDialog) {
     elStarDialog.addEventListener("click", (e) => {
       if (e.target === elStarDialog) closeStarredDrawer();
     });
   }
+  attachPersistenceListeners();
   loadBookmarks();
   loadVisited();
   loadMutedSources();
@@ -980,8 +1272,10 @@ export function renderNews(items: NewsItem[]): void {
     _topHeadlineSnapshot = null;
   }
 
+  migrateLegacyBookmarks(items);
+
   // In bookmark mode show only bookmarked items as a static list (no clone loop).
-  const baseItems = _bkmMode ? items.filter((i) => _bookmarks.has(getBookmarkKey(i.title))) : items;
+  const baseItems = _bkmMode ? items.filter((item) => isBookmarked(item)) : items;
 
   // Apply search filter
   const afterSearch = _searchQuery ? filterBySearch(baseItems, _searchQuery) : baseItems;
@@ -1068,16 +1362,16 @@ export function renderNews(items: NewsItem[]): void {
 
       // Bookmark toggle button (primary items only)
       if (!isClone) {
-        const key = getBookmarkKey(item.title);
+        const bookmarked = isBookmarked(item);
         const bkmBtn = document.createElement("button");
         bkmBtn.type = "button";
-        bkmBtn.className = "news-bkm-btn" + (_bookmarks.has(key) ? " active" : "");
+        bkmBtn.className = "news-bkm-btn" + (bookmarked ? " active" : "");
         bkmBtn.textContent = "🔖";
-        bkmBtn.title = _bookmarks.has(key) ? "הסר מהמועדפים" : "הוסף למועדפים";
+        bkmBtn.title = bookmarked ? "הסר מהמועדפים" : "הוסף למועדפים";
         bkmBtn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          toggleBookmark(key);
+          toggleNewsItemBookmark(item);
         });
         div.appendChild(bkmBtn);
       }
@@ -1292,6 +1586,7 @@ export function destroyNewsCard(): void {
     clearInterval(_newsRefreshInterval);
     _newsRefreshInterval = null;
   }
+  detachPersistenceListeners();
 }
 
 // configSchema ────────────────────────────────────────────────
@@ -1465,6 +1760,8 @@ export function getShadowVectorizeLog(): readonly VectorizeShadowEntry[] {
 }
 
 export function _resetNewsForTest(): void {
+  detachPersistenceListeners();
+  _visitedHydrationGeneration++;
   if (_newsRefreshInterval !== null) {
     clearInterval(_newsRefreshInterval);
     _newsRefreshInterval = null;
@@ -1474,6 +1771,7 @@ export function _resetNewsForTest(): void {
   _bkmMode = false;
   _lastItems = [];
   _bookmarks = new Set();
+  _ambiguousLegacyBookmarks = new Set();
   elRssScroll = null;
   elNewsTicker = null;
   elBkmPill = null;
@@ -1481,6 +1779,10 @@ export function _resetNewsForTest(): void {
   elSearchClear = null;
   elSearchCount = null;
   elNewsCount = null;
+  elStarBtn = null;
+  elStarDialog = null;
+  elStarExportBtn = null;
+  elStarClearBtn = null;
   _mutedSources = {};
   _shadowVectorizeEnabled = false;
   _shadowVectorizeLog = [];

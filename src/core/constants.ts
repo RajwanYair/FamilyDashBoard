@@ -296,6 +296,7 @@ export const LS_STOCK_ALERTS = "dash_v2_stock_alerts";
 export const LS_PORTFOLIO = "dash_v2_portfolio";
 export const LS_NEWS_VISITED = "dash_visited_news";
 export const LS_NEWS_BOOKMARKS = "dash_bookmarks";
+export const LS_NEWS_STARRED = "dash_news_starred";
 /** Per-source mute windows { [sourceKey]: untilTimestamp } */
 export const LS_NEWS_MUTED = "dash_news_muted_sources";
 export const LS_CUR_HISTORY = "dash_v2_cur_history";

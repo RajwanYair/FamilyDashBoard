@@ -72,6 +72,24 @@ describe("DOM Contract — Overlays", () => {
   it("has #toast", () => expect(hasId("toast")).toBe(true));
 });
 
+describe("DOM Contract — Starred news persistence controls", () => {
+  it("has a labelled starred-news dialog", () => {
+    expect(hasId("news-starred-dialog")).toBe(true);
+    expect(html).toContain('aria-labelledby="news-starred-dialog-title"');
+  });
+  it("has export and clear controls without inline handlers", () => {
+    expect(hasId("news-starred-export")).toBe(true);
+    expect(hasId("news-starred-clear")).toBe(true);
+    expect(html).not.toMatch(/news-starred-(export|clear)"[^>]+onclick=/);
+    expect(html).toContain('aria-label="ייצוא כתבות שמורות"');
+    expect(html).toContain('aria-label="נקה כתבות שמורות"');
+  });
+  it("has a labelled close control", () => {
+    expect(hasId("news-starred-close")).toBe(true);
+    expect(html).toContain('aria-label="סגור חלון כתבות שמורות"');
+  });
+});
+
 // ── Config panel inputs ──
 
 describe("DOM Contract — Config panel form", () => {
