@@ -215,6 +215,7 @@
 .cfg-search-input {
   width: 100%;
   box-sizing: border-box;
+  min-block-size: 2.75rem;
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid var(--accent-border);
@@ -222,6 +223,7 @@
   color: var(--text-primary);
   font-family: inherit;
   font-size: 0.88em;
+  touch-action: manipulation;
 }
 .cfg-search-input:focus {
   outline: 2px solid var(--accent);
