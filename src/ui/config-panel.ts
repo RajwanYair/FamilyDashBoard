@@ -68,8 +68,10 @@ function el(id: string): HTMLElement | null {
 
 // ── Unsaved-changes indicator ──
 let _formDirty = false;
+let _discardConfirmPending = false;
 
 function markDirty(): void {
+  _discardConfirmPending = false;
   if (_formDirty) return;
   _formDirty = true;
   const gear = el("cfg-gear-btn");
@@ -78,6 +80,7 @@ function markDirty(): void {
 
 function clearDirty(): void {
   _formDirty = false;
+  _discardConfirmPending = false;
   const gear = el("cfg-gear-btn");
   if (gear) gear.textContent = "⚙️";
 }
@@ -1004,9 +1007,9 @@ export function openConfigPanel(): void {
 }
 
 export function closeConfigPanel(): void {
-  if (_formDirty) {
+  if (_formDirty && !_discardConfirmPending) {
     showToast(t("settingsUnsavedChanges"), 3000);
-    _formDirty = false; // allow second close without warning
+    _discardConfirmPending = true;
     return;
   }
   const ov = overlay();

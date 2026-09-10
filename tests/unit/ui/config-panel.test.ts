@@ -1270,6 +1270,22 @@ describe("Config Panel — dirty tracking ", () => {
     expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(false);
   });
 
+  it("requires a new discard confirmation after editing again", async () => {
+    setupDirtyDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    const inp = document.getElementById("cfg-family-name") as HTMLInputElement;
+    inp.dispatchEvent(new Event("input", { bubbles: true }));
+    mod.closeConfigPanel(); // arm discard confirmation
+    inp.value = "Changed again";
+    inp.dispatchEvent(new Event("input", { bubbles: true }));
+    mod.closeConfigPanel(); // new edit must re-arm the warning
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(true);
+    mod.closeConfigPanel(); // explicit second confirmation discards
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(false);
+  });
+
   it("gear button shows * when dirty", async () => {
     setupDirtyDOM();
     const mod = await freshCfg();
