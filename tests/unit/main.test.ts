@@ -1472,6 +1472,21 @@ describe("Main — dynamic help overlay (F10 v7.3)", () => {
     const dynEl = document.getElementById("help-dynamic-keys")!;
     expect(dynEl.textContent).toBe("");
   });
+
+  it("restores focus when the help dialog is closed natively", () => {
+    buildHelpDOM();
+    const opener = document.createElement("button");
+    document.body.appendChild(opener);
+    opener.focus();
+    init();
+    const hCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "h");
+    const handler = hCall![2] as () => void;
+    handler();
+
+    document.getElementById("help-overlay")?.dispatchEvent(new Event("close"));
+
+    expect(document.activeElement).toBe(opener);
+  });
 });
 
 // ── init() ECFG_PREFIX branch (line 439) ─────────────────────────────────────

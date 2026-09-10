@@ -392,6 +392,10 @@ export function init(): void {
   const _toggleHelp = (): void => {
     const dlg = document.getElementById("help-overlay") as HTMLDialogElement | null;
     if (!dlg) return;
+    if (!dlg.dataset["focusWired"]) {
+      dlg.dataset["focusWired"] = "1";
+      dlg.addEventListener("close", () => restoreOverlayFocus("help-overlay"));
+    }
     if (dlg.open) {
       dlg.close();
       restoreOverlayFocus("help-overlay");
