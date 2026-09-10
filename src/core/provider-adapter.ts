@@ -1,7 +1,13 @@
 import { cGet, cGetStale, cSet } from "./cache";
-import { getProviderHealth, recordProviderFailure, recordProviderSuccess } from "./provider";
+import {
+  getProviderHealth,
+  recordProviderFailure,
+  recordProviderSuccess,
+  type ProviderFailureStage,
+} from "./provider";
 import { diagLog } from "./diag";
 import { notifyProviderBlocked } from "./provider-toast";
+import { getLastFetchStage } from "./fetch";
 import type { ProviderAdapter, ProviderResult } from "../types/provider";
 
 interface CachedProviderAdapterOptions<T> {
@@ -13,6 +19,7 @@ interface CachedProviderAdapterOptions<T> {
   successLog?: (data: T) => string;
   failureLog?: (message: string) => string;
   failureMessage?: (message: string) => string;
+  failureStage?: (error: unknown) => ProviderFailureStage | undefined;
 }
 
 export function createCachedProviderAdapter<T>(
@@ -27,6 +34,7 @@ export function createCachedProviderAdapter<T>(
     successLog,
     failureLog,
     failureMessage,
+    failureStage,
   } = options;
 
   return {
@@ -41,8 +49,10 @@ export function createCachedProviderAdapter<T>(
         return { ok: true, data: cached };
       }
 
+      let fetched = false;
       try {
         const data = await fetchFresh();
+        fetched = true;
         cSet(cacheKey, data);
         recordProviderSuccess(id);
         if (successLog) {
@@ -50,7 +60,9 @@ export function createCachedProviderAdapter<T>(
         }
         return { ok: true, data };
       } catch (err) {
-        recordProviderFailure(id);
+        const stage = fetched ? "cache" : (failureStage?.(err) ?? getLastFetchStage());
+        if (stage === "unknown") recordProviderFailure(id);
+        else recordProviderFailure(id, stage);
         const stale = cGetStale<T>(cacheKey);
         const message = err instanceof Error ? err.message : String(err);
         diagLog(failureLog ? failureLog(message) : `[${id}] ${message}`);

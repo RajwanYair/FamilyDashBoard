@@ -14,7 +14,7 @@ import {
   recordProviderFailure,
   recordProviderSuccess,
 } from "../../core/provider";
-import { fetchJSONWithWorker } from "../../core/fetch";
+import { fetchJSONWithWorker, getLastFetchStage } from "../../core/fetch";
 import { diagLog } from "../../core/diag";
 import type { ProviderStatus } from "../../core/provider";
 
@@ -44,19 +44,23 @@ export function createOpenMeteoAdapter(lat: number, lon: number): ProviderAdapte
         `&hourly=temperature_2m,weather_code` +
         `&timezone=auto&forecast_days=7`;
 
+      let fetched = false;
       try {
         const data = await fetchJSONWithWorker<WeatherResponse>(url);
         if (!isWeatherResponse(data)) {
-          recordProviderFailure(PROVIDER_ID);
+          recordProviderFailure(PROVIDER_ID, "parse");
           const stale = cGetStale<WeatherResponse>(CACHE_KEY);
           return { ok: false, error: "Invalid response shape", stale: stale ?? undefined };
         }
+        fetched = true;
         await cSetAsync(CACHE_KEY, data);
         recordProviderSuccess(PROVIDER_ID);
         diagLog(`FDB-089: [open-meteo] Fetched weather for ${lat},${lon}`);
         return { ok: true, data };
       } catch (err) {
-        recordProviderFailure(PROVIDER_ID);
+        const stage = fetched ? "cache" : getLastFetchStage();
+        if (stage === "unknown") recordProviderFailure(PROVIDER_ID);
+        else recordProviderFailure(PROVIDER_ID, stage);
         const stale = cGetStale<WeatherResponse>(CACHE_KEY);
         return {
           ok: false,

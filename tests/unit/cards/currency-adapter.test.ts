@@ -17,6 +17,7 @@ vi.mock("@/core/provider", () => ({
 }));
 vi.mock("@/core/fetch", () => ({
   fetchJSONWithWorker: vi.fn(),
+  getLastFetchStage: vi.fn().mockReturnValue("unknown"),
 }));
 vi.mock("@/core/diag", () => ({ diagLog: vi.fn() }));
 vi.mock("@/cards/currency/boi-adapter", () => ({

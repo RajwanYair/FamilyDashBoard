@@ -20,6 +20,19 @@ import {
 } from "./constants";
 import { diagLog, redactUrl } from "./diag";
 import { cGet, cSet, cGetStale } from "./cache";
+import type { ProviderFailureStage } from "./provider";
+
+let _lastFetchStage: ProviderFailureStage = "unknown";
+
+/** Return the most recent fetch boundary observed by the shared fetch helpers. */
+export function getLastFetchStage(): ProviderFailureStage {
+  return _lastFetchStage;
+}
+
+/** Mark a non-JSON fetch boundary (for example an ICS request) for diagnostics. */
+export function markFetchStage(stage: ProviderFailureStage): void {
+  _lastFetchStage = stage;
+}
 
 function buildWorkerRoute(url: string): string | null {
   let parsed: URL;
@@ -125,6 +138,7 @@ export async function fetchWithTimeout(
  *   - "no-worker"       — direct → proxies as normal (worker is skipped by isWorkerEnabled)
  */
 export async function fetchJSON<T = unknown>(url: string): Promise<T> {
+  _lastFetchStage = "direct";
   const safeUrl = redactUrl(url);
   const short = safeUrl.length > 60 ? safeUrl.slice(0, 57) + "..." : safeUrl;
   const mode = getNetworkMode();
@@ -133,6 +147,7 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
   try {
     const r = await fetchWithTimeout(url);
     if (r.ok) {
+      _lastFetchStage = "direct";
       diagLog(`FDB-011: fetchJSON direct OK: ${short}`);
       recordFetchSuccess();
       return (await r.json()) as T;
@@ -146,6 +161,7 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
   //    Build flag `__USE_PROXIES__` lets advanced users strip proxy URLs from
   //    the bundle; defaults to true so prod builds retain the safety net.
   if (mode === "no-proxy" || mode === "worker-only" || !__USE_PROXIES__) {
+    _lastFetchStage = "direct";
     recordFetchFailure();
     throw new Error(`Direct fetch failed and proxy chain disabled (mode=${mode}): ${short}`);
   }
@@ -154,6 +170,7 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
   const proxies = customProxy ? [customProxy, ...PROXIES] : [...PROXIES];
 
   for (const p of proxies) {
+    _lastFetchStage = "proxy";
     const pName = p.includes("allorigins")
       ? "allorigins"
       : p.includes("codetabs")
@@ -245,6 +262,7 @@ export function resetWorkerBreaker(): void {
 }
 
 export async function fetchViaWorker<T = unknown>(url: string): Promise<T | null> {
+  _lastFetchStage = "worker";
   if (!isWorkerEnabled()) return null;
   if (_isWorkerBreakerOpen()) {
     diagLog(`FDB-015D: fetchViaWorker skipped (breaker open)`);
@@ -263,10 +281,12 @@ export async function fetchViaWorker<T = unknown>(url: string): Promise<T | null
   try {
     const r = await fetchWithTimeout(workerUrl, FETCH_TIMEOUT_MS);
     if (!r.ok) {
+      _lastFetchStage = "worker";
       diagLog(`FDB-015: fetchViaWorker HTTP ${r.status}: ${short}`);
       _recordWorkerFailure();
       return null;
     }
+    _lastFetchStage = "worker";
     diagLog(`FDB-016: fetchViaWorker OK: ${short}`);
     _recordWorkerSuccess();
     return (await r.json()) as T;
@@ -285,6 +305,7 @@ export async function fetchJSONWithWorker<T = unknown>(url: string): Promise<T> 
   const workerResult = await fetchViaWorker<T>(url);
   if (workerResult !== null) return workerResult;
   if (getNetworkMode() === "worker-only") {
+    _lastFetchStage = "worker";
     throw new Error(`Worker fetch failed for ${redactUrl(url)}`);
   }
   return fetchJSON<T>(url);

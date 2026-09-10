@@ -13,7 +13,7 @@ import {
   recordProviderFailure,
   recordProviderSuccess,
 } from "../../core/provider";
-import { fetchWithTimeout } from "../../core/fetch";
+import { fetchWithTimeout, getLastFetchStage, markFetchStage } from "../../core/fetch";
 import { diagLog } from "../../core/diag";
 import type { ProviderStatus } from "../../core/provider";
 
@@ -42,7 +42,9 @@ export function createCalendarAdapter(icsUrl: string, feedIndex = 0): ProviderAd
         return { ok: true, data: cached };
       }
 
+      let fetched = false;
       try {
+        markFetchStage("direct");
         const resp = await fetchWithTimeout(icsUrl, FETCH_TIMEOUT);
         if (!resp.ok) {
           throw new Error(`HTTP ${resp.status}`);
@@ -51,12 +53,18 @@ export function createCalendarAdapter(icsUrl: string, feedIndex = 0): ProviderAd
         if (!text.includes("BEGIN:VCALENDAR")) {
           throw new Error("Response is not valid ICS");
         }
+        fetched = true;
         await cSetAsync(cacheKey, text);
         recordProviderSuccess(PROVIDER_ID);
         diagLog(`FDB-129: [calendar] Fetched ICS #${feedIndex}`);
         return { ok: true, data: text };
       } catch (err) {
-        recordProviderFailure(PROVIDER_ID);
+        const stage = fetched
+          ? "cache"
+          : err instanceof Error && err.message === "Response is not valid ICS"
+            ? "parse"
+            : getLastFetchStage();
+        recordProviderFailure(PROVIDER_ID, stage);
         const stale = cGetStale<string>(cacheKey);
         const msg = err instanceof Error ? err.message : String(err);
         diagLog(`FDB-129: [calendar] Failed ICS #${feedIndex}: ${msg}`);

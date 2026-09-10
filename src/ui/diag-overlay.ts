@@ -39,8 +39,7 @@ import { formatHardwareProfile, getHardwareTier } from "../core/hardware";
 import {
   getAllProviderHealth,
   getProviderSuccessRate,
-  getProviderAvgLatency,
-  getProviderLatency,
+  getProviderLatencyPercentile,
 } from "../core/provider";
 import { trustedHTML } from "../core/trusted-types";
 import { getGovernorStats } from "../core/refresh-governor";
@@ -51,14 +50,6 @@ import { registerOverlayCloser } from "./keyboard";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
-
-/** Compute the 95th-percentile value from a latency samples array. Returns 0 if empty. */
-function computeP95(samples: readonly number[]): number {
-  if (samples.length === 0) return 0;
-  const sorted = [...samples].sort((a, b) => a - b);
-  const idx = Math.ceil(sorted.length * 0.95) - 1;
-  return Math.round(sorted[Math.max(0, idx)] ?? 0);
-}
 
 function overlay(): HTMLDialogElement | null {
   if (!overlayEl?.isConnected)
@@ -278,7 +269,7 @@ export function providerStatusIcon(status: string): string {
  * Render a Grafana-style provider health scorecard table.
  * Returns empty string when no providers have been recorded.
  *
- * Columns: Status | Provider | ✓ | ✗ | Rate% | p50ms | p95ms | Consec | Last OK
+ * Columns: Status | Provider | ✓ | ✗ | Rate% | p50ms | p95ms | Consec | Last OK | Stage
  */
 export function renderProviderHealthHtml(): string {
   const providers = getAllProviderHealth();
@@ -291,9 +282,8 @@ export function renderProviderHealthHtml(): string {
       const rateColor =
         rate >= 95 ? "var(--positive)" : rate >= 80 ? "var(--warning)" : "var(--negative)";
 
-      const samples = getProviderLatency(p.id);
-      const p50 = getProviderAvgLatency(p.id);
-      const p95 = computeP95(samples);
+      const p50 = getProviderLatencyPercentile(p.id, 0.5);
+      const p95 = getProviderLatencyPercentile(p.id, 0.95);
       const p50Str = p50 > 0 ? `${p50}ms` : "–";
       const p95Str = p95 > 0 ? `${p95}ms` : "–";
       const p95Color =
@@ -308,6 +298,7 @@ export function renderProviderHealthHtml(): string {
       const consecStr = p.consecutiveFails > 0 ? `×${p.consecutiveFails}` : "–";
       const consecColor = p.consecutiveFails === 0 ? "inherit" : "var(--negative)";
       const lastOkStr = p.lastOkAt ? `ok@${p.lastOkAt.slice(11, 16)}` : "–";
+      const stageStr = p.lastFailureStage ?? "–";
 
       return (
         `<tr>` +
@@ -320,6 +311,7 @@ export function renderProviderHealthHtml(): string {
         `<td style="text-align:end;color:${p95Color}">${p95Str}</td>` +
         `<td style="text-align:end;color:${consecColor}">${consecStr}</td>` +
         `<td style="text-align:end;color:var(--text-muted)">${lastOkStr}</td>` +
+        `<td style="text-align:end;color:var(--text-muted)">${stageStr}</td>` +
         `</tr>`
       );
     })
@@ -339,6 +331,7 @@ export function renderProviderHealthHtml(): string {
           <th style="text-align:end">p95</th>
           <th style="text-align:end">Consec</th>
           <th style="text-align:end">Last OK</th>
+          <th style="text-align:end">Stage</th>
         </tr>
       </thead>
       <tbody>${tableRows}</tbody>

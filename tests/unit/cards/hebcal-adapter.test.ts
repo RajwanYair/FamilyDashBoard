@@ -17,6 +17,7 @@ vi.mock("@/core/provider", () => ({
 }));
 vi.mock("@/core/fetch", () => ({
   fetchJSONWithWorker: vi.fn(),
+  getLastFetchStage: vi.fn().mockReturnValue("unknown"),
 }));
 vi.mock("@/core/diag", () => ({ diagLog: vi.fn() }));
 
@@ -77,7 +78,7 @@ describe("HebcalAdapter ", () => {
       expect(result.error).toContain("Invalid response shape");
       expect(result.stale).toBe(staleData);
     }
-    expect(recordProviderFailure).toHaveBeenCalledWith("hebcal");
+    expect(recordProviderFailure).toHaveBeenCalledWith("hebcal", "parse");
   });
 
   it("returns ok:false with stale=undefined when no stale on invalid response ", async () => {

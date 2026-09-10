@@ -47,5 +47,9 @@ export function createStocksAdapter(
     successLog: () => `FDB-128: [stocks] Fetched ${symbol}`,
     failureLog: (message) => `FDB-128: [stocks] Failed ${symbol}: ${message}`,
     failureMessage: (message) => `Stocks fetch failed for ${symbol}: ${message}`,
+    failureStage: (error) =>
+      error instanceof Error && error.message.startsWith("Invalid chart response")
+        ? "parse"
+        : undefined,
   });
 }

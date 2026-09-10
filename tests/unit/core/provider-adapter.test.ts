@@ -187,4 +187,36 @@ describe("createCachedProviderAdapter", () => {
     expect(result.ok).toBe(false);
     expect(result.error).toBe("plain string error");
   });
+
+  it("records an explicit parse stage from a provider validator", async () => {
+    const adapter = createCachedProviderAdapter({
+      id: "parse-provider",
+      displayName: "Parse Provider",
+      cacheKey: "parse-key",
+      cacheTtl: 60,
+      fetchFresh: vi.fn().mockRejectedValue(new Error("invalid payload")),
+      failureStage: () => "parse",
+    });
+
+    await adapter.fetch();
+
+    expect(recordProviderFailure).toHaveBeenCalledWith("parse-provider", "parse");
+  });
+
+  it("records cache when persistence fails after a successful fetch", async () => {
+    vi.mocked(cSet).mockImplementationOnce(() => {
+      throw new Error("storage unavailable");
+    });
+    const adapter = createCachedProviderAdapter({
+      id: "cache-provider",
+      displayName: "Cache Provider",
+      cacheKey: "cache-key",
+      cacheTtl: 60,
+      fetchFresh: vi.fn().mockResolvedValue({ value: 1 }),
+    });
+
+    await adapter.fetch();
+
+    expect(recordProviderFailure).toHaveBeenCalledWith("cache-provider", "cache");
+  });
 });

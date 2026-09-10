@@ -12,7 +12,7 @@ import {
   recordProviderFailure,
   recordProviderSuccess,
 } from "../../core/provider";
-import { fetchJSONWithWorker } from "../../core/fetch";
+import { fetchJSONWithWorker, getLastFetchStage } from "../../core/fetch";
 import { diagLog } from "../../core/diag";
 import type { ProviderStatus } from "../../core/provider";
 
@@ -42,10 +42,11 @@ export function createAlertsAdapter(): ProviderAdapter<AlertsResponse> {
         return { ok: true, data: cached };
       }
 
+      let fetched = false;
       try {
         const data = await fetchJSONWithWorker<AlertsResponse>(API.ALERTS);
         if (!Array.isArray(data)) {
-          recordProviderFailure(PROVIDER_ID);
+          recordProviderFailure(PROVIDER_ID, "parse");
           const stale = cGetStale<AlertsResponse>(CACHE_KEY);
           return {
             ok: false,
@@ -53,12 +54,15 @@ export function createAlertsAdapter(): ProviderAdapter<AlertsResponse> {
             stale: stale ?? undefined,
           };
         }
+        fetched = true;
         await cSetAsync(CACHE_KEY, data);
         recordProviderSuccess(PROVIDER_ID);
         diagLog(`FDB-092: [alerts] Fetched ${data.length} alert items`);
         return { ok: true, data };
       } catch (err) {
-        recordProviderFailure(PROVIDER_ID);
+        const stage = fetched ? "cache" : getLastFetchStage();
+        if (stage === "unknown") recordProviderFailure(PROVIDER_ID);
+        else recordProviderFailure(PROVIDER_ID, stage);
         const stale = cGetStale<AlertsResponse>(CACHE_KEY);
         return {
           ok: false,

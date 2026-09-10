@@ -15,6 +15,7 @@
 import { nowMs, fromEpochMs } from "./temporal";
 
 export type ProviderStatus = "ok" | "degraded" | "down";
+export type ProviderFailureStage = "worker" | "direct" | "proxy" | "parse" | "cache" | "unknown";
 
 export interface ProviderHealth {
   /** Provider identifier (e.g. "open-meteo", "yahoo-finance"). */
@@ -27,6 +28,10 @@ export interface ProviderHealth {
   lastOkAt: string | null;
   /** Number of failures since the last success (reset on success). */
   consecutiveFails: number;
+  /** Most recent failure boundary, when known. */
+  lastFailureStage: ProviderFailureStage | null;
+  /** ISO timestamp of the most recent failed attempt, or null. */
+  lastFailureAt: string | null;
   /**
    * Derived status:
    *   ok        — last attempt succeeded, or consecutiveFails === 0
@@ -47,6 +52,8 @@ function _ensure(id: string): ProviderHealth {
       failureCount: 0,
       lastOkAt: null,
       consecutiveFails: 0,
+      lastFailureStage: null,
+      lastFailureAt: null,
       status: "ok",
     };
     _health.set(id, h);
@@ -66,21 +73,27 @@ function _computeStatus(consecutiveFails: number): ProviderStatus {
  */
 export function recordProviderSuccess(id: string): void {
   const h = _ensure(id);
+  const prev = h.status;
   h.successCount++;
   h.consecutiveFails = 0;
   h.lastOkAt = fromEpochMs(nowMs()).toISOString();
   h.status = "ok";
+  if (prev !== "ok") {
+    for (const cb of _statusListeners) cb(id, "ok", prev);
+  }
 }
 
 /**
  * Record a failed provider response.
  * @param id - Provider identifier
  */
-export function recordProviderFailure(id: string): void {
+export function recordProviderFailure(id: string, stage: ProviderFailureStage = "unknown"): void {
   const h = _ensure(id);
   const prev = h.status;
   h.failureCount++;
   h.consecutiveFails++;
+  h.lastFailureStage = stage;
+  h.lastFailureAt = fromEpochMs(nowMs()).toISOString();
   h.status = _computeStatus(h.consecutiveFails);
   if (h.status !== prev && h.status !== "ok") {
     for (const cb of _statusListeners) cb(id, h.status, prev);
@@ -124,9 +137,22 @@ export function getProviderAvgLatency(id: string): number {
   return Math.round(samples.reduce((a, b) => a + b, 0) / samples.length);
 }
 
+/**
+ * Compute a nearest-rank latency percentile from the retained session samples.
+ * Returns 0 when no samples are recorded.
+ */
+export function getProviderLatencyPercentile(id: string, percentile: number): number {
+  const samples = _latencyHistory.get(id);
+  if (!samples || samples.length === 0) return 0;
+  const bounded = Math.min(1, Math.max(0, percentile));
+  const sorted = [...samples].sort((a, b) => a - b);
+  const index = Math.max(0, Math.ceil(sorted.length * bounded) - 1);
+  return Math.round(sorted[index] ?? 0);
+}
+
 // ── Status change listeners ──────────────────────────────────
 
-/** Callback invoked when a provider transitions to degraded or down. */
+/** Callback invoked when a provider transitions between health states. */
 export type ProviderStatusListener = (
   id: string,
   newStatus: ProviderStatus,

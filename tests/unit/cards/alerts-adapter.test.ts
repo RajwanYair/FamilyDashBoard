@@ -17,6 +17,7 @@ vi.mock("@/core/provider", () => ({
 }));
 vi.mock("@/core/fetch", () => ({
   fetchJSONWithWorker: vi.fn(),
+  getLastFetchStage: vi.fn().mockReturnValue("unknown"),
 }));
 vi.mock("@/core/diag", () => ({ diagLog: vi.fn() }));
 
@@ -55,7 +56,7 @@ describe("AlertsAdapter ", () => {
     vi.mocked(fetchJSONWithWorker).mockResolvedValueOnce({ bad: true });
     const result = await adapter.fetch();
     expect(result.ok).toBe(false);
-    expect(recordProviderFailure).toHaveBeenCalled();
+    expect(recordProviderFailure).toHaveBeenCalledWith("tzeva-adom", "parse");
   });
 
   it("returns failure on fetch error", async () => {

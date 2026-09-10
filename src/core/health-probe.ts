@@ -74,7 +74,7 @@ async function fetchAndIngest(): Promise<void> {
     if (p.status === "ok") {
       recordProviderSuccess(p.id);
     } else {
-      recordProviderFailure(p.id);
+      recordProviderFailure(p.id, "worker");
     }
   }
 

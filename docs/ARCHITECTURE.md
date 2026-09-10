@@ -9,21 +9,21 @@ Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.m
 
 ## 🛠️ Stack
 
-| Decision         | Choice                                                                                                     | Rationale                                                            |
-| ---------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking             |
-| Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks                   |
-| Test framework   | **Vitest 4.1.6 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, canonical gate via `npm run check` |
-| Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced        |
-| API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed             |
-| Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                                      |
-| CSS approach     | **Vanilla CSS** with `@layer`, design tokens, `color-mix()`                                                | No preprocessor; cascade-aware; container queries                    |
-| Module format    | **ES Modules** native `import`/`export`                                                                    |                                                                      |
-| npm model        | Root development tools are pinned in `package.json` + `package-lock.json`; Worker has its own lockfile      | Independent repository-local installs                                  |
+| Decision         | Choice                                                                                                           | Rationale                                                            |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Build tool       | **Vite 8**                                                                                                       | Fast dev server, Rollup bundler, native TS, tree-shaking             |
+| Language         | **TypeScript 6.0.3**                                                                                             | Type safety, type-aware ESLint, strict null checks                   |
+| Test framework   | **Vitest 4.1.6 + happy-dom 20**                                                                                  | Vite-native, real DOM simulation, canonical gate via `npm run check` |
+| Lint             | **ESLint 10 + typescript-eslint 8**                                                                              | Flat config, type-aware rules, 0 errors / 0 warnings enforced        |
+| API proxy        | **Cloudflare Workers**                                                                                           | Eliminates CORS chain, 100 K req/day free, edge-deployed             |
+| Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                         |                                                                      |
+| CSS approach     | **Vanilla CSS** with `@layer`, design tokens, `color-mix()`                                                      | No preprocessor; cascade-aware; container queries                    |
+| Module format    | **ES Modules** native `import`/`export`                                                                          |                                                                      |
+| npm model        | Root development tools are pinned in `package.json` + `package-lock.json`; Worker has its own lockfile           | Independent repository-local installs                                |
 | CI               | `.github/ci/install-tools.sh` runs root and Worker `npm ci --ignore-scripts`; configs are vendored in `tooling/` |                                                                      |
-| Tooling ESLint   | `tooling/eslint/web-ts-app.mjs` (browser TS) · `node-ts-app.mjs` (Node/Worker) · `js-browser-app.mjs` (JS) | Shared factory functions; project-specific overrides only            |
-| Tooling Vitest   | `tooling/vitest/base.mjs` · `happy-dom.mjs` (DOM) · `node.mjs` (server)                                    | Layered presets; projects extend the relevant preset                 |
-| Tooling tsconfig | `tooling/tsconfig/base-typescript.json` (browser/bundler) · `base-node.json` (Node/Worker)                 | All TS projects extend one of these bases                            |
+| Tooling ESLint   | `tooling/eslint/web-ts-app.mjs` (browser TS) · `node-ts-app.mjs` (Node/Worker) · `js-browser-app.mjs` (JS)       | Shared factory functions; project-specific overrides only            |
+| Tooling Vitest   | `tooling/vitest/base.mjs` · `happy-dom.mjs` (DOM) · `node.mjs` (server)                                          | Layered presets; projects extend the relevant preset                 |
+| Tooling tsconfig | `tooling/tsconfig/base-typescript.json` (browser/bundler) · `base-node.json` (Node/Worker)                       | All TS projects extend one of these bases                            |
 
 ## 📂 File Structure
 
@@ -356,7 +356,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module
 19. **CardRuntime interface** — `src/types/card.ts` defines `CardRuntime` contract (render/connect/disconnect/refresh/onConfigChange); `FdbCard` base class implements foundation
-20. **Provider health model** — `src/core/provider.ts` tracks per-provider success/failure counts + latency histogram; `getProviderHealth(id)` exposed in diagnostic overlay
+20. **Provider health model** — `src/core/provider.ts` tracks per-provider success/failure counts, a capped latency sample window with nearest-rank p50/p95 helpers, last-success time, failure streak, and the last known failure stage (`worker`, `direct`, `proxy`, `parse`, `cache`, or `unknown`); recovery transitions notify the provider-toast listener and `getProviderHealth(id)` is exposed in the diagnostic overlay
 21. **Config import validation** — `validateImportedConfig(raw)` in `src/core/config.ts` guards against malformed or mismatched schema versions on import
 22. **Per-card configSchema** — Each card exports a `CardConfigField[]` schema; `buildConfigAccordion()` auto-renders the config panel UI; per-card reset buttons (ADR-004)
 23. **Config dirty tracking** — `closeConfigPanel()` warns on unsaved changes; second close discards

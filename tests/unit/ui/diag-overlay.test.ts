@@ -546,12 +546,19 @@ describe("renderProviderHealthHtml ", () => {
     expect(html).toContain("67%");
   });
 
-  it("shows avg latency when samples exist", () => {
+  it("shows p50 latency when samples exist", () => {
     recordProviderSuccess("fast");
     recordProviderLatency("fast", 100);
     recordProviderLatency("fast", 200);
+    recordProviderLatency("fast", 300);
     const html = renderProviderHealthHtml();
-    expect(html).toContain("150ms");
+    expect(html).toContain("200ms");
+  });
+
+  it("shows the last failure stage", () => {
+    recordProviderFailure("staged", "parse");
+    const html = renderProviderHealthHtml();
+    expect(html).toContain("parse");
   });
 });
 

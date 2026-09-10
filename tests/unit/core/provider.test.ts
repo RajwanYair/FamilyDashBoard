@@ -3,7 +3,7 @@
  * src/core/provider.ts
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   recordProviderSuccess,
   recordProviderFailure,
@@ -17,6 +17,8 @@ import {
   getAllProviderLatencies,
   getProviderSuccessRate,
   getProviderAvgLatency,
+  getProviderLatencyPercentile,
+  onProviderStatusChange,
 } from "@/core/provider";
 
 beforeEach(() => {
@@ -57,6 +59,14 @@ describe("recordProviderSuccess", () => {
     const h = getProviderHealth("open-meteo");
     expect(h.consecutiveFails).toBe(0);
     expect(h.status).toBe("ok");
+  });
+
+  it("records recovery listeners when a degraded provider succeeds", () => {
+    const listener = vi.fn();
+    onProviderStatusChange(listener);
+    recordProviderFailure("recovering");
+    recordProviderSuccess("recovering");
+    expect(listener).toHaveBeenLastCalledWith("recovering", "ok", "degraded");
   });
 
   it("sets lastOkAt to ISO string", () => {
@@ -241,6 +251,15 @@ describe("getProviderSuccessRate", () => {
   });
 });
 
+describe("provider failure stage", () => {
+  it("keeps the latest failure stage and timestamp", () => {
+    recordProviderFailure("staged", "proxy");
+    const health = getProviderHealth("staged");
+    expect(health.lastFailureStage).toBe("proxy");
+    expect(health.lastFailureAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+});
+
 describe("getProviderAvgLatency", () => {
   it("returns 0 for unknown provider", () => {
     expect(getProviderAvgLatency("none")).toBe(0);
@@ -251,5 +270,20 @@ describe("getProviderAvgLatency", () => {
     recordProviderLatency("svc", 200);
     recordProviderLatency("svc", 300);
     expect(getProviderAvgLatency("svc")).toBe(200);
+  });
+});
+
+describe("getProviderLatencyPercentile", () => {
+  it("returns the nearest-rank percentile", () => {
+    recordProviderLatency("percentile", 300);
+    recordProviderLatency("percentile", 100);
+    recordProviderLatency("percentile", 200);
+    recordProviderLatency("percentile", 900);
+    expect(getProviderLatencyPercentile("percentile", 0.5)).toBe(200);
+    expect(getProviderLatencyPercentile("percentile", 0.95)).toBe(900);
+  });
+
+  it("returns zero when no samples exist", () => {
+    expect(getProviderLatencyPercentile("empty", 0.95)).toBe(0);
   });
 });

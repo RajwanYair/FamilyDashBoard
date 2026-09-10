@@ -12,7 +12,7 @@ import {
   recordProviderFailure,
   recordProviderSuccess,
 } from "../../core/provider";
-import { fetchJSONWithWorker } from "../../core/fetch";
+import { fetchJSONWithWorker, getLastFetchStage } from "../../core/fetch";
 import { diagLog } from "../../core/diag";
 import { today } from "../../core/temporal";
 import type { ProviderStatus } from "../../core/provider";
@@ -51,19 +51,23 @@ export function createHebcalAdapter(geonameid = 281184): ProviderAdapter<HebcalR
       const now = today();
       const url = `${API.HEBCAL}?v=1&cfg=json&maj=on&min=on&year=${now.getFullYear()}&month=x&geonameid=${geonameid}`;
 
+      let fetched = false;
       try {
         const data = await fetchJSONWithWorker<HebcalResponse>(url);
         if (!data?.items || !Array.isArray(data.items)) {
-          recordProviderFailure(PROVIDER_ID);
+          recordProviderFailure(PROVIDER_ID, "parse");
           const stale = cGetStale<HebcalResponse>(CACHE_KEY);
           return { ok: false, error: "Invalid response shape", stale: stale ?? undefined };
         }
+        fetched = true;
         await cSetAsync(CACHE_KEY, data);
         recordProviderSuccess(PROVIDER_ID);
         diagLog(`FDB-090: [hebcal] Fetched ${data.items.length} items`);
         return { ok: true, data };
       } catch (err) {
-        recordProviderFailure(PROVIDER_ID);
+        const stage = fetched ? "cache" : getLastFetchStage();
+        if (stage === "unknown") recordProviderFailure(PROVIDER_ID);
+        else recordProviderFailure(PROVIDER_ID, stage);
         const stale = cGetStale<HebcalResponse>(CACHE_KEY);
         return {
           ok: false,
