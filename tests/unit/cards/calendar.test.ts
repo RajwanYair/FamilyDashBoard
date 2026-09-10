@@ -317,7 +317,9 @@ describe("Calendar — renderCalendar (weekly tiled view)", () => {
     ]);
     const grid = document.getElementById("cal-week-grid")!;
     expect(grid.textContent).toContain("הרצליה");
-    expect(grid.querySelector(".cal-event-loc")).not.toBeNull();
+    expect(grid.querySelector<HTMLElement>(".cal-event-loc")).toMatchObject({
+      title: "הרצליה",
+    });
   });
 
   it("marks overlapping timed events with has-conflict", () => {
@@ -3503,6 +3505,7 @@ describe("Calendar — renderCalendar with holidays", () => {
     // At least one tile should show the holiday (if date matches)
     const hasHoliday = grid?.querySelector(".has-holiday");
     expect(hasHoliday || holidayLabels?.length).toBeTruthy();
+    expect(holidayLabels?.[0]?.getAttribute("title")).toBe("שבת");
   });
 
   it("updateTodayEventCount shows badge when events exist today", () => {

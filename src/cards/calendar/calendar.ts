@@ -282,6 +282,7 @@ function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
     const locEl = document.createElement("div");
     locEl.className = "cal-event-loc";
     locEl.textContent = "📍 " + ev.location;
+    locEl.title = ev.location;
     titleEl.appendChild(locEl);
   }
 
@@ -412,6 +413,7 @@ function renderDayTile(
     const hol = document.createElement("div");
     hol.className = "cal-holiday-label";
     hol.textContent = holidayLabel;
+    hol.title = holidayLabel;
     tile.appendChild(hol);
   }
 
