@@ -65,6 +65,8 @@
   border: 1px solid transparent;
   transition: all 0.15s;
   user-select: none;
+  min-block-size: 2.75rem;
+  touch-action: manipulation;
 }
 .wx-city-tab.active {
   background: var(--cyan);
@@ -121,6 +123,8 @@
   font-family: inherit;
   float: left;
   margin: 2px 0;
+  min-block-size: 2.75rem;
+  touch-action: manipulation;
 }
 
 /* F142: Dew point tile — 7th detail cell border accent */

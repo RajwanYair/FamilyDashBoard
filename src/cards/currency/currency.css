@@ -143,6 +143,8 @@
     color: var(--text-primary);
     font-size: 0.9em;
     cursor: pointer;
+    min-block-size: 2.75rem;
+    touch-action: manipulation;
   }
 
   .cur-calc-result {

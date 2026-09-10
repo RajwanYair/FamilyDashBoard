@@ -50,4 +50,15 @@ describe("card touch-target contracts", () => {
     expect(block).toContain("min-block-size: 2.75rem");
     expect(block).toContain("touch-action: manipulation");
   });
+
+  it("keeps weather, alert, and currency controls touch-sized", () => {
+    const weather = readCss("cards/weather/weather.css");
+    const alerts = readCss("cards/alerts/alerts.css");
+    const currency = readCss("cards/currency/currency.css");
+
+    expect(selectorBlock(weather, ".wx-city-tab")).toContain("min-block-size: 2.75rem");
+    expect(selectorBlock(weather, ".wx-city-tab")).toContain("touch-action: manipulation");
+    expect(selectorBlock(alerts, ".alerts-history-toggle")).toContain("min-block-size: 2.75rem");
+    expect(selectorBlock(currency, ".cur-calc-pair")).toContain("min-block-size: 2.75rem");
+  });
 });

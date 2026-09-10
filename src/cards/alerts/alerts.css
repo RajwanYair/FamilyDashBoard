@@ -94,6 +94,8 @@
     background: var(--bg-secondary);
     color: var(--text-muted);
     cursor: pointer;
+    min-block-size: 2.75rem;
+    touch-action: manipulation;
     transition: color 0.2s;
   }
 
