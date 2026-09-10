@@ -74,6 +74,7 @@ function updateRestorePill(): void {
     document.body.appendChild(pill);
   }
   pill.textContent = `👁 ${cfg.hiddenCards.length} הוסתרו — הצג הכל`;
+  pill.ariaLabel = `הצג את כל הכרטיסיות שהוסתרו (${cfg.hiddenCards.length})`;
   pill.title = "Restore all hidden cards";
 }
 

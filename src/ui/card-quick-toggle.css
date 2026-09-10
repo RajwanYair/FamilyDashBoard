@@ -3,11 +3,17 @@
 .card-quick-hide-btn {
   all: unset;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.72em;
   opacity: 0;
   transition: opacity 0.2s;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
   padding: 2px 4px;
   border-radius: 4px;
+  touch-action: manipulation;
 }
 .card-header:hover .card-quick-hide-btn,
 .card-quick-hide-btn:focus-visible {
@@ -16,6 +22,12 @@
 .card-quick-hide-btn:hover {
   opacity: 1;
   background: var(--bg-card-inner);
+}
+
+@media (pointer: coarse) {
+  .card-quick-hide-btn {
+    opacity: 0.7;
+  }
 }
 
 .card-quick-restore-pill {
@@ -28,10 +40,12 @@
   color: var(--text-on-accent);
   border: none;
   border-radius: 20px;
+  min-block-size: 2.75rem;
   padding: 6px 16px;
   font-size: 0.82em;
   font-family: inherit;
   cursor: pointer;
+  touch-action: manipulation;
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.3);
   transition:
     opacity 0.2s,
