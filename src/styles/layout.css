@@ -214,11 +214,34 @@
 
   /* -- Card container queries (R1.8) -- */
   @container card (max-width: 320px) {
+    .stk {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      gap: 4px;
+      padding-inline: 4px;
+      overflow: hidden;
+    }
     .stk-sym {
       font-size: 0.72em;
     }
     .stk-desc {
       display: none;
+    }
+    .stk-chart,
+    .stk-time,
+    .stk-ph-spark,
+    .stk-vol-spark {
+      display: none;
+    }
+    .stk-info {
+      width: 4.5em;
+    }
+    .stk-vals {
+      width: 5em;
+    }
+    .stk-detail-btn {
+      padding-inline: 2px;
     }
     .rss-item {
       font-size: 0.78em;

@@ -150,6 +150,10 @@ export const test = base.extend<DashboardFixtures>({
   },
 });
 
+test.afterEach(async ({ page }) => {
+  await page.unrouteAll({ behavior: "ignoreErrors" });
+});
+
 export { expect };
 
 /**
