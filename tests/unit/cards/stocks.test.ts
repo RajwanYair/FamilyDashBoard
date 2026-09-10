@@ -2316,6 +2316,31 @@ describe("Stocks — fillStockDetailPopover", () => {
     expect(document.getElementById("stk-dp-chg")!.className).toContain("positive");
   });
 
+  it("wires a focus target and restores the trigger when the popover closes", () => {
+    document.body.innerHTML = `
+      <div id="stocks-body"></div>
+      <div id="stk-detail-popover" class="stk-detail-popover">
+        <span id="stk-dp-sym"></span>
+        <span id="stk-dp-name"></span>
+        <span id="stk-dp-price"></span>
+        <span id="stk-dp-chg"></span>
+        <span id="stk-dp-time"></span>
+      </div>`;
+    renderStocksShell();
+    const trigger = document.querySelector<HTMLButtonElement>(".stk-detail-btn")!;
+    const popover = document.getElementById("stk-detail-popover")!;
+    vi.spyOn(popover, "focus").mockImplementation(() => {});
+
+    trigger.click();
+    popover.dispatchEvent(Object.assign(new Event("toggle"), { newState: "open" }));
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+    expect(popover.getAttribute("tabindex")).toBe("-1");
+
+    popover.dispatchEvent(Object.assign(new Event("toggle"), { newState: "closed" }));
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+    expect(document.activeElement).toBe(trigger);
+  });
+
   it("does not throw when popover element is absent", () => {
     document.body.innerHTML = "";
     expect(() => fillStockDetailPopover("AAPL")).not.toThrow();
@@ -2342,6 +2367,9 @@ describe("Stocks — CSS Anchor Positioning on detail button click (F11)", () =>
 
     const btn = document.querySelector<HTMLElement>(".stk-detail-btn");
     expect(btn).not.toBeNull();
+    expect(btn!.getAttribute("aria-haspopup")).toBe("dialog");
+    expect(btn!.getAttribute("aria-controls")).toBe("stk-detail-popover");
+    expect(btn!.getAttribute("aria-expanded")).toBe("false");
     btn!.dispatchEvent(new MouseEvent("click", { bubbles: false }));
     expect(btn!.style.getPropertyValue("anchor-name")).toBe("--stk-row-anchor");
   });

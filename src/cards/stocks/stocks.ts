@@ -42,6 +42,7 @@ import { today, fromDateString } from "../../core/temporal";
 
 // X15: cached snapshot of top mover for the semantic-clipboard producer.
 let _topMoverSnapshot: { sym: string; pct: number; dir: "up" | "down" } | null = null;
+let _activeStockDetailTrigger: HTMLButtonElement | null = null;
 
 function buildStocksPayload(): SemanticPayload | null {
   const m = _topMoverSnapshot;
@@ -382,11 +383,31 @@ const INDEX_SYMBOLS = ["^GSPC", "^VIX"] as const;
 // The Tel Aviv index is shown as a separate trailing entry
 const TA35_SYMBOL = "^TA35.TA";
 
+function wireStockDetailPopover(): void {
+  const popover = document.getElementById("stk-detail-popover");
+  if (!popover || popover.dataset["focusWired"] === "1") return;
+
+  popover.dataset["focusWired"] = "1";
+  if (!popover.hasAttribute("tabindex")) popover.setAttribute("tabindex", "-1");
+  popover.addEventListener("toggle", (event: Event) => {
+    const newState = (event as Event & { newState?: string }).newState;
+    if (newState === "open") {
+      _activeStockDetailTrigger?.setAttribute("aria-expanded", "true");
+      popover.focus({ preventScroll: true });
+    } else if (newState === "closed") {
+      const trigger = _activeStockDetailTrigger;
+      _activeStockDetailTrigger = null;
+      trigger?.setAttribute("aria-expanded", "false");
+      if (trigger?.isConnected) trigger.focus({ preventScroll: true });
+    }
+  });
+}
+
 /**
  * Fill and reveal the Popover API stock detail panel.
  * Reads from the already-rendered `.stk` row so no extra fetch is needed.
  */
-export function fillStockDetailPopover(symbol: string): void {
+export function fillStockDetailPopover(symbol: string, show = true): void {
   const popover = document.getElementById("stk-detail-popover") as HTMLElement & {
     showPopover?: () => void;
   };
@@ -411,7 +432,7 @@ export function fillStockDetailPopover(symbol: string): void {
   }
   if (timeEl) timeEl.textContent = row?.querySelector(".stk-time")?.textContent ?? "";
 
-  if (typeof popover.showPopover === "function") popover.showPopover();
+  if (show && typeof popover.showPopover === "function") popover.showPopover();
 }
 
 /**
@@ -422,6 +443,7 @@ export function fillStockDetailPopover(symbol: string): void {
 export function renderStocksShell(): void {
   const container = document.getElementById("stocks-body");
   if (!container) return;
+  wireStockDetailPopover();
 
   const FAVICON = (domain: string) => `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 
@@ -498,10 +520,14 @@ export function renderStocksShell(): void {
     detailBtn.type = "button";
     detailBtn.className = "stk-detail-btn";
     detailBtn.setAttribute("popovertarget", "stk-detail-popover");
+    detailBtn.setAttribute("aria-haspopup", "dialog");
+    detailBtn.setAttribute("aria-controls", "stk-detail-popover");
+    detailBtn.setAttribute("aria-expanded", "false");
     detailBtn.setAttribute("aria-label", `פרטים נוספים — ${meta?.he ?? symbol}`);
     detailBtn.textContent = "ℹ";
     detailBtn.addEventListener("click", (e) => {
       e.stopPropagation();
+      _activeStockDetailTrigger = detailBtn;
       // F11 CSS Anchor Positioning: move --stk-row-anchor to the clicked button
       // so the popover appears near the trigger. Harmlessly ignored in browsers
       // that don't support anchor-name (CSS @supports handles the fallback).
@@ -509,7 +535,8 @@ export function renderStocksShell(): void {
         btn.style.removeProperty("anchor-name");
       });
       detailBtn.style.setProperty("anchor-name", "--stk-row-anchor");
-      fillStockDetailPopover(symbol);
+      // Let the native popover target perform the single open/close transition.
+      fillStockDetailPopover(symbol, false);
     });
 
     row.append(logoDiv, infoDiv, valsDiv, svg, timeDiv, histSparkDiv, volSparkDiv, detailBtn);
@@ -1186,6 +1213,7 @@ function scheduleStocksRefresh(): void {
 }
 
 export function destroyStocksCard(): void {
+  _activeStockDetailTrigger = null;
   if (_marketBadgeInterval !== null) {
     clearInterval(_marketBadgeInterval);
     _marketBadgeInterval = null;

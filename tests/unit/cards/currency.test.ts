@@ -326,7 +326,7 @@ describe("Currency — initCurrencyCard", () => {
     expect(() => destroyCurrencyCard()).not.toThrow();
   });
 
-  it("reload button triggers showPopover and loadCurrency (lines 459-462)", () => {
+  it("reload button delegates visibility to the native popover target", () => {
     document.body.innerHTML += `
       <button id="cur-reload-btn"></button>
       <div id="cur-reload-popover"></div>
@@ -341,7 +341,33 @@ describe("Currency — initCurrencyCard", () => {
     initCurrencyCard();
     const btn = document.getElementById("cur-reload-btn") as HTMLButtonElement;
     btn.click();
-    expect(popover.showPopover).toHaveBeenCalledOnce();
+    expect(popover.showPopover).not.toHaveBeenCalled();
+    expect(btn.getAttribute("aria-controls")).toBe("cur-reload-popover");
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("restores focus after the native popover target closes", () => {
+    document.body.innerHTML += `
+      <button id="cur-reload-btn"></button>
+      <div id="cur-reload-popover"></div>
+    `;
+    const popover = document.getElementById("cur-reload-popover") as HTMLElement & {
+      showPopover?: () => void;
+      hidePopover?: () => void;
+    };
+    popover.showPopover = vi.fn();
+    popover.hidePopover = vi.fn();
+    cacheDom();
+    initCurrencyCard();
+    const btn = document.getElementById("cur-reload-btn") as HTMLButtonElement;
+    btn.click();
+    expect(popover.showPopover).not.toHaveBeenCalled();
+
+    popover.dispatchEvent(Object.assign(new Event("toggle"), { newState: "open" }));
+    expect(btn.getAttribute("aria-expanded")).toBe("true");
+    popover.dispatchEvent(Object.assign(new Event("toggle"), { newState: "closed" }));
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+    expect(document.activeElement).toBe(btn);
   });
 });
 

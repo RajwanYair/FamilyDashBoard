@@ -741,8 +741,19 @@ export function initCurrencyCard(): void {
   const reloadBtn = document.getElementById("cur-reload-btn");
   const reloadPopover = document.getElementById("cur-reload-popover");
   if (reloadBtn && reloadPopover) {
+    reloadBtn.setAttribute("aria-controls", "cur-reload-popover");
+    reloadBtn.setAttribute("aria-expanded", "false");
+    if (reloadPopover.dataset["focusWired"] !== "1") {
+      reloadPopover.dataset["focusWired"] = "1";
+      reloadPopover.addEventListener("toggle", (event: Event) => {
+        const newState = (event as Event & { newState?: string }).newState;
+        const isOpen = newState === "open";
+        reloadBtn.setAttribute("aria-expanded", String(isOpen));
+        if (!isOpen && reloadBtn.isConnected) reloadBtn.focus({ preventScroll: true });
+      });
+    }
     reloadBtn.addEventListener("click", () => {
-      if (typeof reloadPopover.showPopover === "function") reloadPopover.showPopover();
+      // The native popover target owns the visible loading status.
       void loadCurrency().then(() => {
         if (typeof reloadPopover.hidePopover === "function") reloadPopover.hidePopover();
       });
