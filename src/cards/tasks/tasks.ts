@@ -327,16 +327,22 @@ function buildTaskRow(
   const row = document.createElement("div");
   row.className = "tasks-row" + (doneMap[fp] ? " done" : "");
   row.tabIndex = 0;
+  row.setAttribute("role", "listitem");
   row.addEventListener("keydown", (e: KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      const next = row.nextElementSibling as HTMLElement | null;
-      next?.focus();
-      e.preventDefault();
-    } else if (e.key === "ArrowUp") {
-      const prev = row.previousElementSibling as HTMLElement | null;
-      prev?.focus();
-      e.preventDefault();
-    }
+    if (e.target !== row) return;
+    const rows = Array.from(row.parentElement?.querySelectorAll<HTMLElement>(".tasks-row") ?? []);
+    const currentIndex = rows.indexOf(row);
+    if (currentIndex < 0) return;
+
+    let nextIndex: number | null = null;
+    if (e.key === "ArrowDown") nextIndex = Math.min(rows.length - 1, currentIndex + 1);
+    if (e.key === "ArrowUp") nextIndex = Math.max(0, currentIndex - 1);
+    if (e.key === "Home") nextIndex = 0;
+    if (e.key === "End") nextIndex = rows.length - 1;
+    if (nextIndex === null || nextIndex === currentIndex) return;
+
+    e.preventDefault();
+    rows[nextIndex]?.focus();
   });
 
   const cb = document.createElement("input");
@@ -458,6 +464,7 @@ function buildTaskRow(
 export function renderTasksCard(): void {
   const container = document.getElementById("tasks-list");
   if (!container) return;
+  container.setAttribute("role", "list");
 
   checkDailyReset();
   const chores = loadChores();

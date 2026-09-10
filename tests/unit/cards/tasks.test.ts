@@ -1804,6 +1804,36 @@ describe("Tasks — row ArrowDown/ArrowUp keyboard navigation ", () => {
     ).not.toThrow();
   });
 
+  it("Home and End move to the first and last rows", () => {
+    renderTasksCard();
+    const rows = document.querySelectorAll<HTMLElement>(".tasks-row");
+    const firstSpy = vi.spyOn(rows[0]!, "focus");
+    const lastSpy = vi.spyOn(rows[rows.length - 1]!, "focus");
+
+    rows[2]!.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Home", bubbles: true, cancelable: true }),
+    );
+    rows[0]!.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "End", bubbles: true, cancelable: true }),
+    );
+
+    expect(firstSpy).toHaveBeenCalled();
+    expect(lastSpy).toHaveBeenCalled();
+  });
+
+  it("keeps arrow keys inside a task checkbox", () => {
+    renderTasksCard();
+    const rows = document.querySelectorAll<HTMLElement>(".tasks-row");
+    const checkbox = rows[0]!.querySelector<HTMLInputElement>(".tasks-cb")!;
+    const focusSpy = vi.spyOn(rows[1]!, "focus");
+
+    checkbox.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }),
+    );
+
+    expect(focusSpy).not.toHaveBeenCalled();
+  });
+
   it("other key (Tab) is not handled by the row keydown listener", () => {
     renderTasksCard();
     const rows = document.querySelectorAll<HTMLElement>(".tasks-row");
