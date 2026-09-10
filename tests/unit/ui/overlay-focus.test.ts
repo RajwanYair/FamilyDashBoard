@@ -47,6 +47,16 @@ describe("overlay focus helpers", () => {
     expect(document.activeElement).not.toBe(trigger);
   });
 
+  it("does not retain the document body as a return target", () => {
+    const overlay = document.createElement("div");
+    document.body.append(overlay);
+
+    captureOverlayFocus("body-overlay", overlay);
+    restoreOverlayFocus("body-overlay");
+
+    expect(document.activeElement).toBe(document.body);
+  });
+
   it("excludes hidden and inactive settings controls", () => {
     const overlay = document.createElement("div");
     const active = document.createElement("button");

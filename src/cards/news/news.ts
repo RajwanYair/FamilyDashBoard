@@ -38,6 +38,7 @@ import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import { removeFreshnessBadge, renderFreshnessBadge } from "../../core/freshness";
 import { deduplicateBySimHash } from "../../core/simhash";
 import { recordDedupStats } from "../../core/feed-stats";
+import { captureOverlayFocus, restoreOverlayFocus } from "../../ui/overlay-focus";
 import {
   nowMs,
   parseEpochMs,
@@ -752,10 +753,14 @@ export function closeStarredDrawer(): void {
 /** Render and open the starred-articles `<dialog>` drawer. */
 export async function openStarredDrawer(): Promise<void> {
   if (!elStarDialog) return;
+  captureOverlayFocus("news-starred-dialog", elStarDialog);
   const articles = await getStarredArticles();
 
   const list = elStarDialog.querySelector<HTMLElement>(".news-starred-list");
-  if (!list) return;
+  if (!list) {
+    restoreOverlayFocus("news-starred-dialog");
+    return;
+  }
 
   list.replaceChildren();
 
@@ -824,8 +829,9 @@ export async function openStarredDrawer(): Promise<void> {
       list.appendChild(tile);
     }
   }
-
-  if (!elStarDialog.open) elStarDialog.showModal();
+  if (!elStarDialog.open) {
+    elStarDialog.showModal();
+  }
 }
 
 export function cacheDom(): void {
@@ -878,6 +884,9 @@ export function cacheDom(): void {
   if (elStarDialog) {
     elStarDialog.addEventListener("click", (e) => {
       if (e.target === elStarDialog) closeStarredDrawer();
+    });
+    elStarDialog.addEventListener("close", () => {
+      restoreOverlayFocus("news-starred-dialog");
     });
   }
   attachPersistenceListeners();

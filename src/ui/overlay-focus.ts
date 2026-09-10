@@ -16,6 +16,7 @@ export function captureOverlayFocus(id: string, overlay: Element): void {
   if (
     active instanceof HTMLElement &&
     active.isConnected &&
+    active !== document.body &&
     !overlay.contains(active) &&
     !active.hasAttribute("disabled")
   ) {

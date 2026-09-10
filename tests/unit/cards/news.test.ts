@@ -2909,6 +2909,28 @@ describe("News — openStarredDrawer ", () => {
     document.body.removeChild(closeBtn);
   });
 
+  it("returns focus to the opener when the starred dialog closes", async () => {
+    const dialog = document.createElement("dialog");
+    dialog.id = "news-starred-dialog";
+    const list = document.createElement("div");
+    list.className = "news-starred-list";
+    dialog.appendChild(list);
+    document.body.appendChild(dialog);
+    const opener = document.createElement("button");
+    opener.id = "news-star-btn";
+    document.body.appendChild(opener);
+    vi.spyOn(dialog, "showModal").mockImplementation(() => {});
+    cacheDom();
+    opener.focus();
+
+    await openStarredDrawer();
+    dialog.dispatchEvent(new Event("close"));
+
+    expect(document.activeElement).toBe(opener);
+    document.body.removeChild(dialog);
+    document.body.removeChild(opener);
+  });
+
   it("renders starred tiles when articles exist", async () => {
     const dialog = document.createElement("dialog");
     dialog.id = "news-starred-dialog";
