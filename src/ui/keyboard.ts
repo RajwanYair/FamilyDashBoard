@@ -15,6 +15,7 @@ export interface KeyboardAction {
 
 const actions: KeyboardAction[] = [];
 const overlayClosers = new Map<string, () => void>();
+let keyboardInitialized = false;
 
 /**
  * Register a keyboard shortcut.
@@ -44,6 +45,8 @@ export function registerOverlayCloser(id: string, closer: () => void): void {
  * Initialize keyboard listeners with built-in shortcuts.
  */
 export function initKeyboard(): void {
+  if (keyboardInitialized) return;
+
   // Built-in: theme cycle
   registerKey("t", "מחזור ערכות נושא", cycleTheme);
   registerKey("p", "הדפסה", () => {
@@ -57,8 +60,13 @@ export function initKeyboard(): void {
     // Escape is a global overlay command even when focus is inside a form
     // control. Other shortcuts remain ignored while typing.
     if (key !== "escape") {
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      const target = e.target;
+      if (
+        target instanceof Element &&
+        target.closest("input, textarea, select, [contenteditable='true']")
+      ) {
+        return;
+      }
     }
     for (const action of actions) {
       if (action.key === key) {
@@ -70,6 +78,7 @@ export function initKeyboard(): void {
     }
   });
 
+  keyboardInitialized = true;
   diagLog(`[keyboard] Initialized with ${String(actions.length)} shortcuts`);
 }
 

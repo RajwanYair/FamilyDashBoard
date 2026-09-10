@@ -54,6 +54,13 @@ describe("Keyboard — initKeyboard built-in shortcuts", () => {
     expect(actions.some((a) => a.key === "p")).toBe(true);
   });
 
+  it("does not register built-ins or listeners more than once", () => {
+    const before = getKeyboardActions().length;
+    initKeyboard();
+    initKeyboard();
+    expect(getKeyboardActions()).toHaveLength(before);
+  });
+
   it("dispatches action on keydown event", () => {
     const handler = vi.fn();
     registerKey("z", "unit test dispatch", handler);
@@ -87,6 +94,16 @@ describe("Keyboard — initKeyboard built-in shortcuts", () => {
     const sel = document.createElement("select");
     document.body.appendChild(sel);
     sel.dispatchEvent(new KeyboardEvent("keydown", { key: "r", bubbles: true }));
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it("ignores keydown when target is contenteditable", () => {
+    const handler = vi.fn();
+    registerKey("c", "should ignore in editor", handler);
+    const editor = document.createElement("div");
+    editor.contentEditable = "true";
+    document.body.appendChild(editor);
+    editor.dispatchEvent(new KeyboardEvent("keydown", { key: "c", bubbles: true }));
     expect(handler).not.toHaveBeenCalled();
   });
 
